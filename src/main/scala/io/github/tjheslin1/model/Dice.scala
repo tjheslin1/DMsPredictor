@@ -6,11 +6,11 @@ sealed trait Dice {
 
   def sides: Int
 
-  def result(times: Int): Int = roll(times)
-
   def roll(times: Int): Int = {
     (1 to times).map(_ => Random.nextInt(sides-1) + 1).sum
   }
+
+  def *(times: Int): Int = roll(times)
 }
 
 object D4 extends Dice {
