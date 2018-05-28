@@ -3,7 +3,19 @@ package unit
 import io.github.tjheslin1.model._
 import org.scalatest.{Matchers, WordSpec}
 
+import scala.util.Random
+
 class DiceSpec extends WordSpec with Matchers {
+
+  "defaultRandomiser" should {
+    "return an inclusive value between the minimum and maximum value of the die" in {
+      (1 to 1000).map(_ => {
+        val res = D6.roll(1, _ => Random.nextInt(D6.sides) + 1)
+
+        res should (be >= 1 and be <= 6)
+      })
+    }
+  }
 
   "roll" should {
     "return the minimum value for minimum rolls" in {

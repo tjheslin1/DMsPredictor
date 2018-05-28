@@ -13,7 +13,7 @@ sealed trait Dice {
     (1 to times).map(randomiser).sum
   }
 
-  val defaultRandomiser: Int => Int = _ => Random.nextInt(sides - 1) + 1
+  val defaultRandomiser: Int => Int = _ => Random.nextInt(sides) + 1
 }
 
 object D4 extends Dice {
