@@ -11,8 +11,8 @@ trait Simulation {
 
 sealed trait SimulationStatus
 
-case object Win extends SimulationStatus
-case object Loss extends SimulationStatus
+case object Win     extends SimulationStatus
+case object Loss    extends SimulationStatus
 case object Unknown extends SimulationStatus
 
 case class SimulationResult(result: SimulationStatus, info: String)

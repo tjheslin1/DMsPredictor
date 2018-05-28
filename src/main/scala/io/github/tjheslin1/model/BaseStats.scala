@@ -1,12 +1,11 @@
 package io.github.tjheslin1.model
 
 case class BaseStats(strength: Strength,
-                dexterity: Dexterity,
-                constitution: Constitution,
-                wisdom: Wisdom,
-                intelligence: Intelligence,
-                charisma: Charisma) {
-}
+                     dexterity: Dexterity,
+                     constitution: Constitution,
+                     wisdom: Wisdom,
+                     intelligence: Intelligence,
+                     charisma: Charisma) {}
 
 object BaseStats {
   def apply(strength: Int,

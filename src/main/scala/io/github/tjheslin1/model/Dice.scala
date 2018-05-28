@@ -9,7 +9,7 @@ sealed trait Dice {
 
   def *(times: Int): Int = roll(times)
   def roll(times: Int): Int = {
-    (1 to times).map(_ => Random.nextInt(sides-1) + 1).sum
+    (1 to times).map(_ => Random.nextInt(sides - 1) + 1).sum
   }
 }
 

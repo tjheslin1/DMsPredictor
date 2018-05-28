@@ -5,6 +5,6 @@ import io.github.tjheslin1.util.IntOps._
 
 case object Greatsword extends Weapon {
 
-  def damage: Int = 2*D6
+  def damage: Int = 2 * D6
 
 }
