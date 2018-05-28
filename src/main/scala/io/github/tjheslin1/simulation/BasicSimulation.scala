@@ -13,7 +13,8 @@ case class BasicSimulation(pcs: List[PlayerCharacter], mobs: List[Creature]) ext
       case character :: Nil =>
         SimulationResult(character.attack(monsters.head), "Fighter vs Goblin")
       case _ =>
-        SimulationResult(Unknown, "BasicSimulation only handles a single character vs a single monster")
+        SimulationResult(Unknown,
+          "BasicSimulation only handles a single character vs a single monster")
     }
   }
 }

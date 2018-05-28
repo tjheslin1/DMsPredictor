@@ -8,9 +8,12 @@ sealed trait Dice {
   def max: Int = sides
 
   def *(times: Int): Int = roll(times)
-  def roll(times: Int): Int = {
-    (1 to times).map(_ => Random.nextInt(sides - 1) + 1).sum
+
+  def roll(times: Int, randomiser: Int => Int = defaultRandomiser): Int = {
+    (1 to times).map(randomiser).sum
   }
+
+  val defaultRandomiser: Int => Int = _ => Random.nextInt(sides - 1) + 1
 }
 
 object D4 extends Dice {
