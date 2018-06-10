@@ -3,12 +3,16 @@ package io.github.tjheslin1.classes
 import io.github.tjheslin1.model._
 import io.github.tjheslin1.weapons.Greatsword
 
-case class Fighter() extends PlayerCharacter {
+class Fighter(wpn: Weapon = Greatsword) extends PlayerCharacter {
 
-  def level: Level     = LevelOne
-  def stats: BaseStats = BaseStats(15, 13, 14, 12, 8, 10)
-  def health: Int      = D10.max
-  def armourClass: Int = 14
-  def experience: Int  = 0
-  def weapon: Weapon   = Greatsword
+  val level: Level                                     = LevelOne
+  val stats: BaseStats                                 = BaseStats(15, 13, 14, 12, 8, 10)
+  def health(implicit rollStrategy: RollStrategy): Int = D10.max * level
+  val armourClass: Int                                 = 14
+  val experience: Int                                  = 0
+  val weapon: Weapon                                   = wpn
+}
+
+object Fighter {
+  def apply(wpn: Weapon = Greatsword): Fighter = new Fighter(wpn)
 }

@@ -12,7 +12,7 @@ class BasicSimulationSpec extends FeatureSpec with Matchers {
       val pcs  = List(Fighter())
       val mobs = List(Goblin())
 
-      BasicSimulation(pcs, mobs).run should (equal(SimulationResult(Win, "Fighter vs Goblin"))
+      BasicSimulation(pcs, mobs).run should (equal(SimulationResult(Success, "Fighter vs Goblin"))
         or equal(SimulationResult(Loss, "Fighter vs Goblin")))
     }
   }

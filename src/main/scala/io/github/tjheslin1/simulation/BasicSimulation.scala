@@ -1,20 +1,22 @@
 package io.github.tjheslin1.simulation
 
-import io.github.tjheslin1.model.{Creature, PlayerCharacter}
+import io.github.tjheslin1.model.{Creature, PlayerCharacter, RollStrategy}
 
-case class BasicSimulation(pcs: List[PlayerCharacter], mobs: List[Creature]) extends Simulation {
+case class BasicSimulation(characters: List[PlayerCharacter], monsters: List[Creature]) extends Simulation {
 
-  def characters: List[PlayerCharacter] = pcs
+  def pcs: List[PlayerCharacter] = characters
 
-  def monsters: List[Creature] = mobs
+  def mobs: List[Creature] = monsters
 
-  def run: SimulationResult = {
-    characters match {
+  def run(implicit rollStrategy: RollStrategy): SimulationResult = {
+    pcs match {
       case character :: Nil =>
-        SimulationResult(character.attack(monsters.head), "Fighter vs Goblin")
+        if (character.attack(mobs.head) == Success)
+          SimulationResult(character.resolveDamage(mobs.head), "Fighter vs Goblin")
+        else SimulationResult(Loss, "Fighter vs Goblin")
       case _ =>
-        SimulationResult(Unknown,
-          "BasicSimulation only handles a single character vs a single monster")
+        SimulationResult(Unknown, "BasicSimulation only handles a single character vs a single monster")
     }
   }
+
 }
