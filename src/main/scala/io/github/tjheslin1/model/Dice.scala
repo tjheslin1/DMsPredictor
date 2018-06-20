@@ -4,15 +4,21 @@ import scala.util.Random
 
 sealed trait Dice {
 
+  import Dice._
+
   def sides: Int
 
   def max: Int = sides
 
-  def *(times: Int)(implicit rollStrategy: RollStrategy): Int = roll(times)(rollStrategy)
+  def *(times: Int)(implicit rollStrategy: RollStrategy = defaultRandomiser): Int = roll(times)(rollStrategy)
 
-  def roll(times: Int = 1)(implicit rollStrategy: RollStrategy): Int = (1 to times).map(rollStrategy).sum
+  def roll(times: Int = 1)(implicit rollStrategy: RollStrategy = defaultRandomiser): Int =
+    (1 to times).map(_ => rollStrategy(sides)).sum
+}
 
-  implicit val defaultRandomiser: RollStrategy = _ => RollResult(Random.nextInt(sides) + 1)
+object Dice {
+
+  implicit val defaultRandomiser: RollStrategy = sides => RollResult(Random.nextInt(sides) + 1)
 }
 
 object D4 extends Dice {

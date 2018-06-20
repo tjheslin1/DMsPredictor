@@ -1,13 +1,12 @@
 package io.github.tjheslin1
 
 import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.RollStrategy
 import io.github.tjheslin1.monsters.Goblin
 import io.github.tjheslin1.simulation.{BasicSimulation, SimulationRunner}
 
 object Main extends App {
 
-  implicit def defaultRandomiser: RollStrategy = throw new IllegalStateException("Shouldn't need this implicit")
+  import io.github.tjheslin1.model.Dice._
 
   val pcs  = List(Fighter())
   val mobs = List(Goblin())

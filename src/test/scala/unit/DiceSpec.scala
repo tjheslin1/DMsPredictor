@@ -7,6 +7,8 @@ import scala.util.Random
 
 class DiceSpec extends WordSpec with Matchers {
 
+  implicit def rollResultConversion(roll: Int): RollResult = RollResult(roll)
+
   "defaultRandomiser" should {
     "return an inclusive value between the minimum and maximum value of the die" in {
       (1 to 1000).map(_ => {

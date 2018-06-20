@@ -7,6 +7,8 @@ import org.scalatest.{FeatureSpec, Matchers}
 
 class BasicSimulationSpec extends FeatureSpec with Matchers {
 
+  import io.github.tjheslin1.model.Dice._
+
   feature("BasicSimulation") {
     scenario("One Fighter vs a Goblin") {
       val pcs  = List(Fighter())
