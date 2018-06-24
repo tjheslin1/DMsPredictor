@@ -1,18 +1,15 @@
 package io.github.tjheslin1.monsters
 
-import io.github.tjheslin1.model.{BaseStats, D6, Level, LevelOne, Monster, RollStrategy, Weapon}
+import io.github.tjheslin1.model.{BaseStats, Creature, D6, Monster, RollStrategy, Weapon}
 import io.github.tjheslin1.util.IntOps._
-import io.github.tjheslin1.util.NameGenerator
 import io.github.tjheslin1.weapons.Shortsword
 
-case class Goblin() extends Monster {
+case class Goblin(creature: Creature)
+
+object Goblin {
 
   def calculateHealth(implicit rollStrategy: RollStrategy): Int = 2 * D6
 
-  def stats: BaseStats = BaseStats(8, 14, 10, 10, 8, 8)
-  val armourClass: Int = 15
-  val experience: Int  = 50
-
-  val weapon: Weapon = Shortsword
-  val level: Level = LevelOne
+  def levelOneGoblin(weapon: Weapon = Shortsword)(implicit rollStrategy: RollStrategy) =
+    Goblin(Creature(calculateHealth, BaseStats(8, 14, 10, 10, 8, 8), 15, 0, weapon, Monster))
 }

@@ -8,10 +8,8 @@ object NameGenerator {
   val centreStart = List('s', 't', 'v', 'w')
   val suffixStart = List('k', 'l', 'm', 'o')
 
+  def shuffled(cs: Seq[Char]) = scala.util.Random.shuffle(cs).head.toString
 
-  def shuffled(cs: Seq[Char]) = scala.util.Random.shuffle(cs).head
-
-  def randomName = shuffled(prefixStart) + shuffled(vowels) + "'"
-                    + shuffled(centreStart) + shuffled(vowels) + "'"
-                    + shuffled(suffixStart) + shuffled(vowels)
+  def randomName = shuffled(prefixStart) + shuffled(vowels) + "'" + shuffled(centreStart) + shuffled(vowels) + "'" + shuffled(
+      suffixStart) + shuffled(vowels)
 }

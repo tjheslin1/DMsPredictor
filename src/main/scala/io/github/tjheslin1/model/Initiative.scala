@@ -1,16 +1,14 @@
 package io.github.tjheslin1.model
 
-class Initiative(creatures: List[Creature]) { //(implicit rollStrategy: RollStrategy) {
+import io.github.tjheslin1.model.Modifier.mod
 
-  import Initiative._
+class Initiative(creatures: List[Creature]) {
 
-  def rollInitiative: List[(Creature, Int)] = creatures.map(c => (c, D20.roll() + c.stats.dexterity.score)).sorted(initiativeOrdering)
+  def rollInitiative(implicit rollStrategy: RollStrategy): Map[Creature, Int] =
+    creatures.map(c => (c, D20.roll() + mod(c.stats.dexterity))).toMap
 }
 
 object Initiative {
-
-  val initiativeOrdering: Ordering[(Creature, Int)] = (x: (Creature, Int), y: (Creature, Int)) =>
-    if (x._2 < y._2) -1 else if (x._2 > x._2) 1 else 0
 
   def apply(creatures: List[Creature]): Initiative = new Initiative(creatures)
 }

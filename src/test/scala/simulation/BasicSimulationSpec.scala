@@ -9,14 +9,15 @@ class BasicSimulationSpec extends FeatureSpec with Matchers {
 
   import io.github.tjheslin1.model.Dice._
 
-  // TODO
-//  feature("BasicSimulation") {
-//    scenario("One Fighter vs a Goblin") {
-//      val pcs  = List(Fighter())
-//      val mobs = List(Goblin())
-//
-//      BasicSimulation(pcs, mobs).run should (equal(SimulationResult(Success, "Fighter vs Goblin"))
-//        or equal(SimulationResult(Loss, "Fighter vs Goblin")))
-//    }
-//  }
+  feature("BasicSimulation") {
+    scenario("One Fighter vs a Goblin") {
+
+      val creatures = List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature)
+
+      val info = "Fighter vs Goblin"
+
+      BasicSimulation(creatures).run(info) should (equal(SimulationResult(Success, info))
+        or equal(SimulationResult(Loss, info)))
+    }
+  }
 }

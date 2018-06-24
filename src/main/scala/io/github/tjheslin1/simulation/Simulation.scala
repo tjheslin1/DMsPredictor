@@ -1,12 +1,11 @@
 package io.github.tjheslin1.simulation
 
-import io.github.tjheslin1.model.{Creature, PlayerCharacter, RollStrategy}
+import io.github.tjheslin1.model.{Creature, RollStrategy}
 
 trait Simulation {
 
-  def characters: List[PlayerCharacter]
-  def monsters: List[Creature]
-  def run(implicit rollStrategy: RollStrategy): SimulationResult
+  def creatures: List[Creature]
+  def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult
 }
 
 sealed trait SimulationStatus

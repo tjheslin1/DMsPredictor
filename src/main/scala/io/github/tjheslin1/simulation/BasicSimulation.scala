@@ -2,19 +2,18 @@ package io.github.tjheslin1.simulation
 
 import io.github.tjheslin1.model._
 
-case class BasicSimulation(characters: List[PlayerCharacter], monsters: List[Creature]) extends Simulation {
+case class BasicSimulation(cs: List[Creature]) extends Simulation {
 
-  def pcs: List[PlayerCharacter] = characters
+  val creatures = cs
 
-  def mobs: List[Creature] = monsters
+  def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
-  def run(implicit rollStrategy: RollStrategy): SimulationResult = {
+    val initiative = Initiative(creatures).rollInitiative
 
-    val initiative = Initiative(pcs ++ mobs).rollInitiative
+    val (pcs, mobs) = Turn(initiative).run.partition(_.creatureType == PlayerCharacter)
 
-    Turn(initiative).run
-
-    SimulationResult(Success, "todo")
+    if (pcs.exists(_.health > 0)) SimulationResult(Success, info)
+    else SimulationResult(Loss, info)
   }
 
 }
