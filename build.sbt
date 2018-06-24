@@ -3,7 +3,7 @@ import Dependencies._
 lazy val root = (project in file(".")).settings(
   libraryDependencies ++= Seq(
     scalatest,
-    cats
+    cats, scalaChart
   ))
 
 scalacOptions += "-Ypartial-unification"

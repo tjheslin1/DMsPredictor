@@ -7,7 +7,7 @@ class Fighter(wpn: Weapon = Greatsword) extends PlayerCharacter {
 
   val level: Level                                     = LevelOne
   val stats: BaseStats                                 = BaseStats(15, 13, 14, 12, 8, 10)
-  def health(implicit rollStrategy: RollStrategy): Int = D10.max * level
+  def calculateHealth(implicit rollStrategy: RollStrategy): Int = D10.max * level
   val armourClass: Int                                 = 14
   val experience: Int                                  = 0
   val weapon: Weapon                                   = wpn

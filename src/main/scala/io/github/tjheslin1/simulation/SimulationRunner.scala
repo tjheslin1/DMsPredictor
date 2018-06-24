@@ -10,7 +10,7 @@ object SimulationRunner {
       simulation.run.result match {
         case Loss    => (losses + 1, wins)
         case Success => (losses, wins + 1)
-        case Unknown => (losses, wins)
+        case Unresolved => (losses, wins)
       }
     })
 }
