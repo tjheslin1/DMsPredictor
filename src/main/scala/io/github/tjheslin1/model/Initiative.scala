@@ -4,8 +4,8 @@ import io.github.tjheslin1.model.Modifier.mod
 
 class Initiative(creatures: List[Creature]) {
 
-  def rollInitiative(implicit rollStrategy: RollStrategy): Map[Creature, Int] =
-    creatures.map(c => (c, D20.roll() + mod(c.stats.dexterity))).toMap
+  def rollInitiative(implicit rollStrategy: RollStrategy): Map[String, (Creature, Int)] =
+    creatures.map(c => c.name -> (c, D20.roll() + mod(c.stats.dexterity))).toMap
 }
 
 object Initiative {

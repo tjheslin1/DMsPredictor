@@ -18,7 +18,7 @@ class TurnSpec extends WordSpec with Matchers {
 
       val initiatives = Initiative(List(fighterOne, fighterTwo, goblin)).rollInitiative
 
-      Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq.sortBy(_._2).reverse.map(_._1.name)
+      Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq.sortBy(_._2._2).reverse.map(_._2._1.name)
     }
   }
 }
