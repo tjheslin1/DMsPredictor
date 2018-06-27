@@ -10,13 +10,13 @@ case class BasicSimulation(cs: List[Creature]) extends Simulation {
 
   def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
-    def determineOutcome(initv: Map[String, (Creature, Int)], pcs: List[Creature], mobs: List[Creature]): SimulationResult =
+    def determineOutcome(initv: Map[String, Initiative], pcs: List[Creature], mobs: List[Creature]): SimulationResult =
       if (pcs.exists(_.health > 0)) {
         if (mobs.exists(_.health > 0)) {
 
           val (pcs, mobs) = Turn(initv).run.toList.partition(_.creatureType == PlayerCharacter)
 
-          val updatedInitiative = mutable.Map[String, (Creature, Int)]()
+          val updatedInitiative = mutable.Map[String, Initiative]()
           pcs.foreach(pc => updatedInitiative.put(pc.name, initv(pc.name)))
           mobs.foreach(mob => updatedInitiative.put(mob.name, initv(mob.name)))
 
@@ -24,9 +24,9 @@ case class BasicSimulation(cs: List[Creature]) extends Simulation {
         } else SimulationResult(Success, info)
       } else SimulationResult(Loss, info)
 
-    val initiative = Initiative(creatures).rollInitiative
+    val initiative = InitiativeCalculator(creatures).rollInitiative
 
-    val (playerCharacters, monsters) = initiative.toList.map(_._2._1).partition(_.creatureType == PlayerCharacter)
+    val (playerCharacters, monsters) = initiative.toList.map(_._2.creature).partition(_.creatureType == PlayerCharacter)
 
     determineOutcome(initiative, playerCharacters, monsters)
   }

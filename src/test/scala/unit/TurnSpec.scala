@@ -1,7 +1,7 @@
 package unit
 
 import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.{Initiative, Turn}
+import io.github.tjheslin1.model.{InitiativeCalculator, Turn}
 import io.github.tjheslin1.monsters.Goblin
 import org.scalatest.{Matchers, WordSpec}
 
@@ -16,9 +16,9 @@ class TurnSpec extends WordSpec with Matchers {
       val fighterTwo = Fighter.levelOneFighter().creature
       val goblin = Goblin.levelOneGoblin().creature
 
-      val initiatives = Initiative(List(fighterOne, fighterTwo, goblin)).rollInitiative
+      val initiatives = InitiativeCalculator(List(fighterOne, fighterTwo, goblin)).rollInitiative
 
-      Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq.sortBy(_._2._2).reverse.map(_._2._1.name)
+      Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq.sortBy(_._2.value).reverse.map(_._2.creature.name)
     }
   }
 }

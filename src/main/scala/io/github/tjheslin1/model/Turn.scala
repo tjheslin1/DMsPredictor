@@ -4,11 +4,12 @@ import cats.syntax.option._
 
 import scala.collection.immutable.Queue
 
-class Turn(initiatives: Map[String, (Creature, Int)])(implicit rollStrategy: RollStrategy) {
+class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy) {
 
   import Actions._
 
-  val initiativeOrder: Queue[Creature] = Queue[Creature](initiatives.toSeq.sortBy(_._2._2).reverse.map(_._2._1): _*)
+  val initiativeOrder: Queue[Creature] =
+    Queue[Creature](initiatives.toSeq.sortBy(_._2.value).reverse.map(_._2.creature): _*)
 
   def run: Queue[Creature] = {
 
@@ -54,5 +55,5 @@ class Turn(initiatives: Map[String, (Creature, Int)])(implicit rollStrategy: Rol
 
 object Turn {
 
-  def apply(initiatives: Map[String, (Creature, Int)])(implicit rollStrategy: RollStrategy): Turn = new Turn(initiatives)
+  def apply(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy): Turn = new Turn(initiatives)
 }
