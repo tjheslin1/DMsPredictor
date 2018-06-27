@@ -1,22 +1,33 @@
 package io.github.tjheslin1.simulation
 
-import io.github.tjheslin1.model.{Creature, PlayerCharacter, RollStrategy}
+import io.github.tjheslin1.model._
 
-case class BasicSimulation(characters: List[PlayerCharacter], monsters: List[Creature]) extends Simulation {
+import scala.collection.mutable
 
-  def pcs: List[PlayerCharacter] = characters
+case class BasicSimulation(cs: List[Creature]) extends Simulation {
 
-  def mobs: List[Creature] = monsters
+  val creatures = cs
 
-  def run(implicit rollStrategy: RollStrategy): SimulationResult = {
-    pcs match {
-      case character :: Nil =>
-        if (character.attack(mobs.head) == Success)
-          SimulationResult(character.resolveDamage(mobs.head), "Fighter vs Goblin")
-        else SimulationResult(Loss, "Fighter vs Goblin")
-      case _ =>
-        SimulationResult(Unknown, "BasicSimulation only handles a single character vs a single monster")
-    }
+  def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
+
+    def determineOutcome(initv: Map[String, Initiative], pcs: List[Creature], mobs: List[Creature]): SimulationResult =
+      if (pcs.exists(_.health > 0)) {
+        if (mobs.exists(_.health > 0)) {
+
+          val (pcs, mobs) = Turn(initv).run.toList.partition(_.creatureType == PlayerCharacter)
+
+          val updatedInitiative = mutable.Map[String, Initiative]()
+          pcs.foreach(pc => updatedInitiative.put(pc.name, initv(pc.name)))
+          mobs.foreach(mob => updatedInitiative.put(mob.name, initv(mob.name)))
+
+          determineOutcome(initv, pcs, mobs)
+        } else SimulationResult(Success, info)
+      } else SimulationResult(Loss, info)
+
+    val initiative = InitiativeCalculator(creatures).rollInitiative
+
+    val (playerCharacters, monsters) = initiative.toList.map(_._2.creature).partition(_.creatureType == PlayerCharacter)
+
+    determineOutcome(initiative, playerCharacters, monsters)
   }
-
 }

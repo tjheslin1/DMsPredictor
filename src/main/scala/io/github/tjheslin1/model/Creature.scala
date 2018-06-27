@@ -1,9 +1,20 @@
 package io.github.tjheslin1.model
 
-abstract class Creature {
+import io.github.tjheslin1.util.NameGenerator
 
-  def health(implicit rollStrategy: RollStrategy): Int
-  def stats: BaseStats
-  def armourClass: Int
-  def experience: Int
+sealed trait CreatureType
+
+case object Monster extends CreatureType
+
+case object PlayerCharacter extends CreatureType
+
+case class Creature(health: Int,
+                    stats: BaseStats,
+                    armourClass: Int,
+                    experience: Int,
+                    weapon: Weapon,
+                    creatureType: CreatureType,
+                    name: String = NameGenerator.randomName) {
+
+  val proficiencyBonus = 2
 }
