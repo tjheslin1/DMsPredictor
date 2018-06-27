@@ -14,7 +14,7 @@ class TurnSpec extends WordSpec with Matchers {
 
       val fighterOne = Fighter.levelOneFighter().creature
       val fighterTwo = Fighter.levelOneFighter().creature
-      val goblin = Goblin.levelOneGoblin().creature
+      val goblin     = Goblin.levelOneGoblin().creature
 
       val initiatives = InitiativeCalculator(List(fighterOne, fighterTwo, goblin)).rollInitiative
 

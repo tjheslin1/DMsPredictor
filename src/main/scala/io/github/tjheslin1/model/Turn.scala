@@ -30,7 +30,6 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
             (atckr, atckee.some)
           } else {
 
-            // this attacks the enemy at the front of the currently rotating queue
             val pc = pcs.head
 
             val (atckr, atckee) = attackAndDamage(creature, pc)

@@ -8,8 +8,8 @@ object SimulationRunner {
     (1 to iterations).foldLeft((0, 0))((results, _) => {
       val (losses, wins) = results
       simulation.run(info).result match {
-        case Loss    => (losses + 1, wins)
-        case Success => (losses, wins + 1)
+        case Loss       => (losses + 1, wins)
+        case Success    => (losses, wins + 1)
         case Unresolved => (losses, wins)
       }
     })
