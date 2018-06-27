@@ -13,6 +13,11 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
 
   def run: Queue[Creature] = {
 
+    def attackFirstEnemy(attacker: Creature, attackee: Creature): (Creature, Option[Creature]) = {
+      val (atckr, atckee) = attackAndDamage(attacker, attackee)
+      (atckr, atckee.some)
+    }
+
     def nextCreature(queue: Queue[Creature], creaturesMovesLeft: Int): Queue[Creature] = {
 
       if (creaturesMovesLeft < 1) queue
@@ -22,18 +27,9 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
         val (pcs, mobs)              = waitingQueue.partition(_.creatureType == PlayerCharacter)
 
         val (attacker, attackee) = if (creature.health > 0) {
-          if (creature.creatureType == PlayerCharacter) {
-
-            val mob = mobs.head
-
-            val (atckr, atckee) = attackAndDamage(creature, mob)
-            (atckr, atckee.some)
-          } else {
-
-            val pc = pcs.head
-
-            val (atckr, atckee) = attackAndDamage(creature, pc)
-            (atckr, atckee.some)
+          creature.creatureType match {
+            case PlayerCharacter => attackFirstEnemy(creature, mobs.head)
+            case Monster         => attackFirstEnemy(creature, pcs.head)
           }
         } else (creature, None)
 
