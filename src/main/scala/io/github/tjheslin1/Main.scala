@@ -10,11 +10,12 @@ object Main extends App with scalax.chart.module.Charting {
 
   import io.github.tjheslin1.model.Dice._
 
-  val creatures: List[Creature] = List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature)
+  val creatures: List[Creature] =
+    List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature, Goblin.levelOneGoblin().creature)
 
-  val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures), "Fighter vs Goblin", 1000)
+  val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures), "Fighter vs Goblin", 1)
 
-  println(s"$losses Losses and $wins Wins")
+  println(s"$wins Wins and $losses Losses")
 
   val data  = Seq("wins" -> wins, "losses" -> losses)
   val chart = BarChart(data)

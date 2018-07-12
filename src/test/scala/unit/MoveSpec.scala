@@ -1,0 +1,33 @@
+package unit
+
+import io.github.tjheslin1.model.Move._
+import io.github.tjheslin1.model.RollResult
+import org.scalatest.{Matchers, WordSpec}
+import util.TestCreature
+
+import scala.collection.immutable.Queue
+
+class MoveSpec extends WordSpec with Matchers {
+
+  import io.github.tjheslin1.model.Dice.defaultRandomiser
+
+  "takeMove" should {
+    "replace creature to back of queue after attacking" in {
+      val creature = TestCreature.player
+      val enemy    = TestCreature.enemy
+
+      val queue = Queue(creature, enemy)
+
+      takeMove(queue).map(_.name) shouldBe Queue(enemy.name, creature.name)
+    }
+
+    "update head enemy after attack" in {
+      val creature = TestCreature.player
+      val enemy    = TestCreature.enemy
+
+      val queue = Queue(creature, enemy)
+
+      takeMove(queue)(_ => RollResult(20)) shouldBe Queue(enemy.copy(health = 0), creature)
+    }
+  }
+}

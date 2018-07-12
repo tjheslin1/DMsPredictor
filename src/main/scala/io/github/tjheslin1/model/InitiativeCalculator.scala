@@ -2,7 +2,7 @@ package io.github.tjheslin1.model
 
 import io.github.tjheslin1.model.Modifier.mod
 
-case class Initiative(creature: Creature, value: Int)
+case class Initiative(creature: Creature, score: Int)
 
 class InitiativeCalculator(creatures: List[Creature]) {
 

@@ -10,9 +10,9 @@ case class BasicSimulation(cs: List[Creature]) extends Simulation {
 
   def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
-    def determineOutcome(initv: Map[String, Initiative], pcs: List[Creature], mobs: List[Creature]): SimulationResult =
-      if (pcs.exists(_.health > 0)) {
-        if (mobs.exists(_.health > 0)) {
+    def determineOutcome(initv: Map[String, Initiative], players: List[Creature], monsters: List[Creature]): SimulationResult =
+      if (players.exists(_.health > 0)) {
+        if (monsters.exists(_.health > 0)) {
 
           val (pcs, mobs) = Turn(initv).run.toList.partition(_.creatureType == PlayerCharacter)
 
