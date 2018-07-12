@@ -35,16 +35,5 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
 
 object Turn {
 
-  case class TurnTracker(movesLeft: Int, creatureQueue: Queue[Creature])
-
-  type TurnState = State[Int, Queue[Creature]]
-
-  def nextTurn(turnState: TurnState): TurnState = {
-    State { movesLeft =>
-      if (movesLeft == 0) ???
-      else ???
-    }
-  }
-
   def apply(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy): Turn = new Turn(initiatives)
 }
