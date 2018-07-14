@@ -1,11 +1,12 @@
 package io.github.tjheslin1.model
 
 import cats.data.State
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
-class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy) {
+class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy) extends LazyLogging{
 
   val initiativeOrder: Queue[Creature] =
     Queue[Creature](
@@ -29,6 +30,7 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
       }
     }
 
+    logger.info(initiativeOrder.toString)
     nextCreature(initiativeOrder, initiatives.size)
   }
 }

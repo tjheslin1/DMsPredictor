@@ -1,26 +1,30 @@
 package io.github.tjheslin1.simulation
 
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.model._
 
 import scala.collection.mutable
 
-case class BasicSimulation(cs: List[Creature]) extends Simulation {
-
-  val creatures = cs
+case class BasicSimulation(creatures: List[Creature]) extends Simulation with LazyLogging {
 
   def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
-    def determineOutcome(initv: Map[String, Initiative], players: List[Creature], monsters: List[Creature]): SimulationResult =
+    def determineOutcome(initiv: Map[String, Initiative],
+                         players: List[Creature],
+                         monsters: List[Creature]): SimulationResult =
       if (players.exists(_.health > 0)) {
         if (monsters.exists(_.health > 0)) {
 
-          val (pcs, mobs) = Turn(initv).run.toList.partition(_.creatureType == PlayerCharacter)
+          val (pcs, mobs) = Turn(initiv).run.toList.partition(_.creatureType == PlayerCharacter)
 
           val updatedInitiative = mutable.Map[String, Initiative]()
-          pcs.foreach(pc => updatedInitiative.put(pc.name, initv(pc.name)))
-          mobs.foreach(mob => updatedInitiative.put(mob.name, initv(mob.name)))
+          pcs.foreach(pc => updatedInitiative.put(pc.name, initiv(pc.name)))
+          mobs.foreach(mob => updatedInitiative.put(mob.name, initiv(mob.name)))
 
-          determineOutcome(initv, pcs, mobs)
+          pcs.foreach(pc => logger.info(s"pc: ${pc.name} - hp=${pc.health}"))
+          mobs.foreach(mob => logger.info(s"mob: ${mob.name} - hp=${mob.health}"))
+
+          determineOutcome(initiv, pcs, mobs)
         } else SimulationResult(Success, info)
       } else SimulationResult(Loss, info)
 

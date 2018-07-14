@@ -1,5 +1,6 @@
 package io.github.tjheslin1.model
 
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.model.Modifier.mod
 
 sealed trait AttackResult {
@@ -20,7 +21,7 @@ case object CriticalMiss extends AttackResult {
   val result = -1
 }
 
-object Actions {
+object Actions extends LazyLogging {
 
   def attack(attacker: Creature, attackee: Creature)(implicit rollStrategy: RollStrategy): AttackResult = {
     val roll = D20.roll()
@@ -40,6 +41,8 @@ object Actions {
       case Miss         => 0
       case CriticalMiss => 0
     }
+
+    logger.info(s"${attacker.name} attacks ${attackee.name} for $dmg damage")
 
     val damagedAttackee = attackee.copy(health = Math.max(attackee.health - dmg, 0))
 
