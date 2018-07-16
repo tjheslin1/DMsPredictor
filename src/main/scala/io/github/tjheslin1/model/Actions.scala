@@ -42,7 +42,7 @@ object Actions extends LazyLogging {
       case CriticalMiss => 0
     }
 
-    logger.info(s"${attacker.name} attacks ${attackee.name} for $dmg damage")
+    logger.debug(s"${attacker.name} attacks ${attackee.name} for $dmg damage")
 
     val damagedAttackee = attackee.copy(health = Math.max(attackee.health - dmg, 0))
 

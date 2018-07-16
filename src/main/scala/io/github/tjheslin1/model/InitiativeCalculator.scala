@@ -10,7 +10,7 @@ class InitiativeCalculator(creatures: List[Creature]) extends LazyLogging{
   def rollInitiative(implicit rollStrategy: RollStrategy): Map[String, Initiative] =
     creatures.map(c => {
       val initiative = Initiative(c, D20.roll() + mod(c.stats.dexterity))
-      logger.info(s"${c.name} initiatve = ${initiative.score}")
+      logger.debug(s"${c.name} initiatve = ${initiative.score}")
       c.name -> initiative
     }).toMap
 }

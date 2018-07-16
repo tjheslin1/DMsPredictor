@@ -3,12 +3,14 @@ package io.github.tjheslin1.simulation
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.model._
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 case class BasicSimulation(creatures: List[Creature]) extends Simulation with LazyLogging {
 
   def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
+    @tailrec
     def determineOutcome(initiv: Map[String, Initiative],
                          players: List[Creature],
                          monsters: List[Creature]): SimulationResult =
@@ -21,8 +23,8 @@ case class BasicSimulation(creatures: List[Creature]) extends Simulation with La
           pcs.foreach(pc => updatedInitiative.put(pc.name, initiv(pc.name)))
           mobs.foreach(mob => updatedInitiative.put(mob.name, initiv(mob.name)))
 
-          pcs.foreach(pc => logger.info(s"pc: ${pc.name} - hp=${pc.health}"))
-          mobs.foreach(mob => logger.info(s"mob: ${mob.name} - hp=${mob.health}"))
+          pcs.foreach(pc => logger.debug(s"pc: ${pc.name} - hp=${pc.health}"))
+          mobs.foreach(mob => logger.debug(s"mob: ${mob.name} - hp=${mob.health}"))
 
           determineOutcome(initiv, pcs, mobs)
         } else SimulationResult(Success, info)
