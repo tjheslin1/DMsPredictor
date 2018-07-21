@@ -16,7 +16,9 @@ sealed trait Dice {
 
 object Dice {
 
-  implicit val defaultRandomiser: RollStrategy = sides => RollResult(Random.nextInt(sides) + 1)
+  val defaultRandomiser: RollStrategy = sides => RollResult(Random.nextInt(sides) + 1)
+  val naturalTwenty: RollStrategy = _ => RollResult(20)
+  val naturalOne: RollStrategy = _ => RollResult(1)
 }
 
 object D4 extends Dice {

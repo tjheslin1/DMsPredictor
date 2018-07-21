@@ -1,7 +1,7 @@
 package unit
 
+import io.github.tjheslin1.model.Dice
 import io.github.tjheslin1.model.Move._
-import io.github.tjheslin1.model.RollResult
 import org.scalatest.{Matchers, WordSpec}
 import util.TestCreature
 
@@ -9,7 +9,7 @@ import scala.collection.immutable.Queue
 
 class MoveSpec extends WordSpec with Matchers {
 
-  import io.github.tjheslin1.model.Dice.defaultRandomiser
+  implicit val roll = Dice.defaultRandomiser
 
   "takeMove" should {
     "replace creature to back of queue after attacking" in {
@@ -27,7 +27,7 @@ class MoveSpec extends WordSpec with Matchers {
 
       val queue = Queue(creature, enemy)
 
-      takeMove(queue)(_ => RollResult(20)) shouldBe Queue(enemy.copy(health = 0), creature)
+      takeMove(queue)(Dice.naturalTwenty) shouldBe Queue(enemy.copy(health = 0), creature)
     }
   }
 }

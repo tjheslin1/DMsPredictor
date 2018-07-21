@@ -1,6 +1,6 @@
 package unit
 
-import io.github.tjheslin1.model.{InitiativeCalculator, Turn}
+import io.github.tjheslin1.model.{Dice, InitiativeCalculator, Turn}
 import org.scalatest.{Matchers, WordSpec}
 import util.TestCreature
 
@@ -9,7 +9,7 @@ class TurnSpec extends WordSpec with Matchers {
   "run" should {
     "cycle through all creatures once" in {
 
-      import io.github.tjheslin1.model.Dice._
+      implicit val roll = Dice.defaultRandomiser
 
       val playerOne = TestCreature.player
       val playerTwo = TestCreature.player
