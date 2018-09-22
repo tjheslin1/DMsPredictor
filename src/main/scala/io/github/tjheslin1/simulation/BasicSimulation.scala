@@ -10,23 +10,28 @@ case class BasicSimulation(creatures: List[Creature]) extends Simulation with La
 
   def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
+    def updateInitiative(initiative: Map[String, Initiative], pcs: List[Creature], mobs: List[Creature]): Map[String, Initiative] = {
+      val updatedInitiative = mutable.Map[String, Initiative]()
+      pcs.foreach(pc => updatedInitiative.put(pc.name, initiative(pc.name)))
+      mobs.foreach(mob => updatedInitiative.put(mob.name, initiative(mob.name)))
+      updatedInitiative.toMap
+    }
+
     @tailrec
-    def determineOutcome(initiv: Map[String, Initiative],
+    def determineOutcome(initiative: Map[String, Initiative],
                          players: List[Creature],
                          monsters: List[Creature]): SimulationResult =
       if (players.exists(_.health > 0)) {
         if (monsters.exists(_.health > 0)) {
 
-          val (pcs, mobs) = Turn(initiv).run.toList.partition(_.creatureType == PlayerCharacter)
+          val (pcs, mobs) = Turn(initiative).run.toList.partition(_.creatureType == PlayerCharacter)
 
-          val updatedInitiative = mutable.Map[String, Initiative]()
-          pcs.foreach(pc => updatedInitiative.put(pc.name, initiv(pc.name)))
-          mobs.foreach(mob => updatedInitiative.put(mob.name, initiv(mob.name)))
+          val updatedInitiative = updateInitiative(initiative, pcs, mobs)
 
           pcs.foreach(pc => logger.debug(s"pc: ${pc.name} - hp=${pc.health}"))
           mobs.foreach(mob => logger.debug(s"mob: ${mob.name} - hp=${mob.health}"))
 
-          determineOutcome(initiv, pcs, mobs)
+          determineOutcome(updatedInitiative, pcs, mobs)
         } else SimulationResult(Success, info)
       } else SimulationResult(Loss, info)
 

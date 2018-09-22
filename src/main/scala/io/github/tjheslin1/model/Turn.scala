@@ -6,7 +6,7 @@ import io.github.tjheslin1.model.Move.takeMove
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
-class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy) extends LazyLogging{
+class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy) extends LazyLogging {
 
   val initiativeOrder: Queue[Creature] =
     Queue[Creature](
