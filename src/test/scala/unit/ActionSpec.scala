@@ -2,7 +2,7 @@ package unit
 
 import io.github.tjheslin1.model._
 import org.scalatest.{Matchers, WordSpec}
-import util.TestCreature
+import util.TestModel
 
 class ActionSpec extends WordSpec with Matchers {
 
@@ -10,29 +10,29 @@ class ActionSpec extends WordSpec with Matchers {
 
   "attack" should {
     "hit if the attack roll was a natural 20" in {
-      val player  = TestCreature.player
-      val monster = TestCreature.enemy
+      val player  = TestModel.player
+      val monster = TestModel.enemy
 
       Actions.attack(player, monster)(_ => 20) shouldBe CriticalHit
     }
 
     "hit a monster if the attack overcomes the monsters armour class" in {
-      val player  = TestCreature.player
-      val monster = TestCreature.enemy
+      val player  = TestModel.player
+      val monster = TestModel.enemy
 
       Actions.attack(player, monster)(_ => 19) shouldBe Hit
     }
 
     "miss a monster if the attack overcomes the monsters armour class" in {
-      val player  = TestCreature.player
-      val monster = TestCreature.enemy
+      val player  = TestModel.player
+      val monster = TestModel.enemy
 
       Actions.attack(player, monster)(_ => 2) shouldBe Miss
     }
 
     "miss if the attack roll was a natural 1" in {
-      val player  = TestCreature.player
-      val monster = TestCreature.enemy
+      val player  = TestModel.player
+      val monster = TestModel.enemy
 
       Actions.attack(player, monster)(_ => 1) shouldBe CriticalMiss
     }
@@ -40,8 +40,8 @@ class ActionSpec extends WordSpec with Matchers {
 
   "resolveDamage" should {
     "kill a monster if the damage is more than the monsters health" in {
-      val player  = TestCreature.player
-      val monster = TestCreature.enemy
+      val player  = TestModel.player
+      val monster = TestModel.enemy
 
       Actions.resolveDamage(player, monster, Hit)(_ => 100) shouldBe (player, monster.copy(health = 0))
     }
@@ -51,8 +51,8 @@ class ActionSpec extends WordSpec with Matchers {
         def damage(implicit rollStrategy: RollStrategy): Int = 0
       }
 
-      val player  = TestCreature.player.copy(weapon = zeroDamageWeapon)
-      val monster = TestCreature.enemy
+      val player  = TestModel.player.copy(weapon = zeroDamageWeapon)
+      val monster = TestModel.enemy
 
       Actions.resolveDamage(player, monster, Hit)(_ => 12) shouldBe (player, monster)
     }

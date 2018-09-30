@@ -2,7 +2,7 @@ package unit
 
 import io.github.tjheslin1.model.{Dice, InitiativeCalculator, Turn}
 import org.scalatest.{Matchers, WordSpec}
-import util.TestCreature
+import util.TestModel
 
 class TurnSpec extends WordSpec with Matchers {
 
@@ -11,9 +11,9 @@ class TurnSpec extends WordSpec with Matchers {
 
       implicit val roll = Dice.defaultRandomiser
 
-      val playerOne = TestCreature.player
-      val playerTwo = TestCreature.player
-      val enemy     = TestCreature.enemy
+      val playerOne = TestModel.player
+      val playerTwo = TestModel.player
+      val enemy     = TestModel.enemy
 
       val initiatives = InitiativeCalculator(List(playerOne, playerTwo, enemy)).rollInitiative
 

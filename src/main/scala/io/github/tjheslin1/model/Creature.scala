@@ -17,4 +17,6 @@ case class Creature(health: Int,
                     name: String = NameGenerator.randomName) {
 
   val proficiencyBonus = 2
+
+  def isConscious = health > 0
 }
