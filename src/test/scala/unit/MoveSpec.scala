@@ -6,6 +6,11 @@ import io.github.tjheslin1.model.Move._
 import io.github.tjheslin1.model.{Creature, Dice, Monster}
 import org.scalatest.{Matchers, WordSpec}
 import util.TestModel
+import magnolia._
+import scalacheckmagnolia.MagnoliaArbitrary._
+import cats.syntax.show._
+import cats.Show._
+import io.github.tjheslin1.monsters.Goblin
 
 import scala.collection.immutable.Queue
 
@@ -33,20 +38,19 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
     }
 
     "focus mob with lowest health first" in {
-      forAll { (player: Fighter, enemyOne: Creature, enemyTwo: Creature) =>
-        whenever(enemyOne.creatureType == Monster && enemyTwo.creatureType == Monster) {
+      forAll { (player: Fighter, goblinOne: Goblin, goblinTwo: Goblin) =>
 
-          println("go")
+          val enemyOne = goblinOne.creature.copy(health = 5)
+          val enemyTwo = goblinTwo.creature.copy(health = 50)
 
-          val enemyOne = TestModel.enemy.copy(health = 5)
-          val enemyTwo = TestModel.enemy.copy(health = 50)
+          println(player.show)
+          println(enemyOne.show)
 
           val queue = Queue(player.creature, enemyOne, enemyTwo)
 
           val result = takeMove(queue)(Dice.naturalTwenty)
           result.find(_.name == enemyOne.name).get.health shouldBe 0
           result.find(_.name == enemyTwo.name).get.health shouldBe 50
-        }
       }
     }
   }

@@ -1,10 +1,11 @@
 import io.github.tjheslin1.classes.Fighter
 import io.github.tjheslin1.model._
+import io.github.tjheslin1.monsters.Goblin
 import org.scalacheck.{Arbitrary, Gen}
 
 package object unit {
 
-  def genBaseStats: Gen[BaseStats] =
+  implicit val arbBaseStats: Arbitrary[BaseStats] = Arbitrary {
     for {
       str <- Gen.choose(1, 20)
       dex <- Gen.choose(1, 20)
@@ -13,28 +14,38 @@ package object unit {
       wis <- Gen.choose(1, 20)
       cha <- Gen.choose(1, 20)
     } yield BaseStats(str, dex, con, int, wis, cha)
+  }
 
-  def genWeapon: Gen[Weapon] =
+  implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      sides <- Gen.choose(1, 12)
+      weaponName <- Gen.alphaStr suchThat (_.length < 10)
+      sides      <- Gen.choose(1, 12)
     } yield
       new Weapon {
+        def name                                             = weaponName
         def damage(implicit rollStrategy: RollStrategy): Int = Dice.defaultRandomiser(sides)
       }
+  }
 
-  def genCreature: Gen[Creature] =
+  implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
-      health       <- Gen.choose(1, 100)
-      stats        <- genBaseStats
+      health       <- Gen.choose(10, 80)
+      stats        <- arbBaseStats.arbitrary
       ac           <- Gen.choose(5, 25)
-      weapon       <- genWeapon
-      creatureType <- Gen.frequency((1, PlayerCharacter), (1, Monster))
+      weapon       <- arbWeapon.arbitrary
+      creatureType <- Gen.oneOf(PlayerCharacter, Monster)
     } yield Creature(health, stats, ac, 0, weapon, creatureType)
+  }
 
-  def genFighter: Gen[Fighter] =
+  implicit val arbGoblin: Arbitrary[Goblin] = Arbitrary {
     for {
-      creature <- genCreature
-    } yield Fighter(creature.copy(creatureType = PlayerCharacter))
+      creature <- arbCreature.arbitrary suchThat (_.creatureType == Monster)
+    } yield Goblin(creature)
+  }
 
-  def arbFighter: Arbitrary[Fighter] = Arbitrary(_ => genFighter)
+  implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary suchThat (_.creatureType == PlayerCharacter)
+    } yield Fighter(creature)
+  }
 }

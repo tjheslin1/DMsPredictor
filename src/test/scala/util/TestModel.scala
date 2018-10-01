@@ -9,6 +9,7 @@ object TestModel {
   def enemy: Creature  = Creature(10, BaseStats(8, 8, 8, 8, 8, 8), 10, 0, Shortsword, Monster)
 
   def guaranteedKillWeapon = new Weapon {
+    def name = "guaranteed kill weapon"
     def damage(implicit rollStrategy: RollStrategy): Int = 1000
   }
 }

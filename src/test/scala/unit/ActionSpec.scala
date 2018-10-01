@@ -48,6 +48,7 @@ class ActionSpec extends WordSpec with Matchers {
 
     "fail to kill a monster if the damage is less than the monsters health" in {
       val zeroDamageWeapon = new Weapon() {
+        def name= "zero damage weapon"
         def damage(implicit rollStrategy: RollStrategy): Int = 0
       }
 
