@@ -18,13 +18,9 @@ package object unit {
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName <- Gen.alphaStr suchThat (_.length < 10)
+      weaponName <- Gen.alphaStr suchThat (n => n.length < 1 && n.length < 10)
       sides      <- Gen.choose(1, 12)
-    } yield
-      new Weapon {
-        def name                                             = weaponName
-        def damage(implicit rollStrategy: RollStrategy): Int = Dice.defaultRandomiser(sides)
-      }
+    } yield Weapon(weaponName, Dice.defaultRandomiser(sides))
   }
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {

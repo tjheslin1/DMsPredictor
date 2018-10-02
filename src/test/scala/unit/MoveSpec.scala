@@ -3,7 +3,7 @@ package unit
 import base.PropertyChecksBase
 import io.github.tjheslin1.classes.Fighter
 import io.github.tjheslin1.model.Move._
-import io.github.tjheslin1.model.{Creature, Dice, Monster}
+import io.github.tjheslin1.model.{Creature, Dice, Monster, PlayerCharacter, Weapon}
 import org.scalatest.{Matchers, WordSpec}
 import util.TestModel
 import magnolia._
@@ -40,17 +40,20 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
     "focus mob with lowest health first" in {
       forAll { (player: Fighter, goblinOne: Goblin, goblinTwo: Goblin) =>
 
-          val enemyOne = goblinOne.creature.copy(health = 5)
-          val enemyTwo = goblinTwo.creature.copy(health = 50)
+        val fighter  = player.creature.copy(weapon = Weapon("a", 5))
+        val enemyOne = goblinOne.creature.copy(health = 5)
+        val enemyTwo = goblinTwo.creature.copy(health = 50)
 
-          println(player.show)
-          println(enemyOne.show)
+        println(player.show)
+        println(enemyOne.show)
 
-          val queue = Queue(player.creature, enemyOne, enemyTwo)
+        val queue = Queue(fighter, enemyOne, enemyTwo)
 
-          val result = takeMove(queue)(Dice.naturalTwenty)
-          result.find(_.name == enemyOne.name).get.health shouldBe 0
-          result.find(_.name == enemyTwo.name).get.health shouldBe 50
+        val result = takeMove(queue)(Dice.naturalTwenty)
+        result.find(_.name == enemyOne.name).get.health shouldBe 0
+        result.find(_.name == enemyTwo.name).get.health shouldBe 50
+
+        player.creature.creatureType shouldBe PlayerCharacter
       }
     }
   }
