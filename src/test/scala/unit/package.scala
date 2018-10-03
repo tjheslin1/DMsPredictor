@@ -1,6 +1,4 @@
-import io.github.tjheslin1.classes.Fighter
 import io.github.tjheslin1.model._
-import io.github.tjheslin1.monsters.Goblin
 import org.scalacheck.{Arbitrary, Gen}
 
 package object unit {
@@ -18,7 +16,7 @@ package object unit {
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName <- Gen.alphaStr suchThat (n => n.length < 1 && n.length < 10)
+      weaponName <- Gen.alphaStr
       sides      <- Gen.choose(1, 12)
     } yield Weapon(weaponName, Dice.defaultRandomiser(sides))
   }
@@ -31,17 +29,5 @@ package object unit {
       weapon       <- arbWeapon.arbitrary
       creatureType <- Gen.oneOf(PlayerCharacter, Monster)
     } yield Creature(health, stats, ac, 0, weapon, creatureType)
-  }
-
-  implicit val arbGoblin: Arbitrary[Goblin] = Arbitrary {
-    for {
-      creature <- arbCreature.arbitrary suchThat (_.creatureType == Monster)
-    } yield Goblin(creature)
-  }
-
-  implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
-    for {
-      creature <- arbCreature.arbitrary suchThat (_.creatureType == PlayerCharacter)
-    } yield Fighter(creature)
   }
 }
