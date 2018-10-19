@@ -2,8 +2,9 @@ package io.github.tjheslin1.monsters
 
 import cats.Show
 import cats.syntax.show._
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.model.Creature.creatureShow
-import io.github.tjheslin1.model.{BaseStats, Creature, D6, Monster, RollStrategy, Weapon}
+import io.github.tjheslin1.model._
 import io.github.tjheslin1.util.IntOps._
 import io.github.tjheslin1.weapons.Shortsword
 

@@ -1,5 +1,6 @@
 package simulation
 
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.model.{BaseStats, Dice}
 import io.github.tjheslin1.simulation._
 import org.scalatest.{FeatureSpec, Matchers}

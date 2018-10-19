@@ -1,8 +1,9 @@
 package unit
 
 import base.PropertyChecksBase
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.model.Move._
-import io.github.tjheslin1.model.{Creature, Dice, Monster, PlayerCharacter, Strength}
+import io.github.tjheslin1.model.{Creature, Dice, Monster, PlayerCharacter}
 import org.scalatest.{Matchers, WordSpec}
 import util.TestModel
 
@@ -33,7 +34,7 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
 
     "focus mob with lowest health first" in {
       forAll { (c1: Creature, c2: Creature, c3: Creature) =>
-        val player   = c1.copy(creatureType = PlayerCharacter, stats = c1.stats.copy(strength = Strength(10)))
+        val player   = c1.copy(creatureType = PlayerCharacter, stats = c1.stats.copy(strength = 10))
         val enemyOne = c2.copy(creatureType = Monster, health = 1)
         val enemyTwo = c3.copy(creatureType = Monster, health = 50)
 

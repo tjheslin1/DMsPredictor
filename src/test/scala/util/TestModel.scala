@@ -1,5 +1,6 @@
 package util
 
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.model._
 import io.github.tjheslin1.weapons.Shortsword
 

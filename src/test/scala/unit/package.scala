@@ -1,16 +1,31 @@
+import eu.timepit.refined
+import eu.timepit.refined.W
+import eu.timepit.refined.numeric.Interval
+import io.github.tjheslin1.model.BaseStats.Stat
 import io.github.tjheslin1.model._
 import org.scalacheck.{Arbitrary, Gen}
 
 package object unit {
 
+  implicit val arbStat: Arbitrary[Stat] =
+    Arbitrary {
+      Gen
+        .choose(1, 30)
+        .map(refined.refineV[Interval.ClosedOpen[W.`1`.T, W.`31`.T]](_))
+        .flatMap {
+          case Right(i) => Gen.const(i)
+          case Left(_)  => Gen.fail
+        }
+    }
+
   implicit val arbBaseStats: Arbitrary[BaseStats] = Arbitrary {
     for {
-      str <- Gen.choose(1, 20)
-      dex <- Gen.choose(1, 20)
-      con <- Gen.choose(1, 20)
-      int <- Gen.choose(1, 20)
-      wis <- Gen.choose(1, 20)
-      cha <- Gen.choose(1, 20)
+      str <- arbStat.arbitrary
+      dex <- arbStat.arbitrary
+      con <- arbStat.arbitrary
+      int <- arbStat.arbitrary
+      wis <- arbStat.arbitrary
+      cha <- arbStat.arbitrary
     } yield BaseStats(str, dex, con, int, wis, cha)
   }
 
