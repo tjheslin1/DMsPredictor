@@ -5,7 +5,6 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.model.Move._
 import io.github.tjheslin1.model.{Creature, Dice, Monster, PlayerCharacter}
 import org.scalatest.{Matchers, WordSpec}
-import util.TestModel
 
 import scala.collection.immutable.Queue
 
@@ -15,21 +14,27 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
 
   "takeMove" should {
     "replace creature to back of queue after attacking" in {
-      val creature = TestModel.player
-      val enemy    = TestModel.enemy
+      forAll { (c1: Creature, c2: Creature) =>
+        val player = c1.copy(creatureType = PlayerCharacter)
+        val enemy  = c2.copy(creatureType = Monster)
 
-      val queue = Queue(creature, enemy)
+        val queue = Queue(player, enemy)
 
-      takeMove(queue).map(_.name) shouldBe Queue(enemy.name, creature.name)
+        takeMove(queue).map(_.name) shouldBe Queue(enemy.name, player.name)
+      }
     }
 
     "update head enemy after attack" in {
-      val creature = TestModel.player
-      val enemy    = TestModel.enemy
+      forAll { (c1: Creature, c2: Creature) =>
+        val player = c1.copy(creatureType = PlayerCharacter)
+        val enemy  = c2.copy(creatureType = Monster)
 
-      val queue = Queue(creature, enemy)
+        val queue = Queue(player, enemy)
 
-      takeMove(queue)(Dice.naturalTwenty) shouldBe Queue(enemy.copy(health = 0), creature)
+        val List(updatedEnemy, _) = takeMove(queue)(Dice.naturalTwenty).toList
+
+        updatedEnemy.health should (be <= enemy.health)
+      }
     }
 
     "focus mob with lowest health first" in {

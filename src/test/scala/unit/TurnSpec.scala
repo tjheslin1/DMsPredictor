@@ -1,27 +1,28 @@
 package unit
 
-import io.github.tjheslin1.model.{Dice, InitiativeCalculator, Turn}
+import base.PropertyChecksBase
+import io.github.tjheslin1.model.{Creature, Dice, InitiativeCalculator, Monster, PlayerCharacter, Turn}
 import org.scalatest.{Matchers, WordSpec}
-import util.TestModel
 
-class TurnSpec extends WordSpec with Matchers {
+class TurnSpec extends WordSpec with Matchers with PropertyChecksBase {
 
   "run" should {
     "cycle through all creatures once" in {
+      forAll { (c1: Creature, c2: Creature, c3: Creature) =>
+        implicit val roll = Dice.defaultRandomiser
 
-      implicit val roll = Dice.defaultRandomiser
+        val playerOne = c1.copy(creatureType = PlayerCharacter)
+        val playerTwo = c2.copy(creatureType = PlayerCharacter)
+        val enemy     = c3.copy(creatureType = Monster)
 
-      val playerOne = TestModel.player
-      val playerTwo = TestModel.player
-      val enemy     = TestModel.enemy
+        val initiatives = InitiativeCalculator(List(playerOne, playerTwo, enemy)).rollInitiative
 
-      val initiatives = InitiativeCalculator(List(playerOne, playerTwo, enemy)).rollInitiative
-
-      Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq
-        .map { case (_, initiative) => initiative }
-        .sortBy(_.score)
-        .reverse
-        .map(_.creature.name)
+        Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq
+          .map { case (_, initiative) => initiative }
+          .sortBy(_.score)
+          .reverse
+          .map(_.creature.name)
+      }
     }
   }
 }
