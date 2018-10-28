@@ -13,4 +13,6 @@ object TestModel {
     def name = "guaranteed kill weapon"
     def damage(implicit rollStrategy: RollStrategy): Int = 1000
   }
+
+
 }

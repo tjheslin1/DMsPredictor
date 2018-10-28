@@ -1,21 +1,18 @@
 package unit
 
 import base.PropertyChecksBase
-import io.github.tjheslin1.model.{Creature, Dice, InitiativeCalculator, Monster, PlayerCharacter, Turn}
+import io.github.tjheslin1.classes.Fighter
+import io.github.tjheslin1.model.{Dice, InitiativeCalculator, Turn}
 import org.scalatest.{Matchers, WordSpec}
 
 class TurnSpec extends WordSpec with Matchers with PropertyChecksBase {
 
   "run" should {
     "cycle through all creatures once" in {
-      forAll { (c1: Creature, c2: Creature, c3: Creature) =>
+      forAll { (fighterOne: Fighter, fighterTwo: Fighter, monster: TestMonster) =>
         implicit val roll = Dice.defaultRandomiser
 
-        val playerOne = c1.copy(creatureType = PlayerCharacter)
-        val playerTwo = c2.copy(creatureType = PlayerCharacter)
-        val enemy     = c3.copy(creatureType = Monster)
-
-        val initiatives = InitiativeCalculator(List(playerOne, playerTwo, enemy)).rollInitiative
+        val initiatives = InitiativeCalculator(List(fighterOne.creature, fighterTwo.creature, monster.creature)).rollInitiative
 
         Turn(initiatives).run.map(_.name) shouldBe initiatives.toSeq
           .map { case (_, initiative) => initiative }
