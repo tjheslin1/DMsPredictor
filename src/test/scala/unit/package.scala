@@ -1,11 +1,13 @@
+import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.model.BaseStats.Stat
 import io.github.tjheslin1.model._
 import org.scalacheck.{Arbitrary, Gen}
+import shapeless._
 
-package object unit {
+package object unit extends RandomDataGenerator {
 
   implicit val arbStat: Arbitrary[Stat] =
     Arbitrary {
@@ -18,16 +20,7 @@ package object unit {
         }
     }
 
-  implicit val arbBaseStats: Arbitrary[BaseStats] = Arbitrary {
-    for {
-      str <- arbStat.arbitrary
-      dex <- arbStat.arbitrary
-      con <- arbStat.arbitrary
-      int <- arbStat.arbitrary
-      wis <- arbStat.arbitrary
-      cha <- arbStat.arbitrary
-    } yield BaseStats(str, dex, con, int, wis, cha)
-  }
+  implicit val arbBaseStats: Arbitrary[BaseStats] = cachedImplicit
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
