@@ -7,6 +7,7 @@ import scala.Predef.{$conforms => _}
 
 case object Greatsword extends Weapon {
 
+  def name = "Greatsword"
   def damage(implicit rollStrategy: RollStrategy): Int = 2 * D6
 
 }

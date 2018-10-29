@@ -28,19 +28,19 @@ object Actions extends LazyLogging {
 
     if (roll == 20) CriticalHit
     else if (roll == 1) CriticalMiss
-    else if (roll + mod(attacker.stats.strength) + attacker.proficiencyBonus > attackee.armourClass) Hit
+    else if (roll + mod(attacker.stats.strength) + attacker.proficiencyBonus >= attackee.armourClass) Hit
     else Miss
   }
 
   def resolveDamage(attacker: Creature, attackee: Creature, attackResult: AttackResult)(
       implicit rollStrategy: RollStrategy): (Creature, Creature) = {
 
-    val dmg = attackResult match {
-      case CriticalHit  => attacker.weapon.damage * 2 + mod(attacker.stats.strength)
+    val dmg = Math.max(0, attackResult match {
+      case CriticalHit  => (attacker.weapon.damage + attacker.weapon.damage) + mod(attacker.stats.strength)
       case Hit          => attacker.weapon.damage
       case Miss         => 0
       case CriticalMiss => 0
-    }
+    })
 
     logger.debug(s"${attacker.name} attacks ${attackee.name} for $dmg damage")
 
@@ -51,6 +51,7 @@ object Actions extends LazyLogging {
 
   def attackAndDamage(attacker: Creature, attackee: Creature)(implicit rollStrategy: RollStrategy) = {
     val attackResult = attack(attacker, attackee)
+
     if (attackResult.result > 0) resolveDamage(attacker, attackee, attackResult)
     else (attacker, attackee)
   }

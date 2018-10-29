@@ -1,8 +1,10 @@
 package io.github.tjheslin1.model
 
+import io.github.tjheslin1.model.BaseStats.Stat
+
 object Modifier {
 
-  def mod(stat: Stat): Int = modifier(stat.score)
+  def mod(stat: Stat): Int = modifier(stat.value)
 
   // @formatter:off
   val modifier = Map(
@@ -15,6 +17,7 @@ object Modifier {
     7  -> -2,   16 -> 3,
     8  -> -1,   17 -> 3,
     9  -> -1,   18 -> 4,
+                19 -> 4,
 
     20 -> 5,
     21 -> 5,

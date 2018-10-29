@@ -8,10 +8,10 @@ import scala.collection.immutable.Queue
 object Move {
 
   def takeMove(queue: Queue[Creature])(implicit rollStrategy: RollStrategy): Queue[Creature] = {
-    val (creature, others) = queue.dequeue
-    val (pcs, mobs) = others.partition(_.creatureType == PlayerCharacter)
+    val (creature: Creature, others) = queue.dequeue
+    val (pcs, mobs)                  = others.partition(_.creatureType == PlayerCharacter)
 
-    if (creature.health > 0) {
+    if (creature.isConscious) {
       val (attacker, attackee) = creature.creatureType match {
         case PlayerCharacter => attackAndDamage(creature, mobs.head)
         case Monster         => attackAndDamage(creature, pcs.head)

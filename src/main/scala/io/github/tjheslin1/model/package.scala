@@ -1,5 +1,7 @@
 package io.github.tjheslin1
 
+import io.github.tjheslin1.model.BaseStats.Stat
+
 package object model {
 
   case class RollResult(result: Int)
