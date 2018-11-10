@@ -23,7 +23,7 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
     @tailrec
     def nextCreature(queue: Queue[Creature], creaturesMovesLeft: Int): Queue[Creature] = {
 
-      if (creaturesMovesLeft < 1) queue
+      if (creaturesMovesLeft <= 0) queue
       else {
         val nextTurnQueue = takeMove(queue)
         nextCreature(nextTurnQueue, creaturesMovesLeft - 1)
