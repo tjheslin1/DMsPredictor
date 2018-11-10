@@ -14,7 +14,6 @@ case object PlayerCharacter extends CreatureType
 case class Creature(health: Int,
                     stats: BaseStats,
                     armourClass: Int,
-                    experience: Int,
                     weapon: Weapon,
                     creatureType: CreatureType,
                     name: String = NameGenerator.randomName) {

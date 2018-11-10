@@ -15,7 +15,7 @@ object Goblin {
   def calculateHealth(implicit rollStrategy: RollStrategy): Int = 2 * D6
 
   def levelOneGoblin(weapon: Weapon = Shortsword)(implicit rollStrategy: RollStrategy) =
-    Goblin(Creature(calculateHealth, BaseStats(8, 14, 10, 10, 8, 8), 15, 0, weapon, Monster))
+    Goblin(Creature(calculateHealth, BaseStats(8, 14, 10, 10, 8, 8), 15, weapon, Monster))
 
   implicit val goblinShow: Show[Goblin] = Show.show { goblin =>
     s"Goblin - ${goblin.creature.show}}"

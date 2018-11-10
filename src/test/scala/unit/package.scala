@@ -37,7 +37,7 @@ package object unit extends RandomDataGenerator {
       ac <- Gen.choose(5, 25)
       weapon <- arbWeapon.arbitrary
       creatureType <- Gen.oneOf(PlayerCharacter, Monster)
-    } yield Creature(health, stats, ac, 0, weapon, creatureType)
+    } yield Creature(health, stats, ac, weapon, creatureType)
   }
 
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
