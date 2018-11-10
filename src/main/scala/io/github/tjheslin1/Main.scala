@@ -5,17 +5,18 @@ import io.github.tjheslin1.classes.Fighter
 import io.github.tjheslin1.model.{Creature, Dice}
 import io.github.tjheslin1.monsters.Goblin
 import io.github.tjheslin1.simulation.{BasicSimulation, SimulationRunner}
+import io.github.tjheslin1.strategy._
 import scalax.chart.api._
 
 object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
-  implicit val roll = Dice.defaultRandomiser
+  implicit val rollStrategy = Dice.defaultRandomiser
 
   val creatures: List[Creature] =
     List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature, Goblin.levelOneGoblin().creature)
 
   val simulation = "Fighter vs Goblin"
-  val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures), simulation, 1000)
+  val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 100000)
 
   logger.debug(s"$simulation simulation started")
   println(s"$wins Wins and $losses Losses")

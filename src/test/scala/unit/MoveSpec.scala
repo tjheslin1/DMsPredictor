@@ -3,8 +3,9 @@ package unit
 import base.PropertyChecksBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.classes.Fighter
+import io.github.tjheslin1.model.Dice
 import io.github.tjheslin1.model.Move._
-import io.github.tjheslin1.model.{Creature, Dice, Monster, PlayerCharacter}
+import io.github.tjheslin1.strategy.LowestFirst
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable.Queue
@@ -19,7 +20,7 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
 
         val queue = Queue(fighter.creature, monster.creature)
 
-        takeMove(queue).map(_.name) shouldBe Queue(monster.creature.name, fighter.creature.name)
+        takeMove(queue, LowestFirst).map(_.name) shouldBe Queue(monster.creature.name, fighter.creature.name)
       }
     }
 
@@ -28,7 +29,7 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
 
         val queue = Queue(fighter.creature, monster.creature)
 
-        val List(updatedEnemy, _) = takeMove(queue)(Dice.naturalTwenty).toList
+        val List(updatedEnemy, _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty).toList
 
         updatedEnemy.health should (be <= monster.creature.health)
       }
@@ -43,7 +44,7 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
-        val result = takeMove(queue)(Dice.naturalTwenty)
+        val result = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
 
         result.find(_.name == enemyOne.name).get.health shouldBe 0
         result.find(_.name == enemyTwo.name).get.health shouldBe 0
@@ -60,7 +61,7 @@ class MoveSpec extends WordSpec with Matchers with PropertyChecksBase {
 
         val queue = Queue(player, enemyOne, enemyTwo, enemyThree)
 
-        val result = takeMove(queue)(Dice.naturalTwenty)
+        val result = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
 
         result.find(_.name == enemyOne.name).get.health shouldBe 50
         result.find(_.name == enemyTwo.name).get.health shouldBe 0

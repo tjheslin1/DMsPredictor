@@ -2,6 +2,7 @@ package io.github.tjheslin1.model
 
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.model.Move.takeMove
+import io.github.tjheslin1.strategy.{Focus, LowestFirst}
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
@@ -18,14 +19,14 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
         .reverse
         .map(_.creature): _*)
 
-  def run: Queue[Creature] = {
+  def run(focus: Focus): Queue[Creature] = {
 
     @tailrec
     def nextCreature(queue: Queue[Creature], creaturesMovesLeft: Int): Queue[Creature] = {
 
       if (creaturesMovesLeft <= 0) queue
       else {
-        val nextTurnQueue = takeMove(queue)
+        val nextTurnQueue = takeMove(queue, focus)
         nextCreature(nextTurnQueue, creaturesMovesLeft - 1)
       }
     }

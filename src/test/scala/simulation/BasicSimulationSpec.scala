@@ -3,6 +3,7 @@ package simulation
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.model.{BaseStats, Dice}
 import io.github.tjheslin1.simulation._
+import io.github.tjheslin1.strategy.LowestFirst
 import org.scalatest.{FeatureSpec, Matchers}
 import util.TestModel
 
@@ -17,7 +18,7 @@ class BasicSimulationSpec extends FeatureSpec with Matchers {
 
       val info = "Fighter vs Goblin"
 
-      BasicSimulation(creatures).run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Success, info)
+      BasicSimulation(creatures, LowestFirst).run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Success, info)
     }
 
     scenario("One Fighter vs a Goblin where Goblin wins") {
@@ -28,7 +29,7 @@ class BasicSimulationSpec extends FeatureSpec with Matchers {
 
       val info = "Fighter vs Goblin"
 
-      BasicSimulation(creatures).run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Loss, info)
+      BasicSimulation(creatures, LowestFirst).run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Loss, info)
     }
   }
 }

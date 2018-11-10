@@ -3,10 +3,11 @@ package io.github.tjheslin1.simulation
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.model.InitiativeCalculator.updateInitiative
 import io.github.tjheslin1.model._
+import io.github.tjheslin1.strategy.Focus
 
 import scala.annotation.tailrec
 
-case class BasicSimulation(creatures: List[Creature]) extends Simulation with LazyLogging {
+case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simulation with LazyLogging {
 
   def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
 
@@ -17,7 +18,7 @@ case class BasicSimulation(creatures: List[Creature]) extends Simulation with La
       if (players.exists(_.health > 0)) {
         if (monsters.exists(_.health > 0)) {
 
-          val (pcs, mobs) = Turn(initiative).run.toList.partition(_.creatureType == PlayerCharacter)
+          val (pcs, mobs) = Turn(initiative).run(focus).toList.partition(_.creatureType == PlayerCharacter)
 
           val updatedInitiative = updateInitiative(initiative, pcs, mobs)
 
