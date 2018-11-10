@@ -15,9 +15,8 @@ object Move extends LazyLogging {
 
     if (creature.isConscious) {
 
-      // TODO attack enemy with lowest hp
-      val mobToAttack = mobs.find(_.health > 0)
-      val pcToAttack  = pcs.find(_.health > 0)
+      val mobToAttack = mobs.filter(_.health > 0).sortBy(_.health).headOption
+      val pcToAttack  = pcs.filter(_.health > 0).sortBy(_.health).headOption
 
       val updatedCreatures = creature.creatureType match {
         case PlayerCharacter => mobToAttack.fold(none[(Creature, Creature)])(attackAndDamage(creature, _).some)
