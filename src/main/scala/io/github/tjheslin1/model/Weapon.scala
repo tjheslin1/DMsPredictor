@@ -10,9 +10,9 @@ abstract class Weapon {
 
 object Weapon {
 
-  def apply(name: String, dmg: Int) = new Weapon {
+  def apply(weaponName: String, dmg: Int) = new Weapon {
     override def damage(implicit rollStrategy: RollStrategy): Int = dmg
-    override def name: String = name
+    override def name: String                                     = weaponName
   }
 
   implicit val weaponShow: Show[Weapon] = Show.show { weapon =>

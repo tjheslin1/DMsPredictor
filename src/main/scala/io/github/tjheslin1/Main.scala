@@ -15,7 +15,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
   val creatures: List[Creature] =
     List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature, Goblin.levelOneGoblin().creature)
 
-  val simulation = "Fighter vs Goblin"
+  val simulation     = "Fighter vs Goblin"
   val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 100000)
 
   logger.debug(s"$simulation simulation started")

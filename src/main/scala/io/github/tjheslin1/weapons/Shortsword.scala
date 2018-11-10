@@ -5,7 +5,7 @@ import io.github.tjheslin1.util.IntOps._
 
 case object Shortsword extends Weapon {
 
-  def name = "Shortsword"
+  def name                                             = "Shortsword"
   def damage(implicit rollStrategy: RollStrategy): Int = 1 * D6
 
 }

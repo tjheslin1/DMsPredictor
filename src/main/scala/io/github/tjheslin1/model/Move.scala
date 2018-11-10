@@ -37,7 +37,7 @@ object Move extends LazyLogging {
   private def nextToFocus(creatures: Queue[Creature], focus: Focus): Option[Creature] = {
     val consciousCreatures = creatures.filter(_.health > 0)
     focus match {
-      case LowestFirst => creatures.sortBy(_.health).headOption
+      case LowestFirst => consciousCreatures.sortBy(_.health).headOption
       case Random =>
         if (consciousCreatures.isEmpty) None else consciousCreatures(JRandom.nextInt(consciousCreatures.size)).some
     }
