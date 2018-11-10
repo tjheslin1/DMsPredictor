@@ -1,6 +1,6 @@
-package io.github.tjheslin1.simulation
+package io.github.tjheslin1.dmspredictor.simulation
 
-import io.github.tjheslin1.model.RollStrategy
+import io.github.tjheslin1.dmspredictor.model.RollStrategy
 
 object SimulationRunner {
 

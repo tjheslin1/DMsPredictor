@@ -1,9 +1,9 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
 import cats.Show
 import cats.syntax.show._
-import io.github.tjheslin1.util.NameGenerator
-import io.github.tjheslin1.model.Weapon.weaponShow
+import io.github.tjheslin1.dmspredictor.util.NameGenerator
+import io.github.tjheslin1.dmspredictor.model.Weapon.weaponShow
 
 sealed trait CreatureType
 

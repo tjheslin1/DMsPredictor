@@ -2,10 +2,9 @@ import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.BaseStats.Stat
-import io.github.tjheslin1.model._
-import io.github.tjheslin1.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 

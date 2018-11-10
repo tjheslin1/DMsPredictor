@@ -1,12 +1,11 @@
-package io.github.tjheslin1
+package io.github.tjheslin1.dmspredictor
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.{Creature, Dice}
-import io.github.tjheslin1.monsters.Goblin
-import io.github.tjheslin1.simulation.{BasicSimulation, SimulationRunner}
-import io.github.tjheslin1.strategy._
-import scalax.chart.api._
+import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model.{Creature, Dice}
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
+import io.github.tjheslin1.dmspredictor.strategy._
 
 object Main extends App with scalax.chart.module.Charting with LazyLogging {
 

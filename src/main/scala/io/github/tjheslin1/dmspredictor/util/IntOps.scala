@@ -1,6 +1,6 @@
-package io.github.tjheslin1.util
+package io.github.tjheslin1.dmspredictor.util
 
-import io.github.tjheslin1.model.{Dice, RollStrategy}
+import io.github.tjheslin1.dmspredictor.model.{Dice, RollStrategy}
 
 object IntOps {
 

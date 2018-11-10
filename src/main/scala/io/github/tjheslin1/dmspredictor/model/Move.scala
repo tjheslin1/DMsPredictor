@@ -1,10 +1,10 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.model.Actions.attackAndDamage
-import io.github.tjheslin1.strategy._
-import io.github.tjheslin1.util.QueueOps._
+import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
+import io.github.tjheslin1.dmspredictor.strategy._
+import io.github.tjheslin1.dmspredictor.util.QueueOps._
 import scala.util.{Random => JRandom}
 
 import scala.collection.immutable.Queue

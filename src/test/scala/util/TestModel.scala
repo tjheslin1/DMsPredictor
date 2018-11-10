@@ -1,8 +1,8 @@
 package util
 
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.model._
-import io.github.tjheslin1.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.weapons.Shortsword
 
 object TestModel {
 

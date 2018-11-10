@@ -2,10 +2,10 @@ package unit
 
 import base.PropertyChecksBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.Dice
-import io.github.tjheslin1.model.Move._
-import io.github.tjheslin1.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model.Dice
+import io.github.tjheslin1.dmspredictor.model.Move._
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable.Queue

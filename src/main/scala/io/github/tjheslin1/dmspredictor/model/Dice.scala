@@ -1,4 +1,4 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
 import scala.util.Random
 

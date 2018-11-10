@@ -1,12 +1,12 @@
-package io.github.tjheslin1.monsters
+package io.github.tjheslin1.dmspredictor.monsters
 
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.model.Creature.creatureShow
-import io.github.tjheslin1.model._
-import io.github.tjheslin1.util.IntOps._
-import io.github.tjheslin1.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.model.Creature.creatureShow
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.weapons.Shortsword
 
 case class Goblin(creature: Creature)
 

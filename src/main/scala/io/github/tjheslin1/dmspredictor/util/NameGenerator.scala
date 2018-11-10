@@ -1,4 +1,4 @@
-package io.github.tjheslin1.util
+package io.github.tjheslin1.dmspredictor.util
 
 object NameGenerator {
 

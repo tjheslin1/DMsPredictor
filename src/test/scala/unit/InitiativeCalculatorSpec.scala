@@ -1,9 +1,9 @@
 package unit
 
 import base.PropertyChecksBase
-import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.InitiativeCalculator.updateInitiative
-import io.github.tjheslin1.model.Initiative
+import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model.InitiativeCalculator.updateInitiative
+import io.github.tjheslin1.dmspredictor.model.Initiative
 import org.scalatest.{Matchers, WordSpec}
 
 class InitiativeCalculatorSpec extends WordSpec with Matchers with PropertyChecksBase {

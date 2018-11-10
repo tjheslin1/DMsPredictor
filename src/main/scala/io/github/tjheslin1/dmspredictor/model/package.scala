@@ -1,12 +1,12 @@
-package io.github.tjheslin1
-
-import io.github.tjheslin1.model.BaseStats.Stat
+package io.github.tjheslin1.dmspredictor
 
 package object model {
 
   case class RollResult(result: Int)
 
   type RollStrategy = Int => RollResult
+
+  type RS[_] = RollStrategy // TODO: use
 
   implicit def rollResultConversion(rollResult: RollResult): Int = rollResult.result
 

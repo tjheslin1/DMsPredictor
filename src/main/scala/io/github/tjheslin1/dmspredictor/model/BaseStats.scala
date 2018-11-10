@@ -1,9 +1,9 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
 import eu.timepit.refined._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 
 case class BaseStats(strength: Stat,
                      dexterity: Stat,

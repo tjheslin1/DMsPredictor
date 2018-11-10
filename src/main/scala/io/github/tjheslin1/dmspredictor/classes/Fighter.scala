@@ -1,11 +1,11 @@
-package io.github.tjheslin1.classes
+package io.github.tjheslin1.dmspredictor.classes
 
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.model.Creature.creatureShow
-import io.github.tjheslin1.model._
-import io.github.tjheslin1.weapons.Greatsword
+import io.github.tjheslin1.dmspredictor.model.Creature.creatureShow
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.weapons.Greatsword
 
 case class Fighter(creature: Creature)
 

@@ -1,9 +1,9 @@
 package simulation
 
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.model.{BaseStats, Dice}
-import io.github.tjheslin1.simulation._
-import io.github.tjheslin1.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.model.{BaseStats, Dice}
+import io.github.tjheslin1.dmspredictor.simulation._
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.{FeatureSpec, Matchers}
 import util.TestModel
 

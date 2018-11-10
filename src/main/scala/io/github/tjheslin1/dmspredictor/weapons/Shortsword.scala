@@ -1,7 +1,7 @@
-package io.github.tjheslin1.weapons
+package io.github.tjheslin1.dmspredictor.weapons
 
-import io.github.tjheslin1.model.{D6, RollStrategy, Weapon}
-import io.github.tjheslin1.util.IntOps._
+import io.github.tjheslin1.dmspredictor.model.{D6, RollStrategy, Weapon}
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 case object Shortsword extends Weapon {
 

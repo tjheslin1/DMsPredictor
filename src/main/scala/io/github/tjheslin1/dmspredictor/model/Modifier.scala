@@ -1,6 +1,6 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
-import io.github.tjheslin1.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 
 object Modifier {
 

@@ -1,6 +1,6 @@
-package io.github.tjheslin1.simulation
+package io.github.tjheslin1.dmspredictor.simulation
 
-import io.github.tjheslin1.model.{Creature, RollStrategy}
+import io.github.tjheslin1.dmspredictor.model.{Creature, RollStrategy}
 
 trait Simulation {
 

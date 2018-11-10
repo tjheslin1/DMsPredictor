@@ -1,9 +1,9 @@
-package io.github.tjheslin1.simulation
+package io.github.tjheslin1.dmspredictor.simulation
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.model.InitiativeCalculator.updateInitiative
-import io.github.tjheslin1.model._
-import io.github.tjheslin1.strategy.Focus
+import io.github.tjheslin1.dmspredictor.model.InitiativeCalculator.updateInitiative
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 import scala.annotation.tailrec
 

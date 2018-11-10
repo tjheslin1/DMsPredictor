@@ -1,4 +1,4 @@
-package io.github.tjheslin1.strategy
+package io.github.tjheslin1.dmspredictor.strategy
 
 sealed trait Focus extends Product with Serializable
 

@@ -1,9 +1,9 @@
 package unit
 
 import base.PropertyChecksBase
-import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model.{Dice, InitiativeCalculator, Turn}
-import io.github.tjheslin1.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.{Matchers, WordSpec}
 
 class TurnSpec extends WordSpec with Matchers with PropertyChecksBase {

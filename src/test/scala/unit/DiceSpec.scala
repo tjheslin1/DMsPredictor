@@ -1,6 +1,6 @@
 package unit
 
-import io.github.tjheslin1.model._
+import io.github.tjheslin1.dmspredictor.model._
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.Random

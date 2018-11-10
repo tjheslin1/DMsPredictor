@@ -1,8 +1,8 @@
 package unit
 
 import base.PropertyChecksBase
-import io.github.tjheslin1.classes.Fighter
-import io.github.tjheslin1.model._
+import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model._
 import org.scalatest.{Matchers, WordSpec}
 
 class ActionSpec extends WordSpec with Matchers with PropertyChecksBase {

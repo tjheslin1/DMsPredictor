@@ -1,8 +1,8 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.model.Move.takeMove
-import io.github.tjheslin1.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.model.Move.takeMove
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue

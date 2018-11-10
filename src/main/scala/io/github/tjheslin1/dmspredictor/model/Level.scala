@@ -1,4 +1,4 @@
-package io.github.tjheslin1.model
+package io.github.tjheslin1.dmspredictor.model
 
 sealed trait Level {
   val lvl: Int
