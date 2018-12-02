@@ -16,11 +16,11 @@ class TurnSpec extends UnitSpecBase {
         val initiatives =
           InitiativeCalculator(List(fighterOne.creature, fighterTwo.creature, monster.creature)).rollInitiative()
 
-        Turn(initiatives).run(LowestFirst).map(_.name) shouldBe initiatives.toSeq
+        Turn(initiatives).run(LowestFirst).map(_.creature.name) shouldBe initiatives.toSeq
           .map { case (_, initiative) => initiative }
           .sortBy(_.score)
           .reverse
-          .map(_.creature.name)
+          .map(_.combatant.creature.name)
       }
     }
   }

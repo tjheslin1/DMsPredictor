@@ -14,16 +14,17 @@ object TestData {
 
   case class TestMonster(creature: Creature)
 
-  implicit class TestMonsterOps(val testMob: TestMonster) extends AnyVal {
-    def withName(mobName: String) = testMob.copy(creature = testMob.creature.copy(name = mobName))
-
-    def withHealth(hp: Int) = testMob.copy(creature = testMob.creature.copy(health = hp))
+  implicit class CreatureOps(val creature: Creature) extends AnyVal {
+    def withName(creatureName: String) = creature.copy(name = creatureName)
+    def withHealth(hp: Int) = creature.copy(health = hp)
+    def withStrength(strengthScore: Stat) = creature.copy(stats = creature.stats.copy(strength = strengthScore))
+    def withCombatIndex(index: Int) = Combatant(index, creature)
   }
 
-  implicit class FighterOps(val fighter: Fighter) extends AnyVal {
-    def withName(fighterName: String) = fighter.copy(creature = fighter.creature.copy(name = fighterName))
-
-    def withHealth(hp: Int) = fighter.copy(creature = fighter.creature.copy(health = hp))
+  implicit class CombatantOps(val combatant: Combatant) extends AnyVal {
+    def withName(combatantName: String) = combatant.copy(creature = combatant.creature.withName(combatantName))
+    def withHealth(hp: Int) = combatant.copy(creature = combatant.creature.withHealth(hp))
+    def withStrength(strengthScore: Stat) = combatant.copy(creature = combatant.creature.withStrength(strengthScore))
   }
 }
 

@@ -23,35 +23,35 @@ case object CriticalMiss extends AttackResult {
 
 object Actions extends LazyLogging {
 
-  def attack[_: RS](attacker: Creature, attackee: Creature): AttackResult = {
+  def attack[_: RS](attacker: Combatant, attackee: Combatant): AttackResult = {
     val roll = D20.roll()
 
     if (roll == 20) CriticalHit
     else if (roll == 1) CriticalMiss
-    else if (roll + mod(attacker.stats.strength) + attacker.proficiencyBonus >= attackee.armourClass) Hit
+    else if (roll + mod(attacker.creature.stats.strength) + attacker.creature.proficiencyBonus >= attackee.creature.armourClass) Hit
     else Miss
   }
 
-  def resolveDamage[_: RS](attacker: Creature, attackee: Creature, attackResult: AttackResult): (Creature, Creature) = {
+  def resolveDamage[_: RS](attacker: Combatant, attackee: Combatant, attackResult: AttackResult): (Combatant, Combatant) = {
 
     val dmg = Math.max(
       0,
       attackResult match {
-        case CriticalHit  => (attacker.weapon.damage + attacker.weapon.damage) + mod(attacker.stats.strength)
-        case Hit          => attacker.weapon.damage
+        case CriticalHit  => (attacker.creature.weapon.damage + attacker.creature.weapon.damage) + mod(attacker.creature.stats.strength)
+        case Hit          => attacker.creature.weapon.damage
         case Miss         => 0
         case CriticalMiss => 0
       }
     )
 
-    logger.debug(s"${attacker.name} attacks ${attackee.name} for $dmg damage")
+    logger.debug(s"${attacker.creature.name} attacks ${attackee.creature.name} for $dmg damage")
 
-    val damagedAttackee = attackee.copy(health = Math.max(attackee.health - dmg, 0))
+    val damagedAttackee = attackee.copy(creature = attackee.creature.copy(health = Math.max(attackee.creature.health - dmg, 0)))
 
     (attacker, damagedAttackee)
   }
 
-  def attackAndDamage[_: RS](attacker: Creature, attackee: Creature) = {
+  def attackAndDamage[_: RS](attacker: Combatant, attackee: Combatant) = {
     val attackResult = attack(attacker, attackee)
 
     if (attackResult.result > 0) resolveDamage(attacker, attackee, attackResult)

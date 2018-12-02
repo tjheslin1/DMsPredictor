@@ -7,35 +7,35 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
-class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy) extends LazyLogging {
+class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrategy) extends LazyLogging {
 
-  val initiativeOrder: Queue[Creature] =
-    Queue[Creature](
+  val initiativeOrder: Queue[Combatant] =
+    Queue[Combatant](
       initiatives.toSeq
         .map {
           case (_, initiative) => initiative
         }
         .sortBy(_.score)
         .reverse
-        .map(_.creature): _*)
+        .map(_.combatant): _*)
 
-  def run(focus: Focus): Queue[Creature] = {
+  def run(focus: Focus): Queue[Combatant] = {
 
     @tailrec
-    def nextCreature(queue: Queue[Creature], creaturesMovesLeft: Int): Queue[Creature] = {
+    def nextCombatant(queue: Queue[Combatant], combatantMovesLeft: Int): Queue[Combatant] = {
 
-      if (creaturesMovesLeft <= 0) queue
+      if (combatantMovesLeft <= 0) queue
       else {
         val nextTurnQueue = takeMove(queue, focus)
-        nextCreature(nextTurnQueue, creaturesMovesLeft - 1)
+        nextCombatant(nextTurnQueue, combatantMovesLeft - 1)
       }
     }
 
-    nextCreature(initiativeOrder, initiatives.size)
+    nextCombatant(initiativeOrder, initiatives.size)
   }
 }
 
 object Turn {
 
-  def apply[_: RS](initiatives: Map[String, Initiative]): Turn = new Turn(initiatives)
+  def apply[_: RS](initiatives: Map[Int, Initiative]): Turn = new Turn(initiatives)
 }

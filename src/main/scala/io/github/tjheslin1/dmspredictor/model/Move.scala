@@ -11,35 +11,35 @@ import scala.util.{Random => JRandom}
 
 object Move extends LazyLogging {
 
-  def takeMove[_: RS](queue: Queue[Creature], focus: Focus): Queue[Creature] = {
-    val (creature, others) = queue.dequeue
-    val (pcs, mobs)        = others.partition(_.creatureType == PlayerCharacter)
+  def takeMove[_: RS](queue: Queue[Combatant], focus: Focus): Queue[Combatant] = {
+    val (combatant, others) = queue.dequeue
+    val (pcs, mobs)         = others.partition(_.creature.creatureType == PlayerCharacter)
 
-    if (creature.isConscious) {
+    if (combatant.creature.isConscious) {
 
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val updatedCreatures = creature.creatureType match {
-        case PlayerCharacter => mobToAttack.fold(none[(Creature, Creature)])(attackAndDamage(creature, _).some)
-        case Monster         => pcToAttack.fold(none[(Creature, Creature)])(attackAndDamage(creature, _).some)
+      val updatedCreatures = combatant.creature.creatureType match {
+        case PlayerCharacter => mobToAttack.fold(none[(Combatant, Combatant)])(attackAndDamage(combatant, _).some)
+        case Monster         => pcToAttack.fold(none[(Combatant, Combatant)])(attackAndDamage(combatant, _).some)
       }
 
-      updatedCreatures.fold(others.append(creature)) {
+      updatedCreatures.fold(others.append(combatant)) {
         case (attacker, attackee) =>
-          val updatedOthers = others.map(c => if (c.name == attackee.name) attackee else c)
+          val updatedOthers = others.map(c => if (c.index == attackee.index) attackee else c)
           updatedOthers.append(attacker)
       }
     } else
-      others.append(creature)
+      others.append(combatant)
   }
 
-  private def nextToFocus(creatures: Queue[Creature], focus: Focus): Option[Creature] = {
-    val consciousCreatures = creatures.filter(_.health > 0)
+  private def nextToFocus(combtants: Queue[Combatant], focus: Focus): Option[Combatant] = {
+    val consciousCombatants = combtants.filter(_.creature.health > 0)
     focus match {
-      case LowestFirst => consciousCreatures.sortBy(_.health).headOption
+      case LowestFirst => consciousCombatants.sortBy(_.creature.health).headOption
       case Random =>
-        if (consciousCreatures.isEmpty) None else consciousCreatures(JRandom.nextInt(consciousCreatures.size)).some
+        if (consciousCombatants.isEmpty) None else consciousCombatants(JRandom.nextInt(consciousCombatants.size)).some
     }
   }
 }

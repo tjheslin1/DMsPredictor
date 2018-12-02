@@ -6,7 +6,7 @@ package object model {
 
   type RollStrategy = Int => RollResult
 
-  type RS[_] = RollStrategy // TODO: use
+  type RS[_] = RollStrategy
 
   implicit def rollResultConversion(rollResult: RollResult): Int = rollResult.result
 

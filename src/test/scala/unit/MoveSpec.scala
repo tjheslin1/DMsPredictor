@@ -17,52 +17,52 @@ class MoveSpec extends UnitSpecBase {
   "takeMove" should {
     "replace creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.creature, monster.creature)
+        val queue = Queue(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))
 
-        takeMove(queue, LowestFirst).map(_.name) shouldBe Queue(monster.creature.name, fighter.creature.name)
+        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.creature.name, fighter.creature.name)
       }
     }
 
     "update head enemy after attack" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.creature, monster.creature)
+        val queue = Queue(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))
 
-        val List(updatedEnemy, _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty).toList
+        val Queue(updatedEnemy, _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
 
-        updatedEnemy.health should (be <= monster.creature.health)
+        updatedEnemy.creature.health should (be <= monster.creature.health)
       }
     }
 
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player   = fighter.creature.copy(stats = fighter.creature.stats.copy(strength = 10))
-        val enemyOne = monsterOne.creature.copy(health = 0)
-        val enemyTwo = monsterTwo.creature.copy(health = 1)
+        val player   = fighter.creature.withStrength(10).withCombatIndex(1)
+        val enemyOne = monsterOne.creature.withHealth(0).withCombatIndex(2)
+        val enemyTwo = monsterTwo.creature.withHealth(1).withCombatIndex(3)
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
-        val result = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
+        val Queue(_, updatedEnemyTwo, _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
 
-        result.find(_.name == enemyOne.name).get.health shouldBe 0
-        result.find(_.name == enemyTwo.name).get.health shouldBe 0
+        updatedEnemyTwo.creature.health shouldBe 0
       }
     }
 
     "focus mob with lowest health first" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
-        val player     = fighter.creature.copy(stats = fighter.creature.stats.copy(strength = 10))
 
-        val enemyOne   = monsterOne.creature.copy(health = 50)
-        val enemyTwo   = monsterTwo.creature.copy(health = 1)
-        val enemyThree = monsterThree.creature.copy(health = 50)
+        val player     = fighter.creature.withStrength(10).withCombatIndex(1)
+        val enemyOne   = monsterOne.creature.withHealth(50).withCombatIndex(2)
+        val enemyTwo   = monsterTwo.creature.withHealth(1).withCombatIndex(3)
+        val enemyThree = monsterThree.creature.withHealth(50).withCombatIndex(4)
 
         val queue = Queue(player, enemyOne, enemyTwo, enemyThree)
 
-        val result = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
+        val Queue(updatedEnemyOne, updatedEnemyTwo, updatedEnemyThree, _) =
+          takeMove(queue, LowestFirst)(Dice.naturalTwenty)
 
-        result.find(_.name == enemyOne.name).get.health shouldBe 50
-        result.find(_.name == enemyTwo.name).get.health shouldBe 0
-        result.find(_.name == enemyThree.name).get.health shouldBe 50
+        updatedEnemyOne.creature.health shouldBe 50
+        updatedEnemyTwo.creature.health shouldBe 0
+        updatedEnemyThree.creature.health shouldBe 50
       }
     }
   }

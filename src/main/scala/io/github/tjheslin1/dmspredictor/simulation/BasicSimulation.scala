@@ -12,18 +12,18 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simu
   def run[_: RS](info: String): SimulationResult = {
 
     @tailrec
-    def determineOutcome(initiative: Map[String, Initiative],
-                         players: List[Creature],
-                         monsters: List[Creature]): SimulationResult =
-      if (players.exists(_.health > 0)) {
-        if (monsters.exists(_.health > 0)) {
+    def determineOutcome(initiative: Map[Int, Initiative],
+                         players: List[Combatant],
+                         monsters: List[Combatant]): SimulationResult =
+      if (players.exists(_.creature.isConscious)) {
+        if (monsters.exists(_.creature.isConscious)) {
 
-          val (pcs, mobs) = Turn(initiative).run(focus).toList.partition(_.creatureType == PlayerCharacter)
+          val (pcs, mobs) = Turn(initiative).run(focus).toList.partition(_.creature.creatureType == PlayerCharacter)
 
           val updatedInitiative = updateInitiative(initiative, pcs, mobs)
 
-          pcs.foreach(pc => logger.debug(s"pc: ${pc.name} - hp=${pc.health}"))
-          mobs.foreach(mob => logger.debug(s"mob: ${mob.name} - hp=${mob.health}"))
+          pcs.foreach(pc => logger.debug(s"pc: ${pc.creature.name} - hp=${pc.creature.health}"))
+          mobs.foreach(mob => logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
 
           determineOutcome(updatedInitiative, pcs, mobs)
         } else SimulationResult(Success, info)
@@ -31,7 +31,7 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simu
 
     val initiative = InitiativeCalculator(creatures).rollInitiative()
 
-    val (playerCharacters, monsters) = initiative.toList.map(_._2.creature).partition(_.creatureType == PlayerCharacter)
+    val (playerCharacters, monsters) = initiative.toList.map(_._2.combatant).partition(_.creature.creatureType == PlayerCharacter)
 
     determineOutcome(initiative, playerCharacters, monsters)
   }
