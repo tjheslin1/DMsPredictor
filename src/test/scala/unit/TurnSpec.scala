@@ -1,19 +1,20 @@
 package unit
 
-import base.PropertyChecksBase
+import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
-import org.scalatest.{Matchers, WordSpec}
+import util.TestData._
 
-class TurnSpec extends WordSpec with Matchers with PropertyChecksBase {
+class TurnSpec extends UnitSpecBase {
 
   "run" should {
     "cycle through all creatures once" in {
       forAll { (fighterOne: Fighter, fighterTwo: Fighter, monster: TestMonster) =>
         implicit val roll = Dice.defaultRandomiser
 
-        val initiatives = InitiativeCalculator(List(fighterOne.creature, fighterTwo.creature, monster.creature)).rollInitiative
+        val initiatives =
+          InitiativeCalculator(List(fighterOne.creature, fighterTwo.creature, monster.creature)).rollInitiative()
 
         Turn(initiatives).run(LowestFirst).map(_.name) shouldBe initiatives.toSeq
           .map { case (_, initiative) => initiative }

@@ -15,12 +15,12 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature, Goblin.levelOneGoblin().creature)
 
   val simulation     = "Fighter vs Goblin"
-  val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 100000)
+  val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1000)
 
   logger.debug(s"$simulation simulation started")
   println(s"$wins Wins and $losses Losses")
 
   val data  = Seq("wins" -> wins, "losses" -> losses)
   val chart = BarChart(data)
-  chart.show()
+  chart.show(title = simulation)
 }

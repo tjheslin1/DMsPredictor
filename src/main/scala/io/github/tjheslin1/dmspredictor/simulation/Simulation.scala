@@ -1,11 +1,11 @@
 package io.github.tjheslin1.dmspredictor.simulation
 
-import io.github.tjheslin1.dmspredictor.model.{Creature, RollStrategy}
+import io.github.tjheslin1.dmspredictor.model.{Creature, RS}
 
 trait Simulation {
 
   def creatures: List[Creature]
-  def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult
+  def run[_: RS](info: String): SimulationResult
 }
 
 sealed trait SimulationStatus

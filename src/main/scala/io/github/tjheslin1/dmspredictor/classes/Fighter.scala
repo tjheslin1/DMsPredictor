@@ -7,14 +7,14 @@ import io.github.tjheslin1.dmspredictor.model.Creature.creatureShow
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.weapons.Greatsword
 
-case class Fighter(creature: Creature)
+case class Fighter(creature: Creature, level: Level)
 
 object Fighter {
 
-  def calculateHealth(implicit rollStrategy: RollStrategy): Int = D10.max
+  def calculateHealth[_: RS]: Int = D10.max
 
-  def levelOneFighter(weapon: Weapon = Greatsword)(implicit rollStrategy: RollStrategy): Fighter =
-    new Fighter(Creature(calculateHealth, BaseStats(15, 13, 14, 12, 8, 10), 14, weapon, PlayerCharacter))
+  def levelOneFighter[_: RS](weapon: Weapon = Greatsword): Fighter =
+    new Fighter(Creature(calculateHealth, BaseStats(15, 13, 14, 12, 8, 10), 14, weapon, PlayerCharacter, 2), LevelOne)
 
   implicit val fighterShow: Show[Fighter] = Show.show { fighter =>
     s"Fighter - ${fighter.creature.show}}"

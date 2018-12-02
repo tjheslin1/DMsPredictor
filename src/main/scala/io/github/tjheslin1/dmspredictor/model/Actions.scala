@@ -23,7 +23,7 @@ case object CriticalMiss extends AttackResult {
 
 object Actions extends LazyLogging {
 
-  def attack(attacker: Creature, attackee: Creature)(implicit rollStrategy: RollStrategy): AttackResult = {
+  def attack[_: RS](attacker: Creature, attackee: Creature): AttackResult = {
     val roll = D20.roll()
 
     if (roll == 20) CriticalHit
@@ -32,8 +32,7 @@ object Actions extends LazyLogging {
     else Miss
   }
 
-  def resolveDamage(attacker: Creature, attackee: Creature, attackResult: AttackResult)(
-      implicit rollStrategy: RollStrategy): (Creature, Creature) = {
+  def resolveDamage[_: RS](attacker: Creature, attackee: Creature, attackResult: AttackResult): (Creature, Creature) = {
 
     val dmg = Math.max(
       0,
@@ -52,7 +51,7 @@ object Actions extends LazyLogging {
     (attacker, damagedAttackee)
   }
 
-  def attackAndDamage(attacker: Creature, attackee: Creature)(implicit rollStrategy: RollStrategy) = {
+  def attackAndDamage[_: RS](attacker: Creature, attackee: Creature) = {
     val attackResult = attack(attacker, attackee)
 
     if (attackResult.result > 0) resolveDamage(attacker, attackee, attackResult)

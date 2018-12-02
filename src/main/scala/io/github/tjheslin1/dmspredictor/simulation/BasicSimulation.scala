@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 
 case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simulation with LazyLogging {
 
-  def run(info: String)(implicit rollStrategy: RollStrategy): SimulationResult = {
+  def run[_: RS](info: String): SimulationResult = {
 
     @tailrec
     def determineOutcome(initiative: Map[String, Initiative],
@@ -29,7 +29,7 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simu
         } else SimulationResult(Success, info)
       } else SimulationResult(Loss, info)
 
-    val initiative = InitiativeCalculator(creatures).rollInitiative
+    val initiative = InitiativeCalculator(creatures).rollInitiative()
 
     val (playerCharacters, monsters) = initiative.toList.map(_._2.creature).partition(_.creatureType == PlayerCharacter)
 

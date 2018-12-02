@@ -1,10 +1,10 @@
 package io.github.tjheslin1.dmspredictor.util
 
-import io.github.tjheslin1.dmspredictor.model.{Dice, RollStrategy}
+import io.github.tjheslin1.dmspredictor.model.{Dice, RS}
 
 object IntOps {
 
   implicit class IntOps(val wrappable: Int) extends AnyVal {
-    def *(dice: Dice)(implicit rollStrategy: RollStrategy) = dice.roll(wrappable)
+    def *[_: RS](dice: Dice) = dice.roll(wrappable)
   }
 }

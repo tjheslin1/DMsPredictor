@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.Move.takeMove
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
@@ -37,5 +37,5 @@ class Turn(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStra
 
 object Turn {
 
-  def apply(initiatives: Map[String, Initiative])(implicit rollStrategy: RollStrategy): Turn = new Turn(initiatives)
+  def apply[_: RS](initiatives: Map[String, Initiative]): Turn = new Turn(initiatives)
 }

@@ -1,11 +1,11 @@
 package unit
 
+import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.model._
-import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.Random
 
-class DiceSpec extends WordSpec with Matchers {
+class DiceSpec extends UnitSpecBase {
 
   implicit def rollResultConversion(roll: Int): RollResult = RollResult(roll)
 

@@ -5,13 +5,13 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
-import scala.util.{Random => JRandom}
 
 import scala.collection.immutable.Queue
+import scala.util.{Random => JRandom}
 
 object Move extends LazyLogging {
 
-  def takeMove(queue: Queue[Creature], focus: Focus)(implicit rollStrategy: RollStrategy): Queue[Creature] = {
+  def takeMove[_: RS](queue: Queue[Creature], focus: Focus): Queue[Creature] = {
     val (creature, others) = queue.dequeue
     val (pcs, mobs)        = others.partition(_.creatureType == PlayerCharacter)
 

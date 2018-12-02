@@ -9,7 +9,7 @@ case class Initiative(creature: Creature, score: Int)
 
 class InitiativeCalculator(creatures: List[Creature]) extends LazyLogging {
 
-  def rollInitiative(implicit rollStrategy: RollStrategy): Map[String, Initiative] =
+  def rollInitiative[_: RS](): Map[String, Initiative] =
     creatures.map(c => c.name -> Initiative(c, D20.roll() + mod(c.stats.dexterity))).toMap
 }
 

@@ -12,9 +12,9 @@ case class Goblin(creature: Creature)
 
 object Goblin {
 
-  def calculateHealth(implicit rollStrategy: RollStrategy): Int = 2 * D6
+  def calculateHealth[_: RS]: Int = 2 * D6
 
-  def levelOneGoblin(weapon: Weapon = Shortsword)(implicit rollStrategy: RollStrategy) =
+  def levelOneGoblin[_: RS](weapon: Weapon = Shortsword) =
     Goblin(Creature(calculateHealth, BaseStats(8, 14, 10, 10, 8, 8), 15, weapon, Monster))
 
   implicit val goblinShow: Show[Goblin] = Show.show { goblin =>
