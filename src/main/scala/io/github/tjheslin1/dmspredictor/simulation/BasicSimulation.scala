@@ -31,7 +31,8 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simu
 
     val initiative = InitiativeCalculator(creatures).rollInitiative()
 
-    val (playerCharacters, monsters) = initiative.toList.map(_._2.combatant).partition(_.creature.creatureType == PlayerCharacter)
+    val (playerCharacters, monsters) =
+      initiative.toList.map(_._2.combatant).partition(_.creature.creatureType == PlayerCharacter)
 
     determineOutcome(initiative, playerCharacters, monsters)
   }
