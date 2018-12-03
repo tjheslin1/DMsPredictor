@@ -1,7 +1,9 @@
 package unit
 
 import base.UnitSpecBase
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 
@@ -42,25 +44,27 @@ class ActionSpec extends UnitSpecBase {
   "resolveDamage" should {
     "kill a monster if the damage is more than the monsters health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val oneHundredDamageWeapon = Weapon("one hundred damage weapon", 100)
-        val player                 = fighter.creature.copy(weapon = oneHundredDamageWeapon)
+        val oneHundredDamageWeapon = fixedDamageWeapon("one hundred damage weapon", Slashing, 100)
+        val player                 = fighter.creature.withStrength(10).withWeapon(oneHundredDamageWeapon)
 
-        val playerCombatant = player.withCombatIndex(1)
+        val playerCombatant  = player.withCombatIndex(1)
         val monsterCombatant = monster.creature.withCombatIndex(2)
 
-        Actions.resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withHealth(0))
+        Actions.resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant
+          .withHealth(0))
       }
     }
 
     "fail to kill a monster if the damage is less than the monsters health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val zeroDamageWeapon = Weapon("zero damage weapon", 0)
-        val player           = fighter.creature.copy(weapon = zeroDamageWeapon)
+        val oneDamageWeapon = fixedDamageWeapon("one damage weapon", Slashing, 1)
+        val player          = fighter.creature.withStrength(10).withWeapon(oneDamageWeapon)
 
-        val playerCombatant = player.withCombatIndex(1)
-        val monsterCombatant = monster.creature.withCombatIndex(2)
+        val playerCombatant  = player.withCombatIndex(1)
+        val monsterCombatant = monster.creature.withHealth(10).withCombatIndex(2)
 
-        Actions.resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 12) shouldBe (playerCombatant, monsterCombatant)
+        Actions.resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
+          (playerCombatant, monsterCombatant.withHealth(8))
       }
     }
   }

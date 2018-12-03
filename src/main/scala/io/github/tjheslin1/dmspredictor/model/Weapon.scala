@@ -4,18 +4,22 @@ import cats.Show
 
 abstract class Weapon {
 
-  def name: String
+  val name: String
+  val damageType: DamageType
+
   def damage(implicit rollStrategy: RollStrategy): Int
 }
 
 object Weapon {
 
-  def apply(weaponName: String, dmg: Int) = new Weapon {
-    override def damage(implicit rollStrategy: RollStrategy): Int = dmg
-    override def name: String                                     = weaponName
+  def fixedDamageWeapon(weaponName: String, weaponDamageType: DamageType, dmg: Int) = new Weapon {
+    val name: String = weaponName
+    val damageType   = weaponDamageType
+
+    def damage(implicit rollStrategy: RollStrategy): Int = dmg
   }
 
   implicit val weaponShow: Show[Weapon] = Show.show { weapon =>
-    s"Weapon: ${weapon.name}"
+    s"Weapon: ${weapon.name} (${weapon.damageType}})"
   }
 }

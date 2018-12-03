@@ -15,16 +15,19 @@ object TestData {
   case class TestMonster(creature: Creature)
 
   implicit class CreatureOps(val creature: Creature) extends AnyVal {
-    def withName(creatureName: String) = creature.copy(name = creatureName)
-    def withHealth(hp: Int) = creature.copy(health = hp)
+    def withName(creatureName: String)    = creature.copy(name = creatureName)
+    def withHealth(hp: Int)               = creature.copy(health = hp)
     def withStrength(strengthScore: Stat) = creature.copy(stats = creature.stats.copy(strength = strengthScore))
+    def withWeapon(wpn: Weapon)           = creature.copy(weapon = wpn)
+
     def withCombatIndex(index: Int) = Combatant(index, creature)
   }
 
   implicit class CombatantOps(val combatant: Combatant) extends AnyVal {
-    def withName(combatantName: String) = combatant.copy(creature = combatant.creature.withName(combatantName))
-    def withHealth(hp: Int) = combatant.copy(creature = combatant.creature.withHealth(hp))
+    def withName(combatantName: String)   = combatant.copy(creature = combatant.creature.withName(combatantName))
+    def withHealth(hp: Int)               = combatant.copy(creature = combatant.creature.withHealth(hp))
     def withStrength(strengthScore: Stat) = combatant.copy(creature = combatant.creature.withStrength(strengthScore))
+    def withWeapon(wpn: Weapon)           = combatant.copy(creature = combatant.creature.withWeapon(wpn))
   }
 }
 
@@ -45,15 +48,26 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbBaseStats: Arbitrary[BaseStats] = cachedImplicit
 
+  implicit val arbDamageType: Arbitrary[DamageType] = Arbitrary {
+    Gen.oneOf(Bludgeoning, Piercing, Slashing, Magical)
+  }
+
   implicit val arbLevel: Arbitrary[Level] = Arbitrary {
     Gen.oneOf(LevelOne, LevelTwo, LevelThree, LevelFour)
   }
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName <- Gen.alphaStr
-      sides      <- Gen.choose(1, 12)
-    } yield Weapon(weaponName, Dice.defaultRandomiser(sides))
+      weaponName       <- Gen.alphaStr
+      weaponDamageType <- arbDamageType.arbitrary
+      sides            <- Gen.choose(1, 12)
+    } yield
+      new Weapon {
+        val name: String = weaponName
+        val damageType   = weaponDamageType
+
+        def damage(implicit rollStrategy: RollStrategy): Int = Dice.defaultRandomiser(sides)
+      }
   }
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
