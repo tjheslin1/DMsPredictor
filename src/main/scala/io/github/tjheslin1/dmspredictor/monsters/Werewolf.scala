@@ -12,7 +12,7 @@ object Werewolf {
 
   val hydbridFormClaw = new Weapon {
     val name: String = "hybrid form claw"
-    val damageType = Slashing
+    val damageType   = Slashing
 
     def damage(implicit rollStrategy: RollStrategy): Int = (2 * D4) + 2
   }
