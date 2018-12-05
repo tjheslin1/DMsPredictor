@@ -12,13 +12,20 @@ import shapeless._
 
 object TestData {
 
+  val DamageTypes = List(Bludgeoning, Piercing, Slashing)
+
   case class TestMonster(creature: Creature)
 
   implicit class CreatureOps(val creature: Creature) extends AnyVal {
-    def withName(creatureName: String)    = creature.copy(name = creatureName)
-    def withHealth(hp: Int)               = creature.copy(health = hp)
-    def withStrength(strengthScore: Stat) = creature.copy(stats = creature.stats.copy(strength = strengthScore))
-    def withWeapon(wpn: Weapon)           = creature.copy(weapon = wpn)
+    def withName(creatureName: String)           = creature.copy(name = creatureName)
+    def withHealth(hp: Int)                      = creature.copy(health = hp)
+    def withStrength(strengthScore: Stat)        = creature.copy(stats = creature.stats.copy(strength = strengthScore))
+    def withWeapon(wpn: Weapon)                  = creature.copy(weapon = wpn)
+    def withResistance(creatureRes: DamageType*) = creature.copy(resistances = creatureRes.toList)
+    def withImmunity(creatureImm: DamageType*)   = creature.copy(immunities = creatureImm.toList)
+    def withNoResistances                        = creature.copy(resistances = List.empty)
+    def withNoImmunities                         = creature.copy(immunities = List.empty)
+    def withNoResistancesOrImmunities            = creature.copy(resistances = List.empty, immunities = List.empty)
 
     def withCombatIndex(index: Int) = Combatant(index, creature)
   }
@@ -28,6 +35,13 @@ object TestData {
     def withHealth(hp: Int)               = combatant.copy(creature = combatant.creature.withHealth(hp))
     def withStrength(strengthScore: Stat) = combatant.copy(creature = combatant.creature.withStrength(strengthScore))
     def withWeapon(wpn: Weapon)           = combatant.copy(creature = combatant.creature.withWeapon(wpn))
+    def withResistances(combatantRes: DamageType*) =
+      combatant.copy(creature = combatant.creature.withResistance(combatantRes: _*))
+    def withImmunites(combatantImm: DamageType*) =
+      combatant.copy(creature = combatant.creature.withImmunity(combatantImm: _*))
+    def withNoResistances             = combatant.copy(creature = combatant.creature.withNoResistances)
+    def withNoImmunities              = combatant.copy(creature = combatant.creature.withNoImmunities)
+    def withNoResistancesOrImmunities = combatant.copy(creature = combatant.creature.withNoResistancesOrImmunities)
   }
 }
 
@@ -78,6 +92,8 @@ trait TestData extends RandomDataGenerator {
       weapon           <- arbWeapon.arbitrary
       creatureType     <- Gen.oneOf(PlayerCharacter, Monster)
       proficiencyBonus <- Gen.choose(0, 6)
+//      resistances      <- Gen.someOf(DamageTypes)
+//      immunitues       <- Gen.someOf(DamageTypes)
     } yield Creature(health, stats, ac, weapon, creatureType, proficiencyBonus)
   }
 

@@ -68,26 +68,47 @@ class ActionSpec extends UnitSpecBase {
       }
     }
 
-    "deal half damage to a creature resistance to the damage type" ignore {
+    "deal half damage rounded down to a creature resistance to the damage type" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 10)
+        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
 
         val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature.withHealth(100).withCombatIndex(2)
+        val monsterCombatant = monster.creature
+          .withResistance(Slashing)
+          .withHealth(100)
+          .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit)(Dice.naturalTwenty) shouldBe
+        resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
           (playerCombatant, monsterCombatant.withHealth(95))
       }
     }
 
-    "deal no damage to a creature immune to the damage type" ignore {
+    "deal regular damage to a creature resistance to the damage type for a critical hit" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
+
+        val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
+        val monsterCombatant = monster.creature
+          .withResistance(Slashing)
+          .withHealth(100)
+          .withCombatIndex(2)
+
+        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
+          (playerCombatant, monsterCombatant.withHealth(89))
+      }
+    }
+
+    "deal no damage to a creature immune to the damage type" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 10)
 
         val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature.withHealth(100).withCombatIndex(2)
+        val monsterCombatant = monster.creature
+          .withImmunity(Slashing)
+          .withHealth(100)
+          .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit)(Dice.naturalTwenty) shouldBe
+        resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
           (playerCombatant, monsterCombatant.withHealth(100))
       }
     }

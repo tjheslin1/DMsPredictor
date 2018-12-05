@@ -17,6 +17,8 @@ case class Creature(health: Int,
                     weapon: Weapon,
                     creatureType: CreatureType,
                     proficiencyBonus: Int = 0,
+                    resistances: List[DamageType] = List(),
+                    immunities: List[DamageType] = List(),
                     name: String = NameGenerator.randomName) {
 
   def isConscious = health > 0
