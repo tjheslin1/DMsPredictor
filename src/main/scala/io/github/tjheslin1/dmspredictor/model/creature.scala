@@ -2,8 +2,8 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.Show
 import cats.syntax.show._
-import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import io.github.tjheslin1.dmspredictor.model.Weapon.weaponShow
+import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 sealed trait CreatureType
 
@@ -11,15 +11,17 @@ case object Monster extends CreatureType
 
 case object PlayerCharacter extends CreatureType
 
-case class Creature(health: Int,
-                    stats: BaseStats,
-                    armourClass: Int,
-                    weapon: Weapon,
-                    creatureType: CreatureType,
-                    proficiencyBonus: Int = 0,
-                    resistances: List[DamageType] = List(),
-                    immunities: List[DamageType] = List(),
-                    name: String = NameGenerator.randomName) {
+trait Creature {
+
+  def health: Int
+  def stats: BaseStats
+  def armourClass: Int
+  def weapon: Weapon
+  def creatureType: CreatureType
+  def proficiencyBonus: Int = 0
+  def resistances: List[DamageType] = List()
+  def immunities: List[DamageType] = List()
+  def name: String = NameGenerator.randomName
 
   def isConscious = health > 0
 }
