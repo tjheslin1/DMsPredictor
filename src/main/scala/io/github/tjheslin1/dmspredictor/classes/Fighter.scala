@@ -3,8 +3,6 @@ package io.github.tjheslin1.dmspredictor.classes
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.model.Creature.creatureShow
-import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.fromLevel
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import io.github.tjheslin1.dmspredictor.weapons.Greatsword
@@ -14,12 +12,15 @@ case class Fighter(level: Level,
                    stats: BaseStats,
                    armourClass: Int,
                    weapon: Weapon,
+                   override val proficiencyBonus: Int = 0,
                    override val resistances: List[DamageType] = List(),
                    override val immunities: List[DamageType] = List(),
                    override val name: String = NameGenerator.randomName)
     extends Creature {
 
-  def creatureType: CreatureType = PlayerCharacter
+  val creatureType: CreatureType = PlayerCharacter
+
+  def updateHealth(modification: Int): Fighter = copy(health = Math.max(health + modification, 0))
 }
 
 object Fighter {

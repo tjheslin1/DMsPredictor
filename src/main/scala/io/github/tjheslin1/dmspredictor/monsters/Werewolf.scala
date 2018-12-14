@@ -3,8 +3,20 @@ package io.github.tjheslin1.dmspredictor.monsters
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
-case class Werewolf(creature: Creature)
+case class Werewolf(health: Int,
+                    stats: BaseStats,
+                    armourClass: Int,
+                    weapon: Weapon,
+                    override val resistances: List[DamageType] = List(),
+                    override val immunities: List[DamageType] = List(),
+                    override val name: String = NameGenerator.randomName) extends Creature {
+
+  val creatureType: CreatureType = Monster
+
+  def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
+}
 
 object Werewolf {
 
@@ -18,5 +30,5 @@ object Werewolf {
   }
 
   def apply[_: RS](): Werewolf =
-    Werewolf(Creature(calculateHealth, BaseStats(15, 13, 14, 10, 11, 10), 12, hydbridFormClaw, Monster))
+    Werewolf(calculateHealth, BaseStats(15, 13, 14, 10, 11, 10), 12, hydbridFormClaw, immunities = List(Bludgeoning, Piercing, Slashing))
 }

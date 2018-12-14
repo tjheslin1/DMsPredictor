@@ -17,27 +17,27 @@ class MoveSpec extends UnitSpecBase {
   "takeMove" should {
     "replace creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))
+        val queue = Queue(fighter.creature.withCombatIndex(1), monster.testMonster.withCombatIndex(2))
 
-        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.creature.name, fighter.creature.name)
+        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.testMonster.name, fighter.creature.name)
       }
     }
 
     "update head enemy after attack" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))
+        val queue = Queue(fighter.creature.withCombatIndex(1), monster.testMonster.withCombatIndex(2))
 
         val Queue(updatedEnemy, _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
 
-        updatedEnemy.creature.health should (be <= monster.creature.health)
+        updatedEnemy.creature.health should (be <= monster.testMonster.health)
       }
     }
 
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
         val player   = fighter.creature.withStrength(10).withCombatIndex(1)
-        val enemyOne = monsterOne.creature.withHealth(0).withCombatIndex(2)
-        val enemyTwo = monsterTwo.creature.withHealth(1).withCombatIndex(3)
+        val enemyOne = monsterOne.testMonster.withHealth(0).withCombatIndex(2)
+        val enemyTwo = monsterTwo.testMonster.withHealth(1).withCombatIndex(3)
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
@@ -51,9 +51,9 @@ class MoveSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
 
         val player     = fighter.creature.withStrength(10).withCombatIndex(1)
-        val enemyOne   = monsterOne.creature.withHealth(50).withCombatIndex(2)
-        val enemyTwo   = monsterTwo.creature.withHealth(1).withCombatIndex(3)
-        val enemyThree = monsterThree.creature.withHealth(50).withCombatIndex(4)
+        val enemyOne   = monsterOne.testMonster.withHealth(50).withCombatIndex(2)
+        val enemyTwo   = monsterTwo.testMonster.withHealth(1).withCombatIndex(3)
+        val enemyThree = monsterThree.testMonster.withHealth(50).withCombatIndex(4)
 
         val queue = Queue(player, enemyOne, enemyTwo, enemyThree)
 

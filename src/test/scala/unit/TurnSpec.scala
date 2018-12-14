@@ -14,7 +14,7 @@ class TurnSpec extends UnitSpecBase {
         implicit val roll = Dice.defaultRandomiser
 
         val initiatives =
-          InitiativeCalculator(List(fighterOne.creature, fighterTwo.creature, monster.creature)).rollInitiative()
+          InitiativeCalculator(List(fighterOne.creature, fighterTwo.creature, monster.testMonster)).rollInitiative()
 
         Turn(initiatives).run(LowestFirst).map(_.creature.name) shouldBe initiatives.toSeq
           .map { case (_, initiative) => initiative }

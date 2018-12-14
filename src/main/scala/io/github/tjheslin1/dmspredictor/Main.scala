@@ -12,7 +12,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
   implicit val rollStrategy = Dice.defaultRandomiser
 
   val creatures: List[Creature] =
-    List(Fighter.levelOneFighter().creature, Goblin.levelOneGoblin().creature, Goblin.levelOneGoblin().creature)
+    List(Fighter.levelOneFighter(), Goblin.levelOneGoblin(), Goblin.levelOneGoblin())
 
   val simulation     = "Fighter vs Goblin"
   val (losses, wins) = SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1000)

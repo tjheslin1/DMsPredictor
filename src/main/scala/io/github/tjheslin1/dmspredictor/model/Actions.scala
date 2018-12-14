@@ -56,8 +56,7 @@ object Actions extends LazyLogging {
 
     logger.debug(s"${attacker.creature.name} attacks ${attackee.creature.name} for $adjustedDamage damage")
 
-    val damagedAttackee =
-      attackee.copy(creature = attackee.creature.copy(health = Math.max(attackee.creature.health - adjustedDamage, 0)))
+    val damagedAttackee = attackee.copy(creature = attackee.creature.updateHealth(Math.negateExact(adjustedDamage)))
 
     (attacker, damagedAttackee)
   }

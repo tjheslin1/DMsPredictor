@@ -15,13 +15,13 @@ class ActionSpec extends UnitSpecBase {
   "attack" should {
     "hit if the attack roll was a natural 20" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        attack(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))(_ => 20) shouldBe CriticalHit
+        attack(fighter.creature.withCombatIndex(1), monster.testMonster.withCombatIndex(2))(_ => 20) shouldBe CriticalHit
       }
     }
 
     "hit a monster if the attack overcomes the monsters armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val ac10Monster = monster.creature.copy(armourClass = 10)
+        val ac10Monster = monster.testMonster.copy(armourClass = 10)
 
         attack(fighter.creature.withCombatIndex(1), ac10Monster.withCombatIndex(2))(_ => 19) shouldBe Hit
       }
@@ -29,7 +29,7 @@ class ActionSpec extends UnitSpecBase {
 
     "miss a monster if the attack overcomes the monsters armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val ac20Monster = monster.creature.copy(armourClass = 20)
+        val ac20Monster = monster.testMonster.copy(armourClass = 20)
 
         attack(fighter.creature.withCombatIndex(1), ac20Monster.withCombatIndex(2))(_ => 2) shouldBe Miss
       }
@@ -37,7 +37,7 @@ class ActionSpec extends UnitSpecBase {
 
     "miss if the attack roll was a natural 1" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        attack(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
+        attack(fighter.creature.withCombatIndex(1), monster.testMonster.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
       }
     }
   }
@@ -49,7 +49,7 @@ class ActionSpec extends UnitSpecBase {
         val player                 = fighter.creature.withStrength(10).withWeapon(oneHundredDamageWeapon)
 
         val playerCombatant  = player.withCombatIndex(1)
-        val monsterCombatant = monster.creature.withCombatIndex(2)
+        val monsterCombatant = monster.testMonster.withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant
           .withHealth(0))
@@ -61,7 +61,7 @@ class ActionSpec extends UnitSpecBase {
         val oneDamageWeapon = fixedDamageWeapon("one damage weapon", Slashing, 1)
 
         val playerCombatant  = fighter.creature.withStrength(10).withWeapon(oneDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature.withHealth(10).withCombatIndex(2)
+        val monsterCombatant = monster.testMonster.withHealth(10).withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
           (playerCombatant, monsterCombatant.withHealth(8))
@@ -73,7 +73,7 @@ class ActionSpec extends UnitSpecBase {
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
 
         val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature
+        val monsterCombatant = monster.testMonster
           .withResistance(Slashing)
           .withHealth(100)
           .withCombatIndex(2)
@@ -88,7 +88,7 @@ class ActionSpec extends UnitSpecBase {
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
 
         val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature
+        val monsterCombatant = monster.testMonster
           .withResistance(Slashing)
           .withHealth(100)
           .withCombatIndex(2)
@@ -103,7 +103,7 @@ class ActionSpec extends UnitSpecBase {
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 10)
 
         val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature
+        val monsterCombatant = monster.testMonster
           .withImmunity(Slashing)
           .withHealth(100)
           .withCombatIndex(2)

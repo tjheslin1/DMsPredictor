@@ -13,17 +13,20 @@ case object PlayerCharacter extends CreatureType
 
 trait Creature {
 
-  def health: Int
-  def stats: BaseStats
-  def armourClass: Int
-  def weapon: Weapon
-  def creatureType: CreatureType
-  def proficiencyBonus: Int = 0
-  def resistances: List[DamageType] = List()
-  def immunities: List[DamageType] = List()
-  def name: String = NameGenerator.randomName
+  val creatureType: CreatureType
 
-  def isConscious = health > 0
+  val health: Int
+  val stats: BaseStats
+  val armourClass: Int
+  val weapon: Weapon
+  def proficiencyBonus: Int         = 0
+  def resistances: List[DamageType] = List()
+  def immunities: List[DamageType]  = List()
+  def name: String                  = NameGenerator.randomName
+
+  val isConscious = health > 0
+
+  def updateHealth(modification: Int): Creature
 }
 
 object Creature {
