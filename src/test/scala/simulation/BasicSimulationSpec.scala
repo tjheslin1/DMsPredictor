@@ -18,8 +18,8 @@ class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksB
 
     scenario("One Fighter vs a TestMonster where Fighter wins") {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val healthyFighter = fighter.creature.withHealth(1000).withStrength(10)
-        val weakTestMonster = monster.creature.withHealth(1)
+        val healthyFighter = fighter.withHealth(1000).withStrength(10)
+        val weakTestMonster = monster.withHealth(1)
 
         BasicSimulation(List(healthyFighter, weakTestMonster), LowestFirst)
           .run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Success, info)
@@ -28,8 +28,8 @@ class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksB
 
     scenario("One Fighter vs a TestMonster where TestMonster wins") {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val weakFighter = fighter.creature.withHealth(1)
-        val healthyTestMonster = monster.creature.withHealth(1000).withStrength(10)
+        val weakFighter = fighter.withHealth(1)
+        val healthyTestMonster = monster.withHealth(1000).withStrength(10)
 
         BasicSimulation(List(weakFighter, healthyTestMonster), LowestFirst)
           .run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Loss, info)
