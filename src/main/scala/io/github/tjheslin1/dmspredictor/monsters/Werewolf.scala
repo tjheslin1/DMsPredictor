@@ -1,5 +1,7 @@
 package io.github.tjheslin1.dmspredictor.monsters
 
+import cats.Show
+import cats.syntax.show._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -11,7 +13,8 @@ case class Werewolf(health: Int,
                     weapon: Weapon,
                     override val resistances: List[DamageType] = List(),
                     override val immunities: List[DamageType] = List(),
-                    override val name: String = NameGenerator.randomName) extends Creature {
+                    override val name: String = NameGenerator.randomName)
+    extends Creature {
 
   val creatureType: CreatureType = Monster
 
@@ -30,5 +33,17 @@ object Werewolf {
   }
 
   def apply[_: RS](): Werewolf =
-    Werewolf(calculateHealth, BaseStats(15, 13, 14, 10, 11, 10), 12, hydbridFormClaw, immunities = List(Bludgeoning, Piercing, Slashing))
+    Werewolf(calculateHealth,
+             BaseStats(15, 13, 14, 10, 11, 10),
+             12,
+             hydbridFormClaw,
+             immunities = List(Bludgeoning, Piercing, Slashing))
+
+  implicit val werewolfShow: Show[Werewolf] = Show.show { werewolf =>
+    s"Fighter: " +
+      s"Name: ${werewolf.name}, " +
+      s"health: ${werewolf.health}, " +
+      s"AC: ${werewolf.armourClass}, " +
+      s"${werewolf.weapon.show}"
+  }
 }
