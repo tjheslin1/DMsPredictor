@@ -15,29 +15,29 @@ class ActionSpec extends UnitSpecBase {
   "attack" should {
     "hit if the attack roll was a natural 20" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        attack(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))(_ => 20) shouldBe CriticalHit
+        attack(fighter.withCombatIndex(1), monster.withCombatIndex(2))(_ => 20) shouldBe CriticalHit
       }
     }
 
     "hit a monster if the attack overcomes the monsters armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val ac10Monster = monster.creature.copy(armourClass = 10)
+        val ac10Monster = monster.copy(armourClass = 10)
 
-        attack(fighter.creature.withCombatIndex(1), ac10Monster.withCombatIndex(2))(_ => 19) shouldBe Hit
+        attack(fighter.withCombatIndex(1), ac10Monster.withCombatIndex(2))(_ => 19) shouldBe Hit
       }
     }
 
     "miss a monster if the attack overcomes the monsters armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val ac20Monster = monster.creature.copy(armourClass = 20)
+        val ac20Monster = monster.copy(armourClass = 20)
 
-        attack(fighter.creature.withCombatIndex(1), ac20Monster.withCombatIndex(2))(_ => 2) shouldBe Miss
+        attack(fighter.withCombatIndex(1), ac20Monster.withCombatIndex(2))(_ => 2) shouldBe Miss
       }
     }
 
     "miss if the attack roll was a natural 1" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        attack(fighter.creature.withCombatIndex(1), monster.creature.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
+        attack(fighter.withCombatIndex(1), monster.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
       }
     }
   }
@@ -46,13 +46,12 @@ class ActionSpec extends UnitSpecBase {
     "kill a monster if the damage is more than the monsters health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val oneHundredDamageWeapon = fixedDamageWeapon("one hundred damage weapon", Slashing, 100)
-        val player                 = fighter.creature.withStrength(10).withWeapon(oneHundredDamageWeapon)
+        val player                 = fighter.withStrength(10).withWeapon(oneHundredDamageWeapon)
 
         val playerCombatant  = player.withCombatIndex(1)
-        val monsterCombatant = monster.creature.withCombatIndex(2)
+        val monsterCombatant = monster.withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant
-          .withHealth(0))
+        resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withCreature(monster.withHealth(0)))
       }
     }
 
@@ -60,11 +59,11 @@ class ActionSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val oneDamageWeapon = fixedDamageWeapon("one damage weapon", Slashing, 1)
 
-        val playerCombatant  = fighter.creature.withStrength(10).withWeapon(oneDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature.withHealth(10).withCombatIndex(2)
+        val playerCombatant  = fighter.withStrength(10).withWeapon(oneDamageWeapon).withCombatIndex(1)
+        val monsterCombatant = monster.withHealth(10).withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
-          (playerCombatant, monsterCombatant.withHealth(8))
+          (playerCombatant, monsterCombatant.withCreature(monster.withHealth(8)))
       }
     }
 
@@ -72,14 +71,16 @@ class ActionSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
 
-        val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature
+        val playerCombatant = fighter.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
+        val modifiedMonster = monster
           .withResistance(Slashing)
           .withHealth(100)
+
+        val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
-          (playerCombatant, monsterCombatant.withHealth(95))
+          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(95)))
       }
     }
 
@@ -87,14 +88,16 @@ class ActionSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
 
-        val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature
+        val playerCombatant = fighter.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
+        val modifiedMonster = monster
           .withResistance(Slashing)
           .withHealth(100)
+
+        val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
-          (playerCombatant, monsterCombatant.withHealth(89))
+          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(89)))
       }
     }
 
@@ -102,14 +105,16 @@ class ActionSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 10)
 
-        val playerCombatant = fighter.creature.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
-        val monsterCombatant = monster.creature
+        val playerCombatant = fighter.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
+        val modifiedMonster = monster
           .withImmunity(Slashing)
           .withHealth(100)
+
+        val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
-          (playerCombatant, monsterCombatant.withHealth(100))
+          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(100)))
       }
     }
   }
