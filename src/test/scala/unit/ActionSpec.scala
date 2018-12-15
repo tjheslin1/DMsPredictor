@@ -114,7 +114,7 @@ class ActionSpec extends UnitSpecBase {
           .withCombatIndex(2)
 
         resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
-          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(100~~)))
+          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(100)))
       }
     }
   }
