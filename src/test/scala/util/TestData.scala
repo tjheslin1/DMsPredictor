@@ -39,34 +39,24 @@ object TestData {
     def withNoResistances                        = testMonster.copy(resistances = List.empty)
     def withNoImmunities                         = testMonster.copy(immunities = List.empty)
     def withNoResistancesOrImmunities            = testMonster.copy(resistances = List.empty, immunities = List.empty)
-
-    def withCombatIndex(index: Int) = Combatant(index, testMonster)
+    def withCombatIndex(index: Int)              = Combatant(index, testMonster)
   }
 
-  implicit class CreatureOps(val creature: Creature) extends AnyVal {
-    def withName(creatureName: String)           = ???
-    def withHealth(hp: Int)                      = ???
-    def withStrength(strengthScore: Stat)        = ???
-    def withWeapon(wpn: Weapon)                  = ???
-    def withResistance(creatureRes: DamageType*) = ???
-    def withImmunity(creatureImm: DamageType*)   = ???
-    def withNoResistances                        = ???
-    def withNoImmunities                         = ???
-    def withNoResistancesOrImmunities            = ???
+  implicit class FighterOps(val fighter: Fighter) extends AnyVal {
+    def withName(creatureName: String)           = fighter.copy(name = creatureName)
+    def withHealth(hp: Int)                      = fighter.copy(health = hp)
+    def withStrength(strengthScore: Stat)        = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
+    def withWeapon(wpn: Weapon)                  = fighter.copy(weapon = wpn)
+    def withResistance(creatureRes: DamageType*) = fighter.copy(resistances = creatureRes.toList)
+    def withImmunity(creatureImm: DamageType*)   = fighter.copy(immunities = creatureImm.toList)
+    def withNoResistances                        = fighter.copy(resistances = List.empty)
+    def withNoImmunities                         = fighter.copy(immunities = List.empty)
+    def withNoResistancesOrImmunities            = fighter.copy(resistances = List.empty, immunities = List.empty)
+    def withCombatIndex(index: Int)              = Combatant(index, fighter)
   }
 
   implicit class CombatantOps(val combatant: Combatant) extends AnyVal {
-    def withName(combatantName: String)   = combatant.copy(creature = combatant.creature.withName(combatantName))
-    def withHealth(hp: Int)               = combatant.copy(creature = combatant.creature.withHealth(hp))
-    def withStrength(strengthScore: Stat) = combatant.copy(creature = combatant.creature.withStrength(strengthScore))
-    def withWeapon(wpn: Weapon)           = combatant.copy(creature = combatant.creature.withWeapon(wpn))
-    def withResistances(combatantRes: DamageType*) =
-      combatant.copy(creature = combatant.creature.withResistance(combatantRes: _*))
-    def withImmunites(combatantImm: DamageType*) =
-      combatant.copy(creature = combatant.creature.withImmunity(combatantImm: _*))
-    def withNoResistances             = combatant.copy(creature = combatant.creature.withNoResistances)
-    def withNoImmunities              = combatant.copy(creature = combatant.creature.withNoImmunities)
-    def withNoResistancesOrImmunities = combatant.copy(creature = combatant.creature.withNoResistancesOrImmunities)
+    def withCreature(c: Creature) = combatant.copy(creature = c)
   }
 }
 
@@ -127,7 +117,7 @@ trait TestData extends RandomDataGenerator {
         override val proficiencyBonus: Int = profBonus
 
         def updateHealth(modification: Int): Creature =
-          _ => throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
+          throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
       }
   }
 

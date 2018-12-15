@@ -11,25 +11,25 @@ class InitiativeCalculatorSpec extends UnitSpecBase {
   "updateInitiative" should {
     "update initiative with creatures updated health" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player = fighter.creature.withName("fighter").withCombatIndex(1)
-        val goblin = monsterOne.testMonster.withName("goblin").withCombatIndex(2)
-        val dragon = monsterTwo.testMonster.withName("dragon").withCombatIndex(3)
+        val player = fighter.withCombatIndex(1)
+        val testMonsterOne = monsterOne.withCombatIndex(2)
+        val testMonsterTwo = monsterTwo.withCombatIndex(3)
 
         val initiative = Map(player.index -> Initiative(player, 15),
-                             goblin.index -> Initiative(goblin, 10),
-                             dragon.index -> Initiative(dragon, 20))
+                             testMonsterOne.index -> Initiative(testMonsterOne, 10),
+                             testMonsterTwo.index -> Initiative(testMonsterTwo, 20))
 
-        val woundedFighter = player.withHealth(2)
-        val woundedGoblin  = goblin.withHealth(1)
-        val woundedDragon  = dragon.withHealth(5)
+        val woundedFighter = player.withCreature(fighter.withHealth(2))
+        val woundedGoblin  = testMonsterOne.withCreature(monsterOne.withHealth(1))
+        val woundedDragon  = testMonsterTwo.withCreature(monsterTwo.withHealth(5))
 
         val pcs  = List(woundedFighter)
         val mobs = List(woundedGoblin, woundedDragon)
 
         updateInitiative(initiative, pcs, mobs) shouldBe Map(
           player.index -> Initiative(woundedFighter, 15),
-          dragon.index -> Initiative(woundedDragon, 20),
-          goblin.index -> Initiative(woundedGoblin, 10)
+          testMonsterTwo.index -> Initiative(woundedDragon, 20),
+          testMonsterOne.index -> Initiative(woundedGoblin, 10)
         )
       }
     }
