@@ -34,8 +34,8 @@ object Move extends LazyLogging {
       others.append(combatant)
   }
 
-  private def nextToFocus(combtants: Queue[Combatant], focus: Focus): Option[Combatant] = {
-    val consciousCombatants = combtants.filter(_.creature.health > 0)
+  private def nextToFocus(combatants: Queue[Combatant], focus: Focus): Option[Combatant] = {
+    val consciousCombatants = combatants.filter(_.creature.isConscious)
     focus match {
       case LowestFirst => consciousCombatants.sortBy(_.creature.health).headOption
       case Random =>
