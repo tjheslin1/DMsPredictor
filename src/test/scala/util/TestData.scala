@@ -129,9 +129,11 @@ trait TestData extends RandomDataGenerator {
       Fighter(
         level,
         creature.health,
+        creature.health,
         creature.stats,
         creature.armourClass,
         creature.weapon,
+        secondWindUsed = false,
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,

@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
+import io.github.tjheslin1.dmspredictor.classes.Fighter
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
@@ -16,6 +17,11 @@ object Move extends LazyLogging {
     val (pcs, mobs)         = others.partition(_.creature.creatureType == PlayerCharacter)
 
     if (combatant.creature.isConscious) {
+
+      if (combatant.creature.creatureType == PlayerCharacter) {
+//        val classAbilities = implicitly[ClassAbilities[Fighter]].abilities
+
+      }
 
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
