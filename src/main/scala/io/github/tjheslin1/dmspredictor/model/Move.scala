@@ -18,20 +18,35 @@ object Move extends LazyLogging {
 
     if (combatant.creature.isConscious) {
 
-      if (combatant.creature.creatureType == PlayerCharacter) {
-//        val classAbilities = implicitly[ClassAbilities[Fighter]].abilities
-
-      }
-
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val updatedCreatures = combatant.creature.creatureType match {
-        case PlayerCharacter => mobToAttack.fold(none[(Combatant, Combatant)])(attackAndDamage(combatant, _).some)
-        case Monster         => pcToAttack.fold(none[(Combatant, Combatant)])(attackAndDamage(combatant, _).some)
+      val updatedCombatants = if (combatant.creature.creatureType == PlayerCharacter) {
+        combatant.creature match {
+          case fighter: Fighter =>
+            val classAbilities = implicitly[ClassAbilities[Fighter]].abilities.sortBy{ case (priority, _) => priority }
+            val optAbility = classAbilities.find { case (_, fighterAbility) =>
+
+              val ability = fighterAbility(fighter)
+              ability.conditionMet && ability.triggerMet
+            }
+
+            mobToAttack.fold(none[(Combatant, Combatant)]) { mob =>
+              optAbility.fold(attackAndDamage(combatant, mob).some) {
+                case (_, ability) =>
+                  val actedFighter = ability(fighter).useAbility
+                  val updatedCombatant = combatant.copy(creature = ability(actedFighter).update)
+
+                  (updatedCombatant, mob).some
+              }
+            }
+          case _ => none[(Combatant, Combatant)]
+        }
+      } else {
+        pcToAttack.fold(none[(Combatant, Combatant)])(attackAndDamage(combatant, _).some)
       }
 
-      updatedCreatures.fold(others.append(combatant)) {
+      updatedCombatants.fold(others.append(combatant)) {
         case (attacker, attackee) =>
           val updatedOthers = others.map(c => if (c.index == attackee.index) attackee else c)
           updatedOthers.append(attacker)

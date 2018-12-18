@@ -39,19 +39,18 @@ object Fighter {
   }
 
   implicit val fighterAbilities = new ClassAbilities[Fighter] {
-    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1, secondWind)
+    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1 -> secondWind _)
   }
 
-  def secondWind(fighter: Fighter) = new Ability[Fighter](fighter) {
+  def secondWind(fighter: Fighter): Ability[Fighter] = new Ability[Fighter](fighter) {
     val levelRequirement = LevelTwo
-    val trigger          = fighter.health <= fighter.maxHealth / 2
-    val condition        = fighter.secondWindUsed == false
+    val triggerMet          = fighter.health <= fighter.maxHealth / 2
+    val conditionMet        = fighter.level.value >= levelRequirement && fighter.secondWindUsed == false
 
     def useAbility[_: RS]: Fighter =
       fighter.copy(health = Math.min(fighter.maxHealth, fighter.health + 1 * D10 + fighter.level.value))
 
     def update: Fighter = fighter.copy(secondWindUsed = true)
-
   }
 
   implicit val fighterShow: Show[Fighter] = Show.show { fighter =>
