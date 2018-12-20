@@ -12,6 +12,6 @@ abstract class Ability[T <: Creature](player: T) {
   def levelRequirement: Level
   def triggerMet: Boolean
   def conditionMet: Boolean
-  def useAbility[_ : RS]: T
+  def useAbility[_: RS]: T
   def update: T
 }

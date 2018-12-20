@@ -44,8 +44,8 @@ object Fighter {
 
   def secondWind(fighter: Fighter): Ability[Fighter] = new Ability[Fighter](fighter) {
     val levelRequirement = LevelTwo
-    val triggerMet          = fighter.health <= fighter.maxHealth / 2
-    val conditionMet        = fighter.level.value >= levelRequirement && fighter.secondWindUsed == false
+    val triggerMet       = fighter.health <= fighter.maxHealth / 2
+    val conditionMet     = fighter.level.value >= levelRequirement && fighter.secondWindUsed == false
 
     def useAbility[_: RS]: Fighter =
       fighter.copy(health = Math.min(fighter.maxHealth, fighter.health + 1 * D10 + fighter.level.value))

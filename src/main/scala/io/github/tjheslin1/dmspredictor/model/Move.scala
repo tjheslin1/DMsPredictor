@@ -22,11 +22,13 @@ object Move {
 
       val updatedCombatants = if (combatant.creature.creatureType == PlayerCharacter) {
 
-        def abilities[T <: Creature](cmb: T)(implicit ca: ClassAbilities[T]): List[(Int, T => Ability[T])] = ca.abilities
+        def abilities[T <: Creature](cmb: T)(implicit ca: ClassAbilities[T]): List[(Int, T => Ability[T])] =
+          ca.abilities
 
         val classAbilities: List[(Int, Creature => Ability[Creature])] = combatant.creature match {
-          case f: Fighter => abilities(f)(implicitly[ClassAbilities[Fighter]]).asInstanceOf[List[(Int, Creature => Ability[Creature])]]
-          case _          => List.empty[(Int, Creature => Ability[Creature])]
+          case f: Fighter =>
+            abilities(f)(implicitly[ClassAbilities[Fighter]]).asInstanceOf[List[(Int, Creature => Ability[Creature])]]
+          case _ => List.empty[(Int, Creature => Ability[Creature])]
         }
 
         val optAbility = classAbilities.find {

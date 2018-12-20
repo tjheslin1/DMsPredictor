@@ -16,7 +16,7 @@ class FighterSpec extends UnitSpecBase {
     "use Second Wind when it has reached a health threshold" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         val lowHealthFighter = fighter.withHealth(1).withMaxHealth(5).copy(level = LevelTwo).withCombatIndex(1)
-        val monster = testMonster.withCombatIndex(2)
+        val monster          = testMonster.withCombatIndex(2)
 
         val Queue(_, Combatant(_, updatedFighter)) = Move.takeMove(Queue(lowHealthFighter, monster), LowestFirst)
 
