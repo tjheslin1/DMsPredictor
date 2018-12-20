@@ -39,7 +39,7 @@ object Fighter {
   }
 
   implicit val fighterAbilities = new ClassAbilities[Fighter] {
-    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1 -> secondWind _)
+    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1 -> secondWind)
   }
 
   def secondWind(fighter: Fighter): Ability[Fighter] = new Ability[Fighter](fighter) {
