@@ -37,4 +37,35 @@ class DiceSpec extends UnitSpecBase {
       d4Res + d6Res shouldBe 5
     }
   }
+
+  "midpointRoundedUp" should {
+
+    "return 3 for d4" in {
+      Dice.midpointRoundedUp(D4) shouldBe 3
+    }
+
+    "return 4 for d6" in {
+      Dice.midpointRoundedUp(D6) shouldBe 4
+    }
+
+    "return 5 for d8" in {
+      Dice.midpointRoundedUp(D8) shouldBe 5
+    }
+
+    "return 6 for d10" in {
+      Dice.midpointRoundedUp(D10) shouldBe 6
+    }
+
+    "return 7 for d12" in {
+      Dice.midpointRoundedUp(D12) shouldBe 7
+    }
+
+    "return 11 for d20" in {
+      Dice.midpointRoundedUp(D20) shouldBe 11
+    }
+
+    "return 51 for d100" in {
+      Dice.midpointRoundedUp(D100) shouldBe 51
+    }
+  }
 }

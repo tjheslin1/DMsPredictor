@@ -17,8 +17,8 @@ trait Creature {
 
   val health: Int
   val stats: BaseStats
-  val armourClass: Int
   val weapon: Weapon
+  def armourClass: Int
   def proficiencyBonus: Int         = 0
   def resistances: List[DamageType] = List()
   def immunities: List[DamageType]  = List()

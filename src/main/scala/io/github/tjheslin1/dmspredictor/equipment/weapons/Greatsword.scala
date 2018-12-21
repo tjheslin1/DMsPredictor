@@ -1,4 +1,4 @@
-package io.github.tjheslin1.dmspredictor.weapons
+package io.github.tjheslin1.dmspredictor.equipment.weapons
 
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._

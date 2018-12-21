@@ -6,7 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
-import io.github.tjheslin1.dmspredictor.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 
 case class Goblin(health: Int,
                   stats: BaseStats,

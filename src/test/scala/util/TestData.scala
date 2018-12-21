@@ -1,10 +1,12 @@
 package util
 
+import cats.syntax.option._
 import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -33,7 +35,7 @@ object TestData {
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
     def withName(creatureName: String)           = testMonster.copy(name = creatureName)
     def withHealth(hp: Int)                      = testMonster.copy(health = hp)
-    def withMaxHealth(hp: Int)                      = testMonster.copy(maxHealth = hp)
+    def withMaxHealth(hp: Int)                   = testMonster.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = testMonster.copy(stats = testMonster.stats.copy(strength = strengthScore))
     def withWeapon(wpn: Weapon)                  = testMonster.copy(weapon = wpn)
     def withResistance(creatureRes: DamageType*) = testMonster.copy(resistances = creatureRes.toList)
@@ -47,8 +49,10 @@ object TestData {
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
     def withName(creatureName: String)           = fighter.copy(name = creatureName)
     def withHealth(hp: Int)                      = fighter.copy(health = hp)
-    def withMaxHealth(hp: Int)                      = fighter.copy(maxHealth = hp)
+    def withMaxHealth(hp: Int)                   = fighter.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
+    def withDexterity(dexScore: Stat)            = fighter.copy(stats = fighter.stats.copy(dexterity = dexScore))
+    def withConstitution(conScore: Stat)         = fighter.copy(stats = fighter.stats.copy(constitution = conScore))
     def withWeapon(wpn: Weapon)                  = fighter.copy(weapon = wpn)
     def withResistance(creatureRes: DamageType*) = fighter.copy(resistances = creatureRes.toList)
     def withImmunity(creatureImm: DamageType*)   = fighter.copy(immunities = creatureImm.toList)
@@ -102,21 +106,38 @@ trait TestData extends RandomDataGenerator {
       }
   }
 
+  implicit val arbArmour: Arbitrary[Armour] = Arbitrary {
+    for {
+      armourName <- Gen.alphaStr
+      baseArmour <- Gen.choose(5, 15)
+    } yield
+      new Armour {
+        val name: String = armourName
+
+        def armourClass(dexterity: Stat): Int = baseArmour + Modifier.mod(dexterity)
+      }
+  }
+
+  implicit val arbShield: Arbitrary[Option[Shield]] = Arbitrary {
+    Gen.oneOf(none[Shield], Shield().some)
+  }
+
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
       hp        <- Gen.choose(10, 80)
       baseStats <- arbBaseStats.arbitrary
-      ac        <- Gen.choose(5, 25)
       wpn       <- arbWeapon.arbitrary
+      armr      <- arbArmour.arbitrary
       cType     <- Gen.oneOf(PlayerCharacter, Monster)
       profBonus <- Gen.choose(0, 6)
     } yield
       new Creature {
-        val creatureType: CreatureType     = cType
-        val health: Int                    = hp
-        val stats: BaseStats               = baseStats
-        val armourClass: Int               = ac
-        val weapon: Weapon                 = wpn
+        val creatureType: CreatureType = cType
+        val health: Int                = hp
+        val stats: BaseStats           = baseStats
+        val weapon: Weapon             = wpn
+        def armourClass: Int           = armr.armourClass(stats.dexterity)
+
         override val proficiencyBonus: Int = profBonus
 
         def updateHealth(modification: Int): Creature =
@@ -127,6 +148,8 @@ trait TestData extends RandomDataGenerator {
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
     for {
       creature <- arbCreature.arbitrary
+      armour   <- arbArmour.arbitrary
+      shield   <- arbShield.arbitrary
       level    <- arbLevel.arbitrary
     } yield
       Fighter(
@@ -134,8 +157,9 @@ trait TestData extends RandomDataGenerator {
         creature.health,
         creature.health,
         creature.stats,
-        creature.armourClass,
         creature.weapon,
+        armour,
+        shield,
         secondWindUsed = false,
         creature.proficiencyBonus,
         creature.resistances,
