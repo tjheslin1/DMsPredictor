@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 case class Werewolf(health: Int,
                     stats: BaseStats,
                     armourClass: Int,
-                    weapon: Weapon,
+                    wpn: Weapon,
                     override val resistances: List[DamageType] = List(),
                     override val immunities: List[DamageType] = List(),
                     override val name: String = NameGenerator.randomName)
@@ -19,18 +19,15 @@ case class Werewolf(health: Int,
   val creatureType: CreatureType = Monster
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
+
+  override def weapon[_: RS]: Weapon = wpn
 }
 
 object Werewolf {
 
   def calculateHealth[_: RS] = (9 * D8) + 18
 
-  val hydbridFormClaw = new Weapon {
-    val name: String = "hybrid form claw"
-    val damageType   = Slashing
-
-    def damage(implicit rollStrategy: RollStrategy): Int = (2 * D4) + 2
-  }
+  def hydbridFormClaw[_ :RS] = Weapon("hybrid form claw", Melee, Slashing, (2 * D4) + 2)
 
   def apply[_: RS](): Werewolf =
     Werewolf(calculateHealth,
@@ -39,7 +36,7 @@ object Werewolf {
              hydbridFormClaw,
              immunities = List(Bludgeoning, Piercing, Slashing))
 
-  implicit val werewolfShow: Show[Werewolf] = Show.show { werewolf =>
+  implicit def werewolfShow[_: RS]: Show[Werewolf] = Show.show { werewolf =>
     s"Fighter: " +
       s"Name: ${werewolf.name}, " +
       s"health: ${werewolf.health}, " +

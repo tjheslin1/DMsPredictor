@@ -16,9 +16,10 @@ case class Fighter(level: Level,
                    health: Int,
                    maxHealth: Int,
                    stats: BaseStats,
-                   weapon: Weapon,
+                   wpn: Weapon,
                    armour: Armour = NoArmour,
                    shield: Option[Shield] = None,
+                   fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
                    secondWindUsed: Boolean = false,
                    override val proficiencyBonus: Int = 0,
                    override val resistances: List[DamageType] = List(),
@@ -28,9 +29,27 @@ case class Fighter(level: Level,
 
   val creatureType: CreatureType = PlayerCharacter
 
-  def updateHealth(modification: Int): Fighter = copy(health = Math.max(health + modification, 0))
+  def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
 
-  def armourClass: Int = armour.armourClass(stats.dexterity) + shield.fold(0)(_.armourClass(stats.dexterity))
+  def armourClass: Int = {
+    val baseArmourClass = armour.armourClass(stats.dexterity)
+    val shieldBonus     = shield.fold(0)(_.armourClass(stats.dexterity))
+    val defenseBonus    = if (fightingStyles.contains(Defense)) 1 else 0
+
+    armour match {
+      case NoArmour  => baseArmourClass + shieldBonus
+      case _: Armour => baseArmourClass + shieldBonus + defenseBonus
+    }
+  }
+
+  def weapon[_: RS]: Weapon = wpn.weaponType match {
+    case Melee =>
+      if (fightingStyles.contains(Dueling)) Weapon(wpn.name, wpn.weaponType, wpn.damageType, wpn.damage, wpnHitBonus = 2)
+      else wpn
+    case Ranged =>
+      if (fightingStyles.contains(Archery)) Weapon(wpn.name, wpn.weaponType, wpn.damageType, wpn.damage, wpnHitBonus = 2)
+      else wpn
+  }
 }
 
 object Fighter {
@@ -44,7 +63,7 @@ object Fighter {
   }
 
   implicit val fighterAbilities = new ClassAbilities[Fighter] {
-    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1 -> secondWind)
+    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1 -> secondWind _)
   }
 
   def secondWind(fighter: Fighter): Ability[Fighter] = new Ability[Fighter](fighter) {
@@ -58,7 +77,7 @@ object Fighter {
     def update: Fighter = fighter.copy(secondWindUsed = true)
   }
 
-  implicit val fighterShow: Show[Fighter] = Show.show { fighter =>
+  implicit def fighterShow[_: RS]: Show[Fighter] = Show.show { fighter =>
     s"Fighter: " +
       s"Name: ${fighter.name}, " +
       s"health: ${fighter.health}, " +
@@ -66,3 +85,12 @@ object Fighter {
       s"${fighter.weapon.show}"
   }
 }
+
+sealed trait FighterFightingStyle extends Product with Serializable
+
+case object Archery             extends FighterFightingStyle
+case object Defense             extends FighterFightingStyle
+case object Dueling             extends FighterFightingStyle
+case object GreatWeaponFighting extends FighterFightingStyle
+case object Protection          extends FighterFightingStyle
+case object TwoWeaponFighting   extends FighterFightingStyle

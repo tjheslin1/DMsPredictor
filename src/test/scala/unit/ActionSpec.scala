@@ -45,19 +45,20 @@ class ActionSpec extends UnitSpecBase {
   "resolveDamage" should {
     "kill a monster if the damage is more than the monsters health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val oneHundredDamageWeapon = fixedDamageWeapon("one hundred damage weapon", Slashing, 100)
+        val oneHundredDamageWeapon = fixedDamageWeapon("one hundred damage weapon", Melee, Slashing, 100)
         val player                 = fighter.withStrength(10).withWeapon(oneHundredDamageWeapon)
 
         val playerCombatant  = player.withCombatIndex(1)
         val monsterCombatant = monster.withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withCreature(monster.withHealth(0)))
+        resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withCreature(
+          monster.withHealth(0)))
       }
     }
 
     "fail to kill a monster if the damage is less than the monsters health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val oneDamageWeapon = fixedDamageWeapon("one damage weapon", Slashing, 1)
+        val oneDamageWeapon = fixedDamageWeapon("one damage weapon", Melee, Slashing, 1)
 
         val playerCombatant  = fighter.withStrength(10).withWeapon(oneDamageWeapon).withCombatIndex(1)
         val monsterCombatant = monster.withHealth(10).withCombatIndex(2)
@@ -69,7 +70,7 @@ class ActionSpec extends UnitSpecBase {
 
     "deal half damage rounded down to a creature resistance to the damage type" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
+        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, 11)
 
         val playerCombatant = fighter.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
         val modifiedMonster = monster
@@ -86,7 +87,7 @@ class ActionSpec extends UnitSpecBase {
 
     "deal regular damage to a creature resistance to the damage type for a critical hit" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 11)
+        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, 11)
 
         val playerCombatant = fighter.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
         val modifiedMonster = monster
@@ -103,7 +104,7 @@ class ActionSpec extends UnitSpecBase {
 
     "deal no damage to a creature immune to the damage type" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Slashing, 10)
+        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, 10)
 
         val playerCombatant = fighter.withStrength(10).withWeapon(tenDamageWeapon).withCombatIndex(1)
         val modifiedMonster = monster

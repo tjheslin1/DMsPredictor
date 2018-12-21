@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 case class Goblin(health: Int,
                   stats: BaseStats,
                   armourClass: Int,
-                  weapon: Weapon,
+                  wpn: Weapon,
                   override val resistances: List[DamageType] = List(),
                   override val immunities: List[DamageType] = List(),
                   override val name: String = NameGenerator.randomName)
@@ -20,6 +20,8 @@ case class Goblin(health: Int,
   val creatureType: CreatureType = Monster
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
+
+  override def weapon[_: RS]: Weapon = wpn
 }
 
 object Goblin {
@@ -29,7 +31,7 @@ object Goblin {
   def levelOneGoblin[_: RS](weapon: Weapon = Shortsword): Goblin =
     Goblin(calculateHealth, BaseStats(8, 14, 10, 10, 8, 8), 15, weapon)
 
-  implicit val goblinShow: Show[Goblin] = Show.show { goblin =>
+  implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>
     s"Fighter: " +
       s"Name: ${goblin.name}, " +
       s"health: ${goblin.health}, " +

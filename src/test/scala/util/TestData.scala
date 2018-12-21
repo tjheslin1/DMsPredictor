@@ -5,7 +5,7 @@ import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.classes._
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
@@ -15,13 +15,15 @@ import shapeless._
 
 object TestData {
 
+  implicit val rollStrategy = Dice.defaultRandomiser
+
   val DamageTypes = List(Bludgeoning, Piercing, Slashing)
 
   case class TestMonster(health: Int,
                          maxHealth: Int,
                          stats: BaseStats,
                          armourClass: Int,
-                         weapon: Weapon,
+                         wpn: Weapon,
                          override val resistances: List[DamageType] = List(),
                          override val immunities: List[DamageType] = List(),
                          override val name: String = NameGenerator.randomName)
@@ -30,6 +32,8 @@ object TestData {
     val creatureType: CreatureType = Monster
 
     def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
+
+    override def weapon[_: RS]: Weapon = wpn
   }
 
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
@@ -37,7 +41,7 @@ object TestData {
     def withHealth(hp: Int)                      = testMonster.copy(health = hp)
     def withMaxHealth(hp: Int)                   = testMonster.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = testMonster.copy(stats = testMonster.stats.copy(strength = strengthScore))
-    def withWeapon(wpn: Weapon)                  = testMonster.copy(weapon = wpn)
+    def withWeapon(weapon: Weapon)               = testMonster.copy(wpn = weapon)
     def withResistance(creatureRes: DamageType*) = testMonster.copy(resistances = creatureRes.toList)
     def withImmunity(creatureImm: DamageType*)   = testMonster.copy(immunities = creatureImm.toList)
     def withNoResistances                        = testMonster.copy(resistances = List.empty)
@@ -53,7 +57,7 @@ object TestData {
     def withStrength(strengthScore: Stat)        = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
     def withDexterity(dexScore: Stat)            = fighter.copy(stats = fighter.stats.copy(dexterity = dexScore))
     def withConstitution(conScore: Stat)         = fighter.copy(stats = fighter.stats.copy(constitution = conScore))
-    def withWeapon(wpn: Weapon)                  = fighter.copy(weapon = wpn)
+    def withWeapon(weapon: Weapon)               = fighter.copy(wpn = weapon)
     def withResistance(creatureRes: DamageType*) = fighter.copy(resistances = creatureRes.toList)
     def withImmunity(creatureImm: DamageType*)   = fighter.copy(immunities = creatureImm.toList)
     def withNoResistances                        = fighter.copy(resistances = List.empty)
@@ -88,6 +92,10 @@ trait TestData extends RandomDataGenerator {
     Gen.oneOf(Bludgeoning, Piercing, Slashing, Magical)
   }
 
+  implicit val arbWeaponType: Arbitrary[WeaponType] = Arbitrary {
+    Gen.oneOf(Melee, Ranged)
+  }
+
   implicit val arbLevel: Arbitrary[Level] = Arbitrary {
     Gen.oneOf(LevelOne, LevelTwo, LevelThree, LevelFour)
   }
@@ -95,12 +103,17 @@ trait TestData extends RandomDataGenerator {
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
       weaponName       <- Gen.alphaStr
+      wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
+      wpnHitBonus      <- Gen.choose(0, 3)
       sides            <- Gen.choose(1, 12)
     } yield
       new Weapon {
         val name: String = weaponName
+        val weaponType   = wpnType
         val damageType   = weaponDamageType
+
+        override val hitBonus: Int = wpnHitBonus
 
         def damage(implicit rollStrategy: RollStrategy): Int = Dice.defaultRandomiser(sides)
       }
@@ -145,12 +158,18 @@ trait TestData extends RandomDataGenerator {
       }
   }
 
+  implicit val arbFighterFightingStyle: Arbitrary[Seq[FighterFightingStyle]] = Arbitrary {
+    Gen.someOf(Archery, Defense, Dueling, GreatWeaponFighting, Protection, TwoWeaponFighting)
+  }
+
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
     for {
-      creature <- arbCreature.arbitrary
-      armour   <- arbArmour.arbitrary
-      shield   <- arbShield.arbitrary
-      level    <- arbLevel.arbitrary
+      creature       <- arbCreature.arbitrary
+      armour         <- arbArmour.arbitrary
+      shield         <- arbShield.arbitrary
+      fightingStyles <- arbFighterFightingStyle.arbitrary
+      secondWindUsed <- Gen.oneOf(true, false)
+      level          <- arbLevel.arbitrary
     } yield
       Fighter(
         level,
@@ -160,7 +179,8 @@ trait TestData extends RandomDataGenerator {
         creature.weapon,
         armour,
         shield,
-        secondWindUsed = false,
+        fightingStyles.toList,
+        secondWindUsed,
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,

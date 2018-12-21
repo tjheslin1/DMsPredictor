@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 case object Shortsword extends Weapon {
 
   val name       = "Shortsword"
+  val weaponType = Melee
   val damageType = Slashing
 
   def damage(implicit rollStrategy: RollStrategy): Int = 1 * D6
