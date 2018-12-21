@@ -10,7 +10,7 @@ package object model {
 
   implicit def rollResultConversion(rollResult: RollResult): Int = rollResult.result
 
-  implicit def levelConversion(level: Level): Int = level.lvl
+  implicit def levelConversion(level: Level): Int = level.value
 
   implicit val numericRollResult = new Numeric[RollResult] {
     def plus(x: RollResult, y: RollResult): RollResult  = RollResult(x.result + y.result)

@@ -1,21 +1,21 @@
 package io.github.tjheslin1.dmspredictor.model
 
 sealed trait Level {
-  val lvl: Int
+  val value: Int
 }
 
 object LevelOne extends Level {
-  val lvl = 1
+  val value = 1
 }
 
 object LevelTwo extends Level {
-  val lvl = 2
+  val value = 2
 }
 
 object LevelThree extends Level {
-  val lvl = 3
+  val value = 3
 }
 
 object LevelFour extends Level {
-  val lvl = 4
+  val value = 4
 }

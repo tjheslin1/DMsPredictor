@@ -16,6 +16,7 @@ object TestData {
   val DamageTypes = List(Bludgeoning, Piercing, Slashing)
 
   case class TestMonster(health: Int,
+                         maxHealth: Int,
                          stats: BaseStats,
                          armourClass: Int,
                          weapon: Weapon,
@@ -32,6 +33,7 @@ object TestData {
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
     def withName(creatureName: String)           = testMonster.copy(name = creatureName)
     def withHealth(hp: Int)                      = testMonster.copy(health = hp)
+    def withMaxHealth(hp: Int)                      = testMonster.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = testMonster.copy(stats = testMonster.stats.copy(strength = strengthScore))
     def withWeapon(wpn: Weapon)                  = testMonster.copy(weapon = wpn)
     def withResistance(creatureRes: DamageType*) = testMonster.copy(resistances = creatureRes.toList)
@@ -45,6 +47,7 @@ object TestData {
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
     def withName(creatureName: String)           = fighter.copy(name = creatureName)
     def withHealth(hp: Int)                      = fighter.copy(health = hp)
+    def withMaxHealth(hp: Int)                      = fighter.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
     def withWeapon(wpn: Weapon)                  = fighter.copy(weapon = wpn)
     def withResistance(creatureRes: DamageType*) = fighter.copy(resistances = creatureRes.toList)
@@ -129,9 +132,11 @@ trait TestData extends RandomDataGenerator {
       Fighter(
         level,
         creature.health,
+        creature.health,
         creature.stats,
         creature.armourClass,
         creature.weapon,
+        secondWindUsed = false,
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,
@@ -144,6 +149,7 @@ trait TestData extends RandomDataGenerator {
       creature <- arbCreature.arbitrary
     } yield
       TestMonster(
+        creature.health,
         creature.health,
         creature.stats,
         creature.armourClass,
