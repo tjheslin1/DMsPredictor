@@ -33,7 +33,7 @@ object Move {
           case _ => List.empty[(Int, Combatant => Ability[Creature])]
         }
 
-        val optAbility = classAbilities.sortBy(_._1).find {
+        val optAbility = classAbilities.sortBy{ case (priority, _) => priority }.find {
           case (_, fighterAbility) =>
             val ability = fighterAbility(combatant)
             ability.conditionMet && ability.triggerMet

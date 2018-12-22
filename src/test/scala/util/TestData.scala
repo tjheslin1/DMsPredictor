@@ -143,7 +143,7 @@ trait TestData extends RandomDataGenerator {
   }
 
   implicit val arbShield: Arbitrary[Option[Shield]] = Arbitrary {
-    Gen.oneOf(none[Shield], Shield().some)
+    Gen.oneOf(none[Shield], Shield().some) // TODO Gen any type of equipment
   }
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
