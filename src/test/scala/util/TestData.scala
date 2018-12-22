@@ -109,6 +109,7 @@ trait TestData extends RandomDataGenerator {
       weaponName       <- Gen.alphaStr
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
+      twoHands         <- Gen.oneOf(true, false)
       wpnHitBonus      <- Gen.choose(0, 3)
       sides            <- Gen.choose(1, 12)
     } yield
@@ -116,10 +117,12 @@ trait TestData extends RandomDataGenerator {
         val name: String = weaponName
         val weaponType   = wpnType
         val damageType   = weaponDamageType
+        val twoHanded    = twoHands
 
         override val hitBonus: Int = wpnHitBonus
 
         def damage(implicit rollStrategy: RollStrategy): Int = Dice.defaultRandomiser(sides)
+
       }
   }
 

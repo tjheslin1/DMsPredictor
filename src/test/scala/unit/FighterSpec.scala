@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
 import scala.collection.immutable.Queue
+import scala.util.Random
 
 class FighterSpec extends UnitSpecBase {
 
@@ -52,8 +53,8 @@ class FighterSpec extends UnitSpecBase {
   }
 
   "weapon" should {
-    "apply +2 to hit bonus for a melee weapon with the Dueling fighting style" in {
-      val sword = Weapon("sword", Melee, Slashing, 10)
+    "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in {
+      val sword = Weapon("sword", Melee, Slashing, false, 10)
 
       forAll { fighter: Fighter =>
         val meleeFighter = fighter.copy(baseWeapon = sword).withFightingStyle(Dueling)
@@ -63,7 +64,7 @@ class FighterSpec extends UnitSpecBase {
     }
 
     "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in {
-      val bow = Weapon("bow", Ranged, Piercing, 10)
+      val bow = Weapon("bow", Ranged, Piercing, true, 10)
 
       forAll { fighter: Fighter =>
         val rangedFighter = fighter.copy(baseWeapon = bow).withFightingStyle(Archery)
@@ -73,12 +74,30 @@ class FighterSpec extends UnitSpecBase {
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in {
-      val sword = Weapon("sword", Melee, Slashing, 10)
+      val sword = Weapon("sword", Melee, Slashing, true, 10)
 
       forAll { fighter: Fighter =>
         val noStyleFighter = fighter.copy(baseWeapon = sword).withNoFightingStyles()
 
         noStyleFighter.weapon.hitBonus shouldBe 0
+      }
+    }
+
+    "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in {
+      forAll { fighter: Fighter =>
+        val rollOneOrTwo: RollStrategy = _ => Random.nextInt(2) + 1
+
+        var count = 0
+        val twoHandedWeapon = Weapon("sword", Melee, Slashing, true, {
+          count += 1
+          D6.roll()(rollOneOrTwo)
+        })
+
+        val twoHanderFighter = fighter.copy(baseWeapon = twoHandedWeapon).withFightingStyle(GreatWeaponFighting)
+
+        twoHanderFighter.weapon
+
+        count shouldBe 2
       }
     }
   }
@@ -110,7 +129,8 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for wearing armour and a shield" in {
       forAll { fighter: Fighter =>
-        val armouredAndShieldedFighter = fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(10)
+        val armouredAndShieldedFighter =
+          fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(10)
 
         armouredAndShieldedFighter.armourClass shouldBe 15
       }
@@ -118,7 +138,8 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for wearing armour, shield and with high dexterity" in {
       forAll { fighter: Fighter =>
-        val armouredAndShieldedFighter = fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(14)
+        val armouredAndShieldedFighter =
+          fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(14)
 
         armouredAndShieldedFighter.armourClass shouldBe 17
       }
@@ -126,7 +147,8 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for having armour and the Defense fighting style" in {
       forAll { fighter: Fighter =>
-        val defensiveFighter = fighter.withArmour(ChainShirt).withNoShield().withFightingStyle(Defense).withDexterity(10)
+        val defensiveFighter =
+          fighter.withArmour(ChainShirt).withNoShield().withFightingStyle(Defense).withDexterity(10)
 
         defensiveFighter.armourClass shouldBe 14
       }

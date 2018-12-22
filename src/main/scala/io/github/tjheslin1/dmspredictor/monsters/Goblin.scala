@@ -3,10 +3,10 @@ package io.github.tjheslin1.dmspredictor.monsters
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
-import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 
 case class Goblin(health: Int,
                   stats: BaseStats,
@@ -21,7 +21,7 @@ case class Goblin(health: Int,
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
-  override def weapon[_: RS]: Weapon = wpn
+  def weapon[_: RS]: Weapon = wpn
 }
 
 object Goblin {

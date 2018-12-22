@@ -8,6 +8,7 @@ case object Greatsword extends Weapon {
   val name       = "Greatsword"
   val weaponType = Melee
   val damageType = Slashing
+  val twoHanded  = true
 
   def damage(implicit rollStrategy: RollStrategy): Int = 2 * D6
 

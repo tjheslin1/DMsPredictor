@@ -37,27 +37,51 @@ case class Fighter(level: Level,
     val defenseBonus    = if (fightingStyles.contains(Defense)) 1 else 0
 
     armour match {
-      case NoArmour  => baseArmourClass + shieldBonus
-      case _: Armour => baseArmourClass + shieldBonus + defenseBonus
+      case NoArmour => baseArmourClass + shieldBonus
+      case _        => baseArmourClass + shieldBonus + defenseBonus
     }
   }
 
   def weapon[_: RS]: Weapon = baseWeapon.weaponType match {
-    case Melee =>
-      if (fightingStyles.contains(Dueling))
-        Weapon(baseWeapon.name, baseWeapon.weaponType, baseWeapon.damageType, baseWeapon.damage, wpnHitBonus = 2)
-      else baseWeapon
-    case Ranged =>
-      if (fightingStyles.contains(Archery))
-        Weapon(baseWeapon.name, baseWeapon.weaponType, baseWeapon.damageType, baseWeapon.damage, wpnHitBonus = 2)
-      else baseWeapon
+    case Ranged if fightingStyles.contains(Archery) =>
+      Weapon(baseWeapon.name,
+             baseWeapon.weaponType,
+             baseWeapon.damageType,
+             baseWeapon.twoHanded,
+             baseWeapon.damage,
+             baseWeapon.hitBonus + 2)
+    case Melee if baseWeapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+      Weapon(baseWeapon.name,
+             baseWeapon.weaponType,
+             baseWeapon.damageType,
+             baseWeapon.twoHanded,
+             baseWeapon.damage,
+             baseWeapon.hitBonus + 2)
+    case Melee if baseWeapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
+      val rerollingDamage = {
+        val damageRoll = baseWeapon.damage
+        if (damageRoll <= 2)
+          baseWeapon.damage
+        else
+          damageRoll
+      }
+      Weapon(baseWeapon.name,
+             baseWeapon.weaponType,
+             baseWeapon.damageType,
+             baseWeapon.twoHanded,
+             rerollingDamage,
+             baseWeapon.hitBonus)
+    case _ => baseWeapon
   }
 }
 
 object Fighter {
 
+  val HitDice = D10
+
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
-    (D10.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(D10) + mod(constitutionScore)))
+    (D10.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(HitDice) + mod(
+      constitutionScore)))
 
   def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
     val health = calculateHealth(LevelOne, 14)
@@ -74,7 +98,7 @@ object Fighter {
     val conditionMet     = fighter.level.value >= levelRequirement && fighter.secondWindUsed == false
 
     def useAbility[_: RS]: Fighter =
-      fighter.copy(health = Math.min(fighter.maxHealth, fighter.health + 1 * D10 + fighter.level.value))
+      fighter.copy(health = Math.min(fighter.maxHealth, fighter.health + (1 * HitDice) + fighter.level.value))
 
     def update: Fighter = fighter.copy(secondWindUsed = true)
   }

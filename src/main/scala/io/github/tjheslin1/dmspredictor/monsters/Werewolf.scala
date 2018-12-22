@@ -20,14 +20,16 @@ case class Werewolf(health: Int,
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
-  override def weapon[_: RS]: Weapon = wpn
+  def weapon[_: RS]: Weapon = wpn
 }
 
 object Werewolf {
 
-  def calculateHealth[_: RS] = (9 * D8) + 18
+  val HitDice = D8
 
-  def hydbridFormClaw[_: RS] = Weapon("hybrid form claw", Melee, Slashing, (2 * D4) + 2)
+  def calculateHealth[_: RS] = (9 * HitDice) + 18
+
+  def hydbridFormClaw[_: RS] = Weapon("hybrid form claw", Melee, Slashing, twoHands = true, dmg = (2 * D4) + 2)
 
   def apply[_: RS](): Werewolf =
     Werewolf(calculateHealth,
