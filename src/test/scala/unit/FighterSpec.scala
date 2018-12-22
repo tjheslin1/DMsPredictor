@@ -1,10 +1,9 @@
 package unit
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.Fighter
-import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
+import io.github.tjheslin1.dmspredictor.classes._
+import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
@@ -52,10 +51,42 @@ class FighterSpec extends UnitSpecBase {
     }
   }
 
+  "weapon" should {
+    "apply +2 to hit bonus for a melee weapon with the Dueling fighting style" in {
+      val sword = Weapon("sword", Melee, Slashing, 10)
+
+      forAll { fighter: Fighter =>
+        val meleeFighter = fighter.copy(baseWeapon = sword).withFightingStyle(Dueling)
+
+        meleeFighter.weapon.hitBonus shouldBe 2
+      }
+    }
+
+    "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in {
+      val bow = Weapon("bow", Ranged, Piercing, 10)
+
+      forAll { fighter: Fighter =>
+        val rangedFighter = fighter.copy(baseWeapon = bow).withFightingStyle(Archery)
+
+        rangedFighter.weapon.hitBonus shouldBe 2
+      }
+    }
+
+    "apply no hit bonus for a weapon without a complementary fighting style" in {
+      val sword = Weapon("sword", Melee, Slashing, 10)
+
+      forAll { fighter: Fighter =>
+        val noStyleFighter = fighter.copy(baseWeapon = sword).withNoFightingStyles()
+
+        noStyleFighter.weapon.hitBonus shouldBe 0
+      }
+    }
+  }
+
   "armourClass" should {
     "calculate default armour class for no armour and no shield" in {
       forAll { fighter: Fighter =>
-        val unarmouredFighter = fighter.copy(armour = NoArmour, shield = None).withDexterity(12)
+        val unarmouredFighter = fighter.withNoArmour().withNoShield().withNoFightingStyles().withDexterity(12)
 
         unarmouredFighter.armourClass shouldBe 11
       }
@@ -63,7 +94,7 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for wearing armour but no shield" in {
       forAll { fighter: Fighter =>
-        val armouredFighter = fighter.copy(armour = ChainShirt, shield = None).withDexterity(10)
+        val armouredFighter = fighter.withArmour(ChainShirt).withNoShield().withNoFightingStyles().withDexterity(10)
 
         armouredFighter.armourClass shouldBe 13
       }
@@ -71,7 +102,7 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for wearing a shield but no armour" in {
       forAll { fighter: Fighter =>
-        val shieldedFighter = fighter.copy(armour = NoArmour, shield = Shield().some).withDexterity(10)
+        val shieldedFighter = fighter.withNoArmour().withShield().withNoFightingStyles().withDexterity(10)
 
         shieldedFighter.armourClass shouldBe 12
       }
@@ -79,7 +110,7 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for wearing armour and a shield" in {
       forAll { fighter: Fighter =>
-        val armouredAndShieldedFighter = fighter.copy(armour = ChainShirt, shield = Shield().some).withDexterity(10)
+        val armouredAndShieldedFighter = fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(10)
 
         armouredAndShieldedFighter.armourClass shouldBe 15
       }
@@ -87,9 +118,25 @@ class FighterSpec extends UnitSpecBase {
 
     "calculate armour class for wearing armour, shield and with high dexterity" in {
       forAll { fighter: Fighter =>
-        val armouredAndShieldedFighter = fighter.copy(armour = ChainShirt, shield = Shield().some).withDexterity(14)
+        val armouredAndShieldedFighter = fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(14)
 
         armouredAndShieldedFighter.armourClass shouldBe 17
+      }
+    }
+
+    "calculate armour class for having armour and the Defense fighting style" in {
+      forAll { fighter: Fighter =>
+        val defensiveFighter = fighter.withArmour(ChainShirt).withNoShield().withFightingStyle(Defense).withDexterity(10)
+
+        defensiveFighter.armourClass shouldBe 14
+      }
+    }
+
+    "calculate armour class for having no armour and ignoring Defense fighting style" in {
+      forAll { fighter: Fighter =>
+        val defensiveFighter = fighter.withNoArmour().withNoShield().withFightingStyle(Defense).withDexterity(10)
+
+        defensiveFighter.armourClass shouldBe 10
       }
     }
   }

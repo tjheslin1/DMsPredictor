@@ -16,7 +16,7 @@ case class Fighter(level: Level,
                    health: Int,
                    maxHealth: Int,
                    stats: BaseStats,
-                   wpn: Weapon,
+                   baseWeapon: Weapon,
                    armour: Armour = NoArmour,
                    shield: Option[Shield] = None,
                    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
@@ -42,13 +42,15 @@ case class Fighter(level: Level,
     }
   }
 
-  def weapon[_: RS]: Weapon = wpn.weaponType match {
+  def weapon[_: RS]: Weapon = baseWeapon.weaponType match {
     case Melee =>
-      if (fightingStyles.contains(Dueling)) Weapon(wpn.name, wpn.weaponType, wpn.damageType, wpn.damage, wpnHitBonus = 2)
-      else wpn
+      if (fightingStyles.contains(Dueling))
+        Weapon(baseWeapon.name, baseWeapon.weaponType, baseWeapon.damageType, baseWeapon.damage, wpnHitBonus = 2)
+      else baseWeapon
     case Ranged =>
-      if (fightingStyles.contains(Archery)) Weapon(wpn.name, wpn.weaponType, wpn.damageType, wpn.damage, wpnHitBonus = 2)
-      else wpn
+      if (fightingStyles.contains(Archery))
+        Weapon(baseWeapon.name, baseWeapon.weaponType, baseWeapon.damageType, baseWeapon.damage, wpnHitBonus = 2)
+      else baseWeapon
   }
 }
 

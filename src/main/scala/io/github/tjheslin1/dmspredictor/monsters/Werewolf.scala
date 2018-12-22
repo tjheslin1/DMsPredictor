@@ -27,7 +27,7 @@ object Werewolf {
 
   def calculateHealth[_: RS] = (9 * D8) + 18
 
-  def hydbridFormClaw[_ :RS] = Weapon("hybrid form claw", Melee, Slashing, (2 * D4) + 2)
+  def hydbridFormClaw[_: RS] = Weapon("hybrid form claw", Melee, Slashing, (2 * D4) + 2)
 
   def apply[_: RS](): Werewolf =
     Werewolf(calculateHealth,

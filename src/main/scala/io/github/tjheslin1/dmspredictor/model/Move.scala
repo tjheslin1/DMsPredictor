@@ -51,8 +51,8 @@ object Move {
       }
 
       updatedCombatants.fold(others.append(combatant)) {
-        case (attacker, attackee) =>
-          val updatedOthers = others.map(c => if (c.index == attackee.index) attackee else c)
+        case (attacker, target) =>
+          val updatedOthers = others.map(c => if (c.index == target.index) target else c)
           updatedOthers.append(attacker)
       }
     } else

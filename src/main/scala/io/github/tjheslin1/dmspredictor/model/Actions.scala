@@ -23,18 +23,18 @@ case object CriticalMiss extends AttackResult {
 
 object Actions extends LazyLogging {
 
-  def attack[_: RS](attacker: Combatant, attackee: Combatant): AttackResult = {
+  def attack[_: RS](attacker: Combatant, target: Combatant): AttackResult = {
     val roll = D20.roll()
 
     if (roll == 20) CriticalHit
     else if (roll == 1) CriticalMiss
-    else if (roll + mod(attacker.creature.stats.strength) + attacker.creature.proficiencyBonus >= attackee.creature.armourClass)
+    else if (roll + mod(attacker.creature.stats.strength) + attacker.creature.proficiencyBonus >= target.creature.armourClass)
       Hit
     else Miss
   }
 
   def resolveDamage[_: RS](attacker: Combatant,
-                           attackee: Combatant,
+                           target: Combatant,
                            attackResult: AttackResult): (Combatant, Combatant) = {
 
     val dmg = Math.max(
@@ -49,23 +49,23 @@ object Actions extends LazyLogging {
     )
 
     val adjustedDamage = attacker.creature.weapon.damageType match {
-      case damageType if attackee.creature.resistances.contains(damageType) => math.floor(dmg / 2).toInt
-      case damageType if attackee.creature.immunities.contains(damageType)  => 0
-      case _                                                                => dmg
+      case damageType if target.creature.resistances.contains(damageType) => math.floor(dmg / 2).toInt
+      case damageType if target.creature.immunities.contains(damageType)  => 0
+      case _                                                              => dmg
     }
 
-    logger.debug(s"${attacker.creature.name} attacks ${attackee.creature.name} for $adjustedDamage damage")
+    logger.debug(s"${attacker.creature.name} attacks ${target.creature.name} for $adjustedDamage damage")
 
-    val damagedAttackee = attackee.copy(creature = attackee.creature.updateHealth(Math.negateExact(adjustedDamage)))
+    val damagedTarget = target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
 
-    (attacker, damagedAttackee)
+    (attacker, damagedTarget)
   }
 
-  def attackAndDamage[_: RS](attacker: Combatant, attackee: Combatant) = {
-    val attackResult = attack(attacker, attackee)
+  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant) = {
+    val attackResult = attack(attacker, target)
 
-    if (attackResult.result > 0) resolveDamage(attacker, attackee, attackResult)
+    if (attackResult.result > 0) resolveDamage(attacker, target, attackResult)
     else
-      (attacker, attackee)
+      (attacker, target)
   }
 }
