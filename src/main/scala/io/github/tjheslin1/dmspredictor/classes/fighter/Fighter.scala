@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, 
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.{Ability, ClassAbilities}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -48,19 +49,9 @@ case class Fighter(level: Level,
 
   def weapon[_: RS]: Weapon = baseWeapon.weaponType match {
     case Ranged if fightingStyles.contains(Archery) =>
-      Weapon(baseWeapon.name,
-             baseWeapon.weaponType,
-             baseWeapon.damageType,
-             baseWeapon.twoHanded,
-             baseWeapon.damage,
-             baseWeapon.hitBonus + 2)
+      bonusToHitWeapon(baseWeapon, 2)
     case Melee if baseWeapon.twoHanded == false && fightingStyles.contains(Dueling) =>
-      Weapon(baseWeapon.name,
-             baseWeapon.weaponType,
-             baseWeapon.damageType,
-             baseWeapon.twoHanded,
-             baseWeapon.damage,
-             baseWeapon.hitBonus + 2)
+      bonusToHitWeapon(baseWeapon, 2)
     case Melee if baseWeapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
       val rerollingDamage = {
         val damageRoll = baseWeapon.damage

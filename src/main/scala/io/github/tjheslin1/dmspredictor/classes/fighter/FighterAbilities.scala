@@ -32,8 +32,10 @@ object FighterAbilities {
     val levelRequirement: Level = LevelOne
     val triggerMet: Boolean     = true
     val conditionMet: Boolean = fighter.offHand match {
-      case Some(w: Weapon) => w.twoHanded == false && fighter.baseWeapon.twoHanded == false
-      case _               => false
+      case Some(w: Weapon) =>
+        w.twoHanded == false && fighter.baseWeapon.twoHanded == false && fighter.fightingStyles.contains(
+          TwoWeaponFighting)
+      case _ => false
     }
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {

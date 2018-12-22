@@ -37,6 +37,9 @@ object Weapon {
       def damage(implicit rollStrategy: RollStrategy): Int = dmg
     }
 
+  def bonusToHitWeapon[_: RS](weapon: Weapon, bonus: Int): Weapon =
+    Weapon(weapon.name, weapon.weaponType, weapon.damageType, weapon.twoHanded, weapon.damage, weapon.hitBonus + bonus)
+
   def fixedDamageWeapon[_: RS](weaponName: String,
                                wpnType: WeaponType = Melee,
                                weaponDamageType: DamageType,
