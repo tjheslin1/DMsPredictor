@@ -2,7 +2,7 @@ package simulation
 
 import base.PropertyChecksBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Dice
 import io.github.tjheslin1.dmspredictor.simulation._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst

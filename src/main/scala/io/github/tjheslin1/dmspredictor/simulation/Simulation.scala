@@ -1,6 +1,6 @@
 package io.github.tjheslin1.dmspredictor.simulation
 
-import io.github.tjheslin1.dmspredictor.model.{Creature, RS}
+import io.github.tjheslin1.dmspredictor.model._
 
 trait Simulation {
 

@@ -1,13 +1,14 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import cats.Show
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
 
 sealed trait WeaponType
 
 case object Melee  extends WeaponType
 case object Ranged extends WeaponType
 
-abstract class Weapon {
+abstract class Weapon extends Equipment {
 
   val name: String
   val weaponType: WeaponType

@@ -5,7 +5,9 @@ import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.dmspredictor.classes._
+import io.github.tjheslin1.dmspredictor.classes.{fighter, _}
+import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
@@ -40,6 +42,7 @@ object TestData {
     def withMaxHealth(hp: Int)                   = testMonster.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = testMonster.copy(stats = testMonster.stats.copy(strength = strengthScore))
     def withWeapon(weapon: Weapon)               = testMonster.copy(wpn = weapon)
+    def withArmourClass(ac: Int)               = testMonster.copy(armourClass = ac)
     def withResistance(creatureRes: DamageType*) = testMonster.copy(resistances = creatureRes.toList)
     def withImmunity(creatureImm: DamageType*)   = testMonster.copy(immunities = creatureImm.toList)
     def withNoResistances()                      = testMonster.copy(resistances = List.empty)
@@ -58,8 +61,9 @@ object TestData {
     def withWeapon(weapon: Weapon)                       = fighter.copy(baseWeapon = weapon)
     def withArmour(armr: Armour)                         = fighter.copy(armour = armr)
     def withNoArmour()                                   = fighter.copy(armour = NoArmour)
-    def withShield()                                     = fighter.copy(shield = Shield().some)
-    def withNoShield()                                   = fighter.copy(shield = None)
+    def withShield()                                     = fighter.copy(offHand = Shield().some)
+    def withOffHand(equipment: Equipment)                = fighter.copy(offHand = equipment.some)
+    def withNoShield()                                   = fighter.copy(offHand = None)
     def withResistance(creatureRes: DamageType*)         = fighter.copy(resistances = creatureRes.toList)
     def withImmunity(creatureImm: DamageType*)           = fighter.copy(immunities = creatureImm.toList)
     def withNoResistances()                              = fighter.copy(resistances = List.empty)
@@ -178,7 +182,7 @@ trait TestData extends RandomDataGenerator {
       secondWindUsed <- Gen.oneOf(true, false)
       level          <- arbLevel.arbitrary
     } yield
-      Fighter(
+      fighter.Fighter(
         level,
         creature.health,
         creature.health,

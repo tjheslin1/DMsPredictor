@@ -1,8 +1,9 @@
-package io.github.tjheslin1.dmspredictor.classes
+package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -18,7 +19,7 @@ case class Fighter(level: Level,
                    stats: BaseStats,
                    baseWeapon: Weapon,
                    armour: Armour = NoArmour,
-                   shield: Option[Shield] = None,
+                   offHand: Option[Equipment] = None,
                    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
                    secondWindUsed: Boolean = false,
                    override val proficiencyBonus: Int = 0,
@@ -33,8 +34,11 @@ case class Fighter(level: Level,
 
   def armourClass: Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
-    val shieldBonus     = shield.fold(0)(_.armourClass(stats.dexterity))
-    val defenseBonus    = if (fightingStyles.contains(Defense)) 1 else 0
+    val shieldBonus = offHand match {
+      case Some(Shield()) => 2
+      case _              => 0
+    }
+    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
 
     armour match {
       case NoArmour => baseArmourClass + shieldBonus
@@ -77,6 +81,8 @@ case class Fighter(level: Level,
 
 object Fighter {
 
+  import FighterAbilities._
+
   val HitDice = D10
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
@@ -89,18 +95,10 @@ object Fighter {
   }
 
   implicit val fighterAbilities = new ClassAbilities[Fighter] {
-    def abilities: List[(Int, Fighter => Ability[Fighter])] = List(1 -> secondWind _)
-  }
-
-  def secondWind(fighter: Fighter): Ability[Fighter] = new Ability[Fighter](fighter) {
-    val levelRequirement = LevelTwo
-    val triggerMet       = fighter.health <= fighter.maxHealth / 2
-    val conditionMet     = fighter.level.value >= levelRequirement && fighter.secondWindUsed == false
-
-    def useAbility[_: RS]: Fighter =
-      fighter.copy(health = Math.min(fighter.maxHealth, fighter.health + (1 * HitDice) + fighter.level.value))
-
-    def update: Fighter = fighter.copy(secondWindUsed = true)
+    def abilities: List[(Int, Combatant => Ability[Fighter])] = List(
+      1 -> secondWind,
+      2 -> twoWeaponFighting
+    )
   }
 
   implicit def fighterShow[_: RS]: Show[Fighter] = Show.show { fighter =>
