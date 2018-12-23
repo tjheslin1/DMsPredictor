@@ -66,11 +66,24 @@ object Actions extends LazyLogging {
     (attacker, damagedTarget)
   }
 
-  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant) = {
+  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant): (Combatant, Combatant) = {
     val attackResult = attack(attacker, attacker.creature.weapon, target)
 
     if (attackResult.result > 0) resolveDamage(attacker, target, attackResult)
     else
       (attacker, target)
+  }
+
+  def attackAndDamageTimes[_: RS](times: Int, attacker: Combatant, target: Combatant): (Combatant, Combatant) =
+    runCombatantTimes(times, attacker, target, attackAndDamage)
+
+  def runCombatantTimes(times: Int,
+                        c1: Combatant,
+                        c2: Combatant,
+                        f: (Combatant, Combatant) => (Combatant, Combatant)): (Combatant, Combatant) = {
+    (1 to times).foldLeft[(Combatant, Combatant)]((c1, c2)) { (combatants, _) =>
+      val (a, t) = combatants
+      f(a, t)
+    }
   }
 }

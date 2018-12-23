@@ -5,7 +5,8 @@ import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.dmspredictor.classes.{fighter, _}
+import io.github.tjheslin1.dmspredictor.classes.fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities.allUnused
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
@@ -42,7 +43,7 @@ object TestData {
     def withMaxHealth(hp: Int)                   = testMonster.copy(maxHealth = hp)
     def withStrength(strengthScore: Stat)        = testMonster.copy(stats = testMonster.stats.copy(strength = strengthScore))
     def withWeapon(weapon: Weapon)               = testMonster.copy(wpn = weapon)
-    def withArmourClass(ac: Int)               = testMonster.copy(armourClass = ac)
+    def withArmourClass(ac: Int)                 = testMonster.copy(armourClass = ac)
     def withResistance(creatureRes: DamageType*) = testMonster.copy(resistances = creatureRes.toList)
     def withImmunity(creatureImm: DamageType*)   = testMonster.copy(immunities = creatureImm.toList)
     def withNoResistances()                      = testMonster.copy(resistances = List.empty)
@@ -52,9 +53,12 @@ object TestData {
   }
 
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
+    def withLevel(lvl: Level)                            = fighter.copy(level = lvl)
     def withName(creatureName: String)                   = fighter.copy(name = creatureName)
     def withHealth(hp: Int)                              = fighter.copy(health = hp)
     def withMaxHealth(hp: Int)                           = fighter.copy(maxHealth = hp)
+    def withAllAbilitiesUsed()                         = fighter.copy(abilities = FighterAbilities.allUsed())
+    def withAllAbilitiesUnused()                         = fighter.copy(abilities = allUnused())
     def withStrength(strengthScore: Stat)                = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
     def withDexterity(dexScore: Stat)                    = fighter.copy(stats = fighter.stats.copy(dexterity = dexScore))
     def withConstitution(conScore: Stat)                 = fighter.copy(stats = fighter.stats.copy(constitution = conScore))
@@ -173,13 +177,20 @@ trait TestData extends RandomDataGenerator {
     Gen.someOf(Archery, Defense, Dueling, GreatWeaponFighting, Protection, TwoWeaponFighting)
   }
 
+  implicit val arbFighterAbilities: Arbitrary[FighterAbilities] = Arbitrary {
+    for {
+      secondWindUsed  <- Gen.oneOf(true, false)
+      actionSurgeUsed <- Gen.oneOf(true, false)
+    } yield FighterAbilities(secondWindUsed, actionSurgeUsed)
+  }
+
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
+      abilities      <- arbFighterAbilities.arbitrary
       armour         <- arbArmour.arbitrary
       shield         <- arbShield.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
-      secondWindUsed <- Gen.oneOf(true, false)
       level          <- arbLevel.arbitrary
     } yield
       fighter.Fighter(
@@ -191,7 +202,7 @@ trait TestData extends RandomDataGenerator {
         armour,
         shield,
         fightingStyles.toList,
-        secondWindUsed,
+        abilities,
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,

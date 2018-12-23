@@ -35,13 +35,13 @@ class MoveSpec extends UnitSpecBase {
 
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player   = fighter.withStrength(10).withCombatIndex(1)
+        val player   = fighter.copy(abilities = fighter.abilities.copy(secondWindUsed = true, actionSurgeUsed = false)).withStrength(10).withCombatIndex(1)
         val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
         val enemyTwo = monsterTwo.withHealth(1).withCombatIndex(3)
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
-        val Queue(_, Combatant(_, updatedEnemyTwo), _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
+        val Queue(_, Combatant(_, updatedEnemyTwo), _) = takeMove(queue, LowestFirst  )(Dice.naturalTwenty)
 
         updatedEnemyTwo.health shouldBe 0
       }
@@ -49,7 +49,7 @@ class MoveSpec extends UnitSpecBase {
 
     "focus mob with lowest health first" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
-        val player     = fighter.withStrength(10).withCombatIndex(1)
+        val player     = fighter.copy(abilities = fighter.abilities.copy(secondWindUsed = true, actionSurgeUsed = false)).withStrength(10).withCombatIndex(1)
         val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
         val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)
         val enemyThree = monsterThree.withHealth(50).withCombatIndex(4)

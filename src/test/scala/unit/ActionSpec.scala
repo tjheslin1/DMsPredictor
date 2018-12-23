@@ -119,4 +119,21 @@ class ActionSpec extends UnitSpecBase {
       }
     }
   }
+
+  "runCombatantTimes" should {
+    "executed provided function n times against the two combatants" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        var count = 0
+
+        val f: (Combatant, Combatant) => (Combatant, Combatant) = (c1, c2) => {
+          count += 1
+          (c1, c2)
+        }
+
+        runCombatantTimes(5, fighter.withCombatIndex(1), monster.withCombatIndex(1), f)
+
+        count shouldBe 5
+      }
+    }
+  }
 }

@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities.allUnused
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
@@ -22,7 +23,7 @@ case class Fighter(level: Level,
                    armour: Armour = NoArmour,
                    offHand: Option[Equipment] = None,
                    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                   secondWindUsed: Boolean = false,
+                   abilities: FighterAbilities = allUnused(),
                    override val proficiencyBonus: Int = 0,
                    override val resistances: List[DamageType] = List(),
                    override val immunities: List[DamageType] = List(),
@@ -88,7 +89,8 @@ object Fighter {
   implicit val fighterAbilities = new ClassAbilities[Fighter] {
     def abilities: List[(Int, Combatant => Ability[Fighter])] = List(
       1 -> secondWind,
-      2 -> twoWeaponFighting
+      2 -> actionSurge,
+      3 -> twoWeaponFighting,
     )
   }
 
