@@ -31,6 +31,11 @@ trait Creature {
 
 object Creature {
 
+  implicit val determineCritical: DetermineCritical[Creature] =  new DetermineCritical[Creature] {
+    val message = "Creature determineCritical"
+    def attackIsCritical(roll: Int): Boolean = roll == 20
+  }
+
   implicit def creatureShow[_: RS]: Show[Creature] = Show.show { creature =>
     s"${creature.creatureType} - " +
       s"Name: ${creature.name}, " +

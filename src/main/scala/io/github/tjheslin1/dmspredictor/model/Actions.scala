@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 
 sealed trait AttackResult {
@@ -26,6 +27,14 @@ object Actions extends LazyLogging {
   def attack[_: RS](attacker: Combatant, attackerWeapon: Weapon, target: Combatant): AttackResult = {
     val roll = D20.roll()
 
+    def determineCritical[T <: Creature](roll: Int)(
+      implicit dc: DetermineCritical[T]) =
+//      dc.attackIsCritical(roll)
+dc.message
+
+    println("*** Determine Critical -> " + determineCritical[Fighter](1))
+
+//    if (determineCritical[attacker.creature.type](roll)) CriticalHit
     if (roll == 20) CriticalHit
     else if (roll == 1) CriticalMiss
     else {

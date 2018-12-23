@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 
-class ActionSpec extends UnitSpecBase {
+class ActionsSpec extends UnitSpecBase {
 
   implicit def rollResultConversion(roll: Int): RollResult = RollResult(roll)
 
