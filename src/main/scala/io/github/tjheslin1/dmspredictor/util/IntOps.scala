@@ -1,6 +1,6 @@
 package io.github.tjheslin1.dmspredictor.util
 
-import io.github.tjheslin1.dmspredictor.model.{Dice, RS}
+import io.github.tjheslin1.dmspredictor.model._
 
 object IntOps {
 

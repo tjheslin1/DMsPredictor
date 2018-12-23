@@ -1,7 +1,7 @@
 package unit
 
 import base.UnitSpecBase
-import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Initiative
 import io.github.tjheslin1.dmspredictor.model.InitiativeCalculator.updateInitiative
 import util.TestData._

@@ -17,8 +17,8 @@ trait Creature {
 
   val health: Int
   val stats: BaseStats
-  val armourClass: Int
-  val weapon: Weapon
+  def weapon[_: RS]: Weapon
+  def armourClass: Int
   def proficiencyBonus: Int         = 0
   def resistances: List[DamageType] = List()
   def immunities: List[DamageType]  = List()
@@ -31,7 +31,7 @@ trait Creature {
 
 object Creature {
 
-  implicit val creatureShow: Show[Creature] = Show.show { creature =>
+  implicit def creatureShow[_: RS]: Show[Creature] = Show.show { creature =>
     s"${creature.creatureType} - " +
       s"Name: ${creature.name}, " +
       s"health: ${creature.health}, " +

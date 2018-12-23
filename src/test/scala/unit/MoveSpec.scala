@@ -2,9 +2,9 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
-import io.github.tjheslin1.dmspredictor.model.{Combatant, Dice}
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
