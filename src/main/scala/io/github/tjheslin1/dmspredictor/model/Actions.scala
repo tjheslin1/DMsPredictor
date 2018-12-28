@@ -81,16 +81,15 @@ object Actions extends LazyLogging {
   def runCombatantTimes(times: Int,
                         c1: Combatant,
                         c2: Combatant,
-                        f: (Combatant, Combatant) => (Combatant, Combatant)): (Combatant, Combatant) = {
+                        f: (Combatant, Combatant) => (Combatant, Combatant)): (Combatant, Combatant) =
     (1 to times).foldLeft[(Combatant, Combatant)]((c1, c2)) { (combatants, _) =>
-      val (a, t) = combatants
-      f(a, t)
+      f(combatants)
     }
-  }
 
   def determineCritical[T <: Creature](creature: Creature, roll: Int) =
     creature match {
       case _: Champion => implicitly[DetermineCritical[Champion]].attackIsCritical(roll)
       case _: Fighter  => implicitly[DetermineCritical[Fighter]].attackIsCritical(roll)
+      case _           => implicitly[DetermineCritical[Creature]].attackIsCritical(roll)
     }
 }
