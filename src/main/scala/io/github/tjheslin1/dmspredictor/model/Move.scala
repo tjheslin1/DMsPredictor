@@ -43,11 +43,11 @@ object Move {
           optAbility.fold(attackAndDamage(combatant, mob).some) {
             case (_, ability) =>
               val (actedFighter, actedMob) = ability(combatant).useAbility(mob.some)
-              val updatedCombatant           = combatant.copy(creature = ability(actedFighter).update)
+              val updatedCombatant         = combatant.copy(creature = ability(actedFighter).update)
 
               actedMob match {
                 case Some(updatedMob) => (updatedCombatant, updatedMob).some
-                case None    => (updatedCombatant, mob).some
+                case None             => (updatedCombatant, mob).some
               }
           }
         }
