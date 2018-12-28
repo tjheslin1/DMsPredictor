@@ -2,13 +2,13 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 
-class ActionSpec extends UnitSpecBase {
+class ActionsSpec extends UnitSpecBase {
 
   implicit def rollResultConversion(roll: Int): RollResult = RollResult(roll)
 
@@ -38,6 +38,12 @@ class ActionSpec extends UnitSpecBase {
     "miss if the attack roll was a natural 1" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
+      }
+    }
+
+    "score a CriticalHit against a target using a specific DetermineCritical strategy" in {
+      forAll { (champion: Champion, monster: TestMonster) =>
+        attack(champion.withCombatIndex(1), champion.weapon, monster.withCombatIndex(2))(_ => 19) shouldBe CriticalHit
       }
     }
   }

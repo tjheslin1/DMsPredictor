@@ -5,7 +5,6 @@ import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.dmspredictor.classes.fighter
 import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities.allUnused
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -49,7 +48,6 @@ object TestData {
     def withNoResistances()                      = testMonster.copy(resistances = List.empty)
     def withNoImmunities()                       = testMonster.copy(immunities = List.empty)
     def withNoResistancesOrImmunities()          = testMonster.copy(resistances = List.empty, immunities = List.empty)
-    def withCombatIndex(index: Int)              = Combatant(index, testMonster)
   }
 
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
@@ -57,7 +55,7 @@ object TestData {
     def withName(creatureName: String)                   = fighter.copy(name = creatureName)
     def withHealth(hp: Int)                              = fighter.copy(health = hp)
     def withMaxHealth(hp: Int)                           = fighter.copy(maxHealth = hp)
-    def withAllAbilitiesUsed()                         = fighter.copy(abilities = FighterAbilities.allUsed())
+    def withAllAbilitiesUsed()                           = fighter.copy(abilities = FighterAbilities.allUsed())
     def withAllAbilitiesUnused()                         = fighter.copy(abilities = allUnused())
     def withStrength(strengthScore: Stat)                = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
     def withDexterity(dexScore: Stat)                    = fighter.copy(stats = fighter.stats.copy(dexterity = dexScore))
@@ -75,7 +73,10 @@ object TestData {
     def withNoResistancesOrImmunities()                  = fighter.copy(resistances = List.empty, immunities = List.empty)
     def withFightingStyle(styles: FighterFightingStyle*) = fighter.copy(fightingStyles = styles.toList)
     def withNoFightingStyles()                           = fighter.copy(fightingStyles = List.empty)
-    def withCombatIndex(index: Int)                      = Combatant(index, fighter)
+  }
+
+  implicit class PlayerOps[T <: Creature](val t: T) extends AnyVal {
+    def withCombatIndex(index: Int) = Combatant(index, t)
   }
 
   implicit class CombatantOps(val combatant: Combatant) extends AnyVal {
@@ -173,6 +174,22 @@ trait TestData extends RandomDataGenerator {
       }
   }
 
+  implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary
+    } yield
+      TestMonster(
+        creature.health,
+        creature.health,
+        creature.stats,
+        creature.armourClass,
+        creature.weapon(Dice.defaultRandomiser),
+        creature.resistances,
+        creature.immunities,
+        creature.name
+      )
+  }
+
   implicit val arbFighterFightingStyle: Arbitrary[Seq[FighterFightingStyle]] = Arbitrary {
     Gen.someOf(Archery, Defense, Dueling, GreatWeaponFighting, Protection, TwoWeaponFighting)
   }
@@ -193,7 +210,7 @@ trait TestData extends RandomDataGenerator {
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
     } yield
-      fighter.Fighter(
+      Fighter(
         level,
         creature.health,
         creature.health,
@@ -210,16 +227,26 @@ trait TestData extends RandomDataGenerator {
       )
   }
 
-  implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
+  implicit val arbChampion: Arbitrary[Champion] = Arbitrary {
     for {
-      creature <- arbCreature.arbitrary
+      creature       <- arbCreature.arbitrary
+      abilities      <- arbFighterAbilities.arbitrary
+      armour         <- arbArmour.arbitrary
+      shield         <- arbShield.arbitrary
+      fightingStyles <- arbFighterFightingStyle.arbitrary
+      level          <- arbLevel.arbitrary
     } yield
-      TestMonster(
+      Champion(
+        level,
         creature.health,
         creature.health,
         creature.stats,
-        creature.armourClass,
         creature.weapon(Dice.defaultRandomiser),
+        armour,
+        shield,
+        fightingStyles.toList,
+        abilities,
+        creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,
         creature.name

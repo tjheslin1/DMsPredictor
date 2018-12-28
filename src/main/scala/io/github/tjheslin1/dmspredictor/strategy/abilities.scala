@@ -4,7 +4,7 @@ import io.github.tjheslin1.dmspredictor.model._
 
 trait ClassAbilities[T <: Creature] {
 
-  def abilities: List[(Int, Combatant => Ability[T])]
+  def abilities: List[CreatureAbility[T]]
 }
 
 abstract class Ability[T <: Creature](player: Combatant) {
