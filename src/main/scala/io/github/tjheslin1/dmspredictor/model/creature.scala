@@ -3,11 +3,12 @@ package io.github.tjheslin1.dmspredictor.model
 import cats.Show
 import cats.syntax.show._
 import io.github.tjheslin1.dmspredictor.model.Weapon.weaponShow
+import io.github.tjheslin1.dmspredictor.strategy.ClassAbilities
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 sealed trait CreatureType
 
-case object Monster extends CreatureType
+case object Monster         extends CreatureType
 case object PlayerCharacter extends CreatureType
 
 trait Creature {
@@ -30,8 +31,11 @@ trait Creature {
 
 object Creature {
 
-  implicit val determineCritical: DetermineCritical[Creature] =  new DetermineCritical[Creature] {
-    val message = "Creature determineCritical"
+  implicit val creatureAbilities: ClassAbilities[Creature] = new ClassAbilities[Creature] {
+    def abilities: List[CreatureAbility[Creature]] = List.empty[CreatureAbility[Creature]]
+  }
+
+  implicit val determineCritical: DetermineCritical[Creature] = new DetermineCritical[Creature] {
     def attackIsCritical(roll: Int): Boolean = roll == 20
   }
 

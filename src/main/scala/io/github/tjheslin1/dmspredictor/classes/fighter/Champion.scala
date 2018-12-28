@@ -34,7 +34,6 @@ case class Champion(level: Level,
 object Champion {
 
   implicit val improvedCritical: DetermineCritical[Champion] = new DetermineCritical[Champion] {
-    val message = "Champion improvedCritical"
     def attackIsCritical(roll: Int): Boolean = roll >= 19
   }
 }

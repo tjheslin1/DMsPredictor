@@ -83,7 +83,8 @@ object Actions extends LazyLogging {
                         c2: Combatant,
                         f: (Combatant, Combatant) => (Combatant, Combatant)): (Combatant, Combatant) =
     (1 to times).foldLeft[(Combatant, Combatant)]((c1, c2)) { (combatants, _) =>
-      f(combatants)
+      val (a, t) = combatants
+      f(a, t)
     }
 
   def determineCritical[T <: Creature](creature: Creature, roll: Int) =

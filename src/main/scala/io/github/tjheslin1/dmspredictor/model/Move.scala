@@ -20,40 +20,23 @@ object Move {
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val updatedCombatants = if (combatant.creature.creatureType == PlayerCharacter) {
-
-        def abilities[T <: Creature](cmb: Combatant)(
-            implicit ca: ClassAbilities[T]): List[(Int, Combatant => Ability[T])] =
-          ca.abilities
-
-        val classAbilities: List[(Int, Combatant => Ability[Creature])] = combatant match {
-          case Combatant(_, _: Fighter) =>
-            abilities(combatant)(implicitly[ClassAbilities[Fighter]])
-              .asInstanceOf[List[(Int, Combatant => Ability[Creature])]]
-          case _ => List.empty[(Int, Combatant => Ability[Creature])]
-        }
-
-        val optAbility = classAbilities.sortBy { case (priority, _) => priority }.find {
-          case (_, fighterAbility) =>
-            val ability = fighterAbility(combatant)
-            ability.conditionMet && ability.triggerMet
-        }
-
-        mobToAttack.fold(none[(Combatant, Combatant)]) { mob =>
-          optAbility.fold(attackAndDamage(combatant, mob).some) {
-            case (_, ability) =>
-              val (actedFighter, actedMob) = ability(combatant).useAbility(mob.some)
-              val updatedCombatant         = combatant.copy(creature = ability(actedFighter).update)
-
-              actedMob match {
-                case Some(updatedMob) => (updatedCombatant, updatedMob).some
-                case None             => (updatedCombatant, mob).some
-              }
-          }
-        }
-      } else {
-        pcToAttack.fold(none[(Combatant, Combatant)])(attackAndDamage(combatant, _).some)
+      val abilities: List[CreatureAbility[Creature]] = combatant match {
+        case Combatant(_, _: Fighter) =>
+          implicitly[ClassAbilities[Fighter]].abilities
+            .asInstanceOf[List[CreatureAbility[Creature]]]
+        case _ => implicitly[ClassAbilities[Creature]].abilities
       }
+
+      val optAbility: Option[CreatureAbility[Creature]] = abilities.sortBy { case (priority, _) => priority }.find {
+        case (_, creatureAbility) =>
+          val ability = creatureAbility(combatant)
+          ability.conditionMet && ability.triggerMet
+      }
+
+      val updatedCombatants = if (combatant.creature.creatureType == PlayerCharacter)
+        actionAgainstTarget(combatant, mobToAttack, optAbility)
+      else
+        actionAgainstTarget(combatant, pcToAttack, optAbility)
 
       updatedCombatants.fold(others.append(combatant)) {
         case (attacker, target) =>
@@ -62,6 +45,21 @@ object Move {
       }
     } else
       others.append(combatant)
+  }
+
+  private def actionAgainstTarget[_: RS](combatant: Combatant, toAttack: Option[Combatant], optAbility: Option[CreatureAbility[Creature]]) = {
+    toAttack.fold(none[(Combatant, Combatant)]) { target =>
+      optAbility.fold(attackAndDamage(combatant, target).some) {
+        case (_, ability) =>
+          val (actedCombatant, actedTarget) = ability(combatant).useAbility(target.some)
+          val updatedCombatant              = combatant.copy(creature = ability(actedCombatant).update)
+
+          actedTarget match {
+            case Some(updatedTarget) => (updatedCombatant, updatedTarget).some
+            case None                => (updatedCombatant, target).some
+          }
+      }
+    }
   }
 
   private def nextToFocus(combatants: Queue[Combatant], focus: Focus): Option[Combatant] = {
