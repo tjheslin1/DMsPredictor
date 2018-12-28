@@ -30,50 +30,22 @@ case class Fighter(level: Level,
                    override val name: String = NameGenerator.randomName)
     extends Creature {
 
+  import Fighter._
+
   val creatureType: CreatureType = PlayerCharacter
 
   def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
 
-  def armourClass: Int = {
-    val baseArmourClass = armour.armourClass(stats.dexterity)
-    val shieldBonus = offHand match {
-      case Some(Shield()) => 2
-      case _              => 0
-    }
-    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+  def armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-    armour match {
-      case NoArmour => baseArmourClass + shieldBonus
-      case _        => baseArmourClass + shieldBonus + defenseBonus
-    }
-  }
-
-  def weapon[_: RS]: Weapon = baseWeapon.weaponType match {
-    case Ranged if fightingStyles.contains(Archery) =>
-      bonusToHitWeapon(baseWeapon, 2)
-    case Melee if baseWeapon.twoHanded == false && fightingStyles.contains(Dueling) =>
-      bonusToHitWeapon(baseWeapon, 2)
-    case Melee if baseWeapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
-      val rerollingDamage = {
-        val damageRoll = baseWeapon.damage
-        if (damageRoll <= 2)
-          baseWeapon.damage
-        else
-          damageRoll
-      }
-      Weapon(baseWeapon.name,
-             baseWeapon.weaponType,
-             baseWeapon.damageType,
-             baseWeapon.twoHanded,
-             rerollingDamage,
-             baseWeapon.hitBonus)
-    case _ => baseWeapon
-  }
+  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 }
 
 object Fighter {
 
   import FighterAbilities._
+
+  implicit val dc: DetermineCritical[Fighter] = DetermineCritical.forCreature[Fighter]
 
   val HitDice = D10
 
@@ -92,6 +64,40 @@ object Fighter {
       2 -> actionSurge,
       3 -> twoWeaponFighting,
     )
+  }
+
+  def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) = weapon.weaponType match {
+    case Ranged if fightingStyles.contains(Archery) =>
+      bonusToHitWeapon(weapon, 2)
+    case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+      bonusToHitWeapon(weapon, 2)
+    case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
+      val rerollingDamage = {
+        val damageRoll = weapon.damage
+        if (damageRoll <= 2)
+          weapon.damage
+        else
+          damageRoll
+      }
+      Weapon(weapon.name, weapon.weaponType, weapon.damageType, weapon.twoHanded, rerollingDamage, weapon.hitBonus)
+    case _ => weapon
+  }
+
+  def armourClassWithFightingStyle(stats: BaseStats,
+                                   armour: Armour,
+                                   offHand: Option[Equipment],
+                                   fightingStyles: List[FighterFightingStyle]) = {
+    val baseArmourClass = armour.armourClass(stats.dexterity)
+    val shieldBonus = offHand match {
+      case Some(Shield()) => 2
+      case _              => 0
+    }
+    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+
+    armour match {
+      case NoArmour => baseArmourClass + shieldBonus
+      case _        => baseArmourClass + shieldBonus + defenseBonus
+    }
   }
 
   implicit def fighterShow[_: RS]: Show[Fighter] = Show.show { fighter =>

@@ -8,7 +8,6 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 sealed trait CreatureType
 
 case object Monster extends CreatureType
-
 case object PlayerCharacter extends CreatureType
 
 trait Creature {

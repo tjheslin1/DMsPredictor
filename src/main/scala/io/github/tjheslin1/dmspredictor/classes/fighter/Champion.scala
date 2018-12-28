@@ -5,7 +5,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
-class Champion(level: Level,
+case class Champion(level: Level,
                health: Int,
                maxHealth: Int,
                stats: BaseStats,
@@ -18,19 +18,18 @@ class Champion(level: Level,
                override val resistances: List[DamageType] = List(),
                override val immunities: List[DamageType] = List(),
                override val name: String = NameGenerator.randomName)
-    extends Fighter(level,
-                    health,
-                    maxHealth,
-                    stats,
-                    baseWeapon,
-                    armour,
-                    offHand,
-                    fightingStyles,
-                    abilities,
-                    proficiencyBonus,
-                    resistances,
-                    immunities,
-                    name) {}
+    extends Creature {
+
+  import Fighter._
+
+  val creatureType: CreatureType = PlayerCharacter
+
+  def updateHealth(modification: Int): Champion = copy(health = Math.max(0, health + modification))
+
+  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+
+  def armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
+}
 
 object Champion {
 
