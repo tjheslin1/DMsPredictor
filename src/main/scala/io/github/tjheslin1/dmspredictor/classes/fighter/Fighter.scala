@@ -66,22 +66,23 @@ object Fighter {
     )
   }
 
-  def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) = weapon.weaponType match {
-    case Ranged if fightingStyles.contains(Archery) =>
-      bonusToHitWeapon(weapon, 2)
-    case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
-      bonusToHitWeapon(weapon, 2)
-    case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
-      val rerollingDamage = {
-        val damageRoll = weapon.damage
-        if (damageRoll <= 2)
-          weapon.damage
-        else
-          damageRoll
-      }
-      Weapon(weapon.name, weapon.weaponType, weapon.damageType, weapon.twoHanded, rerollingDamage, weapon.hitBonus)
-    case _ => weapon
-  }
+  def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) =
+    weapon.weaponType match {
+      case Ranged if fightingStyles.contains(Archery) =>
+        bonusToHitWeapon(weapon, 2)
+      case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+        bonusToHitWeapon(weapon, 2)
+      case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
+        val rerollingDamage = {
+          val damageRoll = weapon.damage
+          if (damageRoll <= 2)
+            weapon.damage
+          else
+            damageRoll
+        }
+        Weapon(weapon.name, weapon.weaponType, weapon.damageType, weapon.twoHanded, rerollingDamage, weapon.hitBonus)
+      case _ => weapon
+    }
 
   def armourClassWithFightingStyle(stats: BaseStats,
                                    armour: Armour,

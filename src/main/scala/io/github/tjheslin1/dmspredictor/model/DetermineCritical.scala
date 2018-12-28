@@ -8,7 +8,6 @@ object DetermineCritical {
 
   def forCreature[T <: Creature]: DetermineCritical[T] = new DetermineCritical[T] {
 
-    val message = "Creature determineCritical"
     def attackIsCritical(roll: Int): Boolean = roll == 20
   }
 }

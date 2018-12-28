@@ -33,10 +33,11 @@ object Move {
           ability.conditionMet && ability.triggerMet
       }
 
-      val updatedCombatants = if (combatant.creature.creatureType == PlayerCharacter)
-        actionAgainstTarget(combatant, mobToAttack, optAbility)
-      else
-        actionAgainstTarget(combatant, pcToAttack, optAbility)
+      val updatedCombatants =
+        if (combatant.creature.creatureType == PlayerCharacter)
+          actionAgainstTarget(combatant, mobToAttack, optAbility)
+        else
+          actionAgainstTarget(combatant, pcToAttack, optAbility)
 
       updatedCombatants.fold(others.append(combatant)) {
         case (attacker, target) =>
@@ -47,7 +48,9 @@ object Move {
       others.append(combatant)
   }
 
-  private def actionAgainstTarget[_: RS](combatant: Combatant, toAttack: Option[Combatant], optAbility: Option[CreatureAbility[Creature]]) = {
+  private def actionAgainstTarget[_: RS](combatant: Combatant,
+                                         toAttack: Option[Combatant],
+                                         optAbility: Option[CreatureAbility[Creature]]) = {
     toAttack.fold(none[(Combatant, Combatant)]) { target =>
       optAbility.fold(attackAndDamage(combatant, target).some) {
         case (_, ability) =>
