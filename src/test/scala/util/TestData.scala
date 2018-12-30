@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
@@ -27,13 +28,13 @@ object TestData {
                          override val resistances: List[DamageType] = List(),
                          override val immunities: List[DamageType] = List(),
                          override val name: String = NameGenerator.randomName)
-      extends Creature {
+      extends Creature with Monster {
 
-    val creatureType: CreatureType = Monster
+    val creatureType: CreatureType = EnemyMonster
 
     def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
-    override def weapon[_: RS]: Weapon = wpn
+    def weapon[_: RS]: Weapon = wpn
   }
 
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
@@ -110,7 +111,7 @@ trait TestData extends RandomDataGenerator {
   }
 
   implicit val arbLevel: Arbitrary[Level] = Arbitrary {
-    Gen.oneOf(LevelOne, LevelTwo, LevelThree, LevelFour)
+    Gen.oneOf(LevelOne, LevelTwo, LevelThree, LevelFour, LevelFive)
   }
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
@@ -157,7 +158,7 @@ trait TestData extends RandomDataGenerator {
       baseStats <- arbBaseStats.arbitrary
       wpn       <- arbWeapon.arbitrary
       armour    <- arbArmour.arbitrary
-      cType     <- Gen.oneOf(PlayerCharacter, Monster)
+      cType     <- Gen.oneOf(PlayerCharacter, EnemyMonster)
       profBonus <- Gen.choose(0, 6)
     } yield
       new Creature {

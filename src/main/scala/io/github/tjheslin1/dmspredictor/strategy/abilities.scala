@@ -2,12 +2,12 @@ package io.github.tjheslin1.dmspredictor.strategy
 
 import io.github.tjheslin1.dmspredictor.model._
 
-trait ClassAbilities[T <: Creature] {
+trait ClassAbilities[T] {
 
   def abilities: List[CreatureAbility[T]]
 }
 
-abstract class Ability[T <: Creature](player: Combatant) {
+abstract class Ability[T](combatant: Combatant) {
 
   def levelRequirement: Level
   def triggerMet: Boolean

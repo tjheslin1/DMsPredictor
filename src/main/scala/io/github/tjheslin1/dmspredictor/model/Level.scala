@@ -20,6 +20,10 @@ object LevelFour extends Level {
   val value = 4
 }
 
+object LevelFive extends Level {
+  val value = 5
+}
+
 object LevelTwenty extends Level {
   val value = 20
 }

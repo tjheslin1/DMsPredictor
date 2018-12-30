@@ -45,7 +45,7 @@ object Fighter {
 
   import FighterAbilities._
 
-  implicit val dc: DetermineCritical[Fighter] = DetermineCritical.forCreature[Fighter]
+  implicit val dc: DetermineCritical[Fighter] = DetermineCritical.default[Fighter]
 
   val HitDice = D10
 
@@ -59,7 +59,7 @@ object Fighter {
   }
 
   implicit val fighterAbilities = new ClassAbilities[Fighter] {
-    def abilities: List[(Int, Combatant => Ability[Fighter])] = List(
+    def abilities: List[CreatureAbility[Fighter]] = List(
       1 -> secondWind,
       2 -> actionSurge,
       3 -> twoWeaponFighting,
@@ -73,7 +73,7 @@ object Fighter {
       case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
         bonusToHitWeapon(weapon, 2)
       case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
-        val rerollingDamage = {
+        lazy val rerollingDamage = {
           val damageRoll = weapon.damage
           if (damageRoll <= 2)
             weapon.damage

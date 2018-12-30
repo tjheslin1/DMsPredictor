@@ -1,9 +1,11 @@
 package unit
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
+import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 
@@ -35,37 +37,25 @@ class FighterSpec extends UnitSpecBase {
 
   "weapon" should {
     "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, false, 10)
+      val sword = Weapon("sword", Melee, Slashing, false, 10, wpnHitBonus = 0)
 
-      forAll { fighter: Fighter =>
-        val meleeFighter = fighter.withWeapon(sword).withFightingStyle(Dueling)
-
-        meleeFighter.weapon.hitBonus shouldBe 2
-      }
+      Fighter.weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 2
     }
 
     "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in new TestContext {
       val bow = Weapon("bow", Ranged, Piercing, true, 10)
 
-      forAll { fighter: Fighter =>
-        val rangedFighter = fighter.withWeapon(bow).withFightingStyle(Archery)
-
-        rangedFighter.weapon.hitBonus shouldBe 2
-      }
+      Fighter.weaponWithFightingStyle(bow, List(Archery)).hitBonus shouldBe 2
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in new TestContext {
       val sword = Weapon("sword", Melee, Slashing, true, 10)
 
-      forAll { fighter: Fighter =>
-        val noStyleFighter = fighter.withWeapon(sword).withNoFightingStyles()
-
-        noStyleFighter.weapon.hitBonus shouldBe 0
-      }
+      Fighter.weaponWithFightingStyle(sword, List.empty).hitBonus shouldBe 0
     }
 
     "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in new TestContext {
-      forAll { fighter: Fighter =>
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
         var count = 0
         val twoHandedWeapon = Weapon("sword", Melee, Slashing, true, {
           count += 1
@@ -74,7 +64,7 @@ class FighterSpec extends UnitSpecBase {
 
         val twoHanderFighter = fighter.withWeapon(twoHandedWeapon).withFightingStyle(GreatWeaponFighting)
 
-        twoHanderFighter.weapon
+        Actions.resolveDamage(twoHanderFighter.withCombatIndex(1), testMonster.withCombatIndex(2), Hit)
 
         count shouldBe 2
       }
@@ -83,62 +73,52 @@ class FighterSpec extends UnitSpecBase {
 
   "armourClass" should {
     "calculate default armour class for no armour and no shield" in new TestContext {
-      forAll { fighter: Fighter =>
-        val unarmouredFighter = fighter.withNoArmour().withNoShield().withNoFightingStyles().withDexterity(12)
-
-        unarmouredFighter.armourClass shouldBe 11
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(12, 12, 12, 12, 12, 12),
+        NoArmour,
+        none[Equipment],
+        List.empty[FighterFightingStyle]) shouldBe 11
     }
 
     "calculate armour class for wearing armour but no shield" in new TestContext {
-      forAll { fighter: Fighter =>
-        val armouredFighter = fighter.withArmour(ChainShirt).withNoShield().withNoFightingStyles().withDexterity(10)
-
-        armouredFighter.armourClass shouldBe 13
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+        ChainShirt,
+        none[Equipment],
+        List.empty[FighterFightingStyle]) shouldBe 13
     }
 
     "calculate armour class for wearing a shield but no armour" in new TestContext {
-      forAll { fighter: Fighter =>
-        val shieldedFighter = fighter.withNoArmour().withShield().withNoFightingStyles().withDexterity(10)
-
-        shieldedFighter.armourClass shouldBe 12
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+        NoArmour,
+        Shield().some,
+        List.empty[FighterFightingStyle]) shouldBe 12
     }
 
     "calculate armour class for wearing armour and a shield" in new TestContext {
-      forAll { fighter: Fighter =>
-        val armouredAndShieldedFighter =
-          fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(10)
-
-        armouredAndShieldedFighter.armourClass shouldBe 15
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+        ChainShirt,
+        Shield().some,
+        List.empty[FighterFightingStyle]) shouldBe 15
     }
 
     "calculate armour class for wearing armour, shield and with high dexterity" in new TestContext {
-      forAll { fighter: Fighter =>
-        val armouredAndShieldedFighter =
-          fighter.withArmour(ChainShirt).withShield().withNoFightingStyles().withDexterity(14)
-
-        armouredAndShieldedFighter.armourClass shouldBe 17
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(14, 14, 14, 14, 14, 14),
+        ChainShirt,
+        Shield().some,
+        List.empty[FighterFightingStyle]) shouldBe 17
     }
 
     "calculate armour class for having armour and the Defense fighting style" in new TestContext {
-      forAll { fighter: Fighter =>
-        val defensiveFighter =
-          fighter.withArmour(ChainShirt).withNoShield().withFightingStyle(Defense).withDexterity(10)
-
-        defensiveFighter.armourClass shouldBe 14
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+        ChainShirt,
+        none[Equipment],
+        List(Defense)) shouldBe 14
     }
 
     "calculate armour class for having no armour and ignoring Defense fighting style" in new TestContext {
-      forAll { fighter: Fighter =>
-        val defensiveFighter = fighter.withNoArmour().withNoShield().withFightingStyle(Defense).withDexterity(10)
-
-        defensiveFighter.armourClass shouldBe 10
-      }
+      Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+        NoArmour,
+        none[Equipment],
+        List(Defense)) shouldBe 10
     }
   }
 

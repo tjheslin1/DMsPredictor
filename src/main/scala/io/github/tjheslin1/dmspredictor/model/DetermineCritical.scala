@@ -1,13 +1,13 @@
 package io.github.tjheslin1.dmspredictor.model
 
 trait DetermineCritical[T] {
-  def attackIsCritical(roll: Int): Boolean
+  def attackIsCritical(t: T, roll: Int): Boolean
 }
 
 object DetermineCritical {
 
-  def forCreature[T <: Creature]: DetermineCritical[T] = new DetermineCritical[T] {
+  def default[T <: Creature]: DetermineCritical[T] = new DetermineCritical[T] {
 
-    def attackIsCritical(roll: Int): Boolean = roll == 20
+    def attackIsCritical(t: T, roll: Int): Boolean = roll == 20
   }
 }

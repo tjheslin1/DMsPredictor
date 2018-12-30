@@ -1,8 +1,11 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
+import cats.Show
+import cats.syntax.show._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.strategy.{Ability, ClassAbilities}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 case class Champion(level: Level,
@@ -33,7 +36,28 @@ case class Champion(level: Level,
 
 object Champion {
 
+  import FighterAbilities._
+
+  val HitDice = D10
+
   implicit val improvedCritical: DetermineCritical[Champion] = new DetermineCritical[Champion] {
-    def attackIsCritical(roll: Int): Boolean = roll >= 19
+    def attackIsCritical(champion: Champion, roll: Int): Boolean =
+      if (champion.level.value <= 2) roll == 20 else roll >= 19
+  }
+
+  implicit val championAbilities = new ClassAbilities[Champion] {
+    def abilities: List[(Int, Combatant => Ability[Champion])] = List.empty
+//      1 -> secondWind,
+//      2 -> actionSurge,
+//      3 -> twoWeaponFighting,
+//    )
+  }
+
+  implicit def championShow[_: RS]: Show[Champion] = Show.show { champion =>
+    s"Fighter: " +
+      s"Name: ${champion.name}, " +
+      s"health: ${champion.health}, " +
+      s"AC: ${champion.armourClass}, " +
+      s"${champion.weapon.show}"
   }
 }

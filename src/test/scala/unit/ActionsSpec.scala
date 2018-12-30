@@ -43,7 +43,9 @@ class ActionsSpec extends UnitSpecBase {
 
     "score a CriticalHit against a target using a specific DetermineCritical strategy" in {
       forAll { (champion: Champion, monster: TestMonster) =>
-        attack(champion.withCombatIndex(1), champion.weapon, monster.withCombatIndex(2))(_ => 19) shouldBe CriticalHit
+        val levelThreeChampion = champion.copy(level = LevelThree)
+
+        attack(levelThreeChampion.withCombatIndex(1), levelThreeChampion.weapon, monster.withCombatIndex(2))(_ => 19) shouldBe CriticalHit
       }
     }
   }

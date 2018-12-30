@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 sealed trait CreatureType
 
-case object Monster         extends CreatureType
+case object EnemyMonster    extends CreatureType
 case object PlayerCharacter extends CreatureType
 
 trait Creature {
@@ -36,7 +36,7 @@ object Creature {
   }
 
   implicit val determineCritical: DetermineCritical[Creature] = new DetermineCritical[Creature] {
-    def attackIsCritical(roll: Int): Boolean = roll == 20
+    def attackIsCritical(creature: Creature, roll: Int): Boolean = roll == 20
   }
 
   implicit def creatureShow[_: RS]: Show[Creature] = Show.show { creature =>

@@ -14,9 +14,10 @@ case class Werewolf(health: Int,
                     override val resistances: List[DamageType] = List(),
                     override val immunities: List[DamageType] = List(),
                     override val name: String = NameGenerator.randomName)
-    extends Creature {
+    extends Creature
+    with Monster {
 
-  val creatureType: CreatureType = Monster
+  val creatureType: CreatureType = EnemyMonster
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 

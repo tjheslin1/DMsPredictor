@@ -48,7 +48,7 @@ object Actions extends LazyLogging {
       attackResult match {
         case CriticalHit =>
           (attacker.creature.weapon.damage + attacker.creature.weapon.damage) + mod(attacker.creature.stats.strength)
-        case Hit          => attacker.creature.weapon.damage
+        case Hit          => attacker.creature.weapon.damage + mod(attacker.creature.stats.strength)
         case Miss         => 0
         case CriticalMiss => 0
       }
@@ -89,8 +89,8 @@ object Actions extends LazyLogging {
 
   def determineCritical[T <: Creature](creature: Creature, roll: Int) =
     creature match {
-      case _: Champion => implicitly[DetermineCritical[Champion]].attackIsCritical(roll)
-      case _: Fighter  => implicitly[DetermineCritical[Fighter]].attackIsCritical(roll)
-      case _           => implicitly[DetermineCritical[Creature]].attackIsCritical(roll)
+      case champion: Champion => implicitly[DetermineCritical[Champion]].attackIsCritical(champion, roll)
+      case fighter: Fighter   => implicitly[DetermineCritical[Fighter]].attackIsCritical(fighter, roll)
+      case _                  => implicitly[DetermineCritical[Creature]].attackIsCritical(creature, roll)
     }
 }
