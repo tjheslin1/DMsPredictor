@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model
 import cats.Show
 import cats.syntax.show._
 import io.github.tjheslin1.dmspredictor.model.Weapon.weaponShow
-import io.github.tjheslin1.dmspredictor.strategy.ClassAbilities
+import io.github.tjheslin1.dmspredictor.strategy.Ability
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 sealed trait CreatureType
@@ -18,22 +18,20 @@ trait Creature {
   val health: Int
   val stats: BaseStats
   def weapon[_: RS]: Weapon
-  def armourClass: Int
-  def proficiencyBonus: Int         = 0
-  def resistances: List[DamageType] = List()
-  def immunities: List[DamageType]  = List()
-  def name: String                  = NameGenerator.randomName
+  val armourClass: Int
+  val proficiencyBonus: Int
+  val resistances: List[DamageType]
+  val immunities: List[DamageType]
+  val name: String
 
   val isConscious = health > 0
 
   def updateHealth(modification: Int): Creature
+
+  val abilities: List[CreatureAbility[Creature]]
 }
 
 object Creature {
-
-  implicit val creatureAbilities: ClassAbilities[Creature] = new ClassAbilities[Creature] {
-    def abilities: List[CreatureAbility[Creature]] = List.empty[CreatureAbility[Creature]]
-  }
 
   implicit val determineCritical: DetermineCritical[Creature] = new DetermineCritical[Creature] {
     def attackIsCritical(creature: Creature, roll: Int): Boolean = roll == 20

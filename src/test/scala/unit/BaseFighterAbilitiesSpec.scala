@@ -8,7 +8,7 @@ import util.TestData._
 
 import scala.collection.immutable.Queue
 
-class FighterAbilitiesSpec extends UnitSpecBase {
+class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
   "Fighter" should {
 
@@ -23,7 +23,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
         })
 
         val dualWieldingFighter = fighter
-          .copy(abilities = fighter.abilities.copy(secondWindUsed = true))
+          .copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true))
           .withWeapon(trackedSword)
           .withOffHand(trackedSword)
           .withFightingStyle(TwoWeaponFighting)
@@ -63,7 +63,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
         val swordFighter =
           fighter
             .withLevel(LevelTwo)
-            .copy(abilities = fighter.abilities.copy(secondWindUsed = true, actionSurgeUsed = false))
+            .copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true, actionSurgeUsed = false))
             .withWeapon(trackedSword)
             .withCombatIndex(1)
 

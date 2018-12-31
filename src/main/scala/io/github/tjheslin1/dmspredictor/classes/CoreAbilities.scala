@@ -1,19 +1,20 @@
 package io.github.tjheslin1.dmspredictor.classes
 
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.{Combatant, Creature, Level, LevelFive, RS}
 import io.github.tjheslin1.dmspredictor.strategy.Ability
 
 object CoreAbilities {
 
-  def extraAttack[T: RS](combatant: Combatant) = new Ability[T](combatant) {
-    val levelRequirement = LevelFive
+  def extraAttack[T: RS](combatant: Combatant): Ability[T] = new Ability[T](combatant) {
+    override def levelRequirement: Level = ???
 
-    def triggerMet: Boolean = ???
+    override def triggerMet: Boolean = ???
 
-    def conditionMet: Boolean = ???
+    override def conditionMet: Boolean = ???
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = ???
+    override def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = ???
 
-    def update: T = ???
+    override def update: T = ???
   }
 }

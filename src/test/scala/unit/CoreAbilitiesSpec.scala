@@ -1,11 +1,9 @@
 package unit
 
 import base.UnitSpecBase
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Monster
-import io.github.tjheslin1.dmspredictor.strategy.{Ability, ClassAbilities, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
 import scala.collection.immutable.Queue
@@ -15,13 +13,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   "Extra Attack" should {
     "make two weapon attacks" ignore new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
-
-      implicit val testMonsterAbilities = new ClassAbilities[Monster] {
-        def abilities: List[CreatureAbility[Monster]] =
-          List(
-            1 -> CoreAbilities.extraAttack[Monster]
-          )
-      }
 
       forAll { (testMonster: TestMonster, fighter: Fighter) =>
         var swordUsedCount = 0
