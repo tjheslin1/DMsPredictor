@@ -20,7 +20,7 @@ case class Goblin(health: Int,
     extends Creature {
 
   val creatureType: CreatureType = EnemyMonster
-  val proficiencyBonus: Int = 0
+  val proficiencyBonus: Int      = 0
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 

@@ -27,7 +27,7 @@ case class Fighter(level: Level,
                    resistances: List[DamageType] = List(),
                    immunities: List[DamageType] = List(),
                    name: String = NameGenerator.randomName)
-  extends Creature {
+    extends Creature {
 
   import Fighter._
 
@@ -59,11 +59,11 @@ object Fighter {
     new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
 
-  implicit val fighterAbilities: List[CreatureAbility] = List(
-      1 -> secondWind,
-      2 -> actionSurge,
-      3 -> twoWeaponFighting,
-    )
+  val fighterAbilities: List[CreatureAbility] = List(
+    1 -> secondWind,
+    2 -> actionSurge,
+    3 -> twoWeaponFighting,
+  )
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) =
     weapon.weaponType match {
