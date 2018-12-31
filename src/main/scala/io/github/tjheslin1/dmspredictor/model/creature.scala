@@ -28,7 +28,7 @@ trait Creature {
 
   def updateHealth(modification: Int): Creature
 
-  val abilities: List[CreatureAbility[Creature]]
+  val abilities: List[CreatureAbility]
 }
 
 object Creature {

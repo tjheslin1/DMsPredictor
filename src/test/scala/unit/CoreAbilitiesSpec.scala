@@ -1,6 +1,8 @@
 package unit
 
 import base.UnitSpecBase
+import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -11,7 +13,7 @@ import scala.collection.immutable.Queue
 class CoreAbilitiesSpec extends UnitSpecBase {
 
   "Extra Attack" should {
-    "make two weapon attacks" ignore new TestContext {
+    "make two weapon attacks" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 
       forAll { (testMonster: TestMonster, fighter: Fighter) =>
@@ -21,9 +23,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val swordedMonster = testMonster.copy(wpn = trackedSword).withCombatIndex(1)
+        val swordedMonster = testMonster
+          .copy(wpn = trackedSword)
+          .withStrength(10)
+          .withAbilities(List(1 -> CoreAbilities.extraAttack))
+          .withCombatIndex(1)
 
-        Move.takeMove(Queue(swordedMonster, fighter.withCombatIndex(2)), LowestFirst)
+        Move.takeMove(Queue(swordedMonster, fighter.withDexterity(10).withCombatIndex(2)), LowestFirst)
 
         swordUsedCount shouldBe 2
       }

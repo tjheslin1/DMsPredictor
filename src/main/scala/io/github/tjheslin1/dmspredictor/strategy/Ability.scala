@@ -2,11 +2,11 @@ package io.github.tjheslin1.dmspredictor.strategy
 
 import io.github.tjheslin1.dmspredictor.model._
 
-abstract class Ability[+T](combatant: Combatant) {
+abstract class Ability(combatant: Combatant) {
 
-  def levelRequirement: Level
+  val levelRequirement: Level
   def triggerMet: Boolean
   def conditionMet: Boolean
   def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant])
-  def update: T
+  def update: Creature
 }

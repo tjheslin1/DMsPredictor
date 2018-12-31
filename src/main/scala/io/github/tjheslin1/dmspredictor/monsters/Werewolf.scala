@@ -18,12 +18,13 @@ case class Werewolf(health: Int,
     extends Creature {
 
   val creatureType: CreatureType = EnemyMonster
+  val proficiencyBonus: Int = 0
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
   def weapon[_: RS]: Weapon = wpn
 
-  val abilities: List[(Int, Combatant => Ability[Creature])] = List.empty
+  val abilities: List[CreatureAbility] = List.empty
 }
 
 object Werewolf {

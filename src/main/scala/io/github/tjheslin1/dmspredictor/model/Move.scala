@@ -19,7 +19,7 @@ object Move {
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val optAbility: Option[CreatureAbility[Creature]] =
+      val optAbility: Option[CreatureAbility] =
         combatant.creature.abilities.sortBy { case (priority, _) => priority }.find {
           case (_, creatureAbility) =>
             val ability = creatureAbility(combatant)
@@ -42,7 +42,7 @@ object Move {
 
   private def actionAgainstTarget[_: RS](combatant: Combatant,
                                          toAttack: Option[Combatant],
-                                         optAbility: Option[CreatureAbility[Creature]]) = {
+                                         optAbility: Option[CreatureAbility]) = {
     toAttack.fold(none[(Combatant, Combatant)]) { target =>
       optAbility.fold(attackAndDamage(combatant, target).some) {
         case (_, ability) =>

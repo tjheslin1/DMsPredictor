@@ -8,7 +8,7 @@ import util.TestData._
 
 import scala.collection.immutable.Queue
 
-class BaseFighterAbilitiesSpec extends UnitSpecBase {
+class FighterAbilitiesSpec extends UnitSpecBase {
 
   "Fighter" should {
 

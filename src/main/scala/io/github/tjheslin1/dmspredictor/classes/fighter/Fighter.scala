@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities.allUnused
+import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
@@ -22,23 +22,33 @@ case class Fighter(level: Level,
                    armour: Armour = NoArmour,
                    offHand: Option[Equipment] = None,
                    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                   abilityUsages: BaseFighterAbilities = allUnused(),
+                   abilityUsages: FighterAbilities = allUnused(),
                    proficiencyBonus: Int = 0,
                    resistances: List[DamageType] = List(),
                    immunities: List[DamageType] = List(),
                    name: String = NameGenerator.randomName)
-    extends BaseFighter {
+  extends Creature {
+
+  import Fighter._
+
+  val creatureType: CreatureType = PlayerCharacter
 
   def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
 
-  override val abilities: List[CreatureAbility[BaseFighter]] = ???
+  val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
+
+  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+
+  val abilities: List[CreatureAbility] = fighterAbilities
 }
 
 object Fighter {
 
-  import BaseFighter._
+  import FighterAbilities._
 
   implicit val dc: DetermineCritical[Fighter] = DetermineCritical.default[Fighter]
+
+  val HitDice = D10
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
     (D10.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(HitDice) + mod(
@@ -48,6 +58,12 @@ object Fighter {
     val health = calculateHealth(LevelOne, 14)
     new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
+
+  implicit val fighterAbilities: List[CreatureAbility] = List(
+      1 -> secondWind,
+      2 -> actionSurge,
+      3 -> twoWeaponFighting,
+    )
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) =
     weapon.weaponType match {
