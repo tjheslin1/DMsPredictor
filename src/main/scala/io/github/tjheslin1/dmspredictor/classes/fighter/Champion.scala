@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
 import cats.syntax.show._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Champion._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
@@ -51,6 +52,7 @@ object Champion {
     1 -> secondWind,
     2 -> actionSurge,
     3 -> twoWeaponFighting,
+    4 -> extraAttack
   )
 
   implicit def championShow[_: RS]: Show[Champion] = Show.show { champion =>

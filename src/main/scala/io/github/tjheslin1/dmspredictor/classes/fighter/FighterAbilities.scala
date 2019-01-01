@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamageTimes, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
@@ -85,10 +86,18 @@ object FighterAbilities {
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       target match {
         case Some(target: Combatant) =>
-          // TODO summon Extra Attack
-          val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
+          val extraAttack = CoreAbilities.extraAttack(combatant)
+          if (fighter.level.value >= extraAttack.levelRequirement &&
+              extraAttack.conditionMet && extraAttack.triggerMet) {
+            val (_, updatedTarget)                 = extraAttack.useAbility(target.some)
+            val (updatedAttacker2, updatedTarget2) = extraAttack.useAbility(updatedTarget)
 
-          (updatedAttacker, updatedTarget.some)
+            (updatedAttacker2, updatedTarget2)
+          } else {
+            val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
+
+            (updatedAttacker, updatedTarget.some)
+          }
         case None => (combatant, None)
       }
     }

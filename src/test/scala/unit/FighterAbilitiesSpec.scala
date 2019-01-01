@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
+import FighterAbilities._
 
 import scala.collection.immutable.Queue
 
@@ -22,8 +23,8 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val dualWieldingFighter = fighter
-          .copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true))
+        val dualWieldingFighter = abilityUsagesLens
+          .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
           .withWeapon(trackedSword)
           .withOffHand(trackedSword)
           .withFightingStyle(TwoWeaponFighting)
@@ -50,7 +51,54 @@ class FighterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "use Action Surge to make another attack action" in new TestContext {
+    "make 2 attacks using Extra Attack with a single Action" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(19)
+
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        var swordUsedCount = 0
+        val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+          swordUsedCount += 1
+          1
+        })
+
+        val swordFighter = fighter.withAllAbilitiesUsed()
+            .withLevel(LevelFive)
+            .withWeapon(trackedSword)
+            .withCombatIndex(1)
+
+        val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+
+        Move.takeMove(Queue(swordFighter, monster), LowestFirst)
+
+        swordUsedCount shouldBe 2
+      }
+    }
+
+    "make 2 attacks using Action Surge to make two Attack actions" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(19)
+
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        var swordUsedCount = 0
+        val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+          swordUsedCount += 1
+          1
+        })
+
+        val swordFighter = abilityUsagesLens
+            .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+            .withLevel(LevelTwo)
+            .withWeapon(trackedSword)
+            .withCombatIndex(1)
+
+        val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+
+        Move.takeMove(Queue(swordFighter, monster), LowestFirst)
+
+        swordUsedCount shouldBe 2
+      }
+    }
+
+    "make 4 attacks using Action Surge to make two Extra Attack actions" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
@@ -62,7 +110,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
 
         val swordFighter =
           fighter
-            .withLevel(LevelTwo)
+            .withLevel(LevelFive)
             .copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true, actionSurgeUsed = false))
             .withWeapon(trackedSword)
             .withCombatIndex(1)
@@ -71,7 +119,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
 
         Move.takeMove(Queue(swordFighter, monster), LowestFirst)
 
-        swordUsedCount shouldBe 2
+        swordUsedCount shouldBe 4
       }
     }
   }

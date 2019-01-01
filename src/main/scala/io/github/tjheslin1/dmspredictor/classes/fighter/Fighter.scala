@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
@@ -63,6 +64,7 @@ object Fighter {
     1 -> secondWind,
     2 -> actionSurge,
     3 -> twoWeaponFighting,
+    4 -> extraAttack
   )
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) =
