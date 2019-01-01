@@ -8,6 +8,8 @@ lazy val root = (project in file("."))
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.0",
       "eu.timepit"                  %% "refined"                          % "0.9.2",
       "eu.timepit"                  %% "refined-scalacheck"               % "0.9.2",
+      "com.github.julien-truffaut"  %% "monocle-core"                     % "1.5.0",
+      "com.github.julien-truffaut"  %% "monocle-macro"                    % "1.5.0",
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"     % Test,
       "org.scalatest"               %% "scalatest"                        % "3.0.5"   % Test,

@@ -2,10 +2,10 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
 import cats.syntax.show._
+import io.github.tjheslin1.dmspredictor.classes.fighter.Champion._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.{Ability, ClassAbilities}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 case class Champion(level: Level,
@@ -16,11 +16,11 @@ case class Champion(level: Level,
                     armour: Armour = NoArmour,
                     offHand: Option[Equipment] = None,
                     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                    abilities: FighterAbilities = FighterAbilities.allUnused(),
-                    override val proficiencyBonus: Int = 0,
-                    override val resistances: List[DamageType] = List(),
-                    override val immunities: List[DamageType] = List(),
-                    override val name: String = NameGenerator.randomName)
+                    abilityUsages: FighterAbilities = FighterAbilities.allUnused(),
+                    proficiencyBonus: Int = 0,
+                    resistances: List[DamageType] = List(),
+                    immunities: List[DamageType] = List(),
+                    name: String = NameGenerator.randomName)
     extends Creature {
 
   import Fighter._
@@ -31,7 +31,9 @@ case class Champion(level: Level,
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
+  val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
+
+  val abilities: List[CreatureAbility] = championAbilities
 }
 
 object Champion {
@@ -45,13 +47,11 @@ object Champion {
       if (champion.level.value <= 2) roll == 20 else roll >= 19
   }
 
-  implicit val championAbilities = new ClassAbilities[Champion] {
-    def abilities: List[(Int, Combatant => Ability[Champion])] = List.empty
-//      1 -> secondWind,
-//      2 -> actionSurge,
-//      3 -> twoWeaponFighting,
-//    )
-  }
+  implicit val championAbilities: List[CreatureAbility] = List(
+    1 -> secondWind,
+    2 -> actionSurge,
+    3 -> twoWeaponFighting,
+  )
 
   implicit def championShow[_: RS]: Show[Champion] = Show.show { champion =>
     s"Fighter: " +

@@ -3,8 +3,10 @@ package io.github.tjheslin1.dmspredictor.monsters
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.fighter.Champion
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.strategy.Ability
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
@@ -15,14 +17,16 @@ case class Goblin(health: Int,
                   override val resistances: List[DamageType] = List(),
                   override val immunities: List[DamageType] = List(),
                   override val name: String = NameGenerator.randomName)
-    extends Creature
-    with Monster {
+    extends Creature {
 
   val creatureType: CreatureType = EnemyMonster
+  val proficiencyBonus: Int      = 0
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
   def weapon[_: RS]: Weapon = wpn
+
+  val abilities: List[CreatureAbility] = List.empty
 }
 
 object Goblin {

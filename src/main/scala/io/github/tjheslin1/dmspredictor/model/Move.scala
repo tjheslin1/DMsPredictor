@@ -1,9 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.option._
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
-import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
 
@@ -21,8 +19,8 @@ object Move {
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val optAbility: Option[CreatureAbility[Creature]] =
-        creatureAbilities(combatant.creature).sortBy { case (priority, _) => priority }.find {
+      val optAbility: Option[CreatureAbility] =
+        combatant.creature.abilities.sortBy { case (priority, _) => priority }.find {
           case (_, creatureAbility) =>
             val ability = creatureAbility(combatant)
             ability.conditionMet && ability.triggerMet
@@ -42,17 +40,9 @@ object Move {
       others.append(combatant)
   }
 
-  private def creatureAbilities[T <: Creature](creature: Creature): List[CreatureAbility[Creature]] =
-    creature match {
-      case _: Champion => implicitly[ClassAbilities[Champion]].abilities.asInstanceOf[List[CreatureAbility[Creature]]]
-      case _: Fighter  => implicitly[ClassAbilities[Fighter]].abilities.asInstanceOf[List[CreatureAbility[Creature]]]
-      case _: Monster  => implicitly[ClassAbilities[Monster]].abilities.asInstanceOf[List[CreatureAbility[Creature]]]
-      case _           => implicitly[ClassAbilities[Creature]].abilities
-    }
-
   private def actionAgainstTarget[_: RS](combatant: Combatant,
                                          toAttack: Option[Combatant],
-                                         optAbility: Option[CreatureAbility[Creature]]) = {
+                                         optAbility: Option[CreatureAbility]) = {
     toAttack.fold(none[(Combatant, Combatant)]) { target =>
       optAbility.fold(attackAndDamage(combatant, target).some) {
         case (_, ability) =>

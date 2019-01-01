@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities.allUnused
+import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
@@ -11,7 +11,6 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.{Ability, ClassAbilities}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
@@ -23,11 +22,11 @@ case class Fighter(level: Level,
                    armour: Armour = NoArmour,
                    offHand: Option[Equipment] = None,
                    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                   abilities: FighterAbilities = allUnused(),
-                   override val proficiencyBonus: Int = 0,
-                   override val resistances: List[DamageType] = List(),
-                   override val immunities: List[DamageType] = List(),
-                   override val name: String = NameGenerator.randomName)
+                   abilityUsages: FighterAbilities = allUnused(),
+                   proficiencyBonus: Int = 0,
+                   resistances: List[DamageType] = List(),
+                   immunities: List[DamageType] = List(),
+                   name: String = NameGenerator.randomName)
     extends Creature {
 
   import Fighter._
@@ -36,9 +35,11 @@ case class Fighter(level: Level,
 
   def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
 
-  def armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
+  val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+
+  val abilities: List[CreatureAbility] = fighterAbilities
 }
 
 object Fighter {
@@ -58,13 +59,11 @@ object Fighter {
     new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
 
-  implicit val fighterAbilities = new ClassAbilities[Fighter] {
-    def abilities: List[CreatureAbility[Fighter]] = List(
-      1 -> secondWind,
-      2 -> actionSurge,
-      3 -> twoWeaponFighting,
-    )
-  }
+  val fighterAbilities: List[CreatureAbility] = List(
+    1 -> secondWind,
+    2 -> actionSurge,
+    3 -> twoWeaponFighting,
+  )
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) =
     weapon.weaponType match {

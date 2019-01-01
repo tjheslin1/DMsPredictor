@@ -11,7 +11,6 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
@@ -25,12 +24,14 @@ object TestData {
                          stats: BaseStats,
                          armourClass: Int,
                          wpn: Weapon,
-                         override val resistances: List[DamageType] = List(),
-                         override val immunities: List[DamageType] = List(),
-                         override val name: String = NameGenerator.randomName)
-      extends Creature with Monster {
+                         abilities: List[CreatureAbility] = List.empty,
+                         resistances: List[DamageType] = List(),
+                         immunities: List[DamageType] = List(),
+                         name: String = NameGenerator.randomName)
+      extends Creature {
 
     val creatureType: CreatureType = EnemyMonster
+    val proficiencyBonus: Int      = 0
 
     def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
@@ -49,6 +50,8 @@ object TestData {
     def withNoResistances()                      = testMonster.copy(resistances = List.empty)
     def withNoImmunities()                       = testMonster.copy(immunities = List.empty)
     def withNoResistancesOrImmunities()          = testMonster.copy(resistances = List.empty, immunities = List.empty)
+
+    def withAbilities(ablts: List[CreatureAbility]) = testMonster.copy(abilities = ablts)
   }
 
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
@@ -56,8 +59,8 @@ object TestData {
     def withName(creatureName: String)                   = fighter.copy(name = creatureName)
     def withHealth(hp: Int)                              = fighter.copy(health = hp)
     def withMaxHealth(hp: Int)                           = fighter.copy(maxHealth = hp)
-    def withAllAbilitiesUsed()                           = fighter.copy(abilities = FighterAbilities.allUsed())
-    def withAllAbilitiesUnused()                         = fighter.copy(abilities = allUnused())
+    def withAllAbilitiesUsed()                           = fighter.copy(abilityUsages = FighterAbilities.allUsed())
+    def withAllAbilitiesUnused()                         = fighter.copy(abilityUsages = allUnused())
     def withStrength(strengthScore: Stat)                = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
     def withDexterity(dexScore: Stat)                    = fighter.copy(stats = fighter.stats.copy(dexterity = dexScore))
     def withConstitution(conScore: Stat)                 = fighter.copy(stats = fighter.stats.copy(constitution = conScore))
@@ -139,7 +142,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbArmour: Arbitrary[Armour] = Arbitrary {
     for {
       armourName <- Gen.alphaStr
-      baseArmour <- Gen.choose(5, 15)
+      baseArmour <- Gen.choose(5, 14)
     } yield
       new Armour {
         val name: String = armourName
@@ -154,6 +157,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
+      n         <- Gen.alphaStr
       hp        <- Gen.choose(10, 80)
       baseStats <- arbBaseStats.arbitrary
       wpn       <- arbWeapon.arbitrary
@@ -166,12 +170,18 @@ trait TestData extends RandomDataGenerator {
         val health: Int                = hp
         val stats: BaseStats           = baseStats
         def weapon[_: RS]: Weapon      = wpn
-        def armourClass: Int           = armour.armourClass(stats.dexterity)
+        val armourClass: Int           = armour.armourClass(stats.dexterity)
 
-        override val proficiencyBonus: Int = profBonus
+        val proficiencyBonus: Int = profBonus
 
         def updateHealth(modification: Int): Creature =
           throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
+
+        val abilities: List[CreatureAbility] = List.empty // TODO add core abilities
+
+        val resistances: List[DamageType] = List.empty
+        val immunities: List[DamageType]  = List.empty
+        val name: String                  = n
       }
   }
 
@@ -185,6 +195,7 @@ trait TestData extends RandomDataGenerator {
         creature.stats,
         creature.armourClass,
         creature.weapon(Dice.defaultRandomiser),
+        List.empty, // TODO add core abilities
         creature.resistances,
         creature.immunities,
         creature.name

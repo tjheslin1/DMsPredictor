@@ -1,19 +1,26 @@
 package io.github.tjheslin1.dmspredictor.classes
 
-import io.github.tjheslin1.dmspredictor.model.{Combatant, Creature, Level, LevelFive, RS}
+import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
 
 object CoreAbilities {
 
-  def extraAttack[T: RS](combatant: Combatant) = new Ability[T](combatant) {
-    val levelRequirement = LevelFive
+  def extraAttack(combatant: Combatant): Ability = new Ability(combatant) {
+    val levelRequirement: Level = LevelFive
 
-    def triggerMet: Boolean = ???
+    def triggerMet: Boolean   = true
+    def conditionMet: Boolean = true
 
-    def conditionMet: Boolean = ???
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+      target match {
+        case Some(target: Combatant) =>
+          val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
+          (updatedAttacker, updatedTarget.some)
+        case None => (combatant, None)
+      }
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = ???
-
-    def update: T = ???
+    def update: Creature = combatant.creature
   }
 }
