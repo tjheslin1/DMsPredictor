@@ -41,6 +41,21 @@ class FighterAbilitiesSpec extends UnitSpecBase {
     "use Second Wind when it has reached a health threshold" in new TestContext {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         val lowHealthFighter =
+          fighter.withHealth(4).withMaxHealth(5).withLevel(LevelTwo).withAllAbilitiesUnused().withCombatIndex(1)
+
+        val monster = testMonster.withCombatIndex(2)
+
+        val Queue(_, Combatant(_, updatedCreature)) = Move.takeMove(Queue(lowHealthFighter, monster), LowestFirst)
+        val updatedFighter = updatedCreature.asInstanceOf[Fighter]
+
+        updatedFighter.health shouldBe 4
+        updatedFighter.abilityUsages.secondWindUsed shouldBe false
+      }
+    }
+
+    "not use Second Wind when the below health condition has not been met" in new TestContext {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        val lowHealthFighter =
           fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withAllAbilitiesUnused().withCombatIndex(1)
 
         val monster = testMonster.withCombatIndex(2)

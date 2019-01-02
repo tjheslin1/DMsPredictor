@@ -6,15 +6,13 @@ import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamageTi
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
 import io.github.tjheslin1.dmspredictor.util.IntOps._
-import monocle.Lens
-import monocle.macros.GenLens
+import monocle.{Lens, Prism}
+import monocle.macros.{GenLens, GenPrism}
 
 case class FighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolean)
 
 object FighterAbilities {
 
-  val healthLens: Lens[Fighter, Int]                       = GenLens[Fighter](_.health)
-  val abilityUsagesLens: Lens[Fighter, FighterAbilities]   = GenLens[Fighter](_.abilityUsages)
   val secondWindUsedLens: Lens[FighterAbilities, Boolean]  = GenLens[FighterAbilities](_.secondWindUsed)
   val actionSurgeUsedLens: Lens[FighterAbilities, Boolean] = GenLens[FighterAbilities](_.actionSurgeUsed)
 
@@ -31,8 +29,9 @@ object FighterAbilities {
     val conditionMet     = fighter.level.value >= levelRequirement && fighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      val updatedHealth    = Math.min(fighter.maxHealth, fighter.health + (1 * HitDice) + fighter.level.value)
-      val updatedCombatant = combatant.copy(creature = healthLens.set(updatedHealth)(fighter))
+      val updatedHealth = Math.min(fighter.maxHealth, fighter.health + (1 * HitDice) + fighter.level.value)
+      val updatedCombatant =
+        (combatantLens composePrism fighterPrism composeLens healthLens).set(updatedHealth)(combatant)
 
       (updatedCombatant, None)
     }

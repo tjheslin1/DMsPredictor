@@ -62,6 +62,7 @@ object Actions extends LazyLogging {
 
     logger.debug(s"${attacker.creature.name} attacks ${target.creature.name} for $adjustedDamage damage")
 
+    // TODO Optics
     val damagedTarget = target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
 
     (attacker, damagedTarget)

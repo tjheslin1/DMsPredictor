@@ -5,7 +5,6 @@ import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities.allUnused
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
@@ -19,64 +18,56 @@ object TestData {
 
   val DamageTypes = List(Bludgeoning, Piercing, Slashing)
 
-  case class TestMonster(health: Int,
-                         maxHealth: Int,
-                         stats: BaseStats,
-                         armourClass: Int,
-                         wpn: Weapon,
-                         abilities: List[CreatureAbility] = List.empty,
-                         resistances: List[DamageType] = List(),
-                         immunities: List[DamageType] = List(),
-                         name: String = NameGenerator.randomName)
-      extends Creature {
-
-    val creatureType: CreatureType = EnemyMonster
-    val proficiencyBonus: Int      = 0
-
-    def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
-
-    def weapon[_: RS]: Weapon = wpn
-  }
-
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
-    def withName(creatureName: String)           = testMonster.copy(name = creatureName)
-    def withHealth(hp: Int)                      = testMonster.copy(health = hp)
-    def withMaxHealth(hp: Int)                   = testMonster.copy(maxHealth = hp)
-    def withStrength(strengthScore: Stat)        = testMonster.copy(stats = testMonster.stats.copy(strength = strengthScore))
-    def withWeapon(weapon: Weapon)               = testMonster.copy(wpn = weapon)
-    def withArmourClass(ac: Int)                 = testMonster.copy(armourClass = ac)
-    def withResistance(creatureRes: DamageType*) = testMonster.copy(resistances = creatureRes.toList)
-    def withImmunity(creatureImm: DamageType*)   = testMonster.copy(immunities = creatureImm.toList)
-    def withNoResistances()                      = testMonster.copy(resistances = List.empty)
-    def withNoImmunities()                       = testMonster.copy(immunities = List.empty)
-    def withNoResistancesOrImmunities()          = testMonster.copy(resistances = List.empty, immunities = List.empty)
+    import TestMonster._
+
+    def withName(creatureName: String)                   = nameLens.set(creatureName)(testMonster)
+    def withHealth(hp: Int)                              = healthLens.set(hp)(testMonster)
+    def withMaxHealth(hp: Int)                           = maxHealthLens.set(hp)(testMonster)
+    def withStrength(strengthScore: Stat)                = strengthLens.set(strengthScore)(testMonster)
+    def withDexterity(dexScore: Stat)                    = dexterityLens.set(dexScore)(testMonster)
+    def withConstitution(conScore: Stat)                 = constitutionLens.set(conScore)(testMonster)
+    def withWeapon(weapon: Weapon)                       = baseWeaponLens.set(weapon)(testMonster)
+    def withArmour(armr: Armour)                         = armourLens.set(armr)(testMonster)
+    def withNoArmour()                                   = armourLens.set(NoArmour)(testMonster)
+    def withShield()                                     = offHandLens.set(Shield().some)(testMonster)
+    def withOffHand(equipment: Equipment)                = offHandLens.set(equipment.some)(testMonster)
+    def withNoShield()                                   = offHandLens.set(None)(testMonster)
+    def withResistance(creatureRes: DamageType*)         = resistancesLens.set(creatureRes.toList)(testMonster)
+    def withImmunity(creatureImm: DamageType*)           = immunitiesLens.set(creatureImm.toList)(testMonster)
+    def withNoResistances()                              = resistancesLens.set(List.empty)(testMonster)
+    def withNoImmunities()                               = immunitiesLens.set(List.empty)(testMonster)
+    def withNoResistancesOrImmunities()                  = testMonster.withNoResistances().withNoImmunities()
 
     def withAbilities(ablts: List[CreatureAbility]) = testMonster.copy(abilities = ablts)
   }
 
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
-    def withLevel(lvl: Level)                            = fighter.copy(level = lvl)
-    def withName(creatureName: String)                   = fighter.copy(name = creatureName)
-    def withHealth(hp: Int)                              = fighter.copy(health = hp)
-    def withMaxHealth(hp: Int)                           = fighter.copy(maxHealth = hp)
-    def withAllAbilitiesUsed()                           = fighter.copy(abilityUsages = FighterAbilities.allUsed())
-    def withAllAbilitiesUnused()                         = fighter.copy(abilityUsages = allUnused())
-    def withStrength(strengthScore: Stat)                = fighter.copy(stats = fighter.stats.copy(strength = strengthScore))
-    def withDexterity(dexScore: Stat)                    = fighter.copy(stats = fighter.stats.copy(dexterity = dexScore))
-    def withConstitution(conScore: Stat)                 = fighter.copy(stats = fighter.stats.copy(constitution = conScore))
-    def withWeapon(weapon: Weapon)                       = fighter.copy(baseWeapon = weapon)
-    def withArmour(armr: Armour)                         = fighter.copy(armour = armr)
-    def withNoArmour()                                   = fighter.copy(armour = NoArmour)
-    def withShield()                                     = fighter.copy(offHand = Shield().some)
-    def withOffHand(equipment: Equipment)                = fighter.copy(offHand = equipment.some)
-    def withNoShield()                                   = fighter.copy(offHand = None)
-    def withResistance(creatureRes: DamageType*)         = fighter.copy(resistances = creatureRes.toList)
-    def withImmunity(creatureImm: DamageType*)           = fighter.copy(immunities = creatureImm.toList)
-    def withNoResistances()                              = fighter.copy(resistances = List.empty)
-    def withNoImmunities()                               = fighter.copy(immunities = List.empty)
-    def withNoResistancesOrImmunities()                  = fighter.copy(resistances = List.empty, immunities = List.empty)
-    def withFightingStyle(styles: FighterFightingStyle*) = fighter.copy(fightingStyles = styles.toList)
-    def withNoFightingStyles()                           = fighter.copy(fightingStyles = List.empty)
+    import Fighter._
+    import FighterAbilities._
+
+    def withLevel(lvl: Level)                            = levelLens.set(lvl)(fighter)
+    def withName(creatureName: String)                   = nameLens.set(creatureName)(fighter)
+    def withHealth(hp: Int)                              = healthLens.set(hp)(fighter)
+    def withMaxHealth(hp: Int)                           = maxHealthLens.set(hp)(fighter)
+    def withAllAbilitiesUsed()                           = fighterAbilitiesLens.set(allUsed())(fighter)
+    def withAllAbilitiesUnused()                         = fighterAbilitiesLens.set(allUnused())(fighter)
+    def withStrength(strengthScore: Stat)                = strengthLens.set(strengthScore)(fighter)
+    def withDexterity(dexScore: Stat)                    = dexterityLens.set(dexScore)(fighter)
+    def withConstitution(conScore: Stat)                 = constitutionLens.set(conScore)(fighter)
+    def withWeapon(weapon: Weapon)                       = baseWeaponLens.set(weapon)(fighter)
+    def withArmour(armr: Armour)                         = armourLens.set(armr)(fighter)
+    def withNoArmour()                                   = armourLens.set(NoArmour)(fighter)
+    def withShield()                                     = offHandLens.set(Shield().some)(fighter)
+    def withOffHand(equipment: Equipment)                = offHandLens.set(equipment.some)(fighter)
+    def withNoShield()                                   = offHandLens.set(None)(fighter)
+    def withResistance(creatureRes: DamageType*)         = resistancesLens.set(creatureRes.toList)(fighter)
+    def withImmunity(creatureImm: DamageType*)           = immunitiesLens.set(creatureImm.toList)(fighter)
+    def withNoResistances()                              = resistancesLens.set(List.empty)(fighter)
+    def withNoImmunities()                               = immunitiesLens.set(List.empty)(fighter)
+    def withNoResistancesOrImmunities()                  = fighter.withNoResistances().withNoImmunities()
+    def withFightingStyle(styles: FighterFightingStyle*) = fightingStylesLens.set(styles.toList)(fighter)
+    def withNoFightingStyles()                           = fightingStylesLens.set(List.empty)(fighter)
   }
 
   implicit class PlayerOps[T <: Creature](val t: T) extends AnyVal {

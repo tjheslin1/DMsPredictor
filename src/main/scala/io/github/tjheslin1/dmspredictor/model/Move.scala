@@ -33,6 +33,7 @@ object Move {
 
       updatedCombatants.fold(others.append(combatant)) {
         case (attacker, target) =>
+          // TODO Optics (Optional?)
           val updatedOthers = others.map(c => if (c.index == target.index) target else c)
           updatedOthers.append(attacker)
       }

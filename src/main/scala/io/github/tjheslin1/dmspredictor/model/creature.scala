@@ -2,9 +2,8 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.Show
 import cats.syntax.show._
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.model.Weapon.weaponShow
-import io.github.tjheslin1.dmspredictor.strategy.Ability
-import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 sealed trait CreatureType
 
@@ -16,8 +15,11 @@ trait Creature {
   val creatureType: CreatureType
 
   val health: Int
+  val maxHealth: Int
   val stats: BaseStats
   def weapon[_: RS]: Weapon
+  val armour: Armour
+  val offHand: Option[Equipment]
   val armourClass: Int
   val proficiencyBonus: Int
   val resistances: List[DamageType]

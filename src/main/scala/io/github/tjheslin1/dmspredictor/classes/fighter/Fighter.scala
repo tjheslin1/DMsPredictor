@@ -14,6 +14,8 @@ import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
+import monocle.Lens
+import monocle.macros.GenLens
 
 case class Fighter(level: Level,
                    health: Int,
@@ -109,6 +111,23 @@ object Fighter {
       s"AC: ${fighter.armourClass}, " +
       s"${fighter.weapon.show}"
   }
+
+  val levelLens: Lens[Fighter, Level]                               = GenLens[Fighter](_.level)
+  val healthLens: Lens[Fighter, Int]                                = GenLens[Fighter](_.health)
+  val maxHealthLens: Lens[Fighter, Int]                             = GenLens[Fighter](_.maxHealth)
+  val statLens: Lens[Fighter, BaseStats]                            = GenLens[Fighter](_.stats)
+  val strengthLens: Lens[Fighter, Stat]                             = statLens composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Fighter, Stat]                            = statLens composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Fighter, Stat]                         = statLens composeLens GenLens[BaseStats](_.constitution)
+  val baseWeaponLens: Lens[Fighter, Weapon]                         = GenLens[Fighter](_.baseWeapon)
+  val armourLens: Lens[Fighter, Armour]                             = GenLens[Fighter](_.armour)
+  val offHandLens: Lens[Fighter, Option[Equipment]]                 = GenLens[Fighter](_.offHand)
+  val fightingStylesLens: Lens[Fighter, List[FighterFightingStyle]] = GenLens[Fighter](_.fightingStyles)
+  val fighterAbilitiesLens: Lens[Fighter, FighterAbilities]         = GenLens[Fighter](_.abilityUsages)
+  val proficiencyBonusLens: Lens[Fighter, Int]                      = GenLens[Fighter](_.proficiencyBonus)
+  val resistancesLens: Lens[Fighter, List[DamageType]]              = GenLens[Fighter](_.resistances)
+  val immunitiesLens: Lens[Fighter, List[DamageType]]               = GenLens[Fighter](_.immunities)
+  val nameLens: Lens[Fighter, String]                               = GenLens[Fighter](_.name)
 }
 
 sealed trait FighterFightingStyle extends Product with Serializable
