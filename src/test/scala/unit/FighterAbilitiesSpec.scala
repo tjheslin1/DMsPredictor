@@ -25,7 +25,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val dualWieldingFighter = fighterAbilityUsagesLens
+        val dualWieldingFighter = _abilityUsages
           .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
           .withWeapon(trackedSword)
           .withOffHand(trackedSword)
@@ -101,7 +101,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val swordFighter = fighterAbilityUsagesLens
+        val swordFighter = _abilityUsages
             .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelTwo)
             .withWeapon(trackedSword)

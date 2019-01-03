@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamageTimes, resolveDamage}
-import io.github.tjheslin1.dmspredictor.model.Combatant.creatureLens
+import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -26,17 +26,17 @@ object FighterAbilities {
     val fighter = combatant.creature.asInstanceOf[Fighter]
 
     val levelRequirement = LevelTwo
-    val triggerMet       = fighter.health <= fighter.maxHealth / 2
+    val triggerMet       = combatant.creature.health <= fighter.maxHealth / 2
     val conditionMet     = fighter.level.value >= levelRequirement && fighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val updatedHealth    = Math.min(fighter.maxHealth, fighter.health + (1 * HitDice) + fighter.level.value)
-      val updatedCombatant = creatureLens.set(healthLens.set(updatedHealth)(fighter))(combatant)
+      val updatedCombatant = (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
       (updatedCombatant, None)
     }
 
-    def update: Fighter = (fighterAbilityUsagesLens composeLens secondWindUsedLens).set(true)(fighter)
+    def update: Fighter = (_abilityUsages composeLens secondWindUsedLens).set(true)(fighter)
   }
 
   def twoWeaponFighting(combatant: Combatant): Ability = new Ability(combatant) {
@@ -101,7 +101,7 @@ object FighterAbilities {
       }
     }
 
-    def update: Fighter = (fighterAbilityUsagesLens composeLens actionSurgeUsedLens).set(true)(fighter)
+    def update: Fighter = (_abilityUsages composeLens actionSurgeUsedLens).set(true)(fighter)
   }
 
 }

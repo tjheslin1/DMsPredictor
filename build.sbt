@@ -11,13 +11,17 @@ lazy val root = (project in file("."))
       "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
       "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
 
-      "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"     % Test,
-      "org.scalatest"               %% "scalatest"                        % "3.0.5"   % Test,
-      "org.scalacheck"              %% "scalacheck"                       % "1.14.0"  % Test
+      "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
+      "org.scalatest"               %% "scalatest"                        % "3.0.5"         % Test,
+      "org.scalacheck"              %% "scalacheck"                       % "1.14.0"        % Test
       //@formatter:on
-    ))
+    ),
+    autoCompilerPlugins := true,
+    addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+  )
 
 scalacOptions += "-Ypartial-unification"
+autoCompilerPlugins := true
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),

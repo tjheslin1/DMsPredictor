@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
+import cats.syntax.option._
 import cats.syntax.show._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Champion._
@@ -8,8 +9,10 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
+import monocle.Prism
+import monocle.macros.Lenses
 
-case class Champion(level: Level,
+@Lenses("_") case class Champion(level: Level,
                     health: Int,
                     maxHealth: Int,
                     stats: BaseStats,
@@ -59,7 +62,11 @@ object Champion {
     s"Fighter: " +
       s"Name: ${champion.name}, " +
       s"health: ${champion.health}, " +
-      s"AC: ${champion.armourClass}, " +
-      s"${champion.weapon.show}"
+      s"AC: ${champion.armourClass}"
   }
+
+  val prism: Prism[Creature, Champion] = Prism[Creature, Champion]{
+    case c: Champion => c.some
+    case _ => None
+  }(identity)
 }

@@ -9,12 +9,12 @@ import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
+import monocle.macros.Lenses
 
-case class Goblin(health: Int,
+@Lenses("_") case class Goblin(health: Int,
                   maxHealth: Int,
                   stats: BaseStats,
                   armourClass: Int,
-                  wpn: Weapon,
                   override val resistances: List[DamageType] = List(),
                   override val immunities: List[DamageType] = List(),
                   override val name: String = NameGenerator.randomName)
@@ -25,10 +25,11 @@ case class Goblin(health: Int,
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
-  def weapon[_: RS]: Weapon = wpn
+  val baseWeapon: Weapon = Shortsword
+
+  def weapon[_: RS]: Weapon = baseWeapon
 
   val abilities: List[CreatureAbility] = List.empty
-
   val armour: Armour             = NoArmour
   val offHand: Option[Equipment] = None
 }
@@ -37,16 +38,15 @@ object Goblin {
 
   def calculateHealth[_: RS]: Int = 2 * D6
 
-  def levelOneGoblin[_: RS](weapon: Weapon = Shortsword): Goblin = {
+  def levelOneGoblin[_: RS](): Goblin = {
     val hp = calculateHealth
-    Goblin(hp, hp, BaseStats(8, 14, 10, 10, 8, 8), 15, weapon)
+    Goblin(hp, hp, BaseStats(8, 14, 10, 10, 8, 8), 15)
   }
 
   implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>
     s"Fighter: " +
       s"Name: ${goblin.name}, " +
       s"health: ${goblin.health}, " +
-      s"AC: ${goblin.armourClass}, " +
-      s"${goblin.weapon.show}"
+      s"AC: ${goblin.armourClass}"
   }
 }

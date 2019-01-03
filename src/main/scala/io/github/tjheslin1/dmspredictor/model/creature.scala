@@ -1,9 +1,10 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import cats.Show
-import cats.syntax.show._
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
-import io.github.tjheslin1.dmspredictor.model.Weapon.weaponShow
+import io.github.tjheslin1.dmspredictor.monsters._
+import monocle.Lens
 
 sealed trait CreatureType
 
@@ -17,6 +18,7 @@ trait Creature {
   val health: Int
   val maxHealth: Int
   val stats: BaseStats
+  val baseWeapon: Weapon
   def weapon[_: RS]: Weapon
   val armour: Armour
   val offHand: Option[Equipment]
@@ -35,6 +37,17 @@ trait Creature {
 
 object Creature {
 
+  // TODO
+  val creatureHealthLens: Lens[Creature, Int] = Lens[Creature, Int](_.health) { hp =>
+    {
+      case c: Champion => Champion._health.set(hp)(c)
+      case c: Fighter  => Fighter._health.set(hp)(c)
+
+      case c: Goblin  => Goblin._health.set(hp)(c)
+      case c: Werewolf  => Werewolf._health.set(hp)(c)
+    }
+  }
+
   implicit val determineCritical: DetermineCritical[Creature] = new DetermineCritical[Creature] {
     def attackIsCritical(creature: Creature, roll: Int): Boolean = roll == 20
   }
@@ -43,7 +56,6 @@ object Creature {
     s"${creature.creatureType} - " +
       s"Name: ${creature.name}, " +
       s"health: ${creature.health}, " +
-      s"AC: ${creature.armourClass}, " +
-      s"${creature.weapon.show}"
+      s"AC: ${creature.armourClass}"
   }
 }

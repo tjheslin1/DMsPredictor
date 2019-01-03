@@ -7,17 +7,17 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
-import monocle.macros.GenLens
+import monocle.macros.{GenLens, Lenses}
 
-case class TestMonster(health: Int,
-                       maxHealth: Int,
-                       stats: BaseStats,
-                       armourClass: Int,
-                       wpn: Weapon,
-                       abilities: List[CreatureAbility] = List.empty,
-                       resistances: List[DamageType] = List(),
-                       immunities: List[DamageType] = List(),
-                       name: String = NameGenerator.randomName)
+@Lenses("_") case class TestMonster(health: Int,
+                                    maxHealth: Int,
+                                    stats: BaseStats,
+                                    armourClass: Int,
+                                    baseWeapon: Weapon,
+                                    abilities: List[CreatureAbility] = List.empty,
+                                    resistances: List[DamageType] = List(),
+                                    immunities: List[DamageType] = List(),
+                                    name: String = NameGenerator.randomName)
     extends Creature {
 
   val creatureType: CreatureType = EnemyMonster
@@ -25,7 +25,7 @@ case class TestMonster(health: Int,
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
-  def weapon[_: RS]: Weapon = wpn
+  def weapon[_: RS]: Weapon = baseWeapon
 
   val armour: Armour             = NoArmour
   val offHand: Option[Equipment] = none[Equipment]
@@ -33,15 +33,7 @@ case class TestMonster(health: Int,
 
 object TestMonster {
 
-  val healthLens: Lens[TestMonster, Int]                   = GenLens[TestMonster](_.health)
-  val maxHealthLens: Lens[TestMonster, Int]                = GenLens[TestMonster](_.maxHealth)
-  val statLens: Lens[TestMonster, BaseStats]               = GenLens[TestMonster](_.stats)
-  val strengthLens: Lens[TestMonster, Stat]                = statLens composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[TestMonster, Stat]               = statLens composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[TestMonster, Stat]            = statLens composeLens GenLens[BaseStats](_.constitution)
-  val baseWeaponLens: Lens[TestMonster, Weapon]            = GenLens[TestMonster](_.wpn)
-  val armourClassLens: Lens[TestMonster, Int]              = GenLens[TestMonster](_.armourClass)
-  val resistancesLens: Lens[TestMonster, List[DamageType]] = GenLens[TestMonster](_.resistances)
-  val immunitiesLens: Lens[TestMonster, List[DamageType]]  = GenLens[TestMonster](_.immunities)
-  val nameLens: Lens[TestMonster, String]                  = GenLens[TestMonster](_.name)
+  val strengthLens: Lens[TestMonster, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[TestMonster, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
 }
