@@ -3,14 +3,15 @@ package io.github.tjheslin1.dmspredictor.monsters
 import cats.Show
 import cats.syntax.show._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Champion
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
+import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Ability
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 
 case class Goblin(health: Int,
+                  maxHealth: Int,
                   stats: BaseStats,
                   armourClass: Int,
                   wpn: Weapon,
@@ -27,14 +28,19 @@ case class Goblin(health: Int,
   def weapon[_: RS]: Weapon = wpn
 
   val abilities: List[CreatureAbility] = List.empty
+
+  val armour: Armour             = NoArmour
+  val offHand: Option[Equipment] = None
 }
 
 object Goblin {
 
   def calculateHealth[_: RS]: Int = 2 * D6
 
-  def levelOneGoblin[_: RS](weapon: Weapon = Shortsword): Goblin =
-    Goblin(calculateHealth, BaseStats(8, 14, 10, 10, 8, 8), 15, weapon)
+  def levelOneGoblin[_: RS](weapon: Weapon = Shortsword): Goblin = {
+    val hp = calculateHealth
+    Goblin(hp, hp, BaseStats(8, 14, 10, 10, 8, 8), 15, weapon)
+  }
 
   implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>
     s"Fighter: " +

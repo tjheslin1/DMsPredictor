@@ -10,7 +10,6 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -28,11 +27,7 @@ object TestData {
     def withDexterity(dexScore: Stat)                    = dexterityLens.set(dexScore)(testMonster)
     def withConstitution(conScore: Stat)                 = constitutionLens.set(conScore)(testMonster)
     def withWeapon(weapon: Weapon)                       = baseWeaponLens.set(weapon)(testMonster)
-    def withArmour(armr: Armour)                         = armourLens.set(armr)(testMonster)
-    def withNoArmour()                                   = armourLens.set(NoArmour)(testMonster)
-    def withShield()                                     = offHandLens.set(Shield().some)(testMonster)
-    def withOffHand(equipment: Equipment)                = offHandLens.set(equipment.some)(testMonster)
-    def withNoShield()                                   = offHandLens.set(None)(testMonster)
+    def withArmourClass(ac: Int)                         = armourClassLens.set(ac)(testMonster)
     def withResistance(creatureRes: DamageType*)         = resistancesLens.set(creatureRes.toList)(testMonster)
     def withImmunity(creatureImm: DamageType*)           = immunitiesLens.set(creatureImm.toList)(testMonster)
     def withNoResistances()                              = resistancesLens.set(List.empty)(testMonster)
@@ -50,8 +45,8 @@ object TestData {
     def withName(creatureName: String)                   = nameLens.set(creatureName)(fighter)
     def withHealth(hp: Int)                              = healthLens.set(hp)(fighter)
     def withMaxHealth(hp: Int)                           = maxHealthLens.set(hp)(fighter)
-    def withAllAbilitiesUsed()                           = fighterAbilitiesLens.set(allUsed())(fighter)
-    def withAllAbilitiesUnused()                         = fighterAbilitiesLens.set(allUnused())(fighter)
+    def withAllAbilitiesUsed()                           = fighterAbilityUsagesLens.set(allUsed())(fighter)
+    def withAllAbilitiesUnused()                         = fighterAbilityUsagesLens.set(allUnused())(fighter)
     def withStrength(strengthScore: Stat)                = strengthLens.set(strengthScore)(fighter)
     def withDexterity(dexScore: Stat)                    = dexterityLens.set(dexScore)(fighter)
     def withConstitution(conScore: Stat)                 = constitutionLens.set(conScore)(fighter)
@@ -80,8 +75,6 @@ object TestData {
 }
 
 trait TestData extends RandomDataGenerator {
-
-  import TestData._
 
   implicit val arbStat: Arbitrary[Stat] =
     Arbitrary {
@@ -152,15 +145,21 @@ trait TestData extends RandomDataGenerator {
       hp        <- Gen.choose(10, 80)
       baseStats <- arbBaseStats.arbitrary
       wpn       <- arbWeapon.arbitrary
-      armour    <- arbArmour.arbitrary
+      armr    <- arbArmour.arbitrary
+      optShield         <- arbShield.arbitrary
       cType     <- Gen.oneOf(PlayerCharacter, EnemyMonster)
       profBonus <- Gen.choose(0, 6)
     } yield
       new Creature {
         val creatureType: CreatureType = cType
         val health: Int                = hp
+        val maxHealth: Int = hp
         val stats: BaseStats           = baseStats
         def weapon[_: RS]: Weapon      = wpn
+
+        val armour: Armour = armr
+        val offHand: Option[Equipment] = optShield
+
         val armourClass: Int           = armour.armourClass(stats.dexterity)
 
         val proficiencyBonus: Int = profBonus
@@ -169,7 +168,6 @@ trait TestData extends RandomDataGenerator {
           throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
 
         val abilities: List[CreatureAbility] = List.empty // TODO add core abilities
-
         val resistances: List[DamageType] = List.empty
         val immunities: List[DamageType]  = List.empty
         val name: String                  = n
@@ -208,8 +206,6 @@ trait TestData extends RandomDataGenerator {
     for {
       creature       <- arbCreature.arbitrary
       abilities      <- arbFighterAbilities.arbitrary
-      armour         <- arbArmour.arbitrary
-      shield         <- arbShield.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
     } yield
@@ -219,8 +215,8 @@ trait TestData extends RandomDataGenerator {
         creature.health,
         creature.stats,
         creature.weapon(Dice.defaultRandomiser),
-        armour,
-        shield,
+        creature.armour,
+        creature.offHand,
         fightingStyles.toList,
         abilities,
         creature.proficiencyBonus,

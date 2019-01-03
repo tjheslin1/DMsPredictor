@@ -7,6 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
+import util.TestMonster
 
 import scala.collection.immutable.Queue
 
@@ -24,7 +25,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         })
 
         val swordedMonster = testMonster
-          .copy(wpn = trackedSword)
+          .withWeapon(trackedSword)
           .withStrength(10)
           .withAbilities(List(1 -> CoreAbilities.extraAttack))
           .withCombatIndex(1)

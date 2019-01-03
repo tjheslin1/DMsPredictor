@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
+import util.TestMonster
 
 class TurnSpec extends UnitSpecBase {
 

@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.model.Dice
 import io.github.tjheslin1.dmspredictor.simulation._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.{FeatureSpec, Matchers}
-import util.TestData
+import util._
 import util.TestData._
 
 class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksBase with TestData {

@@ -7,6 +7,7 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
+import util.TestMonster
 
 class ActionsSpec extends UnitSpecBase {
 

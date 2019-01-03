@@ -123,7 +123,7 @@ object Fighter {
   val armourLens: Lens[Fighter, Armour]                             = GenLens[Fighter](_.armour)
   val offHandLens: Lens[Fighter, Option[Equipment]]                 = GenLens[Fighter](_.offHand)
   val fightingStylesLens: Lens[Fighter, List[FighterFightingStyle]] = GenLens[Fighter](_.fightingStyles)
-  val fighterAbilitiesLens: Lens[Fighter, FighterAbilities]         = GenLens[Fighter](_.abilityUsages)
+  val fighterAbilityUsagesLens: Lens[Fighter, FighterAbilities]     = GenLens[Fighter](_.abilityUsages)
   val proficiencyBonusLens: Lens[Fighter, Int]                      = GenLens[Fighter](_.proficiencyBonus)
   val resistancesLens: Lens[Fighter, List[DamageType]]              = GenLens[Fighter](_.resistances)
   val immunitiesLens: Lens[Fighter, List[DamageType]]               = GenLens[Fighter](_.immunities)

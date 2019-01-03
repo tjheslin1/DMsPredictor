@@ -5,13 +5,15 @@ import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
-import FighterAbilities._
+import util.TestMonster
 
 import scala.collection.immutable.Queue
 
 class FighterAbilitiesSpec extends UnitSpecBase {
 
   "Fighter" should {
+
+    import Fighter._
 
     "utilise Two Weapon Fighting if equipped with two weapons" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
@@ -23,7 +25,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val dualWieldingFighter = abilityUsagesLens
+        val dualWieldingFighter = fighterAbilityUsagesLens
           .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
           .withWeapon(trackedSword)
           .withOffHand(trackedSword)
@@ -99,7 +101,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val swordFighter = abilityUsagesLens
+        val swordFighter = fighterAbilityUsagesLens
             .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelTwo)
             .withWeapon(trackedSword)
