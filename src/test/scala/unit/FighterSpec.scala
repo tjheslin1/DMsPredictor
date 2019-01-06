@@ -63,7 +63,7 @@ class FighterSpec extends UnitSpecBase {
           D6.roll()(_ => Random.nextInt(2) + 1)
         })
 
-        val twoHanderFighter = fighter.withWeapon(twoHandedWeapon).withFightingStyle(GreatWeaponFighting)
+        val twoHanderFighter = fighter.withFightingStyle(GreatWeaponFighting).withBaseWeapon(twoHandedWeapon)
 
         Actions.resolveDamage(twoHanderFighter.withCombatIndex(1), testMonster.withCombatIndex(2), Hit)
 

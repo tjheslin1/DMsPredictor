@@ -27,9 +27,9 @@ class FighterAbilitiesSpec extends UnitSpecBase {
 
         val dualWieldingFighter = _abilityUsages
           .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
-          .withWeapon(trackedSword)
-          .withOffHand(trackedSword)
           .withFightingStyle(TwoWeaponFighting)
+          .withBaseWeapon(trackedSword)
+          .withOffHand(trackedSword)
           .withCombatIndex(1)
 
         val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -43,7 +43,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
     "use Second Wind when it has reached a health threshold" in new TestContext {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         val lowHealthFighter =
-          fighter.withHealth(4).withMaxHealth(5).withLevel(LevelTwo).withAllAbilitiesUnused().withCombatIndex(1)
+          fighter.withAllAbilitiesUnused().withHealth(4).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
         val monster = testMonster.withCombatIndex(2)
 
@@ -58,7 +58,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
     "not use Second Wind when the below health condition has not been met" in new TestContext {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         val lowHealthFighter =
-          fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withAllAbilitiesUnused().withCombatIndex(1)
+          fighter.withAllAbilitiesUnused().withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
         val monster = testMonster.withCombatIndex(2)
 
@@ -80,7 +80,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
 
         val swordFighter = fighter.withAllAbilitiesUsed()
             .withLevel(LevelFive)
-            .withWeapon(trackedSword)
+            .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
         val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -104,7 +104,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
         val swordFighter = _abilityUsages
             .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelTwo)
-            .withWeapon(trackedSword)
+            .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
         val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -125,11 +125,9 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val swordFighter =
-          fighter
+        val swordFighter = _abilityUsages.set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelFive)
-            .copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true, actionSurgeUsed = false))
-            .withWeapon(trackedSword)
+            .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
         val monster = testMonster.withArmourClass(5).withCombatIndex(2)

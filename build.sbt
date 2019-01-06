@@ -1,4 +1,4 @@
-lazy val root = (project in file("."))
+lazy val dmspredictor = (project in file("."))
   .settings(
     libraryDependencies ++= Seq(
       // @formatter:off

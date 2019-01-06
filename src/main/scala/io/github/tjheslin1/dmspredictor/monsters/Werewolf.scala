@@ -1,38 +1,37 @@
 package io.github.tjheslin1.dmspredictor.monsters
 
 import cats.Show
-import cats.syntax.show._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters.Werewolf.HydbridFormClaw
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
-import monocle.macros.Lenses
+import monocle.Lens
+import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class Werewolf(health: Int,
-                    maxHealth: Int,
-                    stats: BaseStats,
-                    armourClass: Int,
-                    override val resistances: List[DamageType] = List(),
-                    override val immunities: List[DamageType] = List(),
-                    override val name: String = NameGenerator.randomName)
+                                 maxHealth: Int,
+                                 stats: BaseStats,
+                                 armourClass: Int,
+                                 baseWeapon: Weapon = HydbridFormClaw,
+                                 armour: Armour = NoArmour,
+                                 offHand: Option[Equipment] = None,
+                                 resistances: List[DamageType] = List(),
+                                 immunities: List[DamageType] = List(),
+                                 abilities: List[CreatureAbility] = List.empty,
+                                 name: String = NameGenerator.randomName)
     extends Creature {
 
-  import Werewolf._
-
-  val creatureType: CreatureType = EnemyMonster
-  val proficiencyBonus: Int      = 0
+  val creatureType: CreatureType         = EnemyMonster
+  val proficiencyBonus: ProficiencyBonus = 0
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
-  val baseWeapon: Weapon = HydbridFormClaw
-
   def weapon[_: RS]: Weapon = baseWeapon
-
-  val abilities: List[CreatureAbility] = List.empty
-  val armour: Armour                   = NoArmour
-  val offHand: Option[Equipment]       = None
 }
 
 object Werewolf {
@@ -67,4 +66,8 @@ object Werewolf {
     def damage(implicit rollStrategy: RollStrategy): Int = (2 * D4) + 2
 
   }
+
+  val strengthLens: Lens[Werewolf, Stat]     = Werewolf._stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Werewolf, Stat]    = Werewolf._stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Werewolf, Stat] = Werewolf._stats composeLens GenLens[BaseStats](_.constitution)
 }

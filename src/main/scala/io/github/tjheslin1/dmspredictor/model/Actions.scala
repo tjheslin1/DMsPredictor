@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 

@@ -25,7 +25,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         })
 
         val swordedMonster = testMonster
-          .withWeapon(trackedSword)
+          .withBaseWeapon(trackedSword)
           .withStrength(10)
           .withAbilities(List(1 -> CoreAbilities.extraAttack))
           .withCombatIndex(1)

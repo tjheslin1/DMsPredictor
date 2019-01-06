@@ -1,37 +1,37 @@
 package io.github.tjheslin1.dmspredictor.monsters
 
 import cats.Show
-import cats.syntax.show._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
-import monocle.macros.Lenses
+import monocle.Lens
+import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class Goblin(health: Int,
-                  maxHealth: Int,
-                  stats: BaseStats,
-                  armourClass: Int,
-                  override val resistances: List[DamageType] = List(),
-                  override val immunities: List[DamageType] = List(),
-                  override val name: String = NameGenerator.randomName)
+                               maxHealth: Int,
+                               stats: BaseStats,
+                               armourClass: Int,
+                               baseWeapon: Weapon = Shortsword,
+                               armour: Armour = NoArmour,
+                               offHand: Option[Equipment] = None,
+                               resistances: List[DamageType] = List(),
+                               immunities: List[DamageType] = List(),
+                               abilities: List[CreatureAbility] = List.empty,
+                               name: String = NameGenerator.randomName)
     extends Creature {
 
   val creatureType: CreatureType = EnemyMonster
-  val proficiencyBonus: Int      = 0
+  val proficiencyBonus: ProficiencyBonus      = 0
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
-  val baseWeapon: Weapon = Shortsword
-
   def weapon[_: RS]: Weapon = baseWeapon
-
-  val abilities: List[CreatureAbility] = List.empty
-  val armour: Armour             = NoArmour
-  val offHand: Option[Equipment] = None
 }
 
 object Goblin {
@@ -49,4 +49,8 @@ object Goblin {
       s"health: ${goblin.health}, " +
       s"AC: ${goblin.armourClass}"
   }
+
+  val strengthLens: Lens[Goblin, Stat]     = Goblin._stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Goblin, Stat]    = Goblin._stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Goblin, Stat] = Goblin._stats composeLens GenLens[BaseStats](_.constitution)
 }
