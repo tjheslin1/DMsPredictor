@@ -54,7 +54,7 @@ class ActionsSpec extends UnitSpecBase {
   "resolveDamage" should {
     "kill a monster if the damage is more than the monster's health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val oneHundredDamageWeapon = fixedDamageWeapon("one hundred damage weapon", Melee, Slashing, twoHands = true, 1dmg = 00)
+        val oneHundredDamageWeapon = fixedDamageWeapon("one hundred damage weapon", Melee, Slashing, twoHands = true, dmg = 100)
         val player                 = fighter.withStrength(10).withBaseWeapon(oneHundredDamageWeapon)
 
         val playerCombatant  = player.withCombatIndex(1)

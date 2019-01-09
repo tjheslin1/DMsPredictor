@@ -11,7 +11,7 @@ import monocle.{Lens, Optional}
 
 sealed trait CreatureType
 
-case object EnemyMonster    extends CreatureType
+case object Monster         extends CreatureType
 case object PlayerCharacter extends CreatureType
 
 trait Creature {

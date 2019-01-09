@@ -152,7 +152,7 @@ trait TestData extends RandomDataGenerator {
       wpn       <- arbWeapon.arbitrary
       armr      <- arbArmour.arbitrary
       optShield <- arbShield.arbitrary
-      cType     <- Gen.oneOf(PlayerCharacter, EnemyMonster)
+      cType     <- Gen.oneOf(PlayerCharacter, Monster)
       profBonus <- arbProficiencyBonus.arbitrary
     } yield
       new Creature {
@@ -193,7 +193,7 @@ trait TestData extends RandomDataGenerator {
         creature.weapon(Dice.defaultRandomiser),
         creature.armour,
         creature.offHand,
-        creature.proficiencyBonus,
+        0,
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities
@@ -205,7 +205,7 @@ trait TestData extends RandomDataGenerator {
     Gen.someOf(Archery, Defense, Dueling, GreatWeaponFighting, Protection, TwoWeaponFighting)
   }
 
-  implicit val arbFighterAbilities: Arbitrary[FighterAbilities] = Arbitrary {
+  implicit val arbFighterAbilityUsages: Arbitrary[FighterAbilities] = Arbitrary {
     for {
       secondWindUsed  <- Gen.oneOf(true, false)
       actionSurgeUsed <- Gen.oneOf(true, false)
@@ -215,7 +215,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
-      abilities      <- arbFighterAbilities.arbitrary
+      abilityUsages      <- arbFighterAbilityUsages.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
     } yield
@@ -224,11 +224,11 @@ trait TestData extends RandomDataGenerator {
         creature.health,
         creature.health,
         creature.stats,
-        creature.weapon(Dice.defaultRandomiser),
+        creature.baseWeapon,
         creature.armour,
         creature.offHand,
         fightingStyles.toList,
-        abilities,
+        abilityUsages,
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,
@@ -240,7 +240,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbChampion: Arbitrary[Champion] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
-      abilities      <- arbFighterAbilities.arbitrary
+      abilityUsages      <- arbFighterAbilityUsages.arbitrary
       armour         <- arbArmour.arbitrary
       shield         <- arbShield.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
@@ -251,11 +251,11 @@ trait TestData extends RandomDataGenerator {
         creature.health,
         creature.health,
         creature.stats,
-        creature.weapon(Dice.defaultRandomiser),
+        creature.baseWeapon,
         armour,
         shield,
         fightingStyles.toList,
-        abilities,
+        abilityUsages,
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,

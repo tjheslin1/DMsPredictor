@@ -28,7 +28,7 @@ object Move {
 
       val updatedCombatants = combatant.creature.creatureType match {
         case PlayerCharacter => actionAgainstTarget(combatant, mobToAttack, optAbility)
-        case EnemyMonster    => actionAgainstTarget(combatant, pcToAttack, optAbility)
+        case Monster         => actionAgainstTarget(combatant, pcToAttack, optAbility)
       }
 
       updatedCombatants.fold(others.append(combatant)) {

@@ -26,8 +26,8 @@ import monocle.macros.{GenLens, Lenses}
                                name: String = NameGenerator.randomName)
     extends Creature {
 
-  val creatureType: CreatureType = EnemyMonster
-  val proficiencyBonus: ProficiencyBonus      = 0
+  val creatureType: CreatureType         = Monster
+  val proficiencyBonus: ProficiencyBonus = 0
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
