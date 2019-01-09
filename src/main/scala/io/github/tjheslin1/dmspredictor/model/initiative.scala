@@ -5,8 +5,6 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 
 import scala.collection.mutable
 
-case class Combatant(index: Int, creature: Creature)
-
 case class Initiative(combatant: Combatant, score: Int)
 
 class InitiativeCalculator(creatures: List[Creature]) extends LazyLogging {

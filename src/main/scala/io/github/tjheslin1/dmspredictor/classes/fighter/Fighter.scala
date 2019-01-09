@@ -1,33 +1,37 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
-import cats.syntax.show._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.standardFighterAbilities
 import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
+import monocle.Lens
+import monocle.macros.{GenLens, Lenses}
 
-case class Fighter(level: Level,
-                   health: Int,
-                   maxHealth: Int,
-                   stats: BaseStats,
-                   baseWeapon: Weapon,
-                   armour: Armour = NoArmour,
-                   offHand: Option[Equipment] = None,
-                   fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                   abilityUsages: FighterAbilities = allUnused(),
-                   proficiencyBonus: Int = 0,
-                   resistances: List[DamageType] = List(),
-                   immunities: List[DamageType] = List(),
-                   name: String = NameGenerator.randomName)
+@Lenses("_") case class Fighter(level: Level,
+                                health: Int,
+                                maxHealth: Int,
+                                stats: BaseStats,
+                                baseWeapon: Weapon,
+                                armour: Armour = NoArmour,
+                                offHand: Option[Equipment] = None,
+                                fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
+                                abilityUsages: FighterAbilities = allUnused(),
+                                proficiencyBonus: ProficiencyBonus = 0,
+                                resistances: List[DamageType] = List(),
+                                immunities: List[DamageType] = List(),
+                                abilities: List[CreatureAbility] = standardFighterAbilities,
+                                name: String = NameGenerator.randomName)
     extends Creature {
 
   import Fighter._
@@ -39,8 +43,6 @@ case class Fighter(level: Level,
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
-
-  val abilities: List[CreatureAbility] = fighterAbilities
 }
 
 object Fighter {
@@ -60,14 +62,14 @@ object Fighter {
     new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
 
-  val fighterAbilities: List[CreatureAbility] = List(
+  val standardFighterAbilities: List[CreatureAbility] = List(
     1 -> secondWind,
     2 -> actionSurge,
     3 -> twoWeaponFighting,
     4 -> extraAttack
   )
 
-  def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]) =
+  def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]): Weapon =
     weapon.weaponType match {
       case Ranged if fightingStyles.contains(Archery) =>
         bonusToHitWeapon(weapon, 2)
@@ -88,7 +90,7 @@ object Fighter {
   def armourClassWithFightingStyle(stats: BaseStats,
                                    armour: Armour,
                                    offHand: Option[Equipment],
-                                   fightingStyles: List[FighterFightingStyle]) = {
+                                   fightingStyles: List[FighterFightingStyle]): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
     val shieldBonus = offHand match {
       case Some(Shield()) => 2
@@ -106,9 +108,12 @@ object Fighter {
     s"Fighter: " +
       s"Name: ${fighter.name}, " +
       s"health: ${fighter.health}, " +
-      s"AC: ${fighter.armourClass}, " +
-      s"${fighter.weapon.show}"
+      s"AC: ${fighter.armourClass}"
   }
+
+  val strengthLens: Lens[Fighter, Stat]     = Fighter._stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Fighter, Stat]    = Fighter._stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Fighter, Stat] = Fighter._stats composeLens GenLens[BaseStats](_.constitution)
 }
 
 sealed trait FighterFightingStyle extends Product with Serializable

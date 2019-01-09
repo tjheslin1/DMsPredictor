@@ -1,4 +1,4 @@
-lazy val root = (project in file("."))
+lazy val dmspredictor = (project in file("."))
   .settings(
     libraryDependencies ++= Seq(
       // @formatter:off
@@ -8,17 +8,23 @@ lazy val root = (project in file("."))
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.0",
       "eu.timepit"                  %% "refined"                          % "0.9.2",
       "eu.timepit"                  %% "refined-scalacheck"               % "0.9.2",
-      "com.github.julien-truffaut"  %% "monocle-core"                     % "1.5.0",
-      "com.github.julien-truffaut"  %% "monocle-macro"                    % "1.5.0",
+      "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
+      "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
 
-      "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"     % Test,
-      "org.scalatest"               %% "scalatest"                        % "3.0.5"   % Test,
-      "org.scalacheck"              %% "scalacheck"                       % "1.14.0"  % Test
+      "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
+      "org.scalatest"               %% "scalatest"                        % "3.0.5"         % Test,
+      "org.scalacheck"              %% "scalacheck"                       % "1.14.0"        % Test
       //@formatter:on
-    ))
+    ),
+    autoCompilerPlugins := true,
+    addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+  )
 
 scalacOptions += "-Ypartial-unification"
+
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots")
 )
+
+val MonocleVersion = "1.5.0"

@@ -2,11 +2,12 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, FighterAbilities}
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
+import util.TestMonster
 
 import scala.collection.immutable.Queue
 
@@ -35,7 +36,9 @@ class MoveSpec extends UnitSpecBase {
 
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player   = fighter.copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true, actionSurgeUsed = false)).withStrength(10).withCombatIndex(1)
+        val player   = Fighter._abilityUsages.set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+          .withStrength(10).withCombatIndex(1)
+
         val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
         val enemyTwo = monsterTwo.withHealth(1).withCombatIndex(3)
 
@@ -49,7 +52,9 @@ class MoveSpec extends UnitSpecBase {
 
     "focus mob with lowest health first" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
-        val player     = fighter.copy(abilityUsages = fighter.abilityUsages.copy(secondWindUsed = true, actionSurgeUsed = false)).withStrength(10).withCombatIndex(1)
+        val player     = Fighter._abilityUsages.set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+          .withStrength(10).withCombatIndex(1)
+
         val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
         val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)
         val enemyThree = monsterThree.withHealth(50).withCombatIndex(4)
