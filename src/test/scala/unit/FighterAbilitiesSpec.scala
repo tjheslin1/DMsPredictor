@@ -55,19 +55,6 @@ class FighterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "not use Second Wind when the below health condition has not been met" in new TestContext {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        val lowHealthFighter =
-          fighter.withAllAbilitiesUnused().withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
-
-        val monster = testMonster.withCombatIndex(2)
-
-        val Queue(_, Combatant(_, updatedFighter)) = Move.takeMove(Queue(lowHealthFighter, monster), LowestFirst)
-
-        updatedFighter.health should (be > 1 and be <= 5)
-      }
-    }
-
     "make 2 attacks using Extra Attack with a single Action" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 

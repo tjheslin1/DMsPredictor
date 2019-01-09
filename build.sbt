@@ -21,7 +21,6 @@ lazy val dmspredictor = (project in file("."))
   )
 
 scalacOptions += "-Ypartial-unification"
-autoCompilerPlugins := true
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),

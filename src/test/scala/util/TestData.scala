@@ -23,7 +23,22 @@ object TestData {
     import Combatant._
 
     def withCreature(c: Creature) = creatureLens.set(c)(combatant)
+  }
 
+  implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
+    def withName(creatureName: String)           = TestMonster._name.set(creatureName)(testMonster)
+    def withHealth(hp: Int)                      = TestMonster._health.set(hp)(testMonster)
+    def withMaxHealth(hp: Int)                   = TestMonster._maxHealth.set(hp)(testMonster)
+    def withStrength(strengthScore: Stat)        = TestMonster.strengthLens.set(strengthScore)(testMonster)
+    def withBaseWeapon(weapon: Weapon)               = TestMonster._baseWeapon.set(weapon)(testMonster)
+    def withArmourClass(ac: Int)                 = TestMonster._armourClass.set(ac)(testMonster)
+    def withResistance(creatureRes: DamageType*) = TestMonster._resistances.set(creatureRes.toList)(testMonster)
+    def withImmunity(creatureImm: DamageType*)   = TestMonster._immunities.set(creatureImm.toList)(testMonster)
+    def withNoResistances()                      = TestMonster._resistances.set(List.empty)(testMonster)
+    def withNoImmunities()                       = TestMonster._immunities.set(List.empty)(testMonster)
+    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
+
+    def withAbilities(ablts: List[CreatureAbility]) = TestMonster._abilities.set(ablts)(testMonster)
   }
 
   implicit class CreatureOps(val creature: Creature) extends AnyVal {

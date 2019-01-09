@@ -156,12 +156,12 @@ object Creature {
   val creatureProficiencyBonusOptional: Optional[Creature, ProficiencyBonus] = Optional[Creature, ProficiencyBonus] {
     case c: Champion => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
     case c: Fighter  => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-    case _           => println("***** NO PROF B FOUND!"); none[ProficiencyBonus]
+    case _           => none[ProficiencyBonus]
   } { profBonus =>
     {
       case c: Champion => Champion._proficiencyBonus.set(profBonus)(c)
       case c: Fighter  => Fighter._proficiencyBonus.set(profBonus)(c)
-      case c: Creature => println("***** NO UPDATE MADE TO PROF B!"); c
+      case c: Creature => c
     }
   }
 
@@ -200,12 +200,12 @@ object Creature {
   val creatureLevelOptional: Optional[Creature, Level] = Optional[Creature, Level] {
     case c: Champion => val lvl: Level = c.level; lvl.some
     case c: Fighter  => val lvl: Level = c.level; lvl.some
-    case _           => println("***** NO LEVEL UPDATED!"); none[Level]
+    case _           => none[Level]
   } { lvl =>
     {
       case c: Champion => Champion._level.set(lvl)(c)
       case c: Fighter  => Fighter._level.set(lvl)(c)
-      case c: Creature => println("***** NO UPDATE MADE TO LEVEL!"); c
+      case c: Creature => c
     }
   }
 }

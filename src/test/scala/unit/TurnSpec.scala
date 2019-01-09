@@ -4,7 +4,6 @@ import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
-import util.TestData._
 import util.TestMonster
 
 class TurnSpec extends UnitSpecBase {
@@ -12,7 +11,7 @@ class TurnSpec extends UnitSpecBase {
   "run" should {
     "cycle through all creatures once" in {
       forAll { (fighterOne: Fighter, fighterTwo: Fighter, monster: TestMonster) =>
-        implicit val roll = Dice.defaultRandomiser
+        implicit val roll: RollStrategy = Dice.defaultRandomiser
 
         val initiatives =
           InitiativeCalculator(List(fighterOne, fighterTwo, monster)).rollInitiative()

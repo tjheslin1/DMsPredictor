@@ -26,11 +26,12 @@ object FighterAbilities {
     val fighter = combatant.creature.asInstanceOf[Fighter]
 
     val levelRequirement = LevelTwo
-    val triggerMet       = combatant.creature.health <= fighter.maxHealth / 2
+    val triggerMet       = combatant.creature.health <= combatant.creature.maxHealth / 2
     val conditionMet     = fighter.level.value >= levelRequirement && fighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      val updatedHealth    = Math.min(fighter.maxHealth, fighter.health + (1 * HitDice) + fighter.level.value)
+      val updatedHealth =
+        Math.min(combatant.creature.maxHealth, combatant.creature.health + (1 * HitDice) + fighter.level.value)
       val updatedCombatant = (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
       (updatedCombatant, None)

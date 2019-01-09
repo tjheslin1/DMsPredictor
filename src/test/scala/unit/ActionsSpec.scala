@@ -22,7 +22,7 @@ class ActionsSpec extends UnitSpecBase {
 
     "hit a monster if the attack overcomes the monster's armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val ac10Monster = monster.copy(armourClass = 10)
+        val ac10Monster = monster.withArmourClass(10)
 
         attack(fighter.withCombatIndex(1), fighter.weapon, ac10Monster.withCombatIndex(2))(_ => 19) shouldBe Hit
       }
@@ -30,7 +30,7 @@ class ActionsSpec extends UnitSpecBase {
 
     "miss a monster if the attack doesn't overcomes the monster's armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val ac20Monster = monster.copy(armourClass = 30)
+        val ac20Monster = monster.withArmourClass(30)
 
         attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2))(_ => 2) shouldBe Miss
       }
