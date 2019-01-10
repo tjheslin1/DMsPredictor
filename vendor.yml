@@ -1,1 +1,1 @@
-sbt special-vendored-path/* linguist-vendored
+sbt linguist-vendored
