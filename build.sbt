@@ -17,7 +17,7 @@ lazy val dmspredictor = (project in file("."))
       //@formatter:on
     ),
     autoCompilerPlugins := true,
-    addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+    addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.full)
   )
 
 scalacOptions += "-Ypartial-unification"
