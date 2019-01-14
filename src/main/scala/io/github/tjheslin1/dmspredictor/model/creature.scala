@@ -31,18 +31,15 @@ trait Creature {
   val immunities: List[DamageType]
   val name: String
 
+  val abilities: List[CreatureAbility]
+
   val isConscious = health > 0
 
   def updateHealth(modification: Int): Creature
-
-  val abilities: List[CreatureAbility]
+  def scoresCritical(roll: Int): Boolean
 }
 
 object Creature {
-
-  implicit val determineCritical: DetermineCritical[Creature] = new DetermineCritical[Creature] {
-    def attackIsCritical(creature: Creature, roll: Int): Boolean = roll == 20
-  }
 
   implicit def creatureShow[_: RS]: Show[Creature] = Show.show { creature =>
     s"${creature.creatureType} - " +

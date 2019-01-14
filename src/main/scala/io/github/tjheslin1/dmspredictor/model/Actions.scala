@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 
 sealed trait AttackResult {
@@ -28,7 +27,7 @@ object Actions extends LazyLogging {
   def attack[_: RS](attacker: Combatant, attackerWeapon: Weapon, target: Combatant): AttackResult = {
     val roll = D20.roll()
 
-    if (determineCritical(attacker.creature, roll)) CriticalHit
+    if (attacker.creature.scoresCritical(roll)) CriticalHit
     else if (roll == 1) CriticalMiss
     else {
       val totalAttackRoll = roll +
@@ -86,12 +85,5 @@ object Actions extends LazyLogging {
     (1 to times).foldLeft[(Combatant, Combatant)]((c1, c2)) { (combatants, _) =>
       val (a, t) = combatants
       f(a, t)
-    }
-
-  def determineCritical[T <: Creature](creature: Creature, roll: Int) =
-    creature match {
-      case champion: Champion => implicitly[DetermineCritical[Champion]].attackIsCritical(champion, roll)
-      case fighter: Fighter   => implicitly[DetermineCritical[Fighter]].attackIsCritical(fighter, roll)
-      case _                  => implicitly[DetermineCritical[Creature]].attackIsCritical(creature, roll)
     }
 }

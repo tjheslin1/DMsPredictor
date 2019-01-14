@@ -9,14 +9,18 @@ class ChampionSpec extends UnitSpecBase {
   "improvedCritical" should {
     "return true for a CriticalHit for a roll of 19 or 20 for level three or above" in {
       forAll { champion: Champion =>
+        val levelOneChampion = champion.copy(level = LevelOne)
         val levelThreeChampion = champion.copy(level = LevelThree)
         val levelFiveChampion = champion.copy(level = LevelFive)
 
-        Champion.improvedCritical.attackIsCritical(levelThreeChampion, 19) shouldBe true
-        Champion.improvedCritical.attackIsCritical(levelThreeChampion, 20) shouldBe true
+        levelOneChampion.scoresCritical(19) shouldBe false
+        levelOneChampion.scoresCritical(20) shouldBe true
 
-        Champion.improvedCritical.attackIsCritical(levelFiveChampion, 19) shouldBe true
-        Champion.improvedCritical.attackIsCritical(levelFiveChampion, 20) shouldBe true
+        levelThreeChampion.scoresCritical(19) shouldBe true
+        levelThreeChampion.scoresCritical(20) shouldBe true
+
+        levelFiveChampion.scoresCritical(19) shouldBe true
+        levelFiveChampion.scoresCritical(20) shouldBe true
       }
     }
   }

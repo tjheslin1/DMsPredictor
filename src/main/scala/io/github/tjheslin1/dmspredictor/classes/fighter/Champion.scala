@@ -33,11 +33,13 @@ import monocle.macros.{GenLens, Lenses}
 
   val creatureType: CreatureType = PlayerCharacter
 
-  def updateHealth(modification: Int): Champion = copy(health = Math.max(0, health + modification))
+  val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
+  def updateHealth(modification: Int): Champion = copy(health = Math.max(0, health + modification))
+
+  def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
 }
 
 object Champion {
@@ -45,11 +47,6 @@ object Champion {
   import FighterAbilities._
 
   val HitDice = D10
-
-  implicit val improvedCritical: DetermineCritical[Champion] = new DetermineCritical[Champion] {
-    def attackIsCritical(champion: Champion, roll: Int): Boolean =
-      if (champion.level.value <= 2) roll == 20 else roll >= 19
-  }
 
   implicit val standardChampionAbilities: List[CreatureAbility] = List(
     1 -> secondWind,

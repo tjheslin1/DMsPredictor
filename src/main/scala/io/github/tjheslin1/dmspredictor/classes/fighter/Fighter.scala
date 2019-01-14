@@ -38,18 +38,18 @@ import monocle.macros.{GenLens, Lenses}
 
   val creatureType: CreatureType = PlayerCharacter
 
-  def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
-
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+
+  def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
+
+  def scoresCritical(roll: Int): Boolean = roll == 20
 }
 
 object Fighter {
 
   import FighterAbilities._
-
-  implicit val dc: DetermineCritical[Fighter] = DetermineCritical.default[Fighter]
 
   val HitDice = D10
 

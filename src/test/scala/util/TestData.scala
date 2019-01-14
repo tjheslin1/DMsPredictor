@@ -187,12 +187,15 @@ trait TestData extends RandomDataGenerator {
 
         val proficiencyBonus: ProficiencyBonus = profBonus
 
-        def updateHealth(modification: Int): Creature =
-          throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
-        val abilities: List[CreatureAbility] = List.empty // TODO add core abilities
         val resistances: List[DamageType]    = List.empty
         val immunities: List[DamageType]     = List.empty
         val name: String                     = n
+        val abilities: List[CreatureAbility] = List.empty // TODO add core abilities
+
+        def updateHealth(modification: Int): Creature =
+          throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
+
+        def scoresCritical(roll: Int): Boolean = roll == 20
       }
   }
 

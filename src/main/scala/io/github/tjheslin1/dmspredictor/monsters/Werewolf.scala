@@ -29,9 +29,11 @@ import monocle.macros.{GenLens, Lenses}
   val creatureType: CreatureType         = Monster
   val proficiencyBonus: ProficiencyBonus = 0
 
+  def weapon[_: RS]: Weapon = baseWeapon
+
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
-  def weapon[_: RS]: Weapon = baseWeapon
+  def scoresCritical(roll: Int): Boolean = roll == 20
 }
 
 object Werewolf {
