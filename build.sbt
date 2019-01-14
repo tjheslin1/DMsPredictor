@@ -6,8 +6,8 @@ lazy val dmspredictor = (project in file("."))
       "com.github.wookietreiber"    %% "scala-chart"                      % "0.5.1",
       "ch.qos.logback"              %  "logback-classic"                  % "1.2.3",
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.0",
-      "eu.timepit"                  %% "refined"                          % "0.9.2",
-      "eu.timepit"                  %% "refined-scalacheck"               % "0.9.2",
+      "eu.timepit"                  %% "refined"                          % "0.9.3",
+      "eu.timepit"                  %% "refined-scalacheck"               % "0.9.3",
       "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
       "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
 
