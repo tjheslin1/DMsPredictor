@@ -1,1 +1,1 @@
-sbt linguist-vendored
+sbt linguist-vendored=false
