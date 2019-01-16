@@ -23,8 +23,8 @@ import monocle.macros.{GenLens, Lenses}
                                  fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
                                  abilityUsages: FighterAbilities = FighterAbilities.allUnused(),
                                  proficiencyBonus: ProficiencyBonus = 0,
-                                 resistances: List[DamageType] = List(),
-                                 immunities: List[DamageType] = List(),
+                                 resistances: List[DamageType] = List.empty,
+                                 immunities: List[DamageType] = List.empty,
                                  abilities: List[CreatureAbility] = standardChampionAbilities,
                                  name: String = NameGenerator.randomName)
     extends Creature {
