@@ -20,6 +20,5 @@ object WizardSpells {
     val spellLevel: SpellLevel               = 1
 
     def damage(implicit rollStrategy: RollStrategy): Int = 3 * D8
-
   }
 }

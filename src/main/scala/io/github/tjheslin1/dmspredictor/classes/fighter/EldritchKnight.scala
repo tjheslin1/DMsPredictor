@@ -16,23 +16,23 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class EldritchKnight(level: Level,
-                                       health: Int,
-                                       maxHealth: Int,
-                                       stats: BaseStats,
-                                       baseWeapon: Weapon,
-                                       armour: Armour = NoArmour,
-                                       offHand: Option[Equipment] = None,
-                                       fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                                       abilityUsages: FighterAbilities = FighterAbilities.allUnused(),
-                                       proficiencyBonus: ProficiencyBonus = 0,
-                                       spellsKnown: List[Spell] = List(ChromaticOrb),
-                                       spellSlots: EldritchKnightSpellSlots = EldritchKnightSpellSlots(
-                                         FirstLevelSpellSlot(2)),
-                                       resistances: List[DamageType] = List.empty,
-                                       immunities: List[DamageType] = List.empty,
-                                       abilities: List[CreatureAbility] = standardEldritchKnightAbilities,
-                                       name: String = NameGenerator.randomName)
+@Lenses("_") case class EldritchKnight(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
+    abilityUsages: FighterAbilities = FighterAbilities.allUnused(),
+    proficiencyBonus: ProficiencyBonus = 0,
+    spellsKnown: Map[SpellLevel, Spell] = Map(ChromaticOrb.spellLevel -> ChromaticOrb),
+    spellSlots: EldritchKnightSpellSlots = EldritchKnightSpellSlots(FirstLevelSpellSlot(2)),
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    abilities: List[CreatureAbility] = standardEldritchKnightAbilities,
+    name: String = NameGenerator.randomName)
     extends Creature {
 
   val creatureType: CreatureType = PlayerCharacter
