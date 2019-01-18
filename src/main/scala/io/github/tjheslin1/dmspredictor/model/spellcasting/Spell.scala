@@ -14,9 +14,9 @@ abstract class Spell {
   val damageType: DamageType
   val spellLevel: SpellLevel
 
-  def spellAttack(creature: Creature): Int = creature.proficiencyBonus + attributeModifier(creature)
+  def spellAttackBonus(creature: Creature): Int = creature.proficiencyBonus + attributeModifierForSchool(creature)
 
-  def spellSaveDc(creature: Creature): Int = 8 + creature.proficiencyBonus + attributeModifier(creature)
+  def spellSaveDc(creature: Creature): Int = 8 + creature.proficiencyBonus + attributeModifierForSchool(creature)
 
   def damage(implicit rollStrategy: RollStrategy): Int
 }
@@ -28,7 +28,10 @@ object Spell {
     case _                 => ???
   }
 
-  def attributeModifier(creature: Creature): Int = schoolAttribute(creature) match {
+  def attributeModifierForSchool(creature: Creature): Int =
+    attributeModifier(creature, schoolAttribute(creature))
+
+  def attributeModifier(creature: Creature, attribute: Attribute): Int = attribute match {
     case Strength     => mod(creature.stats.strength)
     case Dexterity    => mod(creature.stats.dexterity)
     case Constitution => mod(creature.stats.constitution)
