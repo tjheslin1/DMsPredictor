@@ -15,10 +15,10 @@ object CoreAbilities {
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
+        case None => (combatant, None)
         case Some(target: Combatant) =>
           val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
           (updatedAttacker, updatedTarget.some)
-        case None => (combatant, None)
       }
 
     def update: Creature = combatant.creature

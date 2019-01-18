@@ -54,6 +54,7 @@ object FighterAbilities {
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
+        case None => (combatant, None)
         case Some(target: Combatant) =>
           val mainHandAttack = attack(combatant, fighter.weapon, target)
 
@@ -70,7 +71,6 @@ object FighterAbilities {
               (attacker1, attackTarget1)
 
           (attacker2, attackTarget2.some)
-        case None => (combatant, None)
       }
 
     def update: Fighter = fighter

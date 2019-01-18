@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
-import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -17,7 +17,7 @@ import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class EldritchKnight(
-    level: Level,
+    level: model.Level,
     health: Int,
     maxHealth: Int,
     stats: BaseStats,

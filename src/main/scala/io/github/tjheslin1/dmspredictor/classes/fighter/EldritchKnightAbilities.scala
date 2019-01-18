@@ -26,6 +26,7 @@ object EldritchKnightAbilities {
       val spell     = eldritchKnight.spellsKnown(spellSlot.spellLevel)
 
       target match {
+        case None => (combatant, None)
         case Some(target: Combatant) =>
           val attackResult: AttackResult = spell.spellOffenseStyle match {
             case MeleeSpellAttack       => spellAttack(spell, eldritchKnight)
@@ -52,8 +53,6 @@ object EldritchKnightAbilities {
           val damagedTarget = target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
 
           (combatant, damagedTarget.some)
-
-        case _ => case None => (combatant, None)
       }
     }
 
@@ -68,13 +67,13 @@ object EldritchKnightAbilities {
       (_spellSlots composeLens spellSlotLens composeLens spellSlotCountLens).set(updatedSpellSlotCount)(eldritchKnight)
     }
 
-    private def spellAttack(spell: Spell, target: Creature): AttackResult = D20.roll() match {
+    private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult = D20.roll() match {
       case 20   => CriticalHit
       case 1    => CriticalMiss
       case roll => if ((roll + spell.spellAttackBonus(eldritchKnight)) >= target.armourClass) Hit else Miss
     }
 
-    private def spellSavingThrow(spell: Spell, attribute: Attribute, target: Creature): AttackResult =
+    private def spellSavingThrow[_: RS](spell: Spell, attribute: Attribute, target: Creature): AttackResult =
       if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(eldritchKnight)) Hit
       else Miss
   }
