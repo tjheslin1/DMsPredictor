@@ -63,7 +63,7 @@ object Move {
     val consciousCombatants = combatants.filter(_.creature.isConscious)
     focus match {
       case LowestFirst => consciousCombatants.sortBy(_.creature.health).headOption
-      case Random =>
+      case RandomFocus =>
         if (consciousCombatants.isEmpty) None else consciousCombatants(JRandom.nextInt(consciousCombatants.size)).some
     }
   }

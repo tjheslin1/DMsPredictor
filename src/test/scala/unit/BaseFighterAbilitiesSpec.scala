@@ -9,7 +9,7 @@ import util.TestMonster
 
 import scala.collection.immutable.Queue
 
-class FighterAbilitiesSpec extends UnitSpecBase {
+class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
   "Fighter" should {
 
@@ -26,7 +26,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
         })
 
         val dualWieldingFighter = _abilityUsages
-          .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
+          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
           .withFightingStyle(TwoWeaponFighting)
           .withBaseWeapon(trackedSword)
           .withOffHand(trackedSword)
@@ -102,7 +102,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
         })
 
         val swordFighter = _abilityUsages
-            .set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+            .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelTwo)
             .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
@@ -125,7 +125,7 @@ class FighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val swordFighter = _abilityUsages.set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+        val swordFighter = _abilityUsages.set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelFive)
             .withBaseWeapon(trackedSword)
             .withCombatIndex(1)

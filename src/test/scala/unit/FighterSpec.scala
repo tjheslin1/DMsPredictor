@@ -38,19 +38,19 @@ class FighterSpec extends UnitSpecBase {
 
   "weapon" should {
     "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, false, 10, wpnHitBonus = 0)
+      val sword = Weapon("sword", Melee, Slashing, twoHands = false, 10)
 
       Fighter.weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 2
     }
 
     "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in new TestContext {
-      val bow = Weapon("bow", Ranged, Piercing, true, 10)
+      val bow = Weapon("bow", Ranged, Piercing, twoHands = true, 10)
 
       Fighter.weaponWithFightingStyle(bow, List(Archery)).hitBonus shouldBe 2
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, true, 10)
+      val sword = Weapon("sword", Melee, Slashing, twoHands = true, 10)
 
       Fighter.weaponWithFightingStyle(sword, List.empty).hitBonus shouldBe 0
     }

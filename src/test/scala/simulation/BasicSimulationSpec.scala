@@ -3,12 +3,12 @@ package simulation
 import base.PropertyChecksBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
-import io.github.tjheslin1.dmspredictor.model.Dice
+import io.github.tjheslin1.dmspredictor.model.D20
 import io.github.tjheslin1.dmspredictor.simulation._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.{FeatureSpec, Matchers}
-import util._
 import util.TestData._
+import util._
 
 class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksBase with TestData {
 
@@ -22,7 +22,7 @@ class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksB
         val weakTestMonster = monster.withHealth(1)
 
         BasicSimulation(List(healthyFighter, weakTestMonster), LowestFirst)
-          .run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Success, info)
+          .run(info)(D20.naturalTwenty) shouldBe SimulationResult(Success, info)
       }
     }
 
@@ -32,7 +32,7 @@ class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksB
         val healthyTestMonster = monster.withHealth(1000).withStrength(10)
 
         BasicSimulation(List(weakFighter, healthyTestMonster), LowestFirst)
-          .run(info)(Dice.naturalTwenty) shouldBe SimulationResult(Loss, info)
+          .run(info)(D20.naturalTwenty) shouldBe SimulationResult(Loss, info)
       }
     }
   }

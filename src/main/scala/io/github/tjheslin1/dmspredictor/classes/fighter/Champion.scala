@@ -21,13 +21,14 @@ import monocle.macros.{GenLens, Lenses}
                                  armour: Armour = NoArmour,
                                  offHand: Option[Equipment] = None,
                                  fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                                 abilityUsages: FighterAbilities = FighterAbilities.allUnused(),
+                                 abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
                                  proficiencyBonus: ProficiencyBonus = 0,
-                                 resistances: List[DamageType] = List(),
-                                 immunities: List[DamageType] = List(),
+                                 resistances: List[DamageType] = List.empty,
+                                 immunities: List[DamageType] = List.empty,
                                  abilities: List[CreatureAbility] = standardChampionAbilities,
                                  name: String = NameGenerator.randomName)
-    extends Creature {
+    extends Creature
+    with BaseFighter {
 
   import Fighter._
 
@@ -44,11 +45,11 @@ import monocle.macros.{GenLens, Lenses}
 
 object Champion {
 
-  import FighterAbilities._
+  import BaseFighterAbilities._
 
   val HitDice = D10
 
-  implicit val standardChampionAbilities: List[CreatureAbility] = List(
+  val standardChampionAbilities: List[CreatureAbility] = List(
     1 -> secondWind,
     2 -> actionSurge,
     3 -> twoWeaponFighting,
@@ -62,7 +63,10 @@ object Champion {
       s"AC: ${champion.armourClass}"
   }
 
-  val strengthLens: Lens[Champion, Stat]     = Champion._stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[Champion, Stat]    = Champion._stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[Champion, Stat] = Champion._stats composeLens GenLens[BaseStats](_.constitution)
+  val strengthLens: Lens[Champion, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Champion, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Champion, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[Champion, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[Champion, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[Champion, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }

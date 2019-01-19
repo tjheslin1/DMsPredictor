@@ -73,8 +73,23 @@ class ActionsSpec extends UnitSpecBase {
         val playerCombatant  = fighter.withStrength(10).withBaseWeapon(oneDamageWeapon).withCombatIndex(1)
         val monsterCombatant = monster.withHealth(10).withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
+        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
           (playerCombatant, monsterCombatant.withCreature(monster.withHealth(8)))
+      }
+    }
+
+    "deal at least one damage to a creature resistance to the damage type" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
+
+        val playerCombatant = fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
+        val modifiedMonster = monster.withResistance(Slashing).withHealth(100)
+
+        val monsterCombatant = modifiedMonster
+          .withCombatIndex(2)
+
+        resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
+          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(99)))
       }
     }
 
@@ -105,7 +120,7 @@ class ActionsSpec extends UnitSpecBase {
         val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(Dice.naturalTwenty) shouldBe
+        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
           (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(89)))
       }
     }

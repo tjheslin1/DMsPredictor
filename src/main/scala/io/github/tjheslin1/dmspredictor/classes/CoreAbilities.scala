@@ -7,6 +7,10 @@ import io.github.tjheslin1.dmspredictor.strategy.Ability
 
 object CoreAbilities {
 
+  val standardCoreAbilities: List[CreatureAbility] = List(
+    1 -> extraAttack
+  )
+
   def extraAttack(combatant: Combatant): Ability = new Ability(combatant) {
     val levelRequirement: Level = LevelFive
 
@@ -15,10 +19,10 @@ object CoreAbilities {
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
+        case None => (combatant, None)
         case Some(target: Combatant) =>
           val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
           (updatedAttacker, updatedTarget.some)
-        case None => (combatant, None)
       }
 
     def update: Creature = combatant.creature

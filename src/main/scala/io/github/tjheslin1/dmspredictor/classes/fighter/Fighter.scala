@@ -4,7 +4,7 @@ import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.standardFighterAbilities
-import io.github.tjheslin1.dmspredictor.classes.fighter.FighterAbilities._
+import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
@@ -26,13 +26,14 @@ import monocle.macros.{GenLens, Lenses}
                                 armour: Armour = NoArmour,
                                 offHand: Option[Equipment] = None,
                                 fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                                abilityUsages: FighterAbilities = allUnused(),
+                                abilityUsages: BaseFighterAbilities = allUnused(),
                                 proficiencyBonus: ProficiencyBonus = 0,
-                                resistances: List[DamageType] = List(),
-                                immunities: List[DamageType] = List(),
+                                resistances: List[DamageType] = List.empty,
+                                immunities: List[DamageType] = List.empty,
                                 abilities: List[CreatureAbility] = standardFighterAbilities,
                                 name: String = NameGenerator.randomName)
-    extends Creature {
+    extends Creature
+    with BaseFighter {
 
   import Fighter._
 
@@ -49,7 +50,7 @@ import monocle.macros.{GenLens, Lenses}
 
 object Fighter {
 
-  import FighterAbilities._
+  import BaseFighterAbilities._
 
   val HitDice = D10
 
@@ -111,9 +112,12 @@ object Fighter {
       s"AC: ${fighter.armourClass}"
   }
 
-  val strengthLens: Lens[Fighter, Stat]     = Fighter._stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[Fighter, Stat]    = Fighter._stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[Fighter, Stat] = Fighter._stats composeLens GenLens[BaseStats](_.constitution)
+  val strengthLens: Lens[Fighter, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Fighter, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Fighter, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[Fighter, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[Fighter, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[Fighter, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }
 
 sealed trait FighterFightingStyle extends Product with Serializable
