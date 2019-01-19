@@ -12,12 +12,12 @@ trait BaseFighter extends Product with Serializable {
 
 object BaseFighter {
 
-  val abilityUsagesLens: Lens[BaseFighter, BaseFighterAbilities] = Lens[BaseFighter, BaseFighterAbilities](_.abilityUsages) {
-    abilityUsages =>
+  val abilityUsagesLens: Lens[BaseFighter, BaseFighterAbilities] =
+    Lens[BaseFighter, BaseFighterAbilities](_.abilityUsages) { abilityUsages =>
       {
         case fighter: Fighter               => Fighter._abilityUsages.set(abilityUsages)(fighter)
         case champion: Champion             => Champion._abilityUsages.set(abilityUsages)(champion)
         case eldritchKnight: EldritchKnight => EldritchKnight._abilityUsages.set(abilityUsages)(eldritchKnight)
       }
-  }
+    }
 }
