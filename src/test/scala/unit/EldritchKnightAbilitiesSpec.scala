@@ -47,7 +47,7 @@ class EldritchKnightAbilitiesSpec extends UnitSpecBase {
     }
 
     "cast a spell (saving throw) using the highest available spell slot" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(19)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
         var spellUsedCount = 0
@@ -65,7 +65,7 @@ class EldritchKnightAbilitiesSpec extends UnitSpecBase {
         val eldritchKnightCombatant = spellCastingEK
           .withLevel(LevelThree)
           .withIntelligence(10)
-          .withProficiencyBonus(0)
+          .withProficiencyBonus(6)
           .withCombatIndex(1)
 
         val monster = testMonster.withWisdom(10).withCombatIndex(2)

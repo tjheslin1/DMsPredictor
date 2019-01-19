@@ -74,8 +74,8 @@ object EldritchKnightAbilities {
     }
 
     private def spellSavingThrow[_: RS](spell: Spell, attribute: Attribute, target: Creature): AttackResult =
-      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(eldritchKnight)) Hit
-      else Miss
+      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(eldritchKnight)) Miss
+      else Hit
   }
 
   val firstLevelSpellSlotLens: Lens[EldritchKnightSpellSlots, FirstLevelSpellSlot] =
