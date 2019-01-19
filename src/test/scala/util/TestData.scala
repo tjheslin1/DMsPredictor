@@ -15,6 +15,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -171,7 +172,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName       <- Gen.alphaStr
+      weaponName       <- Gen.alphaStr.filter(_.nonEmpty)
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
       twoHands         <- Gen.oneOf(true, false)
@@ -247,6 +248,25 @@ trait TestData extends RandomDataGenerator {
       }
   }
 
+  implicit val arbGoblin: Arbitrary[Goblin] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary
+    } yield
+      Goblin(
+        creature.health,
+        creature.health,
+        creature.stats,
+        creature.armourClass,
+        creature.baseWeapon,
+        creature.armour,
+        creature.offHand,
+        creature.resistances,
+        creature.immunities,
+        List.empty, // TODO add core abilities?
+        creature.name
+      )
+  }
+
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
       creature <- arbCreature.arbitrary
@@ -262,7 +282,7 @@ trait TestData extends RandomDataGenerator {
         0,
         creature.resistances,
         creature.immunities,
-        List.empty, // TODO add core abilities
+        List.empty, // TODO add core abilities?
         creature.name
       )
   }

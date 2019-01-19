@@ -19,7 +19,7 @@ object BattleMasterAbilities {
   def disarmingAttackManeuver(combatant: Combatant): Ability = new Ability(combatant) {
     val battleMaster = combatant.creature.asInstanceOf[BattleMaster]
 
-    val name = "Maneuver: Disarming Attack"
+    val name                    = "Maneuver: Disarming Attack"
     val levelRequirement: Level = LevelThree
 
     val triggerMet: Boolean   = true
@@ -33,6 +33,8 @@ object BattleMasterAbilities {
           val extraAttack = CoreAbilities.extraAttack(combatant)
           if (creatureHasExtraAttackAbility(extraAttack)) {
 
+            println("*** CREATURE HAS EXTRA ATTACK ABILITY")
+
             // target makes Strength saving throw or loses weapon (swap with unarmed)
 
             ???
@@ -41,16 +43,17 @@ object BattleMasterAbilities {
             val (updatedAttacker, updatedTarget) =
               resolveDamage(combatant, target, attackResult, 1 * BattleMaster.SuperiorityDice)
 
-            // target makes Strength saving throw or loses weapon (swap with unarmed)
             attackResult match {
-              case CriticalMiss | Miss => (updatedAttacker, updatedTarget.some)
-              case CriticalHit | Hit =>
-                val targetCreature = target.creature
+              case Miss | CriticalMiss =>
+                (updatedAttacker, updatedTarget.some)
+              case Hit | CriticalHit =>
+                val targetCreature = updatedTarget.creature
 
-                if ((D20.roll() + mod(targetCreature.stats.strength)) >=  battleMaster.maneuverSaveDC)
+                if ((D20.roll() + mod(targetCreature.stats.strength)) >= battleMaster.maneuverSaveDC)
                   (updatedAttacker, updatedTarget.some)
-                else {
-                  val disarmedTarget = (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens).set(UnarmedStrike(targetCreature))(target)
+                  else {
+                  val disarmedTarget = (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens)
+                    .set(UnarmedStrike(targetCreature))(updatedTarget)
 
                   (updatedAttacker, disarmedTarget.some)
                 }

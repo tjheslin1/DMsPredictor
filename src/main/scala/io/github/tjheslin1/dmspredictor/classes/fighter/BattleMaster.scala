@@ -1,7 +1,10 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
+import eu.timepit.refined.W
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.BattleMaster.standardBattleMasterAbilities
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -46,7 +49,9 @@ import monocle.macros.{GenLens, Lenses}
 //  Maneuver save DC = 8 + your proficiency bonus + your Strength or Dexterity modifier (your choice)
   val maneuverSaveDC: Int = {
     val highestScore = Math.max(stats.strength.value, stats.dexterity.value)
-    8 + proficiencyBonus + Modifier.mod(highestScore)
+
+    // unsafe cast to work around usage of runtime variable, already guaranteed to match refinement, see [[BaseStats]]
+    8 + proficiencyBonus + Modifier.mod(Refined.unsafeApply(highestScore))
   }
 }
 
