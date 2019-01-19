@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.monsters
 
 import cats.Show
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
@@ -52,7 +53,10 @@ object Goblin {
       s"AC: ${goblin.armourClass}"
   }
 
-  val strengthLens: Lens[Goblin, Stat]     = Goblin._stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[Goblin, Stat]    = Goblin._stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[Goblin, Stat] = Goblin._stats composeLens GenLens[BaseStats](_.constitution)
+  val strengthLens: Lens[Goblin, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Goblin, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Goblin, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[Goblin, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[Goblin, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[Goblin, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }

@@ -10,7 +10,6 @@ import monocle.macros.GenLens
 
 object EldritchKnightAbilities {
 
-  import EldritchKnight._
   import EldritchKnightSpellSlots._
 
   def castSpell(combatant: Combatant): Ability = new Ability(combatant) {
@@ -18,8 +17,8 @@ object EldritchKnightAbilities {
 
     val levelRequirement: Level = LevelThree
 
-    def triggerMet: Boolean   = true
-    def conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
+    val triggerMet: Boolean   = true
+    val conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val spellSlot = highestSpellSlotAvailable(eldritchKnight.spellSlots)
@@ -29,8 +28,8 @@ object EldritchKnightAbilities {
         case None => (combatant, None)
         case Some(target: Combatant) =>
           val attackResult: AttackResult = spell.spellOffenseStyle match {
-            case MeleeSpellAttack       => spellAttack(spell, eldritchKnight)
-            case RangedSpellAttack      => spellAttack(spell, eldritchKnight)
+            case MeleeSpellAttack       => spellAttack(spell, target.creature)
+            case RangedSpellAttack      => spellAttack(spell, target.creature)
             case SavingThrow(attribute) => spellSavingThrow(spell, attribute, target.creature)
           }
 
@@ -64,7 +63,8 @@ object EldritchKnightAbilities {
         case FirstLevelSpellSlot(_) => (firstLevelSpellSlotLens, firstLevelSpellSlotCountLens)
       }
 
-      (_spellSlots composeLens spellSlotLens composeLens spellSlotCountLens).set(updatedSpellSlotCount)(eldritchKnight)
+      (EldritchKnight._spellSlots composeLens spellSlotLens composeLens spellSlotCountLens)
+        .set(updatedSpellSlotCount)(eldritchKnight)
     }
 
     private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult = D20.roll() match {
@@ -80,6 +80,7 @@ object EldritchKnightAbilities {
 
   val firstLevelSpellSlotLens: Lens[EldritchKnightSpellSlots, FirstLevelSpellSlot] =
     GenLens[EldritchKnightSpellSlots](_.firstLevel)
+
   val firstLevelSpellSlotCountLens: Lens[FirstLevelSpellSlot, Int] =
     GenLens[FirstLevelSpellSlot](_.count)
 }

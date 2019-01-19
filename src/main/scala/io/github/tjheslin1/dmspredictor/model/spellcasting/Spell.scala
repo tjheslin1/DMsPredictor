@@ -23,6 +23,22 @@ abstract class Spell {
 
 object Spell {
 
+  def apply(level: SpellLevel,
+            schoolOfMagic: SchoolOfMagic,
+            castTime: CastingTime,
+            offenseStyle: SpellOffenseStyle,
+            `type`: DamageType,
+            dmg: => Int): Spell = new Spell {
+
+    val school: spellcasting.SchoolOfMagic                = schoolOfMagic
+    val castingTime: spellcasting.CastingTime             = castTime
+    val spellOffenseStyle: spellcasting.SpellOffenseStyle = offenseStyle
+    val damageType: DamageType                            = `type`
+    val spellLevel: SpellLevel                            = level
+
+    def damage(implicit rollStrategy: RollStrategy): Int = dmg
+  }
+
   def schoolAttribute(creature: Creature): Attribute = creature match {
     case _: EldritchKnight => Intelligence
     case _                 => ???

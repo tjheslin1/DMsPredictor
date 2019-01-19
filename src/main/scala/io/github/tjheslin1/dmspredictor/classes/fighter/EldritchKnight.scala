@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
-import io.github.tjheslin1.dmspredictor.model
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -17,7 +17,7 @@ import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class EldritchKnight(
-    level: model.Level,
+    level: Level,
     health: Int,
     maxHealth: Int,
     stats: BaseStats,
@@ -25,7 +25,7 @@ import monocle.macros.{GenLens, Lenses}
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-    abilityUsages: FighterAbilities = FighterAbilities.allUnused(),
+    abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
     proficiencyBonus: ProficiencyBonus = 0,
     spellsKnown: Map[SpellLevel, Spell] = Map(ChromaticOrb.spellLevel -> ChromaticOrb),
     spellSlots: EldritchKnightSpellSlots = EldritchKnightSpellSlots(FirstLevelSpellSlot(2)),
@@ -33,7 +33,8 @@ import monocle.macros.{GenLens, Lenses}
     immunities: List[DamageType] = List.empty,
     abilities: List[CreatureAbility] = standardEldritchKnightAbilities,
     name: String = NameGenerator.randomName)
-    extends Creature {
+    extends Creature
+    with BaseFighter {
 
   val creatureType: CreatureType = PlayerCharacter
 
@@ -48,15 +49,17 @@ import monocle.macros.{GenLens, Lenses}
 
 object EldritchKnight {
 
-  import FighterAbilities._
+  import BaseFighterAbilities._
+  import EldritchKnightAbilities._
 
   val HitDice = D10
 
-  implicit val standardEldritchKnightAbilities: List[CreatureAbility] = List(
+  val standardEldritchKnightAbilities: List[CreatureAbility] = List(
     1 -> secondWind,
     2 -> actionSurge,
-    3 -> twoWeaponFighting,
-    4 -> extraAttack
+    3 -> castSpell,
+    4 -> twoWeaponFighting,
+    5 -> extraAttack
   )
 
   implicit def eldritchKnightShow[_: RS]: Show[EldritchKnight] = Show.show { eldritchKnight =>
@@ -66,8 +69,10 @@ object EldritchKnight {
       s"AC: ${eldritchKnight.armourClass}"
   }
 
-  val strengthLens: Lens[EldritchKnight, Stat]  = EldritchKnight._stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[EldritchKnight, Stat] = EldritchKnight._stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[EldritchKnight, Stat] = EldritchKnight._stats composeLens GenLens[BaseStats](
-    _.constitution)
+  val strengthLens: Lens[EldritchKnight, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[EldritchKnight, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[EldritchKnight, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[EldritchKnight, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }

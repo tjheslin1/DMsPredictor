@@ -7,6 +7,10 @@ import io.github.tjheslin1.dmspredictor.strategy.Ability
 
 object CoreAbilities {
 
+  val standardCoreAbilities: List[CreatureAbility] = List(
+    1 -> extraAttack
+  )
+
   def extraAttack(combatant: Combatant): Ability = new Ability(combatant) {
     val levelRequirement: Level = LevelFive
 

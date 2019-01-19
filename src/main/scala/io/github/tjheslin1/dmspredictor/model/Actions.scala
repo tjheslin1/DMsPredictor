@@ -55,7 +55,7 @@ object Actions extends LazyLogging {
     )
 
     val adjustedDamage = attacker.creature.weapon.damageType match {
-      case damageType if target.creature.resistances.contains(damageType) => math.floor(dmg / 2).toInt
+      case damageType if target.creature.resistances.contains(damageType) => math.max(1, math.floor(dmg / 2).toInt)
       case damageType if target.creature.immunities.contains(damageType)  => 0
       case _                                                              => dmg
     }

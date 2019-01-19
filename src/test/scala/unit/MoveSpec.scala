@@ -2,7 +2,7 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, FighterAbilities}
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, BaseFighterAbilities}
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -28,7 +28,7 @@ class MoveSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
-        val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(Dice.naturalTwenty)
+        val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
 
         updatedEnemy.health should (be <= monster.health)
       }
@@ -36,7 +36,7 @@ class MoveSpec extends UnitSpecBase {
 
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player   = Fighter._abilityUsages.set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+        val player   = Fighter._abilityUsages.set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
           .withStrength(10).withCombatIndex(1)
 
         val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
@@ -44,7 +44,7 @@ class MoveSpec extends UnitSpecBase {
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
-        val Queue(_, Combatant(_, updatedEnemyTwo), _) = takeMove(queue, LowestFirst  )(Dice.naturalTwenty)
+        val Queue(_, Combatant(_, updatedEnemyTwo), _) = takeMove(queue, LowestFirst  )(D20.naturalTwenty)
 
         updatedEnemyTwo.health shouldBe 0
       }
@@ -52,7 +52,7 @@ class MoveSpec extends UnitSpecBase {
 
     "focus mob with lowest health first" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
-        val player     = Fighter._abilityUsages.set(FighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+        val player     = Fighter._abilityUsages.set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
           .withStrength(10).withCombatIndex(1)
 
         val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
@@ -62,7 +62,7 @@ class MoveSpec extends UnitSpecBase {
         val queue = Queue(player, enemyOne, enemyTwo, enemyThree)
 
         val Queue(Combatant(_, updatedEnemyOne), Combatant(_, updatedEnemyTwo), Combatant(_, updatedEnemyThree), _) =
-          takeMove(queue, LowestFirst)(Dice.naturalTwenty)
+          takeMove(queue, LowestFirst)(D20.naturalTwenty)
 
         updatedEnemyOne.health shouldBe 50
         updatedEnemyTwo.health shouldBe 0

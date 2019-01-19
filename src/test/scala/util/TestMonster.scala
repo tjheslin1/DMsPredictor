@@ -18,9 +18,9 @@ import monocle.macros.{GenLens, Lenses}
                                     baseWeapon: Weapon,
                                     armour: Armour = NoArmour,
                                     offHand: Option[Equipment] = none[Equipment],
-                                    proficiencyBonus: ProficiencyBonus      = 0,
-                                    resistances: List[DamageType] = List(),
-                                    immunities: List[DamageType] = List(),
+                                    proficiencyBonus: ProficiencyBonus = 0,
+                                    resistances: List[DamageType] = List.empty,
+                                    immunities: List[DamageType] = List.empty,
                                     abilities: List[CreatureAbility] = List.empty,
                                     name: String = NameGenerator.randomName)
     extends Creature {
@@ -39,4 +39,7 @@ object TestMonster {
   val strengthLens: Lens[TestMonster, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[TestMonster, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
   val constitutionLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[TestMonster, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[TestMonster, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }

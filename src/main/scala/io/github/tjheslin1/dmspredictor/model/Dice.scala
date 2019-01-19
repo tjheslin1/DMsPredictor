@@ -17,7 +17,6 @@ sealed trait Dice {
 object Dice {
 
   val defaultRandomiser: RollStrategy = sides => RollResult(Random.nextInt(sides) + 1)
-  val naturalTwenty: RollStrategy     = _ => RollResult(20)
   val naturalOne: RollStrategy        = _ => RollResult(1)
 
   def midpointRoundedUp(dice: Dice): Int = Math.ceil(1 + (dice.sides / 2)).toInt
@@ -44,7 +43,8 @@ object D12 extends Dice {
 }
 
 object D20 extends Dice {
-  val sides = 20
+  val sides                       = 20
+  val naturalTwenty: RollStrategy = _ => RollResult(20)
 }
 
 object D100 extends Dice {
