@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.ExtraAttack
 import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamageTimes, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
@@ -25,6 +26,7 @@ object BaseFighterAbilities {
   def secondWind(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
+    val name = "Second Wind"
     val levelRequirement = LevelTwo
     val triggerMet       = combatant.creature.health <= combatant.creature.maxHealth / 2
     val conditionMet     = baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
@@ -44,6 +46,7 @@ object BaseFighterAbilities {
   def twoWeaponFighting(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
+    val name = "Two Weapon Fighting"
     val levelRequirement: Level = LevelOne
     val triggerMet: Boolean     = true
     val conditionMet: Boolean = combatant.creature.offHand match {
@@ -80,16 +83,17 @@ object BaseFighterAbilities {
   def actionSurge(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
+    val name = "Action Surge"
     val levelRequirement: Level = LevelTwo
     val triggerMet: Boolean     = true
     val conditionMet: Boolean   = baseFighter.abilityUsages.actionSurgeUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       target match {
+        case None => (combatant, None)
         case Some(target: Combatant) =>
           val extraAttack = CoreAbilities.extraAttack(combatant)
-          if (baseFighter.level.value >= extraAttack.levelRequirement &&
-              extraAttack.conditionMet && extraAttack.triggerMet) {
+          if (creatureHasExtraAttackAbility(extraAttack)) {
             val (updatedAttacker, updatedTarget) = extraAttack.useAbility(target.some)
 
             val extraAttackAgain                   = CoreAbilities.extraAttack(updatedAttacker)
@@ -101,12 +105,18 @@ object BaseFighterAbilities {
 
             (updatedAttacker, updatedTarget.some)
           }
-        case None => (combatant, None)
       }
     }
 
     def update: Creature =
       (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
-  }
 
+    private def creatureHasExtraAttackAbility(extraAttack: Ability): Boolean = {
+      combatant.creature.abilities.map{
+        case (_, ability) => ability(combatant).name
+      }.contains(ExtraAttack) &&
+      baseFighter.level >= extraAttack.levelRequirement &&
+      extraAttack.conditionMet && extraAttack.triggerMet
+    }
+  }
 }
