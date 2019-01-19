@@ -136,7 +136,7 @@ object Creature {
     }
   }
 
-  val creatureCharismaLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.intelligence) { chaScore =>
+  val creatureCharismaLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.charisma) { chaScore =>
     {
       case c: EldritchKnight => EldritchKnight.charismaLens.set(chaScore)(c)
       case c: Champion       => Champion.charismaLens.set(chaScore)(c)
