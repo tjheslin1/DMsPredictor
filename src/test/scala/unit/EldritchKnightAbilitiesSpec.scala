@@ -16,7 +16,7 @@ class EldritchKnightAbilitiesSpec extends UnitSpecBase {
 
   "EldritchKnight" should {
 
-    "cast a spell using the highest available spell slot" in new TestContext {
+    "cast a spell (spell attack) using the highest available spell slot" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 
       forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
@@ -37,6 +37,38 @@ class EldritchKnightAbilitiesSpec extends UnitSpecBase {
           .withCombatIndex(1)
 
         val monster = testMonster.withArmourClass(10).withCombatIndex(2)
+
+        val Queue(_, Combatant(_, updatedEK: EldritchKnight)) =
+          Move.takeMove(Queue(eldritchKnightCombatant, monster), LowestFirst)
+
+        spellUsedCount shouldBe 1
+        updatedEK.spellSlots.firstLevel.count shouldBe (spellCastingEK.spellSlots.firstLevel.count - 1)
+      }
+    }
+
+    "cast a spell (saving throw) using the highest available spell slot" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(19)
+
+      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
+        var spellUsedCount = 0
+
+        val trackedSavingThrowSpell = Spell(1, Evocation, OneAction, SavingThrow(Wisdom), Fire, {
+          spellUsedCount += 1
+          1
+        })
+
+        val spellCastingEK = eldritchKnight
+          .withSpell(trackedSavingThrowSpell)
+          .withAllBaseFighterAbilitiesUsed()
+          .withAllSpellSlotsAvailable()
+
+        val eldritchKnightCombatant = spellCastingEK
+          .withLevel(LevelThree)
+          .withIntelligence(10)
+          .withProficiencyBonus(0)
+          .withCombatIndex(1)
+
+        val monster = testMonster.withWisdom(10).withCombatIndex(2)
 
         val Queue(_, Combatant(_, updatedEK: EldritchKnight)) =
           Move.takeMove(Queue(eldritchKnightCombatant, monster), LowestFirst)
