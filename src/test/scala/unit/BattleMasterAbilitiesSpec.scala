@@ -56,6 +56,8 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     }
 
     "use all four superiority dice when using Action Surge with Extra Attack" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = _abilityUsages
           .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)
@@ -74,6 +76,8 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     }
 
     "use all available superiority dice during turn" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = _abilityUsages
           .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)

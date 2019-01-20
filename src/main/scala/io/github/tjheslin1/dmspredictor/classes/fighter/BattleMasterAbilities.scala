@@ -27,7 +27,7 @@ object BattleMasterAbilities {
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       target match {
-        case None                    => (combatant, none[Combatant])
+        case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
           val extraAttack = CoreAbilities.extraAttack(combatant)
           if (creatureHasExtraAttackAbility(extraAttack)) {
@@ -47,10 +47,7 @@ object BattleMasterAbilities {
       }
     }
 
-    def update: Creature = {
-      val updatedSuperiorityDiceCount = battleMaster.superiorityDiceCount - 1
-      BattleMaster._superiorityDiceCount.set(updatedSuperiorityDiceCount)(battleMaster)
-    }
+    def update: Creature = battleMaster
 
     private def creatureHasExtraAttackAbility(extraAttack: Ability): Boolean = {
       combatant.creature.abilities
@@ -62,26 +59,35 @@ object BattleMasterAbilities {
       extraAttack.conditionMet && extraAttack.triggerMet
     }
 
-    private def disarmingAttack[_: RS](combatant: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {
-      val attackResult = attack(combatant, combatant.creature.weapon, target)
+    private def disarmingAttack[_: RS](attackingCombatant: Combatant, attackTarget: Combatant): (Combatant, Option[Combatant]) = {
+      val attackResult = attack(attackingCombatant, attackingCombatant.creature.weapon, attackTarget)
       val (updatedAttacker, updatedTarget) =
-        resolveDamage(combatant, target, attackResult, 1 * BattleMaster.SuperiorityDice)
+        resolveDamage(attackingCombatant, attackTarget, attackResult, 1 * BattleMaster.SuperiorityDice)
 
       attackResult match {
         case Miss | CriticalMiss =>
           (updatedAttacker, updatedTarget.some)
         case Hit | CriticalHit =>
+          val updatedSuperiorityDiceCountAttacker = updateSuperiorityDice(updatedAttacker)
           val targetCreature = updatedTarget.creature
 
           if ((D20.roll() + mod(targetCreature.stats.strength)) >= battleMaster.maneuverSaveDC)
-            (updatedAttacker, updatedTarget.some)
+            (updatedSuperiorityDiceCountAttacker, updatedTarget.some)
           else {
             val disarmedTarget = (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens)
               .set(UnarmedStrike(targetCreature))(updatedTarget)
 
-            (updatedAttacker, disarmedTarget.some)
+            (updatedSuperiorityDiceCountAttacker, disarmedTarget.some)
           }
       }
+    }
+
+    private def updateSuperiorityDice(combatant: Combatant): Combatant = {
+      val battleMaster = combatant.creature.asInstanceOf[BattleMaster]
+
+      val updatedSuperiorityDiceCount = battleMaster.superiorityDiceCount - 1
+      Combatant.creatureLens
+        .set(BattleMaster._superiorityDiceCount.set(updatedSuperiorityDiceCount)(battleMaster))(combatant)
     }
   }
 }
