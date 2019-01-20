@@ -22,10 +22,8 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
-
-        val battleMasterCombatant = _abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(battleMaster)
-            .withSuperiorityDiceCount(1)
+        val battleMasterCombatant = battleMaster.withAllAbilitiesUsed()
+          .withSuperiorityDiceCount(1)
           .withLevel(LevelThree)
           .withCombatIndex(1)
 
@@ -42,9 +40,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
       override implicit val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
-
-        val battleMasterCombatant = _abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(battleMaster)
+        val battleMasterCombatant = battleMaster.withAllAbilitiesUsed()
           .withSuperiorityDiceCount(1)
           .withLevel(LevelThree)
           .withStrength(20)
@@ -60,11 +56,39 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     }
 
     "use all four superiority dice when using Action Surge with Extra Attack" in new TestContext {
-      fail("todo")
+      forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
+        val battleMasterCombatant = _abilityUsages
+          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)
+          .withSuperiorityDiceCount(4)
+          .withLevel(LevelFive)
+          .withStrength(20)
+          .withCombatIndex(1)
+
+        val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
+
+        val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
+          Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
+
+        updatedBattleMaster.superiorityDiceCount shouldBe 0
+      }
     }
 
     "use all available superiority dice during turn" in new TestContext {
-      fail("todo")
+      forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
+        val battleMasterCombatant = _abilityUsages
+          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)
+          .withSuperiorityDiceCount(3)
+          .withLevel(LevelFive)
+          .withStrength(20)
+          .withCombatIndex(1)
+
+        val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
+
+        val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
+          Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
+
+        updatedBattleMaster.superiorityDiceCount shouldBe 0
+      }
     }
   }
 

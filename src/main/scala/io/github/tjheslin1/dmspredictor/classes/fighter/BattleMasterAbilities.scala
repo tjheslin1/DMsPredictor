@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.ExtraAttack
-import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
+import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamage, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
@@ -27,37 +27,22 @@ object BattleMasterAbilities {
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       target match {
-        case None                    => (combatant, None)
+        case None                    => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          // attack with bonus damage
           val extraAttack = CoreAbilities.extraAttack(combatant)
           if (creatureHasExtraAttackAbility(extraAttack)) {
 
-            println("*** CREATURE HAS EXTRA ATTACK ABILITY")
+            val (updatedAttacker, optUpdatedTarget) = disarmingAttack(combatant, target)
 
-            // target makes Strength saving throw or loses weapon (swap with unarmed)
-
-            ???
-          } else {
-            val attackResult = attack(combatant, combatant.creature.weapon, target)
-            val (updatedAttacker, updatedTarget) =
-              resolveDamage(combatant, target, attackResult, 1 * BattleMaster.SuperiorityDice)
-
-            attackResult match {
-              case Miss | CriticalMiss =>
-                (updatedAttacker, updatedTarget.some)
-              case Hit | CriticalHit =>
-                val targetCreature = updatedTarget.creature
-
-                if ((D20.roll() + mod(targetCreature.stats.strength)) >= battleMaster.maneuverSaveDC)
-                  (updatedAttacker, updatedTarget.some)
-                  else {
-                  val disarmedTarget = (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens)
-                    .set(UnarmedStrike(targetCreature))(updatedTarget)
-
-                  (updatedAttacker, disarmedTarget.some)
-                }
+            (battleMaster.superiorityDiceCount - 1, optUpdatedTarget) match {
+              case (_, None) => (updatedAttacker, none[Combatant])
+              case (0, Some(updatedTarget)) =>
+                val (updatedAttacker2, updatedTarget2) = attackAndDamage(updatedAttacker, updatedTarget)
+                (updatedAttacker2, updatedTarget2.some)
+              case (_, Some(updatedTarget)) => disarmingAttack(updatedAttacker, updatedTarget)
             }
+          } else {
+            disarmingAttack(combatant, target)
           }
       }
     }
@@ -75,6 +60,28 @@ object BattleMasterAbilities {
         .contains(ExtraAttack) &&
       battleMaster.level >= extraAttack.levelRequirement &&
       extraAttack.conditionMet && extraAttack.triggerMet
+    }
+
+    private def disarmingAttack[_: RS](combatant: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {
+      val attackResult = attack(combatant, combatant.creature.weapon, target)
+      val (updatedAttacker, updatedTarget) =
+        resolveDamage(combatant, target, attackResult, 1 * BattleMaster.SuperiorityDice)
+
+      attackResult match {
+        case Miss | CriticalMiss =>
+          (updatedAttacker, updatedTarget.some)
+        case Hit | CriticalHit =>
+          val targetCreature = updatedTarget.creature
+
+          if ((D20.roll() + mod(targetCreature.stats.strength)) >= battleMaster.maneuverSaveDC)
+            (updatedAttacker, updatedTarget.some)
+          else {
+            val disarmedTarget = (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens)
+              .set(UnarmedStrike(targetCreature))(updatedTarget)
+
+            (updatedAttacker, disarmedTarget.some)
+          }
+      }
     }
   }
 }

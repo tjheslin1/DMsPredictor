@@ -14,15 +14,17 @@ object CoreAbilities {
   )
 
   def extraAttack(combatant: Combatant): Ability = new Ability(combatant) {
+    val player = combatant.creature.asInstanceOf[Player]
+
     val name = ExtraAttack
     val levelRequirement: Level = LevelFive
 
     def triggerMet: Boolean   = true
-    def conditionMet: Boolean = true
+    def conditionMet: Boolean = player.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
-        case None => (combatant, None)
+        case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
           val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
           (updatedAttacker, updatedTarget.some)

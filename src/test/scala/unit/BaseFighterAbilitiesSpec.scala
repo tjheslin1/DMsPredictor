@@ -25,8 +25,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val dualWieldingFighter = _abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = true))(fighter)
+        val dualWieldingFighter = fighter.withAllAbilitiesUsed()
           .withFightingStyle(TwoWeaponFighting)
           .withBaseWeapon(trackedSword)
           .withOffHand(trackedSword)

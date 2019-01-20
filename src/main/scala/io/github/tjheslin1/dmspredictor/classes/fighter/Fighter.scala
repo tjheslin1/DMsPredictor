@@ -3,8 +3,8 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.standardFighterAbilities
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities._
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.standardFighterAbilities
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword

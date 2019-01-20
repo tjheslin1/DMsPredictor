@@ -26,7 +26,7 @@ object EldritchKnightAbilities {
       val spell     = eldritchKnight.spellsKnown(spellSlot.spellLevel)
 
       target match {
-        case None => (combatant, None)
+        case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
           val attackResult: AttackResult = spell.spellOffenseStyle match {
             case MeleeSpellAttack       => spellAttack(spell, target.creature)

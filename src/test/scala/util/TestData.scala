@@ -43,8 +43,8 @@ object TestData {
     def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
     def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
     def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
-    def withNoArmour()  =                           _armour.set(NoArmour)(testMonster)
-    def withNoOffHand() = _offHand.set(none[Equipment])(testMonster)
+    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
+    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
     def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
     def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
     def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
@@ -67,6 +67,7 @@ object TestData {
     def withOffHand(offHand: Equipment)             = creatureOffHandLens.set(offHand.some)(creature)
     def withArmourClass(ac: Int)                    = creatureArmourClassOptional.set(ac)(creature)
     def withAbilities(ablts: List[CreatureAbility]) = creatureAbilitiesLens.set(ablts)(creature)
+    def withNoAbilities()                           = creatureAbilitiesLens.set(List.empty)(creature)
 
     def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
       creatureProficiencyBonusOptional.set(proficiencyBonus)(creature)
@@ -103,6 +104,8 @@ object TestData {
     import BattleMaster._
 
     def withSuperiorityDiceCount(count: Int) = _superiorityDiceCount.set(count)(battleMaster)
+    def withAllAbilitiesUsed()               = _abilityUsages.set(BaseFighterAbilities(true, true))(battleMaster)
+
   }
 
   implicit class EldritchKnightOps(val eldritchKnight: EldritchKnight) extends AnyVal {

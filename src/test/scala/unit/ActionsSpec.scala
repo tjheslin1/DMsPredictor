@@ -97,7 +97,13 @@ class ActionsSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 11)
 
-        val playerCombatant = fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
+        val playerCombatant =
+          fighter
+            .withNoAbilities()
+            .withStrength(10)
+            .withBaseWeapon(tenDamageWeapon)
+            .withCombatIndex(1)
+
         val modifiedMonster = monster.withResistance(Slashing).withHealth(100)
 
         val monsterCombatant = modifiedMonster
