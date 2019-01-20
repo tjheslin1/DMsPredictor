@@ -60,7 +60,7 @@ object BattleMaster {
   import BaseFighterAbilities._
   import BattleMasterAbilities._
 
-  val HitDice = D10
+  val HitDice         = D10
   val SuperiorityDice = D8
 
   val standardBattleMasterAbilities: List[CreatureAbility] = List(
@@ -83,6 +83,5 @@ object BattleMaster {
   val constitutionLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
   val wisdomLens: Lens[BattleMaster, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
-  val
-  charismaLens: Lens[BattleMaster, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  val charismaLens: Lens[BattleMaster, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }

@@ -16,7 +16,7 @@ object CoreAbilities {
   def extraAttack(combatant: Combatant): Ability = new Ability(combatant) {
     val player = combatant.creature.asInstanceOf[Player]
 
-    val name = ExtraAttack
+    val name                    = ExtraAttack
     val levelRequirement: Level = LevelFive
 
     def triggerMet: Boolean   = true

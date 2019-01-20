@@ -59,7 +59,8 @@ object BattleMasterAbilities {
       extraAttack.conditionMet && extraAttack.triggerMet
     }
 
-    private def disarmingAttack[_: RS](attackingCombatant: Combatant, attackTarget: Combatant): (Combatant, Option[Combatant]) = {
+    private def disarmingAttack[_: RS](attackingCombatant: Combatant,
+                                       attackTarget: Combatant): (Combatant, Option[Combatant]) = {
       val attackResult = attack(attackingCombatant, attackingCombatant.creature.weapon, attackTarget)
       val (updatedAttacker, updatedTarget) =
         resolveDamage(attackingCombatant, attackTarget, attackResult, 1 * BattleMaster.SuperiorityDice)
@@ -69,7 +70,7 @@ object BattleMasterAbilities {
           (updatedAttacker, updatedTarget.some)
         case Hit | CriticalHit =>
           val updatedSuperiorityDiceCountAttacker = updateSuperiorityDice(updatedAttacker)
-          val targetCreature = updatedTarget.creature
+          val targetCreature                      = updatedTarget.creature
 
           if ((D20.roll() + mod(targetCreature.stats.strength)) >= battleMaster.maneuverSaveDC)
             (updatedSuperiorityDiceCountAttacker, updatedTarget.some)

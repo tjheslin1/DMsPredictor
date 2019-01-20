@@ -92,13 +92,13 @@ object BaseFighterAbilities {
         case Some(target: Combatant) =>
           nextAbilityToUseInConjunction(combatant).fold(useAttackActionTwice(combatant, target)) {
 
-            case (_, ability) =>
-              val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(ability, combatant, target)
+            case (_, nextAbility) =>
+              val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
 
               optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
                 nextAbilityToUseInConjunction(updatedAttacker).fold(
                   useAttackActionTwice(updatedAttacker, updatedTarget)) {
-                  case (_, ability2) => useAdditionalAbility(ability2, updatedAttacker, updatedTarget)
+                  case (_, nextAbility2) => useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                 }
               }
           }

@@ -15,7 +15,7 @@ object EldritchKnightAbilities {
   def castSpell(combatant: Combatant): Ability = new Ability(combatant) {
     val eldritchKnight = combatant.creature.asInstanceOf[EldritchKnight]
 
-    val name = "Cast Spell"
+    val name                    = "Cast Spell"
     val levelRequirement: Level = LevelThree
 
     val triggerMet: Boolean   = true

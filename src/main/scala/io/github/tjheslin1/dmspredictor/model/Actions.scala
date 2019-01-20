@@ -41,7 +41,8 @@ object Actions extends LazyLogging {
 
   def resolveDamage[_: RS](attacker: Combatant,
                            target: Combatant,
-                           attackResult: AttackResult, damageBonus: Int = 0): (Combatant, Combatant) = {
+                           attackResult: AttackResult,
+                           damageBonus: Int = 0): (Combatant, Combatant) = {
 
     val dmg = Math.max(
       0,
