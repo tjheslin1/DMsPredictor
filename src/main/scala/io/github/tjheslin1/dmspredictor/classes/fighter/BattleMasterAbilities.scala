@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.ExtraAttack
 import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamage, resolveDamage}
@@ -29,16 +30,19 @@ object BattleMasterAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          val extraAttack = CoreAbilities.extraAttack(combatant)
-          if (creatureHasExtraAttackAbility(extraAttack)) {
+          if (creatureHasExtraAttackAbility(combatant)) {
 
             val (updatedAttacker, optUpdatedTarget) = disarmingAttack(combatant, target)
 
             (battleMaster.superiorityDiceCount - 1, optUpdatedTarget) match {
               case (_, None) => (updatedAttacker, none[Combatant])
-              case (0, Some(updatedTarget)) =>
-                val (updatedAttacker2, updatedTarget2) = attackAndDamage(updatedAttacker, updatedTarget)
-                (updatedAttacker2, updatedTarget2.some)
+              case (noDice @ 0, Some(updatedTarget)) =>
+                nextAbilityToUseInConjunction(updatedAttacker, name).fold {
+                  val (updatedRegularAttacker, regularAttackTarget) = attackAndDamage(updatedAttacker, updatedTarget)
+                  (updatedRegularAttacker, regularAttackTarget.some)
+                } {
+                  case (_, ability) => useAdditionalAbility(ability, updatedAttacker, updatedTarget)
+                }
               case (_, Some(updatedTarget)) => disarmingAttack(updatedAttacker, updatedTarget)
             }
           } else {
@@ -49,10 +53,12 @@ object BattleMasterAbilities {
 
     def update: Creature = battleMaster
 
-    private def creatureHasExtraAttackAbility(extraAttack: Ability): Boolean = {
-      combatant.creature.abilities
+    private def creatureHasExtraAttackAbility(combatantToCheck: Combatant): Boolean = {
+      val extraAttack = CoreAbilities.extraAttack(combatantToCheck)
+
+      combatantToCheck.creature.abilities
         .map {
-          case (_, ability) => ability(combatant).name
+          case (_, ability) => ability(combatantToCheck).name
         }
         .contains(ExtraAttack) &&
       battleMaster.level >= extraAttack.levelRequirement &&

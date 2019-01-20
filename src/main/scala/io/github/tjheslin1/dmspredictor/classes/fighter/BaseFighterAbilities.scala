@@ -1,13 +1,15 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
-import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamageTimes, resolveDamage}
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
+import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import monocle.Lens
 import monocle.macros.GenLens
+
 
 case class BaseFighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolean)
 
@@ -90,13 +92,13 @@ object BaseFighterAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant).fold(useAttackActionTwice(combatant, target)) {
+          nextAbilityToUseInConjunction(combatant, name).fold(useAttackActionTwice(combatant, target)) {
 
             case (_, nextAbility) =>
               val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
 
               optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedAttacker).fold(
+                nextAbilityToUseInConjunction(updatedAttacker, name).fold(
                   useAttackActionTwice(updatedAttacker, updatedTarget)) {
                   case (_, nextAbility2) => useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                 }
@@ -107,28 +109,5 @@ object BaseFighterAbilities {
 
     def update: Creature =
       (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
-
-    private def nextAbilityToUseInConjunction[_: RS](attacker: Combatant): Option[(Int, Combatant => Ability)] = {
-      // Currently Action Surge will choose Two Weapon Fighting over Extra Attack
-      attacker.creature.abilities.sortBy { case (priority, _) => priority }.find {
-        case (_, creatureAbility) =>
-          val ability = creatureAbility(attacker)
-          ability.name != name && ability.conditionMet && ability.triggerMet
-      }
-    }
-
-    private def useAttackActionTwice[_: RS](attacker: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {
-      val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, attacker, target)
-      (updatedAttacker, updatedTarget.some)
-    }
-
-    private def useAdditionalAbility[_: RS](ability: Combatant => Ability,
-                                            attacker: Combatant,
-                                            abilityTarget: Combatant) = {
-      val (updatedAttacker, updatedAbilityTarget) = ability(attacker).useAbility(abilityTarget.some)
-      val updatedAttackingCreature                = ability(updatedAttacker).update
-
-      (attacker.copy(creature = updatedAttackingCreature), updatedAbilityTarget)
-    }
   }
 }

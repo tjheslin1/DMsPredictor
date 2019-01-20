@@ -1,10 +1,8 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
-import eu.timepit.refined.W
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.BattleMaster.standardBattleMasterAbilities
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -64,8 +62,8 @@ object BattleMaster {
   val SuperiorityDice = D8
 
   val standardBattleMasterAbilities: List[CreatureAbility] = List(
-    1 -> secondWind,
-    2 -> actionSurge,
+    1 -> actionSurge,
+    2 -> secondWind,
     3 -> disarmingAttackManeuver,
     4 -> twoWeaponFighting,
     5 -> extraAttack

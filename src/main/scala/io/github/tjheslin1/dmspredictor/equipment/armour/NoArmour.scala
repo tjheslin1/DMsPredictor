@@ -1,7 +1,7 @@
 package io.github.tjheslin1.dmspredictor.equipment.armour
 
-import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model._
 
 case object NoArmour extends Armour {
 
