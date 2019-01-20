@@ -90,29 +90,15 @@ object BaseFighterAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjuction(combatant).fold {
-            val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
+          nextAbilityToUseInConjunction(combatant).fold(useAttackActionTwice(combatant, target)) {
 
-            (updatedAttacker, updatedTarget.some)
-          } {
             case (_, ability) =>
-              val (updatedAttacker, optUpdatedTarget) = {
-                val (attackerUsedAbility, targetOfAbility) = ability(combatant).useAbility(target.some)
-                val updatedAttackingCreature               = ability(attackerUsedAbility).update
-                (combatant.copy(creature = updatedAttackingCreature), targetOfAbility)
-              }
+              val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(ability, combatant, target)
 
               optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjuction(updatedAttacker).fold {
-                  val (updatedAttacker2, updatedTarget2) = attackAndDamageTimes(2, updatedAttacker, updatedTarget)
-
-                  (updatedAttacker2, updatedTarget2.some)
-                } {
-                  case (_, ability2) =>
-                    val (attackerUsedAbility2, targetOfAbility2) = ability2(updatedAttacker).useAbility(updatedTarget.some)
-                    val updatedAttackingCreature2 = ability(attackerUsedAbility2).update
-
-                    (updatedAttacker.copy(creature = updatedAttackingCreature2), targetOfAbility2)
+                nextAbilityToUseInConjunction(updatedAttacker).fold(
+                  useAttackActionTwice(updatedAttacker, updatedTarget)) {
+                  case (_, ability2) => useAdditionalAbility(ability2, updatedAttacker, updatedTarget)
                 }
               }
           }
@@ -122,13 +108,27 @@ object BaseFighterAbilities {
     def update: Creature =
       (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
 
-    private def nextAbilityToUseInConjuction(attacker: Combatant): Option[(Int, Combatant => Ability)] = {
+    private def nextAbilityToUseInConjunction[_: RS](attacker: Combatant): Option[(Int, Combatant => Ability)] = {
       // Currently Action Surge will choose Two Weapon Fighting over Extra Attack
       attacker.creature.abilities.sortBy { case (priority, _) => priority }.find {
         case (_, creatureAbility) =>
           val ability = creatureAbility(attacker)
           ability.name != name && ability.conditionMet && ability.triggerMet
       }
+    }
+
+    private def useAttackActionTwice[_: RS](attacker: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {
+      val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, attacker, target)
+      (updatedAttacker, updatedTarget.some)
+    }
+
+    private def useAdditionalAbility[_: RS](ability: Combatant => Ability,
+                                            attacker: Combatant,
+                                            abilityTarget: Combatant) = {
+      val (updatedAttacker, updatedAbilityTarget) = ability(attacker).useAbility(abilityTarget.some)
+      val updatedAttackingCreature                = ability(updatedAttacker).update
+
+      (attacker.copy(creature = updatedAttackingCreature), updatedAbilityTarget)
     }
   }
 }
