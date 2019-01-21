@@ -73,7 +73,7 @@ object BattleMaster {
   )
 
   implicit def battleMasterShow[_: RS]: Show[BattleMaster] = Show.show { battleMaster =>
-    s"Fighter: " +
+    s"BattleMaster: " +
       s"Name: ${battleMaster.name}, " +
       s"health: ${battleMaster.health}, " +
       s"AC: ${battleMaster.armourClass}"

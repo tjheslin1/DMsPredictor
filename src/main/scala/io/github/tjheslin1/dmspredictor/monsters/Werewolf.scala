@@ -52,7 +52,7 @@ object Werewolf {
   }
 
   implicit def werewolfShow[_: RS]: Show[Werewolf] = Show.show { werewolf =>
-    s"Fighter: " +
+    s"Werewolf: " +
       s"Name: ${werewolf.name}, " +
       s"health: ${werewolf.health}, " +
       s"AC: ${werewolf.armourClass}"

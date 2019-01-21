@@ -57,7 +57,7 @@ object Champion {
   )
 
   implicit def championShow[_: RS]: Show[Champion] = Show.show { champion =>
-    s"Fighter: " +
+    s"Champion: " +
       s"Name: ${champion.name}, " +
       s"health: ${champion.health}, " +
       s"AC: ${champion.armourClass}"

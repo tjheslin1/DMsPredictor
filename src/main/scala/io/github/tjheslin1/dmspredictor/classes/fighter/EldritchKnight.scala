@@ -64,7 +64,7 @@ object EldritchKnight {
   )
 
   implicit def eldritchKnightShow[_: RS]: Show[EldritchKnight] = Show.show { eldritchKnight =>
-    s"Fighter: " +
+    s"EldritchKnight: " +
       s"Name: ${eldritchKnight.name}, " +
       s"health: ${eldritchKnight.health}, " +
       s"AC: ${eldritchKnight.armourClass}"
