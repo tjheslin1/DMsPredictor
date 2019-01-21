@@ -47,6 +47,15 @@ object Weapon {
                                dmg: Int): Weapon =
     Weapon(weaponName, wpnType, weaponDamageType, twoHands, dmg)
 
+  case class UnarmedStrike(creature: Creature) extends Weapon {
+    override val name: String           = "Unarmed strike"
+    override val weaponType: WeaponType = Melee
+    override val damageType: DamageType = Bludgeoning
+    override val twoHanded: Boolean     = false
+
+    override def damage(implicit rollStrategy: RollStrategy): Int = 1 + Modifier.mod(creature.stats.strength)
+  }
+
   implicit val weaponShow: Show[Weapon] = Show.show { weapon =>
     s"Weapon: ${weapon.name} (${weapon.damageType}})"
   }

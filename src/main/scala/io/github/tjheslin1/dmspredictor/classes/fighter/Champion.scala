@@ -50,8 +50,8 @@ object Champion {
   val HitDice = D10
 
   val standardChampionAbilities: List[CreatureAbility] = List(
-    1 -> secondWind,
-    2 -> actionSurge,
+    1 -> actionSurge,
+    2 -> secondWind,
     3 -> twoWeaponFighting,
     4 -> extraAttack
   )

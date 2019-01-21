@@ -1,8 +1,8 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
-import io.github.tjheslin1.dmspredictor.model.Actions.{attack, attackAndDamageTimes, resolveDamage}
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
+import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
@@ -25,6 +25,7 @@ object BaseFighterAbilities {
   def secondWind(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
+    val name             = "Second Wind"
     val levelRequirement = LevelTwo
     val triggerMet       = combatant.creature.health <= combatant.creature.maxHealth / 2
     val conditionMet     = baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
@@ -44,6 +45,7 @@ object BaseFighterAbilities {
   def twoWeaponFighting(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
+    val name                    = "Two Weapon Fighting"
     val levelRequirement: Level = LevelOne
     val triggerMet: Boolean     = true
     val conditionMet: Boolean = combatant.creature.offHand match {
@@ -55,7 +57,7 @@ object BaseFighterAbilities {
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
-        case None => (combatant, None)
+        case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
           val mainHandAttack = attack(combatant, combatant.creature.weapon, target)
 
@@ -80,33 +82,31 @@ object BaseFighterAbilities {
   def actionSurge(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
+    val name                    = "Action Surge"
     val levelRequirement: Level = LevelTwo
     val triggerMet: Boolean     = true
     val conditionMet: Boolean   = baseFighter.abilityUsages.actionSurgeUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       target match {
+        case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          val extraAttack = CoreAbilities.extraAttack(combatant)
-          if (baseFighter.level.value >= extraAttack.levelRequirement &&
-              extraAttack.conditionMet && extraAttack.triggerMet) {
-            val (updatedAttacker, updatedTarget) = extraAttack.useAbility(target.some)
+          nextAbilityToUseInConjunction(combatant, name).fold(useAttackActionTwice(combatant, target)) {
 
-            val extraAttackAgain                   = CoreAbilities.extraAttack(updatedAttacker)
-            val (updatedAttacker2, updatedTarget2) = extraAttackAgain.useAbility(updatedTarget)
+            case (_, nextAbility) =>
+              val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
 
-            (updatedAttacker2, updatedTarget2)
-          } else {
-            val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
-
-            (updatedAttacker, updatedTarget.some)
+              optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
+                nextAbilityToUseInConjunction(updatedAttacker, name).fold(
+                  useAttackActionTwice(updatedAttacker, updatedTarget)) {
+                  case (_, nextAbility2) => useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
+                }
+              }
           }
-        case None => (combatant, None)
       }
     }
 
     def update: Creature =
       (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
   }
-
 }

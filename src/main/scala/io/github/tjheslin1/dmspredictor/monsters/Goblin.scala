@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.monsters
 
 import cats.Show
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword

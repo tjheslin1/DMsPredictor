@@ -4,7 +4,6 @@ import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -36,6 +35,8 @@ import monocle.macros.{GenLens, Lenses}
     extends Creature
     with BaseFighter {
 
+  import Fighter._
+
   val creatureType: CreatureType = PlayerCharacter
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
@@ -55,8 +56,8 @@ object EldritchKnight {
   val HitDice = D10
 
   val standardEldritchKnightAbilities: List[CreatureAbility] = List(
-    1 -> secondWind,
-    2 -> actionSurge,
+    1 -> actionSurge,
+    2 -> secondWind,
     3 -> castSpell,
     4 -> twoWeaponFighting,
     5 -> extraAttack

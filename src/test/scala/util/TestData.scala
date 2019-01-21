@@ -11,11 +11,11 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, _}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.Creature.{creatureArmourLens, creatureOffHandLens}
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -43,8 +43,8 @@ object TestData {
     def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
     def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
     def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
-    def withNoArmour()  =                           _armour.set(NoArmour)(testMonster)
-    def withNoOffHand() = _offHand.set(none[Equipment])(testMonster)
+    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
+    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
     def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
     def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
     def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
@@ -67,6 +67,7 @@ object TestData {
     def withOffHand(offHand: Equipment)             = creatureOffHandLens.set(offHand.some)(creature)
     def withArmourClass(ac: Int)                    = creatureArmourClassOptional.set(ac)(creature)
     def withAbilities(ablts: List[CreatureAbility]) = creatureAbilitiesLens.set(ablts)(creature)
+    def withNoAbilities()                           = creatureAbilitiesLens.set(List.empty)(creature)
 
     def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
       creatureProficiencyBonusOptional.set(proficiencyBonus)(creature)
@@ -97,6 +98,14 @@ object TestData {
     def withFightingStyle(fightingStyle: FighterFightingStyle) = _fightingStyles.set(List(fightingStyle))(fighter)
     def withAllAbilitiesUnused()                               = _abilityUsages.set(BaseFighterAbilities(false, false))(fighter)
     def withAllAbilitiesUsed()                                 = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
+  }
+
+  implicit class BattleMasterOps(val battleMaster: BattleMaster) extends AnyVal {
+    import BattleMaster._
+
+    def withSuperiorityDiceCount(count: Int) = _superiorityDiceCount.set(count)(battleMaster)
+    def withAllAbilitiesUsed()               = _abilityUsages.set(BaseFighterAbilities(true, true))(battleMaster)
+
   }
 
   implicit class EldritchKnightOps(val eldritchKnight: EldritchKnight) extends AnyVal {
@@ -166,7 +175,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName       <- Gen.alphaStr
+      weaponName       <- Gen.alphaStr.filter(_.nonEmpty)
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
       twoHands         <- Gen.oneOf(true, false)
@@ -242,6 +251,25 @@ trait TestData extends RandomDataGenerator {
       }
   }
 
+  implicit val arbGoblin: Arbitrary[Goblin] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary
+    } yield
+      Goblin(
+        creature.health,
+        creature.health,
+        creature.stats,
+        creature.armourClass,
+        creature.baseWeapon,
+        creature.armour,
+        creature.offHand,
+        creature.resistances,
+        creature.immunities,
+        List.empty, // TODO add core abilities?
+        creature.name
+      )
+  }
+
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
       creature <- arbCreature.arbitrary
@@ -257,7 +285,7 @@ trait TestData extends RandomDataGenerator {
         0,
         creature.resistances,
         creature.immunities,
-        List.empty, // TODO add core abilities
+        List.empty, // TODO add core abilities?
         creature.name
       )
   }
@@ -312,6 +340,33 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         Champion.standardChampionAbilities,
+        creature.name
+      )
+  }
+
+  implicit val arbBattleMaster: Arbitrary[BattleMaster] = Arbitrary {
+    for {
+      creature       <- arbCreature.arbitrary
+      armour         <- arbArmour.arbitrary
+      shield         <- arbShield.arbitrary
+      fightingStyles <- arbFighterFightingStyle.arbitrary
+      level          <- arbLevel.arbitrary
+    } yield
+      BattleMaster(
+        level,
+        creature.health,
+        creature.health,
+        creature.stats,
+        creature.baseWeapon,
+        armour,
+        shield,
+        fightingStyles.toList,
+        BaseFighterAbilities.allUnused(),
+        superiorityDiceCount = 4,
+        creature.proficiencyBonus,
+        creature.resistances,
+        creature.immunities,
+        BattleMaster.standardBattleMasterAbilities,
         creature.name
       )
   }
