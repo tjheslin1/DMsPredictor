@@ -52,8 +52,8 @@ object Champion {
   val standardChampionAbilities: List[CreatureAbility] = List(
     1 -> actionSurge,
     2 -> secondWind,
-    3 -> twoWeaponFighting,
-    4 -> extraAttack
+    3 -> extraAttack,
+    4 -> twoWeaponFighting
   )
 
   implicit def championShow[_: RS]: Show[Champion] = Show.show { champion =>

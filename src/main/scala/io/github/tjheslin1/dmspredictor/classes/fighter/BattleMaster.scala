@@ -61,12 +61,15 @@ object BattleMaster {
   val HitDice         = D10
   val SuperiorityDice = D8
 
+  /*
+    Extra Attack must come before any maneuvers, which will be called by Extra Attack, see [[CoreAbilities]]
+   */
   val standardBattleMasterAbilities: List[CreatureAbility] = List(
     1 -> actionSurge,
     2 -> secondWind,
-    3 -> disarmingAttackManeuver,
-    4 -> twoWeaponFighting,
-    5 -> extraAttack
+    3 -> extraAttack,
+    4 -> disarmingAttackManeuver,
+    5 -> twoWeaponFighting
   )
 
   implicit def battleMasterShow[_: RS]: Show[BattleMaster] = Show.show { battleMaster =>

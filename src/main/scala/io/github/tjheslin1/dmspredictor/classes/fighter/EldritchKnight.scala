@@ -59,8 +59,8 @@ object EldritchKnight {
     1 -> actionSurge,
     2 -> secondWind,
     3 -> castSpell,
-    4 -> twoWeaponFighting,
-    5 -> extraAttack
+    4 -> extraAttack,
+    5 -> twoWeaponFighting
   )
 
   implicit def eldritchKnightShow[_: RS]: Show[EldritchKnight] = Show.show { eldritchKnight =>

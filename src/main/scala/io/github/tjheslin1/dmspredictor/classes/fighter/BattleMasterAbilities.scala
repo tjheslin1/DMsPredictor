@@ -30,25 +30,20 @@ object BattleMasterAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          if (creatureHasExtraAttackAbility(combatant)) {
+          val (updatedAttacker, optUpdatedTarget) = disarmingAttack(combatant, target)
 
-            val (updatedAttacker, optUpdatedTarget) = disarmingAttack(combatant, target)
-
-            (battleMaster.superiorityDiceCount - 1, optUpdatedTarget) match {
-              case (_, None) => (updatedAttacker, none[Combatant])
-              case (noDice @ 0, Some(updatedTarget)) =>
-                nextAbilityToUseInConjunction(updatedAttacker, name).fold {
-                  val (updatedRegularAttacker, regularAttackTarget) = attackAndDamage(updatedAttacker, updatedTarget)
-                  (updatedRegularAttacker, regularAttackTarget.some)
-                } {
-                  case (_, ability) =>
-                    useAdditionalAbility(ability, updatedAttacker, updatedTarget)
-                }
-              case (_, Some(updatedTarget)) =>
-                disarmingAttack(updatedAttacker, updatedTarget)
-            }
-          } else {
-            disarmingAttack(combatant, target)
+          (battleMaster.superiorityDiceCount - 1, optUpdatedTarget) match {
+            case (_, None) => (updatedAttacker, none[Combatant])
+            case (noDice @ 0, Some(updatedTarget)) =>
+              nextAbilityToUseInConjunction(updatedAttacker, name).fold {
+                val (updatedRegularAttacker, regularAttackTarget) = attackAndDamage(updatedAttacker, updatedTarget)
+                (updatedRegularAttacker, regularAttackTarget.some)
+              } {
+                case (_, ability) =>
+                  useAdditionalAbility(ability, updatedAttacker, updatedTarget)
+              }
+            case (_, Some(updatedTarget)) =>
+              disarmingAttack(updatedAttacker, updatedTarget)
           }
       }
     }

@@ -66,8 +66,8 @@ object Fighter {
   val standardFighterAbilities: List[CreatureAbility] = List(
     1 -> actionSurge,
     2 -> secondWind,
-    3 -> twoWeaponFighting,
-    4 -> extraAttack
+    3 -> extraAttack,
+    4 -> twoWeaponFighting
   )
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]): Weapon =
