@@ -41,9 +41,11 @@ object BattleMasterAbilities {
                   val (updatedRegularAttacker, regularAttackTarget) = attackAndDamage(updatedAttacker, updatedTarget)
                   (updatedRegularAttacker, regularAttackTarget.some)
                 } {
-                  case (_, ability) => useAdditionalAbility(ability, updatedAttacker, updatedTarget)
+                  case (_, ability) =>
+                    useAdditionalAbility(ability, updatedAttacker, updatedTarget)
                 }
-              case (_, Some(updatedTarget)) => disarmingAttack(updatedAttacker, updatedTarget)
+              case (_, Some(updatedTarget)) =>
+                disarmingAttack(updatedAttacker, updatedTarget)
             }
           } else {
             disarmingAttack(combatant, target)

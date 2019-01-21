@@ -22,7 +22,9 @@ object ClassAbilities {
     (updatedAttacker, updatedTarget.some)
   }
 
-  def useAdditionalAbility[_: RS](ability: Combatant => Ability, attacker: Combatant, abilityTarget: Combatant): (Combatant, Option[Combatant]) = {
+  def useAdditionalAbility[_: RS](ability: Combatant => Ability,
+                                  attacker: Combatant,
+                                  abilityTarget: Combatant): (Combatant, Option[Combatant]) = {
     val (updatedAttacker, updatedAbilityTarget) = ability(attacker).useAbility(abilityTarget.some)
     val updatedAttackingCreature                = ability(updatedAttacker).update
 

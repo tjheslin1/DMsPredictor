@@ -62,7 +62,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val monster = testMonster.withCombatIndex(2)
 
         val Queue(_, Combatant(_, updatedCreature)) = Move.takeMove(Queue(lowHealthFighter, monster), LowestFirst)
-        val updatedFighter                          = updatedCreature.asInstanceOf[Fighter]
+        val updatedFighter = updatedCreature.asInstanceOf[Fighter]
 
         updatedFighter.health shouldBe 4
         updatedFighter.abilityUsages.secondWindUsed shouldBe false
@@ -141,67 +141,69 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "use additional abilities in conjunction with Action Surge" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(19)
+    "use additional abilities in conjunction with Action Surge" in {
+        forAll { (fighter: Fighter, testMonster: TestMonster) =>
+          new TestContext {
+            override implicit val roll: RollStrategy = _ => RollResult(19)
 
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        val trackedAbilityFighter = fighter
-          .withAbilities(List(1 -> actionSurge, 2 -> trackedAbilityOne, 3 -> trackedAbilityTwo))
-          .withCombatIndex(1)
+            val trackedAbilityFighter = fighter.withLevel(LevelTwo)
+              .withAbilities(List(1 -> actionSurge, 2 -> trackedAbilityOne, 3 -> trackedAbilityTwo))
+              .withCombatIndex(1)
 
-        val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+            val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-        Move.takeMove(Queue(trackedAbilityFighter, monster), LowestFirst)
+            Move.takeMove(Queue(trackedAbilityFighter, monster), LowestFirst)
 
-        trackedAbilityOneUsedCount shouldBe 1
-        trackedAbilityTwoUsedCount shouldBe 1
-      }
+            trackedAbilityOneUsedCount shouldBe 1
+            trackedAbilityTwoUsedCount shouldBe 1
+          }
+        }
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+    private class TestContext {
+      implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-    var trackedAbilityOneUsedCount = 0
-    var trackedAbilityOneUsed      = false
+      var trackedAbilityOneUsedCount = 0
+      var trackedAbilityOneUsed = false
 
-    def trackedAbilityOne(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String = "test-tracked-ability-one"
+      def trackedAbilityOne(combatant: Combatant): Ability = new Ability(combatant) {
+        val name: String = "test-tracked-ability-one"
 
-      val levelRequirement: Level = LevelOne
-      val triggerMet: Boolean     = true
-      val conditionMet: Boolean   = trackedAbilityOneUsed == false
+        val levelRequirement: Level = LevelOne
+        val triggerMet: Boolean = true
+        val conditionMet: Boolean = trackedAbilityOneUsed == false
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-        trackedAbilityOneUsedCount += 1
-        (combatant, target)
+        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+          trackedAbilityOneUsedCount += 1
+          (combatant, target)
+        }
+
+        def update: Creature = {
+          trackedAbilityOneUsed = true
+          combatant.creature
+        }
       }
 
-      def update: Creature = {
-        trackedAbilityOneUsed = true
-        combatant.creature
+      var trackedAbilityTwoUsedCount = 0
+      var trackedAbilityTwoUsed = false
+
+      def trackedAbilityTwo(combatant: Combatant): Ability = new Ability(combatant) {
+        val name: String = "test-tracked-ability-two"
+
+        val levelRequirement: Level = LevelOne
+        val triggerMet: Boolean = true
+        val conditionMet: Boolean = trackedAbilityTwoUsed == false
+
+        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+          trackedAbilityTwoUsedCount += 1
+          (combatant, target)
+        }
+
+        def update: Creature = {
+          trackedAbilityTwoUsed = true
+          combatant.creature
+        }
       }
     }
-
-    var trackedAbilityTwoUsedCount = 0
-    var trackedAbilityTwoUsed      = false
-
-    def trackedAbilityTwo(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String = "test-tracked-ability-two"
-
-      val levelRequirement: Level = LevelOne
-      val triggerMet: Boolean     = true
-      val conditionMet: Boolean   = trackedAbilityTwoUsed == false
-
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-        trackedAbilityTwoUsedCount += 1
-        (combatant, target)
-      }
-
-      def update: Creature = {
-        trackedAbilityTwoUsed = true
-        combatant.creature
-      }
-    }
-  }
 }

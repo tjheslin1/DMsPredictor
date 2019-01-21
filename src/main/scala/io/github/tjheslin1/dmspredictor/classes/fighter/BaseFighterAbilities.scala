@@ -10,7 +10,6 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 import monocle.Lens
 import monocle.macros.GenLens
 
-
 case class BaseFighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolean)
 
 object BaseFighterAbilities {

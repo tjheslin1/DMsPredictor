@@ -2,6 +2,7 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.BattleMasterAbilities.disarmingAttackManeuver
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
@@ -98,25 +99,27 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "use next suitable ability if superiority dice run out" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
-
+    "use next suitable ability if superiority dice run out" in {
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
-        val battleMasterCombatant = battleMaster
-          .withAllAbilitiesUsed()
-          .withSuperiorityDiceCount(1)
-          .withLevel(LevelFive)
-          .withStrength(20)
-          .withAbilities(List(1 -> disarmingAttackManeuver, 2 -> trackedAbility))
-          .withCombatIndex(1)
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
-        val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
+          val battleMasterCombatant = battleMaster
+            .withAllAbilitiesUsed()
+            .withSuperiorityDiceCount(1)
+            .withLevel(LevelFive)
+            .withStrength(20)
+            .withAbilities(List(1 -> disarmingAttackManeuver, 2 -> trackedAbility, 3 -> extraAttack))
+            .withCombatIndex(1)
 
-        val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
-          Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
+          val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
 
-        updatedBattleMaster.superiorityDiceCount shouldBe 0
-        trackedAbilityUsedCount shouldBe 1
+          val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
+            Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
+
+          updatedBattleMaster.superiorityDiceCount shouldBe 0
+          trackedAbilityUsedCount shouldBe 1
+        }
       }
     }
   }
