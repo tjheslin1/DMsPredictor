@@ -22,10 +22,12 @@ object BaseFighterAbilities {
   def allUsed(): BaseFighterAbilities   = BaseFighterAbilities(true, true)
   def allUnused(): BaseFighterAbilities = BaseFighterAbilities(false, false)
 
-  def secondWind(combatant: Combatant): Ability = new Ability(combatant) {
+  def secondWind(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name             = "Second Wind"
+    val name     = "Second Wind"
+    val priority = currentPriority
+
     val levelRequirement = LevelTwo
     val triggerMet       = combatant.creature.health <= combatant.creature.maxHealth / 2
     val conditionMet     = baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
@@ -42,10 +44,12 @@ object BaseFighterAbilities {
       (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
   }
 
-  def twoWeaponFighting(combatant: Combatant): Ability = new Ability(combatant) {
+  def twoWeaponFighting(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name                    = "Two Weapon Fighting"
+    val name     = "Two Weapon Fighting"
+    val priority = currentPriority
+
     val levelRequirement: Level = LevelOne
     val triggerMet: Boolean     = true
     val conditionMet: Boolean = combatant.creature.offHand match {
@@ -79,10 +83,12 @@ object BaseFighterAbilities {
     def update: Creature = combatant.creature
   }
 
-  def actionSurge(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
+  def actionSurge(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name                    = "Action Surge"
+    val name     = "Action Surge"
+    val priority = currentPriority
+
     val levelRequirement: Level = LevelTwo
     val triggerMet: Boolean     = true
     val conditionMet: Boolean   = baseFighter.abilityUsages.actionSurgeUsed == false
@@ -91,15 +97,14 @@ object BaseFighterAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, name).fold(useAttackActionTwice(combatant, target)) {
-
-            case (_, nextAbility) =>
+          nextAbilityToUseInConjunction(combatant, priority).fold(useAttackActionTwice(combatant, target)) {
+            nextAbility =>
               val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
 
               optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedAttacker, name).fold(
-                  useAttackActionTwice(updatedAttacker, updatedTarget)) {
-                  case (_, nextAbility2) => useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
+                nextAbilityToUseInConjunction(updatedAttacker, priority).fold(
+                  useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
+                  useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                 }
               }
           }

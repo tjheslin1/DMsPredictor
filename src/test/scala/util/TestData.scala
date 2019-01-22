@@ -51,7 +51,7 @@ object TestData {
     def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
     def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
 
-    def withAbilities(ablts: List[CreatureAbility]) = _abilities.set(ablts)(testMonster)
+    def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
   }
@@ -66,7 +66,7 @@ object TestData {
     def withArmour(armour: Armour)                  = creatureArmourLens.set(armour)(creature)
     def withOffHand(offHand: Equipment)             = creatureOffHandLens.set(offHand.some)(creature)
     def withArmourClass(ac: Int)                    = creatureArmourClassOptional.set(ac)(creature)
-    def withAbilities(ablts: List[CreatureAbility]) = creatureAbilitiesLens.set(ablts)(creature)
+    def withAbilities(ablts: List[CombatantAbility]) = creatureAbilitiesLens.set(ablts)(creature)
     def withNoAbilities()                           = creatureAbilitiesLens.set(List.empty)(creature)
 
     def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
@@ -242,7 +242,7 @@ trait TestData extends RandomDataGenerator {
         val resistances: List[DamageType]    = List.empty
         val immunities: List[DamageType]     = List.empty
         val name: String                     = n
-        val abilities: List[CreatureAbility] = standardCoreAbilities
+        val abilities: List[CombatantAbility] = standardCoreAbilities
 
         def updateHealth(modification: Int): Creature =
           throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")

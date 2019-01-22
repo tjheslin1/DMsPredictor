@@ -27,7 +27,7 @@ import monocle.macros.{GenLens, Lenses}
                                      proficiencyBonus: ProficiencyBonus = 0,
                                      resistances: List[DamageType] = List.empty,
                                      immunities: List[DamageType] = List.empty,
-                                     abilities: List[CreatureAbility] = standardBattleMasterAbilities,
+                                     abilities: List[CombatantAbility] = standardBattleMasterAbilities,
                                      name: String = NameGenerator.randomName)
     extends Creature
     with BaseFighter {
@@ -64,12 +64,12 @@ object BattleMaster {
   /*
     Extra Attack must come before any maneuvers, which will be called by Extra Attack, see [[CoreAbilities]]
    */
-  val standardBattleMasterAbilities: List[CreatureAbility] = List(
-    1 -> actionSurge,
-    2 -> secondWind,
-    3 -> extraAttack,
-    4 -> disarmingAttackManeuver,
-    5 -> twoWeaponFighting
+  val standardBattleMasterAbilities: List[CombatantAbility] = List(
+    actionSurge(1),
+    secondWind(2),
+    extraAttack(3),
+    disarmingAttackManeuver(4),
+    twoWeaponFighting(5)
   )
 
   implicit def battleMasterShow[_: RS]: Show[BattleMaster] = Show.show { battleMaster =>

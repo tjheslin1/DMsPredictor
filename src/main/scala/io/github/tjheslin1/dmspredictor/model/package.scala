@@ -6,7 +6,7 @@ package object model {
 
   case class RollResult(result: Int)
 
-  type CreatureAbility = (Int, Combatant => Ability)
+  type CombatantAbility = Combatant => Ability
 
   type RollStrategy = Int => RollResult
 

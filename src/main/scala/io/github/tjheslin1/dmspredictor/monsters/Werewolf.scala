@@ -22,7 +22,7 @@ import monocle.macros.{GenLens, Lenses}
                                  offHand: Option[Equipment] = None,
                                  resistances: List[DamageType] = List(),
                                  immunities: List[DamageType] = List(),
-                                 abilities: List[CreatureAbility] = List.empty,
+                                 abilities: List[CombatantAbility] = List.empty,
                                  name: String = NameGenerator.randomName)
     extends Creature {
 

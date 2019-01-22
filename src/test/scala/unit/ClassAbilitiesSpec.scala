@@ -16,11 +16,10 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
       forAll { fighter: Fighter =>
         new TestContext {
           val combatant = fighter
-            .withAbilities(List(1 -> dummyAbility("ignored"), 2 -> extraAttack, 3 -> dummyAbility("expected")))
+            .withAbilities(List(dummyAbility(1), extraAttack(2), dummyAbility(3)))
             .withCombatIndex(1)
 
-          ClassAbilities.nextAbilityToUseInConjunction(combatant, 1 -> extraAttack).value
-          shouldBe dummyAbility("expected")
+          ClassAbilities.nextAbilityToUseInConjunction(combatant, 2).value shouldBe dummyAbility(3)
         }
       }
     }
@@ -29,10 +28,12 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-    def dummyAbility(abilityName: String)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String = abilityName
+    def dummyAbility(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+      val name: String = s"test-ability-$currentPriority"
 
       val levelRequirement: Level = LevelOne
+      val priority = currentPriority
+
       val triggerMet: Boolean     = true
       val conditionMet: Boolean   = true
 

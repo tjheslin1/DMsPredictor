@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model._
 abstract class Ability(combatant: Combatant) {
 
   val name: String
+  val priority: Int
   val levelRequirement: Level
   def triggerMet: Boolean
   def conditionMet: Boolean

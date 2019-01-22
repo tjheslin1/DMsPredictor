@@ -42,7 +42,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
         val swordedFighter = fighter.withAllAbilitiesUsed()
           .withBaseWeapon(trackedSword)
-          .withAbilities(List(1 -> CoreAbilities.extraAttack))
+          .withAbilities(List(CoreAbilities.extraAttack(1)))
           .withLevel(LevelFive)
           .withCombatIndex(1)
 

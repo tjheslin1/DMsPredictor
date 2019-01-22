@@ -9,14 +9,16 @@ object CoreAbilities {
 
   val ExtraAttack = "Extra Attack"
 
-  val standardCoreAbilities: List[CreatureAbility] = List(
-    1 -> extraAttack
+  val standardCoreAbilities: List[CombatantAbility] = List(
+    extraAttack(1)
   )
 
-  def extraAttack(combatant: Combatant): Ability = new Ability(combatant) {
+  def extraAttack(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val player = combatant.creature.asInstanceOf[Player]
 
     val name                    = ExtraAttack
+    val priority = currentPriority
+
     val levelRequirement: Level = LevelFive
 
     def triggerMet: Boolean   = true

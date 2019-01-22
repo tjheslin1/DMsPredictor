@@ -20,11 +20,10 @@ object Move {
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val optAbility: Option[CreatureAbility] =
-        combatant.creature.abilities.sortBy { case (priority, _) => priority }.find {
-          case (_, creatureAbility) =>
-            val ability = creatureAbility(combatant)
-            ability.conditionMet && ability.triggerMet
+      val optAbility: Option[CombatantAbility] =
+        combatant.creature.abilities.sortBy(_(combatant).priority).find { combatantAbility =>
+          val ability = combatantAbility(combatant)
+          ability.conditionMet && ability.triggerMet
         }
 
       val updatedCombatants = combatant.creature.creatureType match {
@@ -43,10 +42,9 @@ object Move {
 
   private def actionAgainstTarget[_: RS](combatant: Combatant,
                                          toAttack: Option[Combatant],
-                                         optAbility: Option[CreatureAbility]) = {
+                                         optAbility: Option[CombatantAbility]) = {
     toAttack.fold(none[(Combatant, Combatant)]) { target =>
-      optAbility.fold(attackAndDamage(combatant, target).some) {
-        case (_, ability) =>
+      optAbility.fold(attackAndDamage(combatant, target).some) { ability =>
           val (actedCombatant, actedTarget) = ability(combatant).useAbility(target.some)
           val updatedCombatant              = combatant.copy(creature = ability(actedCombatant).update)
 

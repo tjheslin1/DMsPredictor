@@ -25,7 +25,7 @@ import monocle.macros.{GenLens, Lenses}
                                  proficiencyBonus: ProficiencyBonus = 0,
                                  resistances: List[DamageType] = List.empty,
                                  immunities: List[DamageType] = List.empty,
-                                 abilities: List[CreatureAbility] = standardChampionAbilities,
+                                 abilities: List[CombatantAbility] = standardChampionAbilities,
                                  name: String = NameGenerator.randomName)
     extends Creature
     with BaseFighter {
@@ -49,11 +49,11 @@ object Champion {
 
   val HitDice = D10
 
-  val standardChampionAbilities: List[CreatureAbility] = List(
-    1 -> actionSurge,
-    2 -> secondWind,
-    3 -> extraAttack,
-    4 -> twoWeaponFighting
+  val standardChampionAbilities: List[CombatantAbility] = List(
+    actionSurge(1),
+    secondWind(2),
+    extraAttack(3),
+    twoWeaponFighting(4)
   )
 
   implicit def championShow[_: RS]: Show[Champion] = Show.show { champion =>

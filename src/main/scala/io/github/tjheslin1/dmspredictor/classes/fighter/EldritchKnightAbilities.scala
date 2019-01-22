@@ -12,10 +12,12 @@ object EldritchKnightAbilities {
 
   import EldritchKnightSpellSlots._
 
-  def castSpell(combatant: Combatant): Ability = new Ability(combatant) {
+  def castSpell(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val eldritchKnight = combatant.creature.asInstanceOf[EldritchKnight]
 
     val name                    = "Cast Spell"
+    val priority = currentPriority
+
     val levelRequirement: Level = LevelThree
 
     val triggerMet: Boolean   = true
