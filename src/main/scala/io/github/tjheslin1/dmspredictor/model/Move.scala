@@ -21,7 +21,7 @@ object Move {
       val pcToAttack  = nextToFocus(pcs, focus)
 
       val optAbility: Option[CombatantAbility] =
-        combatant.creature.abilities.sortBy(_(combatant).priority).find { combatantAbility =>
+        combatant.creature.abilities.sortBy(_(combatant).order).find { combatantAbility =>
           val ability = combatantAbility(combatant)
           ability.conditionMet && ability.triggerMet
         }

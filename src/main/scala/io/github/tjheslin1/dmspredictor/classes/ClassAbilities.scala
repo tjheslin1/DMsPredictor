@@ -6,14 +6,12 @@ import io.github.tjheslin1.dmspredictor.model._
 
 object ClassAbilities {
 
-  def nextAbilityToUseInConjunction[_: RS](attacker: Combatant, currentPriority: Int): Option[CombatantAbility] =
+  def nextAbilityToUseInConjunction[_: RS](attacker: Combatant, currentOrder: Int): Option[CombatantAbility] =
     attacker.creature.abilities
-      .sortBy { x =>
-        x(attacker).priority
-      }
+      .sortBy(ability => ability(attacker).order)
       .find { ability =>
         val nextAbility = ability(attacker)
-        nextAbility.priority < currentPriority && nextAbility.conditionMet && nextAbility.triggerMet
+        nextAbility.order > currentOrder && nextAbility.conditionMet && nextAbility.triggerMet
       }
 
   def useAttackActionTwice[_: RS](attacker: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {

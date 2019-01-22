@@ -12,14 +12,19 @@ import util.TestData._
 class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
 
   "nextAbilityToUseInConjunction" should {
-    "find the next ability of lower priority" in {
+    "find the next ability of lower order value" in {
       forAll { fighter: Fighter =>
         new TestContext {
           val combatant = fighter
             .withAbilities(List(dummyAbility(1), extraAttack(2), dummyAbility(3)))
             .withCombatIndex(1)
 
-          ClassAbilities.nextAbilityToUseInConjunction(combatant, 2).value shouldBe dummyAbility(3)
+          val expected = dummyAbility(3)(combatant)
+          val actual = ClassAbilities.nextAbilityToUseInConjunction(combatant, 2).value.apply(combatant)
+
+          actual.name shouldBe expected.name
+          actual.order shouldBe expected.order
+
         }
       }
     }
@@ -28,18 +33,18 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-    def dummyAbility(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String = s"test-ability-$currentPriority"
+    def dummyAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+      val name: String = s"test-ability-$currentOrder"
+      val order                = currentOrder
 
       val levelRequirement: Level = LevelOne
-      val priority = currentPriority
 
-      val triggerMet: Boolean     = true
-      val conditionMet: Boolean   = true
+      val triggerMet: Boolean   = true
+      val conditionMet: Boolean = true
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = (combatant, target)
 
-      def update: Creature = combatant.creature}
+      def update: Creature = combatant.creature
     }
   }
 }

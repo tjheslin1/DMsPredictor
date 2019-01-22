@@ -109,7 +109,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
             .withSuperiorityDiceCount(1)
             .withLevel(LevelFive)
             .withStrength(20)
-            .withAbilities(List(1 -> disarmingAttackManeuver, 2 -> trackedAbility, 3 -> extraAttack))
+            .withAbilities(List(disarmingAttackManeuver(1), trackedAbility(2), extraAttack(3)))
             .withCombatIndex(1)
 
           val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
@@ -130,8 +130,9 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     var trackedAbilityUsedCount = 0
     var trackedAbilityUsed      = false
 
-    def trackedAbility(combatant: Combatant): Ability = new Ability(combatant) {
+    def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
       val name: String = "test-tracked-ability-one"
+      val order = currentOrder
 
       val levelRequirement: Level = LevelOne
       val triggerMet: Boolean     = true

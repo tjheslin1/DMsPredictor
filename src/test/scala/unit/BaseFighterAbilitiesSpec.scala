@@ -147,7 +147,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             override implicit val roll: RollStrategy = _ => RollResult(19)
 
             val trackedAbilityFighter = fighter.withLevel(LevelTwo)
-              .withAbilities(List(1 -> actionSurge, 2 -> trackedAbilityOne, 3 -> trackedAbilityTwo))
+              .withAbilities(List(actionSurge(1), trackedAbilityOne(2), trackedAbilityTwo(3)))
               .withCombatIndex(1)
 
             val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -167,8 +167,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       var trackedAbilityOneUsedCount = 0
       var trackedAbilityOneUsed = false
 
-      def trackedAbilityOne(combatant: Combatant): Ability = new Ability(combatant) {
+      def trackedAbilityOne(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
         val name: String = "test-tracked-ability-one"
+        val order = currentOrder
 
         val levelRequirement: Level = LevelOne
         val triggerMet: Boolean = true
@@ -188,8 +189,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       var trackedAbilityTwoUsedCount = 0
       var trackedAbilityTwoUsed = false
 
-      def trackedAbilityTwo(combatant: Combatant): Ability = new Ability(combatant) {
+      def trackedAbilityTwo(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
         val name: String = "test-tracked-ability-two"
+        val order = currentOrder
 
         val levelRequirement: Level = LevelOne
         val triggerMet: Boolean = true

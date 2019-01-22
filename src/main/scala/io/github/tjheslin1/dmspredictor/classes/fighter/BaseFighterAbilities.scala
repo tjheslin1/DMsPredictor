@@ -22,11 +22,11 @@ object BaseFighterAbilities {
   def allUsed(): BaseFighterAbilities   = BaseFighterAbilities(true, true)
   def allUnused(): BaseFighterAbilities = BaseFighterAbilities(false, false)
 
-  def secondWind(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def secondWind(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
     val name     = "Second Wind"
-    val priority = currentPriority
+    val order = currentOrder
 
     val levelRequirement = LevelTwo
     val triggerMet       = combatant.creature.health <= combatant.creature.maxHealth / 2
@@ -44,11 +44,11 @@ object BaseFighterAbilities {
       (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
   }
 
-  def twoWeaponFighting(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
     val name     = "Two Weapon Fighting"
-    val priority = currentPriority
+    val order = currentOrder
 
     val levelRequirement: Level = LevelOne
     val triggerMet: Boolean     = true
@@ -83,11 +83,11 @@ object BaseFighterAbilities {
     def update: Creature = combatant.creature
   }
 
-  def actionSurge(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
+  def actionSurge(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
     val name     = "Action Surge"
-    val priority = currentPriority
+    val order = currentOrder
 
     val levelRequirement: Level = LevelTwo
     val triggerMet: Boolean     = true
@@ -97,12 +97,12 @@ object BaseFighterAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, priority).fold(useAttackActionTwice(combatant, target)) {
+          nextAbilityToUseInConjunction(combatant, order).fold(useAttackActionTwice(combatant, target)) {
             nextAbility =>
               val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
 
               optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedAttacker, priority).fold(
+                nextAbilityToUseInConjunction(updatedAttacker, order).fold(
                   useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
                   useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                 }

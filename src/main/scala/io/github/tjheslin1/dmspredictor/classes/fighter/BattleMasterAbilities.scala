@@ -14,11 +14,11 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
   */
 object BattleMasterAbilities {
 
-  def disarmingAttackManeuver(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def disarmingAttackManeuver(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val battleMaster = combatant.creature.asInstanceOf[BattleMaster]
 
     val name = "Maneuver: Disarming Attack"
-    val priority = currentPriority
+    val order = currentOrder
 
     val levelRequirement: Level = LevelThree
 

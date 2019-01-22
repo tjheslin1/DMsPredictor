@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
@@ -13,11 +14,11 @@ object CoreAbilities {
     extraAttack(1)
   )
 
-  def extraAttack(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def extraAttack(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val player = combatant.creature.asInstanceOf[Player]
 
-    val name                    = ExtraAttack
-    val priority = currentPriority
+    val name  = ExtraAttack
+    val order = currentOrder
 
     val levelRequirement: Level = LevelFive
 
@@ -28,8 +29,13 @@ object CoreAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
-          (updatedAttacker, updatedTarget.some)
+          nextAbilityToUseInConjunction(combatant, order)
+            .fold {
+              val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
+              (updatedAttacker, updatedTarget.some)
+            } { nextAbility =>
+              useAdditionalAbility(nextAbility, combatant, target)
+            }
       }
 
     def update: Creature = combatant.creature

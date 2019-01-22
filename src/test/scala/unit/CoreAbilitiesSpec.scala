@@ -1,7 +1,7 @@
 package unit
 
 import base.UnitSpecBase
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.{Ability, LowestFirst}
@@ -10,16 +10,17 @@ import util.TestMonster
 
 import scala.collection.immutable.Queue
 
-class CoreAbilitiesSpec extends UnitSpecBase {
+class   CoreAbilitiesSpec extends UnitSpecBase {
 
   "Extra Attack" should {
-    "delegate to a lower priority ability which can be used during an Attack" in {
+    "delegate to an ability lower in the order which can be used during an Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedAbilityFighter = fighter.withAllAbilitiesUsed()
-            .withAbilities(List(1 -> CoreAbilities.extraAttack, 2 -> trackedManeuverAbility))
+          val trackedAbilityFighter = fighter
+            .withAllAbilitiesUsed()
+            .withAbilities(List(extraAttack(1), trackedManeuverAbility(2)))
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
@@ -40,9 +41,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           1
         })
 
-        val swordedFighter = fighter.withAllAbilitiesUsed()
+        val swordedFighter = fighter
+          .withAllAbilitiesUsed()
           .withBaseWeapon(trackedSword)
-          .withAbilities(List(CoreAbilities.extraAttack(1)))
+          .withAbilities(List(extraAttack(1)))
           .withLevel(LevelFive)
           .withCombatIndex(1)
 
@@ -59,8 +61,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     var trackedAbilityUsedCount = 0
     var trackedAbilityUsed      = false
 
-    def trackedManeuverAbility(combatant: Combatant): Ability = new Ability(combatant) {
+    def trackedManeuverAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
       val name: String = "test-tracked-ability-one"
+      val order     = currentOrder
 
       val levelRequirement: Level = LevelOne
       val triggerMet: Boolean     = true
