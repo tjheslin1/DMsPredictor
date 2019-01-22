@@ -6,7 +6,6 @@ import monocle.Lens
 
 trait BaseFighter extends Player with Product with Serializable {
 
-  val level: Level
   val fightingStyles: List[FighterFightingStyle]
   val abilityUsages: BaseFighterAbilities
 }
