@@ -2,18 +2,22 @@ package io.github.tjheslin1.dmspredictor.classes
 
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
-import io.github.tjheslin1.dmspredictor.model.{Combatant, RS}
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
 
 object ClassAbilities {
 
-  def nextAbilityToUseInConjunction[_: RS](attacker: Combatant,
-                                           currentAbilityName: String): Option[(Int, Combatant => Ability)] = {
-    // Currently Action Surge will choose Two Weapon Fighting over Extra Attack
+  def nextAbilityToUseInConjunction[_: RS](
+      attacker: Combatant,
+      currentCreatureAbility: CreatureAbility): Option[(Int, Combatant => Ability)] = {
+
+    val (currentPriority, currentAbility) = currentCreatureAbility
+
     attacker.creature.abilities.sortBy { case (priority, _) => priority }.find {
-      case (_, creatureAbility) =>
+      case (abilityPriority, creatureAbility) =>
         val ability = creatureAbility(attacker)
-        ability.name != currentAbilityName && ability.conditionMet && ability.triggerMet
+        ability.name != currentAbility(attacker).name && abilityPriority < currentPriority &&
+        ability.conditionMet && ability.triggerMet
     }
   }
 
@@ -25,9 +29,10 @@ object ClassAbilities {
   def useAdditionalAbility[_: RS](ability: Combatant => Ability,
                                   attacker: Combatant,
                                   abilityTarget: Combatant): (Combatant, Option[Combatant]) = {
-    val (updatedAttacker, updatedAbilityTarget) = ability(attacker).useAbility(abilityTarget.some)
-    val updatedAttackingCreature                = ability(updatedAttacker).update
+    val (updatedAttacker, updatedTargetOfAbility) = ability(attacker).useAbility(abilityTarget.some)
+    val updatedAttackingCreature                  = ability(updatedAttacker).update
 
-    (attacker.copy(creature = updatedAttackingCreature), updatedAbilityTarget)
+    val updatedAttackingCombatant = Combatant.creatureLens.set(updatedAttackingCreature)(attacker)
+    (updatedAttackingCombatant, updatedTargetOfAbility)
   }
 }

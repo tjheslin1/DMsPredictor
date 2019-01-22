@@ -26,7 +26,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = battleMaster
           .withAllAbilitiesUsed()
-          .withSuperiorityDiceCount(1)
+          .withSuperiorityDiceCount(2)
           .withLevel(LevelThree)
           .withCombatIndex(1)
 
@@ -35,7 +35,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
         val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
           Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
 
-        updatedBattleMaster.superiorityDiceCount shouldBe 0
+        updatedBattleMaster.superiorityDiceCount shouldBe 1
       }
     }
 
