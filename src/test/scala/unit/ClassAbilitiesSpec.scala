@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
+import io.github.tjheslin1.dmspredictor.strategy.Ability.Action
 import org.scalatest.OptionValues
 import util.TestData._
 
@@ -20,7 +21,9 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
             .withCombatIndex(1)
 
           val expected = dummyAbility(3)(combatant)
-          val actual = ClassAbilities.nextAbilityToUseInConjunction(combatant, 2).value.apply(combatant)
+          val actual   = ClassAbilities.nextAbilityToUseInConjunction(combatant, 2).value.apply(combatant)
+
+          fail("Need to utilise AbilityAction")
 
           actual.name shouldBe expected.name
           actual.order shouldBe expected.order
@@ -34,10 +37,10 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
 
     def dummyAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String = s"test-ability-$currentOrder"
-      val order                = currentOrder
-
+      val name: String            = s"test-ability-$currentOrder"
+      val order                   = currentOrder
       val levelRequirement: Level = LevelOne
+      val abilityAction           = Action
 
       val triggerMet: Boolean   = true
       val conditionMet: Boolean = true

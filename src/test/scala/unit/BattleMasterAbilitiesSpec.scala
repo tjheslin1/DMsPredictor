@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.strategy.Ability.Action
 import io.github.tjheslin1.dmspredictor.strategy.{Ability, LowestFirst}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import util.TestData._
@@ -133,8 +134,9 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
       val name: String = "test-tracked-ability-one"
       val order = currentOrder
-
       val levelRequirement: Level = LevelOne
+      val abilityAction = Action
+
       val triggerMet: Boolean     = true
       val conditionMet: Boolean   = trackedAbilityUsed == false
 

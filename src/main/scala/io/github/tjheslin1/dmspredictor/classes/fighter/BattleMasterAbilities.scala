@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
+import io.github.tjheslin1.dmspredictor.strategy.Ability.SingleAttack
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 /**
@@ -19,8 +20,8 @@ object BattleMasterAbilities {
 
     val name = "Maneuver: Disarming Attack"
     val order = currentOrder
-
     val levelRequirement: Level = LevelThree
+    val abilityAction = SingleAttack
 
     val triggerMet: Boolean = true
     val conditionMet: Boolean = battleMaster.level >= levelRequirement && battleMaster.superiorityDiceCount > 0

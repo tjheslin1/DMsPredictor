@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
+import io.github.tjheslin1.dmspredictor.strategy.Ability.Action
 import monocle.Lens
 import monocle.macros.GenLens
 
@@ -17,8 +18,8 @@ object EldritchKnightAbilities {
 
     val name                    = "Cast Spell"
     val order = currentOrder
-
     val levelRequirement: Level = LevelThree
+    val abilityAction = Action
 
     val triggerMet: Boolean   = true
     val conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)

@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.strategy.Ability.AbilityAction
 
 object ClassAbilities {
 

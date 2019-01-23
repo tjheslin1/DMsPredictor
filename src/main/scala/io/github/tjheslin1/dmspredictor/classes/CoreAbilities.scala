@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Ability
+import io.github.tjheslin1.dmspredictor.strategy.Ability.SingleAttack
 
 object CoreAbilities {
 
@@ -19,11 +20,11 @@ object CoreAbilities {
 
     val name  = ExtraAttack
     val order = currentOrder
-
     val levelRequirement: Level = LevelFive
+    val abilityAction = SingleAttack
 
-    def triggerMet: Boolean   = true
-    def conditionMet: Boolean = player.level >= levelRequirement
+    val triggerMet: Boolean   = true
+    val conditionMet: Boolean = player.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
@@ -34,6 +35,7 @@ object CoreAbilities {
               val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
+              println(s">>> Core - nextAbility: ${nextAbility(combatant).name}")
               useAdditionalAbility(nextAbility, combatant, target)
             }
       }

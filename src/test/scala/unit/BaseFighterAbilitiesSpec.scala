@@ -4,6 +4,7 @@ import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities.actionSurge
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.strategy.Ability.Action
 import io.github.tjheslin1.dmspredictor.strategy.{Ability, LowestFirst}
 import util.TestData._
 import util.TestMonster
@@ -170,8 +171,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       def trackedAbilityOne(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
         val name: String = "test-tracked-ability-one"
         val order = currentOrder
-
         val levelRequirement: Level = LevelOne
+        val abilityAction = Action
+
         val triggerMet: Boolean = true
         val conditionMet: Boolean = trackedAbilityOneUsed == false
 
@@ -192,8 +194,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       def trackedAbilityTwo(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
         val name: String = "test-tracked-ability-two"
         val order = currentOrder
-
         val levelRequirement: Level = LevelOne
+        val abilityAction = Action
+
         val triggerMet: Boolean = true
         val conditionMet: Boolean = trackedAbilityTwoUsed == false
 
