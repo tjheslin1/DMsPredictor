@@ -1,11 +1,12 @@
 package io.github.tjheslin1.dmspredictor.classes
 
+import cats.data.NonEmptyList
+import cats.data.NonEmptyList.one
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Ability
-import io.github.tjheslin1.dmspredictor.strategy.Ability.SingleAttack
+import io.github.tjheslin1.dmspredictor.model.ability._
 
 object CoreAbilities {
 
@@ -18,10 +19,10 @@ object CoreAbilities {
   def extraAttack(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val player = combatant.creature.asInstanceOf[Player]
 
-    val name  = ExtraAttack
-    val order = currentOrder
-    val levelRequirement: Level = LevelFive
-    val abilityAction = SingleAttack
+    val name             = ExtraAttack
+    val order            = currentOrder
+    val levelRequirement = LevelFive
+    val abilityAction    = SingleAttack
 
     val triggerMet: Boolean   = true
     val conditionMet: Boolean = player.level >= levelRequirement
@@ -30,13 +31,26 @@ object CoreAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, order)
+          nextAbilityToUseInConjunction(combatant, order, NonEmptyList.of(MultiAttack, SingleAttack))
             .fold {
+              println(">>>> NO NEXT ABILITY: ATTACKING TWICE")
               val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
-              println(s">>> Core - nextAbility: ${nextAbility(combatant).name}")
-              useAdditionalAbility(nextAbility, combatant, target)
+              println(s">>>>> FOUND: ${nextAbility(combatant).name}")
+              val (updatedCombatant, updatedTargetOfAbility) = useAdditionalAbility(nextAbility, combatant, target)
+
+              updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
+                nextAbilityToUseInConjunction(updatedCombatant, order, one(SingleAttack)).fold {
+                  println(">>>> NO NEXT ABILITY: ATTACKING ONCE")
+                  val (updatedAttacker, updatedAttackedTarget) =
+                    attackAndDamageTimes(1, updatedCombatant, updatedTarget)
+                  (updatedAttacker, updatedAttackedTarget.some)
+                } { nextAbility2 =>
+                  println(s">>>>> FOUND: ${nextAbility2(combatant).name}")
+                  useAdditionalAbility(nextAbility2, updatedCombatant, updatedTarget)
+                }
+              }
             }
       }
 

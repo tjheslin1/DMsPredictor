@@ -1,19 +1,18 @@
 package unit
 
 import base.UnitSpecBase
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities.nextAbilityToUseInConjunction
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
-import io.github.tjheslin1.dmspredictor.classes._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Ability
-import io.github.tjheslin1.dmspredictor.strategy.Ability.Action
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import org.scalatest.OptionValues
 import util.TestData._
 
 class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
 
   "nextAbilityToUseInConjunction" should {
-    "find the next ability of lower order value" in {
+    "find the next ability lower in order" in {
       forAll { fighter: Fighter =>
         new TestContext {
           val combatant = fighter
@@ -21,9 +20,7 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
             .withCombatIndex(1)
 
           val expected = dummyAbility(3)(combatant)
-          val actual   = ClassAbilities.nextAbilityToUseInConjunction(combatant, 2).value.apply(combatant)
-
-          fail("Need to utilise AbilityAction")
+          val actual   = nextAbilityToUseInConjunction(combatant, 2, AbilityAction.any).value.apply(combatant)
 
           actual.name shouldBe expected.name
           actual.order shouldBe expected.order
@@ -39,8 +36,8 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
     def dummyAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
       val name: String            = s"test-ability-$currentOrder"
       val order                   = currentOrder
-      val levelRequirement: Level = LevelOne
-      val abilityAction           = Action
+      val levelRequirement = LevelOne
+      val abilityAction           = WholeAction
 
       val triggerMet: Boolean   = true
       val conditionMet: Boolean = true

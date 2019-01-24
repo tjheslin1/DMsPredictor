@@ -1,6 +1,6 @@
 package io.github.tjheslin1.dmspredictor
 
-import io.github.tjheslin1.dmspredictor.strategy.Ability
+import io.github.tjheslin1.dmspredictor.model.ability.Ability
 
 package object model {
 

@@ -7,9 +7,9 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.BattleMasterAbilities.di
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
-import io.github.tjheslin1.dmspredictor.strategy.Ability.Action
-import io.github.tjheslin1.dmspredictor.strategy.{Ability, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import util.TestData._
 
@@ -88,6 +88,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
           .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)
           .withSuperiorityDiceCount(3)
           .withLevel(LevelFive)
+          .withNoOffHand()
           .withStrength(20)
           .withCombatIndex(1)
 
@@ -99,30 +100,6 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
         updatedBattleMaster.superiorityDiceCount shouldBe 0
       }
     }
-
-    "use next suitable ability if superiority dice run out" in {
-      forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val battleMasterCombatant = battleMaster
-            .withAllAbilitiesUsed()
-            .withSuperiorityDiceCount(1)
-            .withLevel(LevelFive)
-            .withStrength(20)
-            .withAbilities(List(disarmingAttackManeuver(1), trackedAbility(2), extraAttack(3)))
-            .withCombatIndex(1)
-
-          val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
-
-          val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
-            Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
-
-          updatedBattleMaster.superiorityDiceCount shouldBe 0
-          trackedAbilityUsedCount shouldBe 1
-        }
-      }
-    }
   }
 
   private class TestContext {
@@ -132,13 +109,13 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     var trackedAbilityUsed      = false
 
     def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String = "test-tracked-ability-one"
-      val order = currentOrder
-      val levelRequirement: Level = LevelOne
-      val abilityAction = Action
+      val name: String     = "test-tracked-ability-one"
+      val order            = currentOrder
+      val levelRequirement = LevelOne
+      val abilityAction    = WholeAction
 
-      val triggerMet: Boolean     = true
-      val conditionMet: Boolean   = trackedAbilityUsed == false
+      val triggerMet: Boolean   = true
+      def conditionMet: Boolean = trackedAbilityUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
         trackedAbilityUsedCount += 1

@@ -5,8 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Ability
-import io.github.tjheslin1.dmspredictor.strategy.Ability.{Action, SingleAttack}
+import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import monocle.Lens
 import monocle.macros.GenLens
@@ -26,13 +25,13 @@ object BaseFighterAbilities {
   def secondWind(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name     = "Second Wind"
-    val order = currentOrder
+    val name             = "Second Wind"
+    val order            = currentOrder
     val levelRequirement = LevelTwo
-    val abilityAction = Action
+    val abilityAction    = WholeAction
 
-    val triggerMet       = combatant.creature.health <= combatant.creature.maxHealth / 2
-    val conditionMet     = baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
+    def triggerMet   = combatant.creature.health <= combatant.creature.maxHealth / 2
+    def conditionMet = baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val updatedHealth =
@@ -49,13 +48,14 @@ object BaseFighterAbilities {
   def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name     = "Two Weapon Fighting"
-    val order = currentOrder
-    val levelRequirement: Level = LevelOne
-    val abilityAction = SingleAttack
+    val name             = "Two Weapon Fighting"
+    val order            = currentOrder
+    val levelRequirement = LevelOne
+    val abilityAction    = MultiAttack
 
-    val triggerMet: Boolean     = true
-    val conditionMet: Boolean = combatant.creature.offHand match {
+    val triggerMet: Boolean = true
+
+    def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
         w.twoHanded == false && combatant.creature.baseWeapon.twoHanded == false && baseFighter.fightingStyles.contains(
           TwoWeaponFighting)
@@ -89,31 +89,29 @@ object BaseFighterAbilities {
   def actionSurge(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name     = "Action Surge"
-    val order = currentOrder
-    val levelRequirement: Level = LevelTwo
-    val abilityAction = Action
+    val name             = "Action Surge"
+    val order            = currentOrder
+    val levelRequirement = LevelTwo
+    val abilityAction    = WholeAction
 
-    val triggerMet: Boolean     = true
-    val conditionMet: Boolean   = baseFighter.abilityUsages.actionSurgeUsed == false
+    val triggerMet: Boolean   = true
+    def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, order).fold(useAttackActionTwice(combatant, target)) {
-            nextAbility =>
-              println(s">>> nextAbility: ${nextAbility(combatant).name}")
+          nextAbilityToUseInConjunction(combatant, order, AbilityAction.any)
+            .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
               val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
 
               optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedAttacker, order).fold(
-                  useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
-                  println(s">>> nextAbility2: ${nextAbility2(combatant).name}")
-                  useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
-                }
+                nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.any)
+                  .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
+                    useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
+                  }
               }
-          }
+            }
       }
     }
 

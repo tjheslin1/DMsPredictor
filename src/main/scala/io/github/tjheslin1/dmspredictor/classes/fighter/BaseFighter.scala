@@ -1,7 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
 trait BaseFighter extends Player with Product with Serializable {

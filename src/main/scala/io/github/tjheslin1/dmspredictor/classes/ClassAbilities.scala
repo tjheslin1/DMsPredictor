@@ -1,18 +1,23 @@
 package io.github.tjheslin1.dmspredictor.classes
 
+import cats.data.NonEmptyList
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Ability.AbilityAction
+import io.github.tjheslin1.dmspredictor.model.ability.AbilityAction
 
 object ClassAbilities {
 
-  def nextAbilityToUseInConjunction[_: RS](attacker: Combatant, currentOrder: Int): Option[CombatantAbility] =
+  def nextAbilityToUseInConjunction[_: RS](attacker: Combatant,
+                                           currentOrder: Int,
+                                           suitableAction: NonEmptyList[AbilityAction]): Option[CombatantAbility] =
     attacker.creature.abilities
       .sortBy(ability => ability(attacker).order)
       .find { ability =>
         val nextAbility = ability(attacker)
-        nextAbility.order > currentOrder && nextAbility.conditionMet && nextAbility.triggerMet
+        suitableAction.toList.contains(nextAbility.abilityAction) &&
+        nextAbility.order > currentOrder &&
+        nextAbility.conditionMet && nextAbility.triggerMet
       }
 
   def useAttackActionTwice[_: RS](attacker: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {
