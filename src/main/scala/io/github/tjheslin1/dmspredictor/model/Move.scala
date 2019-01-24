@@ -44,11 +44,7 @@ object Move {
                                          toAttack: Option[Combatant],
                                          optAbility: Option[CombatantAbility]) = {
     toAttack.fold(none[(Combatant, Combatant)]) { target =>
-      optAbility.fold{
-        println(">>>> MOVE: NO ABILITY: ATTACKING ONCE")
-        attackAndDamage(combatant, target).some
-      } { ability =>
-        println(s">>>>> FOUND: ${ability(combatant).name}")
+      optAbility.fold(attackAndDamage(combatant, target).some){ ability =>
           val (actedCombatant, actedTarget) = ability(combatant).useAbility(target.some)
           val updatedCombatant              = combatant.copy(creature = ability(actedCombatant).update)
 

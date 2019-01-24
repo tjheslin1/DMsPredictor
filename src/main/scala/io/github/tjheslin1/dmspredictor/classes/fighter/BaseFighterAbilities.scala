@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
-import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
+import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -69,14 +69,15 @@ object BaseFighterAbilities {
           val mainHandAttack = attack(combatant, combatant.creature.weapon, target)
 
           val (attacker1, attackTarget1) =
-            if (mainHandAttack.result > 0) resolveDamage(combatant, target, mainHandAttack)
+            if (mainHandAttack.result > 0) resolveDamageMainHand(combatant, target, mainHandAttack)
             else
               (combatant, target)
 
-          val offHandAttack = attack(attacker1, combatant.creature.offHand.get.asInstanceOf[Weapon], attackTarget1)
+          val offHandWeapon        = combatant.creature.offHand.get.asInstanceOf[Weapon]
+          val offHandAttack = attack(attacker1, offHandWeapon, attackTarget1)
 
           val (attacker2, attackTarget2) =
-            if (offHandAttack.result > 0) resolveDamage(attacker1, attackTarget1, offHandAttack)
+            if (offHandAttack.result > 0) resolveDamage(attacker1, attackTarget1, offHandWeapon, offHandAttack)
             else
               (attacker1, attackTarget1)
 

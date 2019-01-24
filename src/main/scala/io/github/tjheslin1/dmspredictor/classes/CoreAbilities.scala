@@ -33,21 +33,17 @@ object CoreAbilities {
         case Some(target: Combatant) =>
           nextAbilityToUseInConjunction(combatant, order, NonEmptyList.of(MultiAttack, SingleAttack))
             .fold {
-              println(">>>> NO NEXT ABILITY: ATTACKING TWICE")
               val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
-              println(s">>>>> FOUND: ${nextAbility(combatant).name}")
               val (updatedCombatant, updatedTargetOfAbility) = useAdditionalAbility(nextAbility, combatant, target)
 
               updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
                 nextAbilityToUseInConjunction(updatedCombatant, order, one(SingleAttack)).fold {
-                  println(">>>> NO NEXT ABILITY: ATTACKING ONCE")
                   val (updatedAttacker, updatedAttackedTarget) =
                     attackAndDamageTimes(1, updatedCombatant, updatedTarget)
                   (updatedAttacker, updatedAttackedTarget.some)
                 } { nextAbility2 =>
-                  println(s">>>>> FOUND: ${nextAbility2(combatant).name}")
                   useAdditionalAbility(nextAbility2, updatedCombatant, updatedTarget)
                 }
               }

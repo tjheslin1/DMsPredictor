@@ -39,8 +39,15 @@ object Actions extends LazyLogging {
     }
   }
 
+  def resolveDamageMainHand[_: RS](attacker: Combatant,
+                                   target: Combatant,
+                                   attackResult: AttackResult,
+                                   damageBonus: Int = 0): (Combatant, Combatant) =
+    resolveDamage(attacker, target, attacker.creature.weapon, attackResult, damageBonus)
+
   def resolveDamage[_: RS](attacker: Combatant,
                            target: Combatant,
+                           weapon: Weapon,
                            attackResult: AttackResult,
                            damageBonus: Int = 0): (Combatant, Combatant) = {
 
@@ -48,14 +55,14 @@ object Actions extends LazyLogging {
       0,
       attackResult match {
         case CriticalHit =>
-          (attacker.creature.weapon.damage + attacker.creature.weapon.damage) + mod(attacker.creature.stats.strength) + damageBonus
-        case Hit          => attacker.creature.weapon.damage + mod(attacker.creature.stats.strength) + damageBonus
+          (weapon.damage + weapon.damage) + mod(attacker.creature.stats.strength) + damageBonus
+        case Hit          => weapon.damage + mod(attacker.creature.stats.strength) + damageBonus
         case Miss         => 0
         case CriticalMiss => 0
       }
     )
 
-    val adjustedDamage = attacker.creature.weapon.damageType match {
+    val adjustedDamage = weapon.damageType match {
       case damageType if target.creature.resistances.contains(damageType) => math.max(1, math.floor(dmg / 2).toInt)
       case damageType if target.creature.immunities.contains(damageType)  => 0
       case _                                                              => dmg
@@ -71,7 +78,7 @@ object Actions extends LazyLogging {
   def attackAndDamage[_: RS](attacker: Combatant, target: Combatant): (Combatant, Combatant) = {
     val attackResult = attack(attacker, attacker.creature.weapon, target)
 
-    if (attackResult.result > 0) resolveDamage(attacker, target, attackResult)
+    if (attackResult.result > 0) resolveDamage(attacker, target, attacker.creature.weapon, attackResult)
     else
       (attacker, target)
   }

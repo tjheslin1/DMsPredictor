@@ -1,7 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
-import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
+import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
@@ -31,7 +31,7 @@ object BattleMasterAbilities {
         case Some(target: Combatant) =>
           val attackResult = attack(combatant, combatant.creature.weapon, target)
           val (updatedAttacker, updatedTarget) =
-            resolveDamage(combatant, target, attackResult, 1 * BattleMaster.SuperiorityDice)
+            resolveDamageMainHand(combatant, target, attackResult, 1 * BattleMaster.SuperiorityDice)
 
           attackResult match {
             case Miss | CriticalMiss =>

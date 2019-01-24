@@ -19,7 +19,6 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     import Fighter._
 
     "utilise Two Weapon Fighting if equipped with two weapons" in {
-
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
