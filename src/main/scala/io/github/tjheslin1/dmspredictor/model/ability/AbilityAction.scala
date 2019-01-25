@@ -4,8 +4,8 @@ import cats.data.NonEmptyList
 
 sealed trait AbilityAction extends Product with Serializable
 
-case object WholeAction extends AbilityAction
-case object MultiAttack extends AbilityAction
+case object WholeAction  extends AbilityAction
+case object MultiAttack  extends AbilityAction
 case object SingleAttack extends AbilityAction
 
 object AbilityAction {

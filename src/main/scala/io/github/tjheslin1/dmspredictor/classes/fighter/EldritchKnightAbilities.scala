@@ -15,10 +15,10 @@ object EldritchKnightAbilities {
   def castSpell(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val eldritchKnight = combatant.creature.asInstanceOf[EldritchKnight]
 
-    val name                    = "Cast Spell"
-    val order = currentOrder
+    val name             = "Cast Spell"
+    val order            = currentOrder
     val levelRequirement = LevelThree
-    val abilityAction = WholeAction
+    val abilityAction    = WholeAction
 
     val triggerMet: Boolean   = true
     def conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)

@@ -17,12 +17,12 @@ object BattleMasterAbilities {
   def disarmingAttackManeuver(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val battleMaster = combatant.creature.asInstanceOf[BattleMaster]
 
-    val name = "Maneuver: Disarming Attack"
-    val order = currentOrder
+    val name             = "Maneuver: Disarming Attack"
+    val order            = currentOrder
     val levelRequirement = LevelThree
-    val abilityAction = SingleAttack
+    val abilityAction    = SingleAttack
 
-    val triggerMet: Boolean = true
+    val triggerMet: Boolean   = true
     def conditionMet: Boolean = battleMaster.level >= levelRequirement && battleMaster.superiorityDiceCount > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {

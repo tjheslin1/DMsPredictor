@@ -73,7 +73,7 @@ object BaseFighterAbilities {
             else
               (combatant, target)
 
-          val offHandWeapon        = combatant.creature.offHand.get.asInstanceOf[Weapon]
+          val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
           val offHandAttack = attack(attacker1, offHandWeapon, attackTarget1)
 
           val (attacker2, attackTarget2) =

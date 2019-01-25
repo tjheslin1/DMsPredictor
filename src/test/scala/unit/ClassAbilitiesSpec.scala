@@ -24,7 +24,6 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
 
           actual.name shouldBe expected.name
           actual.order shouldBe expected.order
-
         }
       }
     }
