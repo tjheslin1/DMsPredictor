@@ -1,12 +1,12 @@
 package io.github.tjheslin1.dmspredictor
 
-import io.github.tjheslin1.dmspredictor.strategy.Ability
+import io.github.tjheslin1.dmspredictor.model.ability.Ability
 
 package object model {
 
   case class RollResult(result: Int)
 
-  type CreatureAbility = (Int, Combatant => Ability)
+  type CombatantAbility = Combatant => Ability
 
   type RollStrategy = Int => RollResult
 

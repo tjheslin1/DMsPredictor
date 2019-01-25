@@ -30,7 +30,7 @@ import monocle.macros.{GenLens, Lenses}
                                 proficiencyBonus: ProficiencyBonus = 0,
                                 resistances: List[DamageType] = List.empty,
                                 immunities: List[DamageType] = List.empty,
-                                abilities: List[CreatureAbility] = standardFighterAbilities,
+                                abilities: List[CombatantAbility] = standardFighterAbilities,
                                 name: String = NameGenerator.randomName)
     extends Creature
     with BaseFighter {
@@ -63,11 +63,11 @@ object Fighter {
     new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
 
-  val standardFighterAbilities: List[CreatureAbility] = List(
-    1 -> actionSurge,
-    2 -> secondWind,
-    3 -> twoWeaponFighting,
-    4 -> extraAttack
+  val standardFighterAbilities: List[CombatantAbility] = List(
+    actionSurge(1),
+    secondWind(2),
+    extraAttack(3),
+    twoWeaponFighting(4)
   )
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]): Weapon =

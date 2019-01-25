@@ -51,7 +51,7 @@ class ActionsSpec extends UnitSpecBase {
     }
   }
 
-  "resolveDamage" should {
+  "resolveDamageMainHand" should {
     "kill a monster if the damage is more than the monster's health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val oneHundredDamageWeapon =
@@ -61,7 +61,7 @@ class ActionsSpec extends UnitSpecBase {
         val playerCombatant  = player.withCombatIndex(1)
         val monsterCombatant = monster.withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withCreature(
+        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withCreature(
           monster.withHealth(0)))
       }
     }
@@ -73,7 +73,7 @@ class ActionsSpec extends UnitSpecBase {
         val playerCombatant  = fighter.withStrength(10).withBaseWeapon(oneDamageWeapon).withCombatIndex(1)
         val monsterCombatant = monster.withHealth(10).withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
+        resolveDamageMainHand(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
           (playerCombatant, monsterCombatant.withCreature(monster.withHealth(8)))
       }
     }
@@ -88,7 +88,7 @@ class ActionsSpec extends UnitSpecBase {
         val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
+        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
           (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(99)))
       }
     }
@@ -109,7 +109,7 @@ class ActionsSpec extends UnitSpecBase {
         val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
+        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
           (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(95)))
       }
     }
@@ -126,7 +126,7 @@ class ActionsSpec extends UnitSpecBase {
         val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
+        resolveDamageMainHand(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
           (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(89)))
       }
     }
@@ -143,7 +143,7 @@ class ActionsSpec extends UnitSpecBase {
         val monsterCombatant = modifiedMonster
           .withCombatIndex(2)
 
-        resolveDamage(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
+        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
           (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(100)))
       }
     }

@@ -22,7 +22,7 @@ import monocle.macros.{GenLens, Lenses}
                                offHand: Option[Equipment] = None,
                                resistances: List[DamageType] = List(),
                                immunities: List[DamageType] = List(),
-                               abilities: List[CreatureAbility] = List.empty,
+                               abilities: List[CombatantAbility] = List.empty,
                                name: String = NameGenerator.randomName)
     extends Creature {
 
@@ -46,7 +46,7 @@ object Goblin {
   }
 
   implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>
-    s"Fighter: " +
+    s"Goblin: " +
       s"Name: ${goblin.name}, " +
       s"health: ${goblin.health}, " +
       s"AC: ${goblin.armourClass}"

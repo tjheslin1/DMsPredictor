@@ -30,7 +30,7 @@ import monocle.macros.{GenLens, Lenses}
     spellSlots: EldritchKnightSpellSlots = EldritchKnightSpellSlots(FirstLevelSpellSlot(2)),
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
-    abilities: List[CreatureAbility] = standardEldritchKnightAbilities,
+    abilities: List[CombatantAbility] = standardEldritchKnightAbilities,
     name: String = NameGenerator.randomName)
     extends Creature
     with BaseFighter {
@@ -55,16 +55,16 @@ object EldritchKnight {
 
   val HitDice = D10
 
-  val standardEldritchKnightAbilities: List[CreatureAbility] = List(
-    1 -> actionSurge,
-    2 -> secondWind,
-    3 -> castSpell,
-    4 -> twoWeaponFighting,
-    5 -> extraAttack
+  val standardEldritchKnightAbilities: List[CombatantAbility] = List(
+    actionSurge(1),
+    secondWind(2),
+    castSpell(3),
+    extraAttack(4),
+    twoWeaponFighting(5)
   )
 
   implicit def eldritchKnightShow[_: RS]: Show[EldritchKnight] = Show.show { eldritchKnight =>
-    s"Fighter: " +
+    s"EldritchKnight: " +
       s"Name: ${eldritchKnight.name}, " +
       s"health: ${eldritchKnight.health}, " +
       s"AC: ${eldritchKnight.armourClass}"

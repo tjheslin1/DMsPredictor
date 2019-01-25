@@ -31,7 +31,7 @@ trait Creature {
   val immunities: List[DamageType]
   val name: String
 
-  val abilities: List[CreatureAbility]
+  val abilities: List[CombatantAbility]
 
   val isConscious = health > 0
 
@@ -245,8 +245,8 @@ object Creature {
     }
   }
 
-  val creatureAbilitiesLens: Lens[Creature, List[CreatureAbility]] =
-    Lens[Creature, List[CreatureAbility]](_.abilities) { res =>
+  val creatureAbilitiesLens: Lens[Creature, List[CombatantAbility]] =
+    Lens[Creature, List[CombatantAbility]](_.abilities) { res =>
       {
         case c: BattleMaster   => BattleMaster._abilities.set(res)(c)
         case c: EldritchKnight => EldritchKnight._abilities.set(res)(c)

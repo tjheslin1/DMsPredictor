@@ -22,7 +22,7 @@ import monocle.macros.{GenLens, Lenses}
                                  offHand: Option[Equipment] = None,
                                  resistances: List[DamageType] = List(),
                                  immunities: List[DamageType] = List(),
-                                 abilities: List[CreatureAbility] = List.empty,
+                                 abilities: List[CombatantAbility] = List.empty,
                                  name: String = NameGenerator.randomName)
     extends Creature {
 
@@ -52,7 +52,7 @@ object Werewolf {
   }
 
   implicit def werewolfShow[_: RS]: Show[Werewolf] = Show.show { werewolf =>
-    s"Fighter: " +
+    s"Werewolf: " +
       s"Name: ${werewolf.name}, " +
       s"health: ${werewolf.health}, " +
       s"AC: ${werewolf.armourClass}"

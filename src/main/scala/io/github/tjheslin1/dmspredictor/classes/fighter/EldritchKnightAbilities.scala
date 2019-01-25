@@ -2,9 +2,9 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.strategy.Ability
 import monocle.Lens
 import monocle.macros.GenLens
 
@@ -12,14 +12,16 @@ object EldritchKnightAbilities {
 
   import EldritchKnightSpellSlots._
 
-  def castSpell(combatant: Combatant): Ability = new Ability(combatant) {
+  def castSpell(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val eldritchKnight = combatant.creature.asInstanceOf[EldritchKnight]
 
-    val name                    = "Cast Spell"
-    val levelRequirement: Level = LevelThree
+    val name             = "Cast Spell"
+    val order            = currentOrder
+    val levelRequirement = LevelThree
+    val abilityAction    = WholeAction
 
     val triggerMet: Boolean   = true
-    val conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
+    def conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val spellSlot = highestSpellSlotAvailable(eldritchKnight.spellSlots)
