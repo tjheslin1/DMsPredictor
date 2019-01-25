@@ -52,6 +52,24 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "use up a Players Bonus Action" in {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val extraAttackFighter = fighter
+            .withAllAbilitiesUsed()
+            .withAbilities(List(extraAttack(1)))
+            .withLevel(LevelFive)
+            .withCombatIndex(1)
+
+          Move.takeMove(Queue(extraAttackFighter, testMonster.withArmourClass(5).withCombatIndex(2)), LowestFirst)
+
+          extraAttackFighter.creature.bonusActionUsed shouldBe true
+        }
+      }
+    }
+
     "make two weapon attacks where no other abilities are available" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 

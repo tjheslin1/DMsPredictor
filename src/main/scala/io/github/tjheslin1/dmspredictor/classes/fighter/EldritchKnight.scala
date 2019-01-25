@@ -30,6 +30,7 @@ import monocle.macros.{GenLens, Lenses}
     spellSlots: EldritchKnightSpellSlots = EldritchKnightSpellSlots(FirstLevelSpellSlot(2)),
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardEldritchKnightAbilities,
     name: String = NameGenerator.randomName)
     extends Creature

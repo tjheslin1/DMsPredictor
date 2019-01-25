@@ -59,15 +59,15 @@ object TestData {
   implicit class CreatureOps(val creature: Creature) extends AnyVal {
     import Creature._
 
-    def withHealth(hp: Int)                         = creatureHealthLens.set(hp)(creature)
-    def withMaxHealth(hp: Int)                      = creatureMaxHealthLens.set(hp)(creature)
-    def withStats(baseStats: BaseStats)             = creatureStatsLens.set(baseStats)(creature)
-    def withBaseWeapon(baseWeapon: Weapon)          = creatureBaseWeaponLens.set(baseWeapon)(creature)
-    def withArmour(armour: Armour)                  = creatureArmourLens.set(armour)(creature)
-    def withOffHand(offHand: Equipment)             = creatureOffHandLens.set(offHand.some)(creature)
-    def withArmourClass(ac: Int)                    = creatureArmourClassOptional.set(ac)(creature)
+    def withHealth(hp: Int)                          = creatureHealthLens.set(hp)(creature)
+    def withMaxHealth(hp: Int)                       = creatureMaxHealthLens.set(hp)(creature)
+    def withStats(baseStats: BaseStats)              = creatureStatsLens.set(baseStats)(creature)
+    def withBaseWeapon(baseWeapon: Weapon)           = creatureBaseWeaponLens.set(baseWeapon)(creature)
+    def withArmour(armour: Armour)                   = creatureArmourLens.set(armour)(creature)
+    def withOffHand(offHand: Equipment)              = creatureOffHandLens.set(offHand.some)(creature)
+    def withArmourClass(ac: Int)                     = creatureArmourClassOptional.set(ac)(creature)
     def withAbilities(ablts: List[CombatantAbility]) = creatureAbilitiesLens.set(ablts)(creature)
-    def withNoAbilities()                           = creatureAbilitiesLens.set(List.empty)(creature)
+    def withNoAbilities()                            = creatureAbilitiesLens.set(List.empty)(creature)
 
     def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
       creatureProficiencyBonusOptional.set(proficiencyBonus)(creature)
@@ -87,6 +87,8 @@ object TestData {
     def withNoResistances()                      = creatureResistancesLens.set(List.empty)(creature)
     def withNoImmunities()                       = creatureImmunitiesLens.set(List.empty)(creature)
     def withNoResistancesOrImmunities()          = creature.withNoResistances().withNoImmunities()
+
+    def withBonusActionUsed()                    = creatureBonusActionLens.set(false)(creature)
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
@@ -239,9 +241,10 @@ trait TestData extends RandomDataGenerator {
 
         val proficiencyBonus: ProficiencyBonus = profBonus
 
-        val resistances: List[DamageType]    = List.empty
-        val immunities: List[DamageType]     = List.empty
-        val name: String                     = n
+        val resistances: List[DamageType]     = List.empty
+        val immunities: List[DamageType]      = List.empty
+        val bonusActionUsed: Boolean          = false
+        val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
 
         def updateHealth(modification: Int): Creature =

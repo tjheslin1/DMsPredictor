@@ -51,7 +51,7 @@ object BaseFighterAbilities {
     val name             = "Two Weapon Fighting"
     val order            = currentOrder
     val levelRequirement = LevelOne
-    val abilityAction    = MultiAttack
+    val abilityAction    = BonusAction
 
     val triggerMet: Boolean = true
 
