@@ -245,18 +245,6 @@ object Creature {
     }
   }
 
-  val creatureBonusActionLens: Lens[Creature, Boolean] = Lens[Creature, Boolean](_.bonusActionUsed) { bonusUsed =>
-    {
-      case c: BattleMaster   => BattleMaster._bonusActionUsed.set(bonusUsed)(c)
-      case c: EldritchKnight => EldritchKnight._bonusActionUsed.set(bonusUsed)(c)
-      case c: Champion       => Champion._bonusActionUsed.set(bonusUsed)(c)
-      case c: Fighter        => Fighter._bonusActionUsed.set(bonusUsed)(c)
-
-      case c: Goblin   => Goblin._bonusActionUsed.set(bonusUsed)(c)
-      case c: Werewolf => Werewolf._bonusActionUsed.set(bonusUsed)(c)
-    }
-  }
-
   val creatureAbilitiesLens: Lens[Creature, List[CombatantAbility]] =
     Lens[Creature, List[CombatantAbility]](_.abilities) { res =>
       {

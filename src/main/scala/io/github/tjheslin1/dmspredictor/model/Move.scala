@@ -2,6 +2,8 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.eq._
 import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighter, BattleMaster}
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
@@ -36,8 +38,18 @@ object Move {
           val updatedOthers = others.map(c => if (c === target) target else c)
           updatedOthers.append(attacker)
       }
-    } else
+    } else {
+
+//       TODO `Creature with Player`
+//      val updatedCreature = combatant.creature match {
+//        case player: Player => Player.playerBonusActionUsedLens.set(false)(player)
+//        case _              => combatant.creature
+//      }
+
+      (Combatant.playerPrism composeLens Player.playerBonusActionUsedLens).set()
+
       others.append(combatant)
+    }
   }
 
   private def actionAgainstTarget[_: RS](combatant: Combatant,

@@ -7,6 +7,7 @@ import eu.timepit.refined.W
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, _}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{NoArmour, Shield}
@@ -88,8 +89,6 @@ object TestData {
     def withNoImmunities()                       = creatureImmunitiesLens.set(List.empty)(creature)
     def withNoResistancesOrImmunities()          = creature.withNoResistances().withNoImmunities()
 
-    def withBonusActionUsed()                    = creatureBonusActionLens.set(false)(creature)
-
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
   }
@@ -100,6 +99,8 @@ object TestData {
     def withFightingStyle(fightingStyle: FighterFightingStyle) = _fightingStyles.set(List(fightingStyle))(fighter)
     def withAllAbilitiesUnused()                               = _abilityUsages.set(BaseFighterAbilities(false, false))(fighter)
     def withAllAbilitiesUsed()                                 = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
+
+    def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
   }
 
   implicit class BattleMasterOps(val battleMaster: BattleMaster) extends AnyVal {
@@ -107,7 +108,6 @@ object TestData {
 
     def withSuperiorityDiceCount(count: Int) = _superiorityDiceCount.set(count)(battleMaster)
     def withAllAbilitiesUsed()               = _abilityUsages.set(BaseFighterAbilities(true, true))(battleMaster)
-
   }
 
   implicit class EldritchKnightOps(val eldritchKnight: EldritchKnight) extends AnyVal {
@@ -213,6 +213,16 @@ trait TestData extends RandomDataGenerator {
     Gen.oneOf(none[Shield], Shield().some) // TODO Gen any type of equipment
   }
 
+  implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
+    for {
+      lvl <- arbLevel.arbitrary
+    } yield
+      new Player {
+        val level: Level             = lvl
+        val bonusActionUsed: Boolean = false
+      }
+  }
+
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
       n         <- Gen.alphaStr
@@ -300,6 +310,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
+      player         <- arbPlayer.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
     } yield
@@ -316,6 +327,7 @@ trait TestData extends RandomDataGenerator {
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,
+        player.bonusActionUsed,
         Fighter.standardFighterAbilities,
         creature.name
       )
@@ -324,6 +336,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbChampion: Arbitrary[Champion] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
+      player         <- arbPlayer.arbitrary
       armour         <- arbArmour.arbitrary
       shield         <- arbShield.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
@@ -342,6 +355,7 @@ trait TestData extends RandomDataGenerator {
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,
+        player.bonusActionUsed,
         Champion.standardChampionAbilities,
         creature.name
       )
@@ -350,6 +364,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbBattleMaster: Arbitrary[BattleMaster] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
+      player         <- arbPlayer.arbitrary
       armour         <- arbArmour.arbitrary
       shield         <- arbShield.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
@@ -369,6 +384,7 @@ trait TestData extends RandomDataGenerator {
         creature.proficiencyBonus,
         creature.resistances,
         creature.immunities,
+        player.bonusActionUsed,
         BattleMaster.standardBattleMasterAbilities,
         creature.name
       )
@@ -377,6 +393,7 @@ trait TestData extends RandomDataGenerator {
   implicit val arbEldritchKnight: Arbitrary[EldritchKnight] = Arbitrary {
     for {
       creature       <- arbCreature.arbitrary
+      player         <- arbPlayer.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
       spellSlots     <- arbEldritchKnightSpellSlots.arbitrary
@@ -396,6 +413,7 @@ trait TestData extends RandomDataGenerator {
         spellSlots,
         creature.resistances,
         creature.immunities,
+        player.bonusActionUsed,
         EldritchKnight.standardEldritchKnightAbilities,
         creature.name
       )

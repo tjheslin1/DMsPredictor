@@ -52,7 +52,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "use up a Players Bonus Action" in {
+    "use up a Player's Bonus Action" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
@@ -63,9 +63,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
-          Move.takeMove(Queue(extraAttackFighter, testMonster.withArmourClass(5).withCombatIndex(2)), LowestFirst)
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = Move.takeMove(Queue(extraAttackFighter, testMonster.withArmourClass(5).withCombatIndex(2)), LowestFirst)
 
-          extraAttackFighter.creature.bonusActionUsed shouldBe true
+          updatedFighter.bonusActionUsed shouldBe true
         }
       }
     }

@@ -24,28 +24,23 @@ class MoveSpec extends UnitSpecBase {
       }
     }
 
-    "reset creatures bonus action to unused" in {
+    "reset player's bonus action to unused" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val queue =
-          Queue(fighter.withBonusActionUsed().withCombatIndex(1), monster.withBonusActionUsed().withCombatIndex(2))
+          Queue(fighter.withBonusActionUsed().withCombatIndex(1), monster.withCombatIndex(2))
 
-        val Queue(Combatant(_, updatedMonster), Combatant(_, updatedFighter)) =
-          takeMove(queue, LowestFirst).map(_.creature.name)
+        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
-        updatedMonster.bonusActionUsed shouldBe false
         updatedFighter.bonusActionUsed shouldBe false
       }
     }
 
     "reset unconscious creatures bonus action to unused" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withHealth(0).withBonusActionUsed().withCombatIndex(1),
-                          monster.withHealth(0).withBonusActionUsed().withCombatIndex(2))
+        val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
 
-        val Queue(Combatant(_, updatedMonster), Combatant(_, updatedFighter)) =
-          takeMove(queue, LowestFirst).map(_.creature.name)
+        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
-        updatedMonster.bonusActionUsed shouldBe false
         updatedFighter.bonusActionUsed shouldBe false
       }
     }
