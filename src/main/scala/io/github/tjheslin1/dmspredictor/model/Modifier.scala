@@ -6,7 +6,7 @@ object Modifier {
 
   def mod(stat: Stat): Int = modifier(stat.value)
 
-  // @formatter:off
+  // format: off
   private val modifier = Map(
     1  -> -5,   10 -> 0,
     2  -> -4,   11 -> 0,

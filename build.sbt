@@ -1,7 +1,7 @@
 lazy val dmspredictor = (project in file("."))
   .settings(
     libraryDependencies ++= Seq(
-      // @formatter:off
+      // format: off
       "org.typelevel"               %% "cats-core"                        % "1.5.0",
       "com.github.wookietreiber"    %% "scala-chart"                      % "0.5.1",
       "ch.qos.logback"              %  "logback-classic"                  % "1.2.3",
@@ -14,7 +14,7 @@ lazy val dmspredictor = (project in file("."))
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
       "org.scalatest"               %% "scalatest"                        % "3.0.5"         % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.14.0"        % Test
-      //@formatter:on
+      // format: on
     ),
     autoCompilerPlugins := true,
     addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.full)

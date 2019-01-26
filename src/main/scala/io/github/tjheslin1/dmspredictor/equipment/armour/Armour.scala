@@ -1,4 +1,4 @@
-package io.github.tjheslin1.dmspredictor.model
+package io.github.tjheslin1.dmspredictor.equipment.armour
 
 import cats.Show
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
