@@ -5,7 +5,7 @@ Assumptions:
 
 ##### Resources will be exhausted:
 The simulation is designed around a single encounter, therefore abilities such as spellcasting are prioritised per 
-class and will used starting from the highest spell slot to the lowest as well as using other abilities 
+class and will be used starting from the highest spell slot to the lowest as well as using other abilities 
 (e.g. a Sorceror's twinned spell).
  
 ##### Player knowledge:
