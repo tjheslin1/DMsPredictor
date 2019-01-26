@@ -216,10 +216,32 @@ trait TestData extends RandomDataGenerator {
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
       lvl <- arbLevel.arbitrary
+      creature <- arbCreature.arbitrary
     } yield
       new Player {
         val level: Level             = lvl
         val bonusActionUsed: Boolean = false
+
+        val creatureType: CreatureType = creature.creatureType
+        val health: Int = creature.health
+        val maxHealth: Int = creature.maxHealth
+        val stats: BaseStats = creature.stats
+        val baseWeapon: Weapon = creature.baseWeapon
+
+        def weapon[_: RS]: Weapon = creature.weapon
+
+        val armour: Armour = creature.armour
+        val offHand: Option[Equipment] = creature.offHand
+        val armourClass: Int = creature.armourClass
+        val proficiencyBonus: ProficiencyBonus = creature.proficiencyBonus
+        val resistances: List[DamageType] = creature.resistances
+        val immunities: List[DamageType] = creature.immunities
+        val name: String = creature.name
+        val abilities: List[CombatantAbility] = creature.abilities
+
+        def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
+
+        def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
       }
   }
 
@@ -309,33 +331,31 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
     for {
-      creature       <- arbCreature.arbitrary
       player         <- arbPlayer.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
     } yield
       Fighter(
         level,
-        creature.health,
-        creature.health,
-        creature.stats,
-        creature.baseWeapon,
-        creature.armour,
-        creature.offHand,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.armour,
+        player.offHand,
         fightingStyles.toList,
         BaseFighterAbilities.allUnused(),
-        creature.proficiencyBonus,
-        creature.resistances,
-        creature.immunities,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
         player.bonusActionUsed,
         Fighter.standardFighterAbilities,
-        creature.name
+        player.name
       )
   }
 
   implicit val arbChampion: Arbitrary[Champion] = Arbitrary {
     for {
-      creature       <- arbCreature.arbitrary
       player         <- arbPlayer.arbitrary
       armour         <- arbArmour.arbitrary
       shield         <- arbShield.arbitrary
@@ -344,26 +364,25 @@ trait TestData extends RandomDataGenerator {
     } yield
       Champion(
         level,
-        creature.health,
-        creature.health,
-        creature.stats,
-        creature.baseWeapon,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
         armour,
         shield,
         fightingStyles.toList,
         BaseFighterAbilities.allUnused(),
-        creature.proficiencyBonus,
-        creature.resistances,
-        creature.immunities,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
         player.bonusActionUsed,
         Champion.standardChampionAbilities,
-        creature.name
+        player.name
       )
   }
 
   implicit val arbBattleMaster: Arbitrary[BattleMaster] = Arbitrary {
     for {
-      creature       <- arbCreature.arbitrary
       player         <- arbPlayer.arbitrary
       armour         <- arbArmour.arbitrary
       shield         <- arbShield.arbitrary
@@ -372,27 +391,26 @@ trait TestData extends RandomDataGenerator {
     } yield
       BattleMaster(
         level,
-        creature.health,
-        creature.health,
-        creature.stats,
-        creature.baseWeapon,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
         armour,
         shield,
         fightingStyles.toList,
         BaseFighterAbilities.allUnused(),
         superiorityDiceCount = 4,
-        creature.proficiencyBonus,
-        creature.resistances,
-        creature.immunities,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
         player.bonusActionUsed,
         BattleMaster.standardBattleMasterAbilities,
-        creature.name
+        player.name
       )
   }
 
   implicit val arbEldritchKnight: Arbitrary[EldritchKnight] = Arbitrary {
     for {
-      creature       <- arbCreature.arbitrary
       player         <- arbPlayer.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
@@ -400,22 +418,22 @@ trait TestData extends RandomDataGenerator {
     } yield
       EldritchKnight(
         level,
-        creature.health,
-        creature.health,
-        creature.stats,
-        creature.baseWeapon,
-        creature.armour,
-        creature.offHand,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.armour,
+        player.offHand,
         fightingStyles.toList,
         BaseFighterAbilities.allUnused(),
-        creature.proficiencyBonus,
+        player.proficiencyBonus,
         Map(ChromaticOrb.spellLevel -> ChromaticOrb), // TODO randomise spells
         spellSlots,
-        creature.resistances,
-        creature.immunities,
+        player.resistances,
+        player.immunities,
         player.bonusActionUsed,
         EldritchKnight.standardEldritchKnightAbilities,
-        creature.name
+        player.name
       )
   }
 }

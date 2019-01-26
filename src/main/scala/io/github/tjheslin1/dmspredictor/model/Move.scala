@@ -3,7 +3,6 @@ package io.github.tjheslin1.dmspredictor.model
 import cats.syntax.eq._
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighter, BattleMaster}
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
@@ -14,56 +13,51 @@ import scala.util.{Random => JRandom}
 object Move {
 
   def takeMove[_: RS](queue: Queue[Combatant], focus: Focus): Queue[Combatant] = {
-    val (combatant, others) = queue.dequeue
-    val (pcs, mobs)         = others.partition(_.creature.creatureType == PlayerCharacter)
+    val (unactedCombatant, others) = queue.dequeue
+    val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
-    if (combatant.creature.isConscious) {
+    if (unactedCombatant.creature.isConscious) {
 
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
       val optAbility: Option[CombatantAbility] =
-        combatant.creature.abilities.sortBy(_(combatant).order).find { combatantAbility =>
-          val ability = combatantAbility(combatant)
+        unactedCombatant.creature.abilities.sortBy(_(unactedCombatant).order).find { combatantAbility =>
+          val ability = combatantAbility(unactedCombatant)
           ability.conditionMet && ability.triggerMet
         }
 
-      val updatedCombatants = combatant.creature.creatureType match {
-        case PlayerCharacter => actionAgainstTarget(combatant, mobToAttack, optAbility)
-        case Monster         => actionAgainstTarget(combatant, pcToAttack, optAbility)
+      val (actedCombatant, updatedTarget) = unactedCombatant.creature.creatureType match {
+        case PlayerCharacter => actionAgainstTarget(unactedCombatant, mobToAttack, optAbility)
+        case Monster         => actionAgainstTarget(unactedCombatant, pcToAttack, optAbility)
       }
 
-      updatedCombatants.fold(others.append(combatant)) {
-        case (attacker, target) =>
-          val updatedOthers = others.map(c => if (c === target) target else c)
-          updatedOthers.append(attacker)
+      val updatedCombatant =
+        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(false)(actedCombatant)
+
+      updatedTarget.fold(others.append(updatedCombatant)) { target =>
+        val updatedOthers = others.map(c => if (c === target) target else c)
+        updatedOthers.append(updatedCombatant)
       }
     } else {
-
-//       TODO `Creature with Player`
-//      val updatedCreature = combatant.creature match {
-//        case player: Player => Player.playerBonusActionUsedLens.set(false)(player)
-//        case _              => combatant.creature
-//      }
-
-      (Combatant.playerPrism composeLens Player.playerBonusActionUsedLens).set()
-
-      others.append(combatant)
+      val updatedCombatant =
+        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(false)(unactedCombatant)
+      others.append(updatedCombatant)
     }
   }
 
   private def actionAgainstTarget[_: RS](combatant: Combatant,
                                          toAttack: Option[Combatant],
-                                         optAbility: Option[CombatantAbility]) = {
-    toAttack.fold(none[(Combatant, Combatant)]) { target =>
-      optAbility.fold(attackAndDamage(combatant, target).some) { ability =>
-        val (actedCombatant, actedTarget) = ability(combatant).useAbility(target.some)
-        val updatedCombatant              = combatant.copy(creature = ability(actedCombatant).update)
+                                         optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) = {
+    toAttack.fold((combatant, none[Combatant])) { target =>
+      optAbility.fold {
+        val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, target)
+        (updatedAttacker, updatedTarget.some)
+      } { ability =>
+        val (actedCombatant, targetOfAbility) = ability(combatant).useAbility(target.some)
+        val updatedCombatant                  = combatant.copy(creature = ability(actedCombatant).update)
 
-        actedTarget match {
-          case Some(updatedTarget) => (updatedCombatant, updatedTarget).some
-          case None                => (updatedCombatant, target).some
-        }
+        (updatedCombatant, targetOfAbility)
       }
     }
   }

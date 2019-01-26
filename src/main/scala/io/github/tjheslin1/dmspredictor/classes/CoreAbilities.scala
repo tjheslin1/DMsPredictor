@@ -50,6 +50,7 @@ object CoreAbilities {
             }
       }
 
-    def update: Creature = combatant.creature
+    def update: Creature =
+      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(true)(combatant).creature
   }
 }

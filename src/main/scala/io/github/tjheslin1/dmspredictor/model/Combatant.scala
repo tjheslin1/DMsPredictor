@@ -14,13 +14,13 @@ object Combatant {
 
   val creatureLens: Lens[Combatant, Creature] = GenLens[Combatant](_.creature)
 
-  val playerPrism: Optional[Combatant, Creature with Player] = Optional[Combatant, Creature with Player] {
-    case Combatant(_, p: Creature with Player) => p.some
-    case _                                     => none[Creature with Player]
-  } { playerCreature =>
+  val playerOptional: Optional[Combatant, Player] = Optional[Combatant, Player] {
+    case Combatant(_, p: Player) => p.some
+    case _                       => none[Player]
+  } { player =>
     {
-      case combatant @ Combatant(_, _: Creature with Player) => combatant.copy(creature = playerCreature)
-      case c: Combatant                                      => c
+      case combatant @ Combatant(_, _: Player) => creatureLens.set(player)(combatant)
+      case c: Combatant                        => c
     }
   }
 }

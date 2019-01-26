@@ -28,8 +28,7 @@ import monocle.macros.{GenLens, Lenses}
                                  bonusActionUsed: Boolean = false,
                                  abilities: List[CombatantAbility] = standardChampionAbilities,
                                  name: String = NameGenerator.randomName)
-    extends Creature
-    with BaseFighter {
+    extends BaseFighter {
 
   import Fighter._
 

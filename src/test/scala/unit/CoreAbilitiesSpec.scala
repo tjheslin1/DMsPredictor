@@ -52,7 +52,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "use up a Player's Bonus Action" in {
+    "set the Player's Bonus Action used to true" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
