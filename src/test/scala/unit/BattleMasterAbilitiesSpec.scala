@@ -60,33 +60,13 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "use all four superiority dice when using Action Surge with Extra Attack" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
-
-      forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
-        val battleMasterCombatant = _abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)
-          .withSuperiorityDiceCount(4)
-          .withLevel(LevelFive)
-          .withStrength(20)
-          .withCombatIndex(1)
-
-        val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
-
-        val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
-          Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
-
-        updatedBattleMaster.superiorityDiceCount shouldBe 0
-      }
-    }
-
     "use all available superiority dice during turn" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = _abilityUsages
           .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)
-          .withSuperiorityDiceCount(3)
+          .withSuperiorityDiceCount(4)
           .withLevel(LevelFive)
           .withNoOffHand()
           .withStrength(20)
@@ -97,7 +77,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
         val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
           Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
 
-        updatedBattleMaster.superiorityDiceCount shouldBe 0
+        updatedBattleMaster.superiorityDiceCount shouldBe 1
       }
     }
   }
