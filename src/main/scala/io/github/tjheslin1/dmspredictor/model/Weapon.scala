@@ -38,7 +38,12 @@ object Weapon {
     }
 
   def bonusToHitWeapon[_: RS](weapon: Weapon, bonus: Int): Weapon =
-    Weapon(weapon.name, weapon.weaponType, weapon.damageType, weapon.twoHanded, weapon.damage, weapon.hitBonus + bonus)
+    Weapon(weapon.name,
+           weapon.weaponType,
+           weapon.damageType,
+           weapon.twoHanded,
+           weapon.damage,
+           weapon.hitBonus + bonus)
 
   def fixedDamageWeapon[_: RS](weaponName: String,
                                wpnType: WeaponType = Melee,
@@ -53,7 +58,8 @@ object Weapon {
     override val damageType: DamageType = Bludgeoning
     override val twoHanded: Boolean     = false
 
-    override def damage(implicit rollStrategy: RollStrategy): Int = 1 + Modifier.mod(creature.stats.strength)
+    override def damage(implicit rollStrategy: RollStrategy): Int =
+      1 + Modifier.mod(creature.stats.strength)
   }
 
   implicit val weaponShow: Show[Weapon] = Show.show { weapon =>

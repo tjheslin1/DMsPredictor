@@ -20,8 +20,9 @@ object EldritchKnightAbilities {
     val levelRequirement = LevelThree
     val abilityAction    = WholeAction
 
-    val triggerMet: Boolean   = true
-    def conditionMet: Boolean = eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
+    val triggerMet: Boolean = true
+    def conditionMet: Boolean =
+      eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val spellSlot = highestSpellSlotAvailable(eldritchKnight.spellSlots)
@@ -47,12 +48,14 @@ object EldritchKnightAbilities {
           )
 
           val adjustedDamage = spell.damageType match {
-            case damageType if target.creature.resistances.contains(damageType) => math.floor(dmg / 2).toInt
-            case damageType if target.creature.immunities.contains(damageType)  => 0
-            case _                                                              => dmg
+            case damageType if target.creature.resistances.contains(damageType) =>
+              math.floor(dmg / 2).toInt
+            case damageType if target.creature.immunities.contains(damageType) => 0
+            case _                                                             => dmg
           }
 
-          val damagedTarget = target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
+          val damagedTarget =
+            target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
 
           (combatant, damagedTarget.some)
       }
@@ -70,14 +73,19 @@ object EldritchKnightAbilities {
         .set(updatedSpellSlotCount)(eldritchKnight)
     }
 
-    private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult = D20.roll() match {
-      case 20   => CriticalHit
-      case 1    => CriticalMiss
-      case roll => if ((roll + spell.spellAttackBonus(eldritchKnight)) >= target.armourClass) Hit else Miss
-    }
+    private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult =
+      D20.roll() match {
+        case 20 => CriticalHit
+        case 1  => CriticalMiss
+        case roll =>
+          if ((roll + spell.spellAttackBonus(eldritchKnight)) >= target.armourClass) Hit else Miss
+      }
 
-    private def spellSavingThrow[_: RS](spell: Spell, attribute: Attribute, target: Creature): AttackResult =
-      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(eldritchKnight)) Miss
+    private def spellSavingThrow[_: RS](spell: Spell,
+                                        attribute: Attribute,
+                                        target: Creature): AttackResult =
+      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(eldritchKnight))
+        Miss
       else Hit
   }
 

@@ -14,22 +14,23 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class BattleMaster(level: Level,
-                                     health: Int,
-                                     maxHealth: Int,
-                                     stats: BaseStats,
-                                     baseWeapon: Weapon,
-                                     armour: Armour = NoArmour,
-                                     offHand: Option[Equipment] = None,
-                                     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                                     abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
-                                     superiorityDiceCount: Int = 4,
-                                     proficiencyBonus: ProficiencyBonus = 0,
-                                     resistances: List[DamageType] = List.empty,
-                                     immunities: List[DamageType] = List.empty,
-                                     bonusActionUsed: Boolean = false,
-                                     abilities: List[CombatantAbility] = standardBattleMasterAbilities,
-                                     name: String = NameGenerator.randomName)
+@Lenses("_") case class BattleMaster(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
+    abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
+    superiorityDiceCount: Int = 4,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = standardBattleMasterAbilities,
+    name: String = NameGenerator.randomName)
     extends BaseFighter {
 
   import Fighter._
@@ -40,7 +41,8 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def updateHealth(modification: Int): BattleMaster = copy(health = Math.max(0, health + modification))
+  def updateHealth(modification: Int): BattleMaster =
+    copy(health = Math.max(0, health + modification))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
@@ -79,10 +81,12 @@ object BattleMaster {
       s"AC: ${battleMaster.armourClass}"
   }
 
-  val strengthLens: Lens[BattleMaster, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[BattleMaster, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
-  val wisdomLens: Lens[BattleMaster, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
-  val intelligenceLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
-  val charismaLens: Lens[BattleMaster, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  val strengthLens: Lens[BattleMaster, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](
+    _.constitution)
+  val wisdomLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](
+    _.intelligence)
+  val charismaLens: Lens[BattleMaster, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
 }

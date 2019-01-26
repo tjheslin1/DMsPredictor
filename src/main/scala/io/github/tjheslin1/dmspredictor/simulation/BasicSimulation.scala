@@ -7,7 +7,9 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 import scala.annotation.tailrec
 
-case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simulation with LazyLogging {
+case class BasicSimulation(creatures: List[Creature], focus: Focus)
+    extends Simulation
+    with LazyLogging {
 
   def run[_: RS](info: String): SimulationResult = {
 
@@ -18,12 +20,14 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus) extends Simu
       if (players.exists(_.creature.isConscious)) {
         if (monsters.exists(_.creature.isConscious)) {
 
-          val (pcs, mobs) = Turn(initiative).run(focus).toList.partition(_.creature.creatureType == PlayerCharacter)
+          val (pcs, mobs) =
+            Turn(initiative).run(focus).toList.partition(_.creature.creatureType == PlayerCharacter)
 
           val updatedInitiative = updateInitiative(initiative, pcs, mobs)
 
           pcs.foreach(pc => logger.debug(s"pc: ${pc.creature.name} - hp=${pc.creature.health}"))
-          mobs.foreach(mob => logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
+          mobs.foreach(mob =>
+            logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
 
           determineOutcome(updatedInitiative, pcs, mobs)
         } else SimulationResult(Success, info)

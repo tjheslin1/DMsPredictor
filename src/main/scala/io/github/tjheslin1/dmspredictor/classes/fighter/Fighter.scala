@@ -25,7 +25,8 @@ import monocle.macros.{GenLens, Lenses}
                                 baseWeapon: Weapon,
                                 armour: Armour = NoArmour,
                                 offHand: Option[Equipment] = None,
-                                fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
+                                fightingStyles: List[FighterFightingStyle] =
+                                  List.empty[FighterFightingStyle],
                                 abilityUsages: BaseFighterAbilities = allUnused(),
                                 proficiencyBonus: ProficiencyBonus = 0,
                                 resistances: List[DamageType] = List.empty,
@@ -70,7 +71,8 @@ object Fighter {
     twoWeaponFighting(4)
   )
 
-  def weaponWithFightingStyle[_: RS](weapon: Weapon, fightingStyles: List[FighterFightingStyle]): Weapon =
+  def weaponWithFightingStyle[_: RS](weapon: Weapon,
+                                     fightingStyles: List[FighterFightingStyle]): Weapon =
     weapon.weaponType match {
       case Ranged if fightingStyles.contains(Archery) =>
         bonusToHitWeapon(weapon, 2)
@@ -84,7 +86,12 @@ object Fighter {
           else
             damageRoll
         }
-        Weapon(weapon.name, weapon.weaponType, weapon.damageType, weapon.twoHanded, rerollingDamage, weapon.hitBonus)
+        Weapon(weapon.name,
+               weapon.weaponType,
+               weapon.damageType,
+               weapon.twoHanded,
+               rerollingDamage,
+               weapon.hitBonus)
       case _ => weapon
     }
 

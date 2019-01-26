@@ -16,8 +16,10 @@ object BaseFighterAbilities {
 
   import Fighter._
 
-  val secondWindUsedLens: Lens[BaseFighterAbilities, Boolean]  = GenLens[BaseFighterAbilities](_.secondWindUsed)
-  val actionSurgeUsedLens: Lens[BaseFighterAbilities, Boolean] = GenLens[BaseFighterAbilities](_.actionSurgeUsed)
+  val secondWindUsedLens: Lens[BaseFighterAbilities, Boolean] =
+    GenLens[BaseFighterAbilities](_.secondWindUsed)
+  val actionSurgeUsedLens: Lens[BaseFighterAbilities, Boolean] =
+    GenLens[BaseFighterAbilities](_.actionSurgeUsed)
 
   def allUsed(): BaseFighterAbilities   = BaseFighterAbilities(true, true)
   def allUnused(): BaseFighterAbilities = BaseFighterAbilities(false, false)
@@ -30,19 +32,24 @@ object BaseFighterAbilities {
     val levelRequirement = LevelTwo
     val abilityAction    = WholeAction
 
-    def triggerMet   = combatant.creature.health <= combatant.creature.maxHealth / 2
-    def conditionMet = baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
+    def triggerMet = combatant.creature.health <= combatant.creature.maxHealth / 2
+    def conditionMet =
+      baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val updatedHealth =
-        Math.min(combatant.creature.maxHealth, combatant.creature.health + (1 * HitDice) + baseFighter.level.value)
-      val updatedCombatant = (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
+        Math.min(combatant.creature.maxHealth,
+                 combatant.creature.health + (1 * HitDice) + baseFighter.level.value)
+      val updatedCombatant =
+        (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
       (updatedCombatant, None)
     }
 
     def update: Creature =
-      (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
+      (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
+        .set(true)(baseFighter)
+        .asInstanceOf[Creature]
   }
 
   def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
@@ -57,8 +64,8 @@ object BaseFighterAbilities {
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
-        w.twoHanded == false && combatant.creature.baseWeapon.twoHanded == false && baseFighter.fightingStyles.contains(
-          TwoWeaponFighting)
+        w.twoHanded == false && combatant.creature.baseWeapon.twoHanded == false && baseFighter.fightingStyles
+          .contains(TwoWeaponFighting)
       case _ => false
     }
 
@@ -77,7 +84,8 @@ object BaseFighterAbilities {
           val offHandAttack = attack(attacker1, offHandWeapon, attackTarget1)
 
           val (attacker2, attackTarget2) =
-            if (offHandAttack.result > 0) resolveDamage(attacker1, attackTarget1, offHandWeapon, offHandAttack)
+            if (offHandAttack.result > 0)
+              resolveDamage(attacker1, attackTarget1, offHandWeapon, offHandAttack)
             else
               (attacker1, attackTarget1)
 
@@ -87,36 +95,39 @@ object BaseFighterAbilities {
     def update: Creature = combatant.creature
   }
 
-  def actionSurge(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant: Combatant) {
-    val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
+  def actionSurge(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant: Combatant) {
+      val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
 
-    val name             = "Action Surge"
-    val order            = currentOrder
-    val levelRequirement = LevelTwo
-    val abilityAction    = WholeAction
+      val name             = "Action Surge"
+      val order            = currentOrder
+      val levelRequirement = LevelTwo
+      val abilityAction    = WholeAction
 
-    val triggerMet: Boolean   = true
-    def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
+      val triggerMet: Boolean   = true
+      def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      target match {
-        case None => (combatant, none[Combatant])
-        case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, order, AbilityAction.any)
-            .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
-              val (updatedAttacker, optUpdatedTarget) = useAdditionalAbility(nextAbility, combatant, target)
+      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+        target match {
+          case None => (combatant, none[Combatant])
+          case Some(target: Combatant) =>
+            nextAbilityToUseInConjunction(combatant, order, AbilityAction.any)
+              .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
+                val (updatedAttacker, optUpdatedTarget) =
+                  useAdditionalAbility(nextAbility, combatant, target)
 
-              optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.any)
-                  .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
-                    useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
-                  }
+                optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
+                  nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.any)
+                    .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
+                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
+                    }
+                }
               }
-            }
-      }
-    }
+        }
 
-    def update: Creature =
-      (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens).set(true)(baseFighter).asInstanceOf[Creature]
-  }
+      def update: Creature =
+        (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens)
+          .set(true)(baseFighter)
+          .asInstanceOf[Creature]
+    }
 }

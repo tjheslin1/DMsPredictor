@@ -43,7 +43,8 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def updateHealth(modification: Int): EldritchKnight = copy(health = Math.max(0, health + modification))
+  def updateHealth(modification: Int): EldritchKnight =
+    copy(health = Math.max(0, health + modification))
 
   def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
 }
@@ -70,10 +71,12 @@ object EldritchKnight {
       s"AC: ${eldritchKnight.armourClass}"
   }
 
-  val strengthLens: Lens[EldritchKnight, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[EldritchKnight, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
-  val wisdomLens: Lens[EldritchKnight, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
-  val intelligenceLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
-  val charismaLens: Lens[EldritchKnight, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  val strengthLens: Lens[EldritchKnight, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](
+    _.constitution)
+  val wisdomLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](
+    _.intelligence)
+  val charismaLens: Lens[EldritchKnight, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
 }

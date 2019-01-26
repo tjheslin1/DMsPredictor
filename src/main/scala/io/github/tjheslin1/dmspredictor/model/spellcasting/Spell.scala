@@ -14,9 +14,11 @@ abstract class Spell {
   val damageType: DamageType
   val spellLevel: SpellLevel
 
-  def spellAttackBonus(creature: Creature): Int = creature.proficiencyBonus + attributeModifierForSchool(creature)
+  def spellAttackBonus(creature: Creature): Int =
+    creature.proficiencyBonus + attributeModifierForSchool(creature)
 
-  def spellSaveDc(creature: Creature): Int = 8 + creature.proficiencyBonus + attributeModifierForSchool(creature)
+  def spellSaveDc(creature: Creature): Int =
+    8 + creature.proficiencyBonus + attributeModifierForSchool(creature)
 
   def damage(implicit rollStrategy: RollStrategy): Int
 }

@@ -31,12 +31,15 @@ object CoreAbilities {
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, order, NonEmptyList.of(BonusAction, SingleAttack))
+          nextAbilityToUseInConjunction(combatant,
+                                        order,
+                                        NonEmptyList.of(BonusAction, SingleAttack))
             .fold {
               val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
-              val (updatedCombatant, updatedTargetOfAbility) = useAdditionalAbility(nextAbility, combatant, target)
+              val (updatedCombatant, updatedTargetOfAbility) =
+                useAdditionalAbility(nextAbility, combatant, target)
 
               updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
                 nextAbilityToUseInConjunction(updatedCombatant, order, one(SingleAttack)).fold {
@@ -51,6 +54,8 @@ object CoreAbilities {
       }
 
     def update: Creature =
-      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(true)(combatant).creature
+      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
+        .set(true)(combatant)
+        .creature
   }
 }

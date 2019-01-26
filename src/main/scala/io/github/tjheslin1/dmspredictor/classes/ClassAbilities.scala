@@ -8,9 +8,10 @@ import io.github.tjheslin1.dmspredictor.model.ability.AbilityAction
 
 object ClassAbilities {
 
-  def nextAbilityToUseInConjunction[_: RS](attacker: Combatant,
-                                           currentOrder: Int,
-                                           suitableAction: NonEmptyList[AbilityAction]): Option[CombatantAbility] =
+  def nextAbilityToUseInConjunction[_: RS](
+      attacker: Combatant,
+      currentOrder: Int,
+      suitableAction: NonEmptyList[AbilityAction]): Option[CombatantAbility] =
     attacker.creature.abilities
       .sortBy(ability => ability(attacker).order)
       .find { ability =>
@@ -20,7 +21,8 @@ object ClassAbilities {
         nextAbility.conditionMet && nextAbility.triggerMet
       }
 
-  def useAttackActionTwice[_: RS](attacker: Combatant, target: Combatant): (Combatant, Option[Combatant]) = {
+  def useAttackActionTwice[_: RS](attacker: Combatant,
+                                  target: Combatant): (Combatant, Option[Combatant]) = {
     val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, attacker, target)
     (updatedAttacker, updatedTarget.some)
   }

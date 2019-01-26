@@ -22,9 +22,10 @@ object Move {
       val pcToAttack  = nextToFocus(pcs, focus)
 
       val optAbility: Option[CombatantAbility] =
-        unactedCombatant.creature.abilities.sortBy(_(unactedCombatant).order).find { combatantAbility =>
-          val ability = combatantAbility(unactedCombatant)
-          ability.conditionMet && ability.triggerMet
+        unactedCombatant.creature.abilities.sortBy(_(unactedCombatant).order).find {
+          combatantAbility =>
+            val ability = combatantAbility(unactedCombatant)
+            ability.conditionMet && ability.triggerMet
         }
 
       val (actedCombatant, updatedTarget) = unactedCombatant.creature.creatureType match {
@@ -33,7 +34,8 @@ object Move {
       }
 
       val updatedCombatant =
-        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(false)(actedCombatant)
+        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
+          .set(false)(actedCombatant)
 
       updatedTarget.fold(others.append(updatedCombatant)) { target =>
         val updatedOthers = others.map(c => if (c === target) target else c)
@@ -41,14 +43,16 @@ object Move {
       }
     } else {
       val updatedCombatant =
-        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(false)(unactedCombatant)
+        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
+          .set(false)(unactedCombatant)
       others.append(updatedCombatant)
     }
   }
 
-  private def actionAgainstTarget[_: RS](combatant: Combatant,
-                                         toAttack: Option[Combatant],
-                                         optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) = {
+  private def actionAgainstTarget[_: RS](
+      combatant: Combatant,
+      toAttack: Option[Combatant],
+      optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) =
     toAttack.fold((combatant, none[Combatant])) { target =>
       optAbility.fold {
         val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, target)
@@ -60,7 +64,6 @@ object Move {
         (updatedCombatant, targetOfAbility)
       }
     }
-  }
 
   private def nextToFocus(combatants: Queue[Combatant], focus: Focus): Option[Combatant] = {
 
@@ -68,7 +71,8 @@ object Move {
     focus match {
       case LowestFirst => consciousCombatants.sortBy(_.creature.health).headOption
       case RandomFocus =>
-        if (consciousCombatants.isEmpty) None else consciousCombatants(JRandom.nextInt(consciousCombatants.size)).some
+        if (consciousCombatants.isEmpty) None
+        else consciousCombatants(JRandom.nextInt(consciousCombatants.size)).some
     }
   }
 }

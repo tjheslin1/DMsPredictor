@@ -84,40 +84,43 @@ object Creature {
     }
   }
 
-  val creatureStrengthLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.strength) { strScore =>
-    {
-      case c: BattleMaster   => BattleMaster.strengthLens.set(strScore)(c)
-      case c: EldritchKnight => EldritchKnight.strengthLens.set(strScore)(c)
-      case c: Champion       => Champion.strengthLens.set(strScore)(c)
-      case c: Fighter        => Fighter.strengthLens.set(strScore)(c)
+  val creatureStrengthLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.strength) {
+    strScore =>
+      {
+        case c: BattleMaster   => BattleMaster.strengthLens.set(strScore)(c)
+        case c: EldritchKnight => EldritchKnight.strengthLens.set(strScore)(c)
+        case c: Champion       => Champion.strengthLens.set(strScore)(c)
+        case c: Fighter        => Fighter.strengthLens.set(strScore)(c)
 
-      case c: Goblin   => Goblin.strengthLens.set(strScore)(c)
-      case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
-    }
+        case c: Goblin   => Goblin.strengthLens.set(strScore)(c)
+        case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
+      }
   }
 
-  val creatureDexterityLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.dexterity) { dexScore =>
-    {
-      case c: BattleMaster   => BattleMaster.dexterityLens.set(dexScore)(c)
-      case c: EldritchKnight => EldritchKnight.dexterityLens.set(dexScore)(c)
-      case c: Champion       => Champion.dexterityLens.set(dexScore)(c)
-      case c: Fighter        => Fighter.dexterityLens.set(dexScore)(c)
+  val creatureDexterityLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.dexterity) {
+    dexScore =>
+      {
+        case c: BattleMaster   => BattleMaster.dexterityLens.set(dexScore)(c)
+        case c: EldritchKnight => EldritchKnight.dexterityLens.set(dexScore)(c)
+        case c: Champion       => Champion.dexterityLens.set(dexScore)(c)
+        case c: Fighter        => Fighter.dexterityLens.set(dexScore)(c)
 
-      case c: Goblin   => Goblin.dexterityLens.set(dexScore)(c)
-      case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
-    }
+        case c: Goblin   => Goblin.dexterityLens.set(dexScore)(c)
+        case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
+      }
   }
 
-  val creatureConstitutionLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.constitution) { conScore =>
-    {
-      case c: BattleMaster   => BattleMaster.constitutionLens.set(conScore)(c)
-      case c: EldritchKnight => EldritchKnight.constitutionLens.set(conScore)(c)
-      case c: Champion       => Champion.constitutionLens.set(conScore)(c)
-      case c: Fighter        => Fighter.constitutionLens.set(conScore)(c)
+  val creatureConstitutionLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.constitution) {
+    conScore =>
+      {
+        case c: BattleMaster   => BattleMaster.constitutionLens.set(conScore)(c)
+        case c: EldritchKnight => EldritchKnight.constitutionLens.set(conScore)(c)
+        case c: Champion       => Champion.constitutionLens.set(conScore)(c)
+        case c: Fighter        => Fighter.constitutionLens.set(conScore)(c)
 
-      case c: Goblin   => Goblin.constitutionLens.set(conScore)(c)
-      case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
-    }
+        case c: Goblin   => Goblin.constitutionLens.set(conScore)(c)
+        case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
+      }
   }
 
   val creatureWisdomLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.wisdom) { wisScore =>
@@ -132,28 +135,30 @@ object Creature {
     }
   }
 
-  val creatureIntelligenceLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.intelligence) { intScore =>
-    {
-      case c: BattleMaster   => BattleMaster.intelligenceLens.set(intScore)(c)
-      case c: EldritchKnight => EldritchKnight.intelligenceLens.set(intScore)(c)
-      case c: Champion       => Champion.intelligenceLens.set(intScore)(c)
-      case c: Fighter        => Fighter.intelligenceLens.set(intScore)(c)
+  val creatureIntelligenceLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.intelligence) {
+    intScore =>
+      {
+        case c: BattleMaster   => BattleMaster.intelligenceLens.set(intScore)(c)
+        case c: EldritchKnight => EldritchKnight.intelligenceLens.set(intScore)(c)
+        case c: Champion       => Champion.intelligenceLens.set(intScore)(c)
+        case c: Fighter        => Fighter.intelligenceLens.set(intScore)(c)
 
-      case c: Goblin   => Goblin.intelligenceLens.set(intScore)(c)
-      case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
-    }
+        case c: Goblin   => Goblin.intelligenceLens.set(intScore)(c)
+        case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
+      }
   }
 
-  val creatureCharismaLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.charisma) { chaScore =>
-    {
-      case c: BattleMaster   => BattleMaster.charismaLens.set(chaScore)(c)
-      case c: EldritchKnight => EldritchKnight.charismaLens.set(chaScore)(c)
-      case c: Champion       => Champion.charismaLens.set(chaScore)(c)
-      case c: Fighter        => Fighter.charismaLens.set(chaScore)(c)
+  val creatureCharismaLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.charisma) {
+    chaScore =>
+      {
+        case c: BattleMaster   => BattleMaster.charismaLens.set(chaScore)(c)
+        case c: EldritchKnight => EldritchKnight.charismaLens.set(chaScore)(c)
+        case c: Champion       => Champion.charismaLens.set(chaScore)(c)
+        case c: Fighter        => Fighter.charismaLens.set(chaScore)(c)
 
-      case c: Goblin   => Goblin.charismaLens.set(chaScore)(c)
-      case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
-    }
+        case c: Goblin   => Goblin.charismaLens.set(chaScore)(c)
+        case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
+      }
   }
 
   val creatureBaseWeaponLens: Lens[Creature, Weapon] = Lens[Creature, Weapon](_.baseWeapon) { wpn =>
@@ -180,17 +185,18 @@ object Creature {
     }
   }
 
-  val creatureOffHandLens: Lens[Creature, Option[Equipment]] = Lens[Creature, Option[Equipment]](_.offHand) { offH =>
-    {
-      case c: BattleMaster   => BattleMaster._offHand.set(offH)(c)
-      case c: EldritchKnight => EldritchKnight._offHand.set(offH)(c)
-      case c: Champion       => Champion._offHand.set(offH)(c)
-      case c: Fighter        => Fighter._offHand.set(offH)(c)
+  val creatureOffHandLens: Lens[Creature, Option[Equipment]] =
+    Lens[Creature, Option[Equipment]](_.offHand) { offH =>
+      {
+        case c: BattleMaster   => BattleMaster._offHand.set(offH)(c)
+        case c: EldritchKnight => EldritchKnight._offHand.set(offH)(c)
+        case c: Champion       => Champion._offHand.set(offH)(c)
+        case c: Fighter        => Fighter._offHand.set(offH)(c)
 
-      case c: Goblin   => Goblin._offHand.set(offH)(c)
-      case c: Werewolf => Werewolf._offHand.set(offH)(c)
+        case c: Goblin   => Goblin._offHand.set(offH)(c)
+        case c: Werewolf => Werewolf._offHand.set(offH)(c)
+      }
     }
-  }
 
   val creatureArmourClassOptional: Optional[Creature, Int] = Optional[Creature, Int] {
     case c: Goblin   => c.armourClass.some
@@ -204,24 +210,25 @@ object Creature {
     }
   }
 
-  val creatureProficiencyBonusOptional: Optional[Creature, ProficiencyBonus] = Optional[Creature, ProficiencyBonus] {
-    case c: BattleMaster   => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-    case c: EldritchKnight => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-    case c: Champion       => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-    case c: Fighter        => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-    case _                 => none[ProficiencyBonus]
-  } { profBonus =>
-    {
-      case c: BattleMaster   => BattleMaster._proficiencyBonus.set(profBonus)(c)
-      case c: EldritchKnight => EldritchKnight._proficiencyBonus.set(profBonus)(c)
-      case c: Champion       => Champion._proficiencyBonus.set(profBonus)(c)
-      case c: Fighter        => Fighter._proficiencyBonus.set(profBonus)(c)
-      case c: Creature       => c
+  val creatureProficiencyBonusOptional: Optional[Creature, ProficiencyBonus] =
+    Optional[Creature, ProficiencyBonus] {
+      case c: BattleMaster   => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
+      case c: EldritchKnight => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
+      case c: Champion       => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
+      case c: Fighter        => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
+      case _                 => none[ProficiencyBonus]
+    } { profBonus =>
+      {
+        case c: BattleMaster   => BattleMaster._proficiencyBonus.set(profBonus)(c)
+        case c: EldritchKnight => EldritchKnight._proficiencyBonus.set(profBonus)(c)
+        case c: Champion       => Champion._proficiencyBonus.set(profBonus)(c)
+        case c: Fighter        => Fighter._proficiencyBonus.set(profBonus)(c)
+        case c: Creature       => c
+      }
     }
-  }
 
-  val creatureResistancesLens: Lens[Creature, List[DamageType]] = Lens[Creature, List[DamageType]](_.resistances) {
-    res =>
+  val creatureResistancesLens: Lens[Creature, List[DamageType]] =
+    Lens[Creature, List[DamageType]](_.resistances) { res =>
       {
         case c: BattleMaster   => BattleMaster._resistances.set(res)(c)
         case c: EldritchKnight => EldritchKnight._resistances.set(res)(c)
@@ -231,19 +238,20 @@ object Creature {
         case c: Goblin   => Goblin._resistances.set(res)(c)
         case c: Werewolf => Werewolf._resistances.set(res)(c)
       }
-  }
-
-  val creatureImmunitiesLens: Lens[Creature, List[DamageType]] = Lens[Creature, List[DamageType]](_.immunities) { res =>
-    {
-      case c: BattleMaster   => BattleMaster._immunities.set(res)(c)
-      case c: EldritchKnight => EldritchKnight._immunities.set(res)(c)
-      case c: Champion       => Champion._immunities.set(res)(c)
-      case c: Fighter        => Fighter._immunities.set(res)(c)
-
-      case c: Goblin   => Goblin._immunities.set(res)(c)
-      case c: Werewolf => Werewolf._immunities.set(res)(c)
     }
-  }
+
+  val creatureImmunitiesLens: Lens[Creature, List[DamageType]] =
+    Lens[Creature, List[DamageType]](_.immunities) { res =>
+      {
+        case c: BattleMaster   => BattleMaster._immunities.set(res)(c)
+        case c: EldritchKnight => EldritchKnight._immunities.set(res)(c)
+        case c: Champion       => Champion._immunities.set(res)(c)
+        case c: Fighter        => Fighter._immunities.set(res)(c)
+
+        case c: Goblin   => Goblin._immunities.set(res)(c)
+        case c: Werewolf => Werewolf._immunities.set(res)(c)
+      }
+    }
 
   val creatureAbilitiesLens: Lens[Creature, List[CombatantAbility]] =
     Lens[Creature, List[CombatantAbility]](_.abilities) { res =>

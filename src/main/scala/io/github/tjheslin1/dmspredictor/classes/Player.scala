@@ -12,12 +12,13 @@ trait Player extends Creature {
 
 object Player {
 
-  val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) { bonusUsed =>
-    {
-      case c: BattleMaster   => BattleMaster._bonusActionUsed.set(bonusUsed)(c)
-      case c: EldritchKnight => EldritchKnight._bonusActionUsed.set(bonusUsed)(c)
-      case c: Champion       => Champion._bonusActionUsed.set(bonusUsed)(c)
-      case c: Fighter        => Fighter._bonusActionUsed.set(bonusUsed)(c)
-    }
+  val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
+    bonusUsed =>
+      {
+        case c: BattleMaster   => BattleMaster._bonusActionUsed.set(bonusUsed)(c)
+        case c: EldritchKnight => EldritchKnight._bonusActionUsed.set(bonusUsed)(c)
+        case c: Champion       => Champion._bonusActionUsed.set(bonusUsed)(c)
+        case c: Fighter        => Fighter._bonusActionUsed.set(bonusUsed)(c)
+      }
   }
 }

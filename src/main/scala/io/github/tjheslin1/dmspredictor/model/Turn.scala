@@ -7,7 +7,8 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
-class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrategy) extends LazyLogging {
+class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrategy)
+    extends LazyLogging {
 
   val initiativeOrder: Queue[Combatant] =
     Queue[Combatant](
@@ -22,14 +23,12 @@ class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrateg
   def run(focus: Focus): Queue[Combatant] = {
 
     @tailrec
-    def nextCombatant(queue: Queue[Combatant], combatantMovesLeft: Int): Queue[Combatant] = {
-
+    def nextCombatant(queue: Queue[Combatant], combatantMovesLeft: Int): Queue[Combatant] =
       if (combatantMovesLeft <= 0) queue
       else {
         val nextTurnQueue = takeMove(queue, focus)
         nextCombatant(nextTurnQueue, combatantMovesLeft - 1)
       }
-    }
 
     nextCombatant(initiativeOrder, initiatives.size)
   }
