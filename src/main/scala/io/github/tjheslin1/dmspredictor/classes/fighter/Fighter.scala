@@ -38,8 +38,6 @@ import monocle.macros.{GenLens, Lenses}
 
   import Fighter._
 
-  val creatureType: CreatureType = PlayerCharacter
-
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
@@ -101,9 +99,10 @@ object Fighter {
                                    fightingStyles: List[FighterFightingStyle]): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
     val shieldBonus = offHand match {
-      case Some(Shield()) => 2
-      case _              => 0
+      case Some(Shield) => Shield.armourClass(stats.dexterity)
+      case _            => 0
     }
+
     val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
 
     armour match {

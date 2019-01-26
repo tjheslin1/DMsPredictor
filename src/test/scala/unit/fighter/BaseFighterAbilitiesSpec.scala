@@ -1,4 +1,4 @@
-package unit
+package unit.fighter
 
 import base.UnitSpecBase
 import cats.syntax.option._

@@ -1,4 +1,4 @@
-package unit
+package unit.fighter
 
 import base.UnitSpecBase
 import cats.syntax.option._
@@ -24,7 +24,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     import BattleMaster._
 
     "spend available superiority dice to use disarming attack" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(19)
+      override implicit val roll: RollStrategy = _ => RollResult(19)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = battleMaster
@@ -43,7 +43,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     }
 
     "disarm opponent permanently using Disarming Attack" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = battleMaster
@@ -63,7 +63,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     }
 
     "use all available superiority dice during turn" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = _abilityUsages

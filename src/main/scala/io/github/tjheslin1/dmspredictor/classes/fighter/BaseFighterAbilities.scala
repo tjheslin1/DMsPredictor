@@ -49,7 +49,6 @@ object BaseFighterAbilities {
     def update: Creature =
       (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
         .set(true)(baseFighter)
-        .asInstanceOf[Creature]
   }
 
   def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {

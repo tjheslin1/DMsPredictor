@@ -1,13 +1,15 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.model.{Creature, Level}
+import io.github.tjheslin1.dmspredictor.model.{Creature, CreatureType, Level, PlayerCharacter}
 import monocle.Lens
 
 trait Player extends Creature {
 
   val level: Level
   val bonusActionUsed: Boolean
+
+  val creatureType: CreatureType = PlayerCharacter
 }
 
 object Player {

@@ -33,8 +33,6 @@ import monocle.macros.{GenLens, Lenses}
 
   import Fighter._
 
-  val creatureType: CreatureType = PlayerCharacter
-
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
