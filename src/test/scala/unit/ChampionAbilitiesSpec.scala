@@ -16,32 +16,35 @@ class ChampionAbilitiesSpec extends UnitSpecBase {
 
     import Champion._
 
-    "make 2 attacks using Action Surge to make two Attack actions" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(19)
+    "make 2 attacks using Action Surge to make two Attack actions" in {
 
       forAll { (champion: Champion, testMonster: TestMonster) =>
-        var swordUsedCount = 0
-        val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-          swordUsedCount += 1
-          1
-        })
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
-        val swordFighter = _abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(champion)
-          .withLevel(LevelTwo)
-          .withBaseWeapon(trackedSword)
-          .withCombatIndex(1)
+          val swordFighter = _abilityUsages
+            .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(champion)
+            .withLevel(LevelTwo)
+            .withBaseWeapon(trackedSword)
+            .withCombatIndex(1)
 
-        val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-        Move.takeMove(Queue(swordFighter, monster), LowestFirst)
+          Move.takeMove(Queue(swordFighter, monster), LowestFirst)
 
-        swordUsedCount shouldBe 2
+          swordUsedCount shouldBe 2
+        }
       }
     }
   }
 
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+    var swordUsedCount = 0
+    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+      swordUsedCount += 1
+      1
+    })
   }
 }

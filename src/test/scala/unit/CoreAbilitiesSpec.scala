@@ -1,54 +1,38 @@
 package unit
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
 
-import scala.collection.immutable.Queue
-
 class CoreAbilitiesSpec extends UnitSpecBase {
 
+  val Priority = 1
+
   "Extra Attack" should {
-    "delegate to an ability lower in the order which can be used during an Attack" in {
+
+    "make two weapon attacks" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedAbilityFighter = fighter
-            .withAllAbilitiesUsed()
-            .withAbilities(List(extraAttack(1), trackedActionAbility(2), trackedAttackAbility(3)))
+          val swordedFighter = fighter
+            .withBaseWeapon(trackedSword)
+            .withAbilities(List(extraAttack(Priority)))
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
-          Move.takeMove(Queue(trackedAbilityFighter, testMonster.withArmourClass(5).withCombatIndex(2)), LowestFirst)
+          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-          trackedAttackUsedCount shouldBe 2
-          trackedActionAbilityUsedCount shouldBe 0
-        }
-      }
-    }
+          extraAttack(Priority)(swordedFighter)
+            .useAbility(monster.some)
 
-    "delegate to an ability lower in the order then default to an attack" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
-
-          val trackedAbilityFighter = fighter
-            .withAllAbilitiesUsed()
-            .withAbilities(List(extraAttack(1), trackedActionAbility(2), singleUseAttackAbility(3)))
-            .withLevel(LevelFive)
-            .withCombatIndex(1)
-
-          Move.takeMove(Queue(trackedAbilityFighter, testMonster.withArmourClass(5).withCombatIndex(2)), LowestFirst)
-
-          trackedAttackUsedCount shouldBe 1
-          trackedActionAbilityUsedCount shouldBe 0
+          swordUsedCount shouldBe 2
         }
       }
     }
@@ -56,35 +40,54 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "set the Player's Bonus Action used to true" in {
       forAll { fighter: Fighter =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val updatedPlayer = extraAttack(1)(fighter.withCombatIndex(1)).update.asInstanceOf[Player]
+          val updatedPlayer =
+            extraAttack(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[Player]
 
           updatedPlayer.bonusActionUsed shouldBe true
         }
       }
     }
 
-    "make two weapon attacks where no other abilities are available" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(19)
-
+    "delegate to an ability lower in the order which can be used during an Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        var swordUsedCount = 0
-        val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-          swordUsedCount += 1
-          1
-        })
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
-        val swordedFighter = fighter
-          .withAllAbilitiesUsed()
-          .withBaseWeapon(trackedSword)
-          .withAbilities(List(extraAttack(1)))
-          .withLevel(LevelFive)
-          .withCombatIndex(1)
+          val trackedAbilityFighter = fighter
+            .withAbilities(
+              List(extraAttack(Priority), trackedActionAbility(2), trackedAttackAbility(3)))
+            .withLevel(LevelFive)
+            .withCombatIndex(1)
 
-        Move.takeMove(Queue(swordedFighter, testMonster.withArmourClass(5).withCombatIndex(2)), LowestFirst)
+          extraAttack(Priority)(trackedAbilityFighter)
+            .useAbility(testMonster.withArmourClass(5).withCombatIndex(2).some)
 
-        swordUsedCount shouldBe 2
+          trackedAttackUsedCount shouldBe 2
+          trackedActionAbilityUsedCount shouldBe 0
+        }
+      }
+    }
+
+    "delegate to an ability lower in order then default to an attack" in {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedAbilityFighter = fighter
+            .withAbilities(
+              List(extraAttack(Priority), trackedActionAbility(2), singleUseAttackAbility(3)))
+            .withLevel(LevelFive)
+            .withCombatIndex(1)
+
+          val monster: Combatant = testMonster.withArmourClass(5).withCombatIndex(2)
+
+          extraAttack(Priority)(trackedAbilityFighter).useAbility(monster.some)
+
+          trackedAttackUsedCount shouldBe 1
+          trackedActionAbilityUsedCount shouldBe 0
+        }
       }
     }
   }
@@ -92,8 +95,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-    var trackedAttackUsedCount = 0
+    var swordUsedCount = 0
+    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+      swordUsedCount += 1
+      1
+    })
 
+    var trackedAttackUsedCount = 0
     def trackedAttackAbility(currentOrder: Int)(combatant: Combatant): Ability =
       new Ability(combatant) {
         val name: String     = "test-tracked-ability-single-attack"
@@ -109,13 +117,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           (combatant, target)
         }
 
-        def update: Creature = {
+        def update: Creature =
           combatant.creature
-        }
       }
 
     var singleUseAttackAbilityUsed = false
-
     def singleUseAttackAbility(currentOrder: Int)(combatant: Combatant): Ability =
       new Ability(combatant) {
         val name: String     = "test-tracked-ability-single-use"
@@ -139,25 +145,25 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
     var trackedActionAbilityUsedCount = 0
     var trackedActionAbilityUsed      = false
+    def trackedActionAbility(currentOrder: Int)(combatant: Combatant): Ability =
+      new Ability(combatant) {
+        val name: String     = "test-tracked-ability-action"
+        val order            = currentOrder
+        val levelRequirement = LevelOne
+        val abilityAction    = WholeAction
 
-    def trackedActionAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String     = "test-tracked-ability-action"
-      val order            = currentOrder
-      val levelRequirement = LevelOne
-      val abilityAction    = WholeAction
+        val triggerMet: Boolean   = true
+        def conditionMet: Boolean = trackedActionAbilityUsed == false
 
-      val triggerMet: Boolean   = true
-      def conditionMet: Boolean = trackedActionAbilityUsed == false
+        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+          trackedActionAbilityUsedCount += 1
+          (combatant, target)
+        }
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-        trackedActionAbilityUsedCount += 1
-        (combatant, target)
+        def update: Creature = {
+          trackedActionAbilityUsed = true
+          combatant.creature
+        }
       }
-
-      def update: Creature = {
-        trackedActionAbilityUsed = true
-        combatant.creature
-      }
-    }
   }
 }

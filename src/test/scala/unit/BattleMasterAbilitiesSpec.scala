@@ -1,8 +1,8 @@
 package unit
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.BattleMasterAbilities.disarmingAttackManeuver
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
@@ -17,12 +17,14 @@ import scala.collection.immutable.Queue
 
 class BattleMasterAbilitiesSpec extends UnitSpecBase {
 
-  "BattleMaster" should {
+  val Priority = 1
+
+  "Disarming Attack Maneuver" should {
 
     import BattleMaster._
 
     "spend available superiority dice to use disarming attack" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(19)
+      implicit override val roll: RollStrategy = _ => RollResult(19)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = battleMaster
@@ -41,7 +43,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     }
 
     "disarm opponent permanently using Disarming Attack" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = battleMaster
@@ -53,15 +55,15 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
 
         val monster = goblin.withArmourClass(5).withStrength(1).withCombatIndex(2)
 
-        val Queue(Combatant(_, updatedMonster: Creature), _) =
-          Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
+        val (_, Some(Combatant(_, updatedMonster: Creature))) =
+          disarmingAttackManeuver(Priority)(battleMasterCombatant).useAbility(monster.some)
 
         updatedMonster.baseWeapon.name shouldBe UnarmedStrike(updatedMonster).name
       }
     }
 
     "use all available superiority dice during turn" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = _abilityUsages
@@ -87,7 +89,6 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
 
     var trackedAbilityUsedCount = 0
     var trackedAbilityUsed      = false
-
     def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
       val name: String     = "test-tracked-ability-one"
       val order            = currentOrder

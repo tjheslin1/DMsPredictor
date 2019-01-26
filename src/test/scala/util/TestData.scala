@@ -83,11 +83,13 @@ object TestData {
     def withNoArmour()  = creatureArmourLens.set(NoArmour)(creature)
     def withNoOffHand() = creatureOffHandLens.set(none[Equipment])(creature)
 
-    def withResistance(creatureRes: DamageType*) = creatureResistancesLens.set(creatureRes.toList)(creature)
-    def withImmunity(creatureImm: DamageType*)   = creatureImmunitiesLens.set(creatureImm.toList)(creature)
-    def withNoResistances()                      = creatureResistancesLens.set(List.empty)(creature)
-    def withNoImmunities()                       = creatureImmunitiesLens.set(List.empty)(creature)
-    def withNoResistancesOrImmunities()          = creature.withNoResistances().withNoImmunities()
+    def withResistance(creatureRes: DamageType*) =
+      creatureResistancesLens.set(creatureRes.toList)(creature)
+    def withImmunity(creatureImm: DamageType*) =
+      creatureImmunitiesLens.set(creatureImm.toList)(creature)
+    def withNoResistances()             = creatureResistancesLens.set(List.empty)(creature)
+    def withNoImmunities()              = creatureImmunitiesLens.set(List.empty)(creature)
+    def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
@@ -96,9 +98,10 @@ object TestData {
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
     import Fighter._
 
-    def withFightingStyle(fightingStyle: FighterFightingStyle) = _fightingStyles.set(List(fightingStyle))(fighter)
-    def withAllAbilitiesUnused()                               = _abilityUsages.set(BaseFighterAbilities(false, false))(fighter)
-    def withAllAbilitiesUsed()                                 = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
+    def withFightingStyle(fightingStyle: FighterFightingStyle) =
+      _fightingStyles.set(List(fightingStyle))(fighter)
+    def withAllAbilitiesUnused() = _abilityUsages.set(BaseFighterAbilities(false, false))(fighter)
+    def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
   }
@@ -115,12 +118,16 @@ object TestData {
 
     def withFightingStyle(fightingStyle: FighterFightingStyle) =
       _fightingStyles.set(List(fightingStyle))(eldritchKnight)
-    def withAllAbilitiesUnused()          = _abilityUsages.set(BaseFighterAbilities(false, false))(eldritchKnight)
-    def withAllBaseFighterAbilitiesUsed() = _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
+    def withAllAbilitiesUnused() =
+      _abilityUsages.set(BaseFighterAbilities(false, false))(eldritchKnight)
+    def withAllBaseFighterAbilitiesUsed() =
+      _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
 
-    def withSpell(spell: Spell)      = _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
-    def withAllSpellSlotsAvailable() = _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
-    def withNoSpellSlotsAvailable()  = _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
+    def withSpell(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
+    def withAllSpellSlotsAvailable() =
+      _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
+    def withNoSpellSlotsAvailable() =
+      _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
   }
 }
 
@@ -215,7 +222,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
-      lvl <- arbLevel.arbitrary
+      lvl      <- arbLevel.arbitrary
       creature <- arbCreature.arbitrary
     } yield
       new Player {
@@ -223,21 +230,21 @@ trait TestData extends RandomDataGenerator {
         val bonusActionUsed: Boolean = false
 
         val creatureType: CreatureType = creature.creatureType
-        val health: Int = creature.health
-        val maxHealth: Int = creature.maxHealth
-        val stats: BaseStats = creature.stats
-        val baseWeapon: Weapon = creature.baseWeapon
+        val health: Int                = creature.health
+        val maxHealth: Int             = creature.maxHealth
+        val stats: BaseStats           = creature.stats
+        val baseWeapon: Weapon         = creature.baseWeapon
 
         def weapon[_: RS]: Weapon = creature.weapon
 
-        val armour: Armour = creature.armour
-        val offHand: Option[Equipment] = creature.offHand
-        val armourClass: Int = creature.armourClass
+        val armour: Armour                     = creature.armour
+        val offHand: Option[Equipment]         = creature.offHand
+        val armourClass: Int                   = creature.armourClass
         val proficiencyBonus: ProficiencyBonus = creature.proficiencyBonus
-        val resistances: List[DamageType] = creature.resistances
-        val immunities: List[DamageType] = creature.immunities
-        val name: String = creature.name
-        val abilities: List[CombatantAbility] = creature.abilities
+        val resistances: List[DamageType]      = creature.resistances
+        val immunities: List[DamageType]       = creature.immunities
+        val name: String                       = creature.name
+        val abilities: List[CombatantAbility]  = creature.abilities
 
         def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
 
@@ -280,7 +287,8 @@ trait TestData extends RandomDataGenerator {
         val abilities: List[CombatantAbility] = standardCoreAbilities
 
         def updateHealth(modification: Int): Creature =
-          throw new NotImplementedError("Impossible to implement, results in recursive definition of Creature")
+          throw new NotImplementedError(
+            "Impossible to implement, results in recursive definition of Creature")
 
         def scoresCritical(roll: Int): Boolean = roll == 20
       }

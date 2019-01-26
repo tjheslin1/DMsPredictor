@@ -36,7 +36,7 @@ object BaseFighterAbilities {
     def conditionMet =
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](targetIgnored: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val updatedHealth =
         Math.min(combatant.creature.maxHealth,
                  combatant.creature.health + (1 * HitDice) + baseFighter.level.value)
