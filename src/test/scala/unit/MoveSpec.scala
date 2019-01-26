@@ -24,6 +24,27 @@ class MoveSpec extends UnitSpecBase {
       }
     }
 
+    "reset player's bonus action to unused" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val queue =
+          Queue(fighter.withBonusActionUsed().withCombatIndex(1), monster.withCombatIndex(2))
+
+        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+        updatedFighter.bonusActionUsed shouldBe false
+      }
+    }
+
+    "reset unconscious creatures bonus action to unused" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
+
+        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+        updatedFighter.bonusActionUsed shouldBe false
+      }
+    }
+
     "update head enemy after attack" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
@@ -36,15 +57,17 @@ class MoveSpec extends UnitSpecBase {
 
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player   = Fighter._abilityUsages.set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
-          .withStrength(10).withCombatIndex(1)
+        val player = Fighter._abilityUsages
+          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+          .withStrength(10)
+          .withCombatIndex(1)
 
         val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
         val enemyTwo = monsterTwo.withHealth(1).withCombatIndex(3)
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
-        val Queue(_, Combatant(_, updatedEnemyTwo), _) = takeMove(queue, LowestFirst  )(D20.naturalTwenty)
+        val Queue(_, Combatant(_, updatedEnemyTwo), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
 
         updatedEnemyTwo.health shouldBe 0
       }
@@ -52,8 +75,10 @@ class MoveSpec extends UnitSpecBase {
 
     "focus mob with lowest health first" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
-        val player     = Fighter._abilityUsages.set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
-          .withStrength(10).withCombatIndex(1)
+        val player = Fighter._abilityUsages
+          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
+          .withStrength(10)
+          .withCombatIndex(1)
 
         val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
         val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)

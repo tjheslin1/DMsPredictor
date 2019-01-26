@@ -27,10 +27,10 @@ import monocle.macros.{GenLens, Lenses}
                                      proficiencyBonus: ProficiencyBonus = 0,
                                      resistances: List[DamageType] = List.empty,
                                      immunities: List[DamageType] = List.empty,
+                                     bonusActionUsed: Boolean = false,
                                      abilities: List[CombatantAbility] = standardBattleMasterAbilities,
                                      name: String = NameGenerator.randomName)
-    extends Creature
-    with BaseFighter {
+    extends BaseFighter {
 
   import Fighter._
 

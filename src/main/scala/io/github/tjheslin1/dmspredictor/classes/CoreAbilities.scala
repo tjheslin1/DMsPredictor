@@ -25,13 +25,13 @@ object CoreAbilities {
     val abilityAction    = SingleAttack
 
     val triggerMet: Boolean   = true
-    val conditionMet: Boolean = player.level >= levelRequirement
+    def conditionMet: Boolean = player.level >= levelRequirement && player.bonusActionUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
-          nextAbilityToUseInConjunction(combatant, order, NonEmptyList.of(MultiAttack, SingleAttack))
+          nextAbilityToUseInConjunction(combatant, order, NonEmptyList.of(BonusAction, SingleAttack))
             .fold {
               val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
               (updatedAttacker, updatedTarget.some)
@@ -50,6 +50,7 @@ object CoreAbilities {
             }
       }
 
-    def update: Creature = combatant.creature
+    def update: Creature =
+      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens).set(true)(combatant).creature
   }
 }

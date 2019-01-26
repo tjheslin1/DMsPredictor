@@ -30,10 +30,10 @@ import monocle.macros.{GenLens, Lenses}
                                 proficiencyBonus: ProficiencyBonus = 0,
                                 resistances: List[DamageType] = List.empty,
                                 immunities: List[DamageType] = List.empty,
+                                bonusActionUsed: Boolean = false,
                                 abilities: List[CombatantAbility] = standardFighterAbilities,
                                 name: String = NameGenerator.randomName)
-    extends Creature
-    with BaseFighter {
+    extends BaseFighter {
 
   import Fighter._
 
@@ -119,12 +119,3 @@ object Fighter {
   val intelligenceLens: Lens[Fighter, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Fighter, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 }
-
-sealed trait FighterFightingStyle extends Product with Serializable
-
-case object Archery             extends FighterFightingStyle
-case object Defense             extends FighterFightingStyle
-case object Dueling             extends FighterFightingStyle
-case object GreatWeaponFighting extends FighterFightingStyle
-case object Protection          extends FighterFightingStyle
-case object TwoWeaponFighting   extends FighterFightingStyle

@@ -49,9 +49,10 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
         val monster = testMonster.withCombatIndex(2)
 
-        val Queue(_, Combatant(_, updatedFighter)) = Move.takeMove(Queue(lowHealthFighter, monster), LowestFirst)
+        val Queue(_, Combatant(_, updatedFighter: Fighter)) = Move.takeMove(Queue(lowHealthFighter, monster), LowestFirst)
 
         updatedFighter.health should (be > 1 and be <= 5)
+        updatedFighter.abilityUsages.secondWindUsed shouldBe true
       }
     }
 

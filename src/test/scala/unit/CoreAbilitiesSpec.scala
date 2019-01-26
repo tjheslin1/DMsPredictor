@@ -2,6 +2,7 @@ package unit
 
 import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -52,6 +53,18 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the Player's Bonus Action used to true" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val updatedPlayer = extraAttack(1)(fighter.withCombatIndex(1)).update.asInstanceOf[Player]
+
+          updatedPlayer.bonusActionUsed shouldBe true
+        }
+      }
+    }
+
     "make two weapon attacks where no other abilities are available" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(19)
 
@@ -96,10 +109,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           (combatant, target)
         }
 
-      def update: Creature = {
-        combatant.creature
+        def update: Creature = {
+          combatant.creature
+        }
       }
-    }
 
     var singleUseAttackAbilityUsed = false
 
@@ -118,11 +131,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           (combatant, target)
         }
 
-      def update: Creature = {
-        singleUseAttackAbilityUsed = true
-        combatant.creature
+        def update: Creature = {
+          singleUseAttackAbilityUsed = true
+          combatant.creature
+        }
       }
-    }
 
     var trackedActionAbilityUsedCount = 0
     var trackedActionAbilityUsed      = false
