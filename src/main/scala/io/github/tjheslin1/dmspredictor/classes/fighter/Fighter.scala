@@ -33,6 +33,8 @@ import monocle.macros.{GenLens, Lenses}
                                 immunities: List[DamageType] = List.empty,
                                 bonusActionUsed: Boolean = false,
                                 abilities: List[CombatantAbility] = standardFighterAbilities,
+                                attackStatus: AttackStatus = Regular,
+                                defenseStatus: AttackStatus = Regular,
                                 name: String = NameGenerator.randomName)
     extends BaseFighter {
 

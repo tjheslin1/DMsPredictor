@@ -4,7 +4,8 @@ import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
-import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
+import io.github.tjheslin1.dmspredictor.equipment.armour._
+import io.github.tjheslin1.dmspredictor.model
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
@@ -25,8 +26,11 @@ import monocle.macros.{GenLens, Lenses}
                                   resistances: List[DamageType] = List.empty,
                                   immunities: List[DamageType] = List.empty,
                                   bonusActionUsed: Boolean = false,
-                                  abilities: List[CombatantAbility] = List.empty,
+                                  abilities: List[CombatantAbility] = standardBarbarianAbilities,
+                                  attackStatus: AttackStatus = Regular,
+                                  defenseStatus: AttackStatus = Regular,
                                   inRage: Boolean = false,
+                                  rageTurnsLeft: Int = 10,
                                   name: String = NameGenerator.randomName)
     extends BaseBarbarian {
 
@@ -41,6 +45,8 @@ import monocle.macros.{GenLens, Lenses}
 
 object Barbarian {
 
+  import BaseBarbarianAbilities._
+
   val HitDice = D12
 
   val rageUsagesPerLevel: Map[Level, Int] = Map(
@@ -49,6 +55,10 @@ object Barbarian {
     LevelThree -> 3,
     LevelFour -> 3,
     LevelFive -> 3
+  )
+
+  val standardBarbarianAbilities: List[CombatantAbility] = List(
+    rage(1)
   )
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
@@ -74,7 +84,7 @@ object Barbarian {
     }
 
     armour match {
-      case NoArmour => baseArmourClass + mod(stats.constitution) + shieldBonus
+      case NoArmour => baseArmourClass + mod(stats.constitution) + shieldBonus // Unarmoured Defense
       case _        => baseArmourClass + shieldBonus
     }
   }

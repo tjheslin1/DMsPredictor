@@ -1,7 +1,8 @@
 package io.github.tjheslin1.dmspredictor.classes
 
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.model.{Creature, CreatureType, Level, PlayerCharacter}
+import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
 trait Player extends Creature {
@@ -21,6 +22,8 @@ object Player {
         case c: EldritchKnight => EldritchKnight._bonusActionUsed.set(bonusUsed)(c)
         case c: Champion       => Champion._bonusActionUsed.set(bonusUsed)(c)
         case c: Fighter        => Fighter._bonusActionUsed.set(bonusUsed)(c)
+
+        case c: Barbarian => Barbarian._bonusActionUsed.set(bonusUsed)(c)
       }
   }
 }

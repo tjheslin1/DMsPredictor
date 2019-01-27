@@ -85,11 +85,16 @@ object TestData {
     def withNoArmour()  = creatureArmourLens.set(NoArmour)(creature)
     def withNoOffHand() = creatureOffHandLens.set(none[Equipment])(creature)
 
-    def withResistance(creatureRes: DamageType*) = creatureResistancesLens.set(creatureRes.toList)(creature)
-    def withImmunity(creatureImm: DamageType*)   = creatureImmunitiesLens.set(creatureImm.toList)(creature)
-    def withNoResistances()                      = creatureResistancesLens.set(List.empty)(creature)
-    def withNoImmunities()                       = creatureImmunitiesLens.set(List.empty)(creature)
-    def withNoResistancesOrImmunities()          = creature.withNoResistances().withNoImmunities()
+    def withResistance(creatureRes: DamageType*) =
+      creatureResistancesLens.set(creatureRes.toList)(creature)
+    def withImmunity(creatureImm: DamageType*) =
+      creatureImmunitiesLens.set(creatureImm.toList)(creature)
+    def withNoResistances()             = creatureResistancesLens.set(List.empty)(creature)
+    def withNoImmunities()              = creatureImmunitiesLens.set(List.empty)(creature)
+    def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
+
+    def withAttackStatus(attackStatus: AttackStatus) =
+      creatureAttackStatusLens.set(attackStatus)(creature)
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
@@ -134,6 +139,7 @@ object TestData {
     import Barbarian._
 
     def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(barbarian)
+    def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(barbarian)
   }
 }
 
@@ -250,6 +256,8 @@ trait TestData extends RandomDataGenerator {
         val immunities: List[DamageType]       = creature.immunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
+        val attackStatus: AttackStatus =  creature.attackStatus
+        val defenseStatus: AttackStatus =  creature.defenseStatus
 
         def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
 
@@ -290,6 +298,8 @@ trait TestData extends RandomDataGenerator {
         val bonusActionUsed: Boolean          = false
         val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
+        val attackStatus: AttackStatus        = Regular
+        val defenseStatus: AttackStatus        = Regular
 
         def updateHealth(modification: Int): Creature =
           throw new NotImplementedError(
@@ -314,6 +324,8 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?
+        creature.attackStatus,
+        creature.defenseStatus,
         creature.name
       )
   }
@@ -334,6 +346,8 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?
+        creature.attackStatus,
+        creature.defenseStatus,
         creature.name
       )
   }
@@ -363,6 +377,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Fighter.standardFighterAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -390,6 +406,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Champion.standardChampionAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -418,6 +436,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         BattleMaster.standardBattleMasterAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -446,6 +466,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         EldritchKnight.standardEldritchKnightAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -468,9 +490,12 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
-        List.empty, // TODO
+        Barbarian.standardBarbarianAbilities,
         inRage = false,
-        player.name
+        rageTurnsLeft = 10,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
       )
   }
 }

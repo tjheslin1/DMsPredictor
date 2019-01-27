@@ -1,5 +1,9 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
+import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
+import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
+import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 
@@ -16,11 +20,43 @@ object BaseBarbarianAbilities {
     val triggerMet: Boolean   = barbarian.inRage == false
     def conditionMet: Boolean = barbarian.rageUsages > 0
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = ???
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+      (combatant, none[Combatant])
 
     def update: Creature = {
       val updatedRageUsages = barbarian.rageUsages - 1
-      BaseBarbarian.rageUsagesLens.set(updatedRageUsages)(barbarian)
+
+      val updatedBarbarian       = rageUsagesLens.set(updatedRageUsages)(barbarian)
+      val rageTurnsLeftBarbarian = rageTurnsLeftLens.set(10)(updatedBarbarian)
+
+      val resistantBarbarian = creatureResistancesLens
+        .set(List(Bludgeoning, Piercing, Slashing))(rageTurnsLeftBarbarian)
+        .asInstanceOf[BaseBarbarian]
+
+      val bonusActionUsedBarbarian =
+        playerBonusActionUsedLens.set(true)(resistantBarbarian).asInstanceOf[BaseBarbarian]
+
+      inRageLens.set(true)(bonusActionUsedBarbarian)
+    }
+  }
+
+  def recklessAttack(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+    val barbarian = combatant.creature.asInstanceOf[BaseBarbarian]
+
+    val name                         = "Reckless Attack"
+    val order                        = currentOrder
+    val abilityAction: AbilityAction = SingleAttack
+    val levelRequirement: Level      = LevelOne
+
+    val triggerMet: Boolean   = true
+    val conditionMet: Boolean = true
+
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = (combatant, none[Combatant])
+
+    def update: Creature = {
+      val recklessBarbarian = Creature.creatureAttackStatusLens.set(Advantage)(barbarian)
+
+      Creature.creatureDefenseStatusLens.set(Disadvantage)(recklessBarbarian)
     }
   }
 }

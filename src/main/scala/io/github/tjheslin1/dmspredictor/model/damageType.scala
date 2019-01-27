@@ -1,6 +1,6 @@
 package io.github.tjheslin1.dmspredictor.model
 
-sealed trait DamageType
+sealed trait DamageType extends Product with Serializable
 
 case object Bludgeoning extends DamageType
 case object Piercing    extends DamageType

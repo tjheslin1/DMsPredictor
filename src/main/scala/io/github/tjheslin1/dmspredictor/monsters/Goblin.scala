@@ -23,6 +23,8 @@ import monocle.macros.{GenLens, Lenses}
                                resistances: List[DamageType] = List(),
                                immunities: List[DamageType] = List(),
                                abilities: List[CombatantAbility] = List.empty,
+                               attackStatus: AttackStatus = Regular,
+                               defenseStatus: AttackStatus = Regular,
                                name: String = NameGenerator.randomName)
     extends Creature {
 
