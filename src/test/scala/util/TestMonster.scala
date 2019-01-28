@@ -24,6 +24,7 @@ import monocle.macros.{GenLens, Lenses}
                                     abilities: List[CombatantAbility] = List.empty,
                                     attackStatus: AttackStatus = Regular,
                                     defenseStatus: AttackStatus = Regular,
+                                    turnResetTracker: Unit => Unit = () => _,
                                     name: String = NameGenerator.randomName)
     extends Creature {
 
@@ -34,6 +35,11 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
+
+  def turnReset(): Creature = {
+    turnResetTracker()
+    this
+  }
 }
 
 object TestMonster {

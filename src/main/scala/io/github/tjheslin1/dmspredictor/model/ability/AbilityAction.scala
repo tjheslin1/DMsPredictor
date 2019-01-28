@@ -10,4 +10,5 @@ case object SingleAttack extends AbilityAction
 
 object AbilityAction {
   val any = NonEmptyList.of(WholeAction, BonusAction, SingleAttack)
+  val action = NonEmptyList.of(WholeAction, SingleAttack)
 }

@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian.resetStatus
-import io.github.tjheslin1.dmspredictor.model.Creature
+import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
 trait BaseBarbarian extends Player with Product with Serializable {
@@ -16,7 +16,10 @@ trait BaseBarbarian extends Player with Product with Serializable {
 
 object BaseBarbarian {
 
-  def resetStatus(baseBarbarian: BaseBarbarian): BaseBarbarian = ???
+  def resetStatus(baseBarbarian: BaseBarbarian): BaseBarbarian = {
+    val resetAttackStatus = Creature.creatureAttackStatusLens.set(Regular)(baseBarbarian)
+    Creature.creatureDefenseStatusLens.set(Regular)(resetAttackStatus).asInstanceOf[BaseBarbarian]
+  }
 
   val inRageLens: Lens[BaseBarbarian, Boolean] = Lens[BaseBarbarian, Boolean](_.inRage) { rage =>
     {
@@ -30,9 +33,10 @@ object BaseBarbarian {
     }
   }
 
-  val rageTurnsLeftLens: Lens[BaseBarbarian, Int] = Lens[BaseBarbarian, Int](_.rageTurnsLeft) { turnsLeft =>
-    {
-      case b: Barbarian => Barbarian._rageTurnsLeft.set(turnsLeft)(b)
-    }
+  val rageTurnsLeftLens: Lens[BaseBarbarian, Int] = Lens[BaseBarbarian, Int](_.rageTurnsLeft) {
+    turnsLeft =>
+      {
+        case b: Barbarian => Barbarian._rageTurnsLeft.set(turnsLeft)(b)
+      }
   }
 }

@@ -1,6 +1,8 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.syntax.option._
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities.nextAbilityToUseInConjunction
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
@@ -20,13 +22,20 @@ object BaseBarbarianAbilities {
     val triggerMet: Boolean   = barbarian.inRage == false
     def conditionMet: Boolean = barbarian.rageUsages > 0
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
-      (combatant, none[Combatant])
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      val ragingBarbarianCombatant = Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
 
-    def update: Creature = {
-      val updatedRageUsages = barbarian.rageUsages - 1
+      nextAbilityToUseInConjunction(ragingBarbarianCombatant, order, AbilityAction.action).fold{
+        Actions.attackAndDamage()
+      }
+    }
 
-      val updatedBarbarian       = rageUsagesLens.set(updatedRageUsages)(barbarian)
+    def update: Creature = barbarian
+
+    private def updateRagingBarbarian(unragedBarbarian: BaseBarbarian): Creature = {
+      val updatedRageUsages = unragedBarbarian.rageUsages - 1
+
+      val updatedBarbarian       = rageUsagesLens.set(updatedRageUsages)(unragedBarbarian)
       val rageTurnsLeftBarbarian = rageTurnsLeftLens.set(10)(updatedBarbarian)
 
       val resistantBarbarian = creatureResistancesLens

@@ -58,7 +58,8 @@ object Barbarian {
   )
 
   val standardBarbarianAbilities: List[CombatantAbility] = List(
-    rage(1)
+    rage(1),
+    recklessAttack(2)
   )
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =

@@ -36,6 +36,20 @@ class MoveSpec extends UnitSpecBase {
       }
     }
 
+    "call a creature's resetTurn at the beginning of their move" in new TestContext {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        var turnReset = false
+        val monster   = testMonster.withResetTurn(_ => turnReset = true)
+
+        val queue =
+          Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
+
+        takeMove(queue, LowestFirst)
+
+        turnReset shouldBe true
+      }
+    }
+
     "reset unconscious creatures bonus action to unused" in new TestContext {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),

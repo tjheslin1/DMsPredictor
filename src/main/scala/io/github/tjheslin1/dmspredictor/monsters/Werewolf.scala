@@ -36,6 +36,8 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
+
+  def turnReset(): Creature = this
 }
 
 object Werewolf {

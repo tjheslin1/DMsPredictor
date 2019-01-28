@@ -13,7 +13,8 @@ class BaseBarbarianSpec extends UnitSpecBase {
     "reset Reckless Attack attackStatus and DefenseStats at start of turn" in new TestContext {
       val barbarian = random[Barbarian]
 
-      val recklessBarbarian = recklessAttack(1)(barbarian.withCombatIndex(1)).update.asInstanceOf[Barbarian]
+      val recklessBarbarian =
+        recklessAttack(1)(barbarian.withCombatIndex(1)).update.asInstanceOf[Barbarian]
 
       val newTurnBarbarian = resetStatus(recklessBarbarian)
 

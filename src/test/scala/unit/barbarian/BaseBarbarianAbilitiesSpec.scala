@@ -4,20 +4,33 @@ import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, BonusAction, WholeAction}
 import util.TestData._
 
 class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
   val Priority = 1
 
-  "rage" should {
+  "Rage" should {
+
+    "delegate to the next Action ability" in new TestContext {
+      forAll { barbarian: Barbarian =>
+        val trackedBarbarian = barbarian
+          .withAbilities(List(rage(1), trackedBonusAction(2), trackedAbility(3)))
+          .withCombatIndex(1)
+
+        rage(Priority)(trackedBarbarian).update.asInstanceOf[BaseBarbarian]
+
+        trackedAbilityUsedCount shouldBe 1
+      }
+    }
 
     "update the barbarian's number of rages left" in new TestContext {
-      val ragedBarbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
+      val barbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val updatedBarbarian = rage(Priority)(ragedBarbarian).update.asInstanceOf[BaseBarbarian]
+      val ragingBarbarian = rage(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
 
-      updatedBarbarian.rageUsages shouldBe 1
+      ragingBarbarian.rageUsages shouldBe 1
     }
 
     "update the barbarian's inRage to true" in new TestContext {
@@ -77,5 +90,51 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+    var trackedAbilityUsedCount = 0
+    var trackedAbilityUsed      = false
+    def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability =
+      new Ability(combatant) {
+        val name: String     = "test-tracked-ability-one"
+        val order            = currentOrder
+        val levelRequirement = LevelOne
+        val abilityAction    = WholeAction
+
+        val triggerMet: Boolean   = true
+        def conditionMet: Boolean = trackedAbilityUsed == false
+
+        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+          trackedAbilityUsedCount += 1
+          (combatant, target)
+        }
+
+        def update: Creature = {
+          trackedAbilityUsed = true
+          combatant.creature
+        }
+      }
+
+    var trackedBonusActionUsedCount = 0
+    var trackedBonusActionUsed      = false
+    def trackedBonusAction(currentOrder: Int)(combatant: Combatant): Ability =
+      new Ability(combatant) {
+        val name: String     = "test-tracked-ability-one"
+        val order            = currentOrder
+        val levelRequirement = LevelOne
+        val abilityAction    = BonusAction
+
+        val triggerMet: Boolean   = true
+        def conditionMet: Boolean = trackedBonusActionUsed == false
+
+        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+          trackedBonusActionUsedCount += 1
+          (combatant, target)
+        }
+
+        def update: Creature = {
+          trackedBonusActionUsed = true
+          combatant.creature
+        }
+      }
   }
 }

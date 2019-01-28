@@ -56,6 +56,8 @@ object TestData {
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
+    def withResetTurn(reset: Unit => Unit) = _turnResetTracker.set(reset)(testMonster)
+
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
   }
 
@@ -262,6 +264,8 @@ trait TestData extends RandomDataGenerator {
         def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
+
+        def turnReset(): Creature = creature.turnReset()
       }
   }
 
@@ -306,6 +310,9 @@ trait TestData extends RandomDataGenerator {
             "Impossible to implement, results in recursive definition of Creature")
 
         def scoresCritical(roll: Int): Boolean = roll == 20
+
+        def turnReset(): Creature = throw new NotImplementedError(
+          "Random generate should delegate to classes turnReset")
       }
   }
 
@@ -348,6 +355,7 @@ trait TestData extends RandomDataGenerator {
         List.empty, // TODO add core abilities?
         creature.attackStatus,
         creature.defenseStatus,
+        turnResetTracker = () => _,
         creature.name
       )
   }

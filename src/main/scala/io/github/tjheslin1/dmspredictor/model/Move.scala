@@ -16,21 +16,24 @@ object Move {
     val (unactedCombatant, others) = queue.dequeue
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
+    val resetUnactedCombatant =
+      Combatant.creatureLens.set(unactedCombatant.creature.turnReset())(unactedCombatant)
+
     if (unactedCombatant.creature.isConscious) {
 
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
       val optAbility: Option[CombatantAbility] =
-        unactedCombatant.creature.abilities.sortBy(_(unactedCombatant).order).find {
+        resetUnactedCombatant.creature.abilities.sortBy(_(resetUnactedCombatant).order).find {
           combatantAbility =>
-            val ability = combatantAbility(unactedCombatant)
+            val ability = combatantAbility(resetUnactedCombatant)
             ability.conditionMet && ability.triggerMet
         }
 
-      val (actedCombatant, updatedTarget) = unactedCombatant.creature.creatureType match {
-        case PlayerCharacter => actionAgainstTarget(unactedCombatant, mobToAttack, optAbility)
-        case Monster         => actionAgainstTarget(unactedCombatant, pcToAttack, optAbility)
+      val (actedCombatant, updatedTarget) = resetUnactedCombatant.creature.creatureType match {
+        case PlayerCharacter => actionAgainstTarget(resetUnactedCombatant, mobToAttack, optAbility)
+        case Monster         => actionAgainstTarget(resetUnactedCombatant, pcToAttack, optAbility)
       }
 
       val updatedCombatant =
@@ -44,7 +47,7 @@ object Move {
     } else {
       val updatedCombatant =
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-          .set(false)(unactedCombatant)
+          .set(false)(resetUnactedCombatant)
       others.append(updatedCombatant)
     }
   }
