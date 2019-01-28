@@ -12,6 +12,14 @@ sealed trait Dice {
 
   def roll(times: Int = 1)(implicit rollStrategy: RollStrategy): Int =
     (1 to times).map(_ => rollStrategy(sides)).sum
+
+  def rollWithAdvantage[_: RS](times: Int = 1): Int = {
+    (1 to times).map(_ => Math.max(roll(), roll())).sum
+  }
+
+  def rollWithDisadvantage[_: RS](times: Int = 1): Int = {
+    (1 to times).map(_ => Math.min(roll(), roll())).sum
+  }
 }
 
 object Dice {

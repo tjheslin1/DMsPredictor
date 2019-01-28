@@ -1,11 +1,14 @@
 package unit.barbarian
 
 import base.UnitSpecBase
+import cats.syntax.option._
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, BonusAction, WholeAction}
 import util.TestData._
+import util.TestMonster
 
 class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
@@ -14,21 +17,26 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
   "Rage" should {
 
     "delegate to the next Action ability" in new TestContext {
-      forAll { barbarian: Barbarian =>
+      forAll { (barbarian: Barbarian, testMonster: TestMonster) =>
         val trackedBarbarian = barbarian
           .withAbilities(List(rage(1), trackedBonusAction(2), trackedAbility(3)))
           .withCombatIndex(1)
 
-        rage(Priority)(trackedBarbarian).update.asInstanceOf[BaseBarbarian]
+        val monster = testMonster.withCombatIndex(2)
+
+        rage(Priority)(trackedBarbarian).useAbility(monster.some)
 
         trackedAbilityUsedCount shouldBe 1
       }
     }
 
+    "increase the Barbarian's wepaon damage" in new TestContext {}
+
     "update the barbarian's number of rages left" in new TestContext {
       val barbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val ragingBarbarian = rage(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, ragingBarbarian: Barbarian), _) =
+        rage(Priority)(barbarian).useAbility(none[Combatant])
 
       ragingBarbarian.rageUsages shouldBe 1
     }
@@ -36,9 +44,10 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     "update the barbarian's inRage to true" in new TestContext {
       val ragedBarbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val updatedBarbarian = rage(Priority)(ragedBarbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, ragingBarbarian: Barbarian), _) =
+        rage(Priority)(ragedBarbarian).useAbility(none[Combatant])
 
-      updatedBarbarian.inRage shouldBe true
+      ragingBarbarian.inRage shouldBe true
     }
 
     "reset the rage turns count back to 10" in new TestContext {
@@ -47,7 +56,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
         .withRageTurnsLeft(5)
         .withCombatIndex(1)
 
-      val ragingBarbarian = rage(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, ragingBarbarian: Barbarian), _) =
+        rage(Priority)(barbarian).useAbility(none[Combatant])
 
       ragingBarbarian.rageTurnsLeft shouldBe 10
     }
@@ -55,7 +65,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     "add resistance to Bludgeoning, Piercing and Slashing damage" in new TestContext {
       val barbarian = random[Barbarian].withNoResistancesOrImmunities().withCombatIndex(1)
 
-      val ragingBarbarian = rage(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, ragingBarbarian: Barbarian), _) =
+        rage(Priority)(barbarian).useAbility(none[Combatant])
 
       ragingBarbarian.resistances shouldBe List(Bludgeoning, Piercing, Slashing)
     }
@@ -63,7 +74,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     "use the Barbarian's bonus action" in new TestContext {
       val barbarian = random[Barbarian].withCombatIndex(1)
 
-      val ragingBarbarian = rage(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, ragingBarbarian: Barbarian), _) =
+        rage(Priority)(barbarian).useAbility(none[Combatant])
 
       ragingBarbarian.bonusActionUsed shouldBe true
     }
@@ -74,7 +86,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     "set the Barbarian's attackStatus to Advantage" in new TestContext {
       val barbarian = random[Barbarian].withCombatIndex(1)
 
-      val recklessBarbarian = recklessAttack(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, recklessBarbarian: Barbarian), _) =
+        recklessAttack(Priority)(barbarian).useAbility(none[Combatant])
 
       recklessBarbarian.attackStatus shouldBe Advantage
     }
@@ -82,14 +95,42 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     "set the Barbarian's defenseStatus to Disadvantage" in new TestContext {
       val barbarian = random[Barbarian].withCombatIndex(1)
 
-      val recklessBarbarian = recklessAttack(Priority)(barbarian).update.asInstanceOf[BaseBarbarian]
+      val (Combatant(_, recklessBarbarian: Barbarian), _) =
+        recklessAttack(Priority)(barbarian).useAbility(none[Combatant])
 
       recklessBarbarian.defenseStatus shouldBe Disadvantage
+    }
+
+    "always use a regular attack after RecklessAttack" in {
+      forAll { (barbarian: Barbarian, testMonster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedBarbarian = barbarian
+            .withAbilities(List(recklessAttack(1), trackedAbility(2)))
+            .withBaseWeapon(trackedSword)
+            .withStrength(20)
+            .withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+
+          recklessAttack(Priority)(trackedBarbarian).useAbility(monster.some)
+
+          swordUsedCount shouldBe 1
+          trackedAbilityUsedCount shouldBe 0
+        }
+      }
     }
   }
 
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+    var swordUsedCount = 0
+    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+      swordUsedCount += 1
+      1
+    })
 
     var trackedAbilityUsedCount = 0
     var trackedAbilityUsed      = false

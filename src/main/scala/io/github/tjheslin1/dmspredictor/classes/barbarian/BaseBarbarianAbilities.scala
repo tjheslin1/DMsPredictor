@@ -1,10 +1,10 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.syntax.option._
-import io.github.tjheslin1.dmspredictor.classes.ClassAbilities
-import io.github.tjheslin1.dmspredictor.classes.ClassAbilities.nextAbilityToUseInConjunction
+import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
+import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -23,10 +23,19 @@ object BaseBarbarianAbilities {
     def conditionMet: Boolean = barbarian.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      val ragingBarbarianCombatant = Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
+      val ragingBarbarianCombatant =
+        Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
 
-      nextAbilityToUseInConjunction(ragingBarbarianCombatant, order, AbilityAction.action).fold{
-        Actions.attackAndDamage()
+      target match {
+        case None => (ragingBarbarianCombatant, none[Combatant])
+        case Some(targetOfAttack) =>
+          nextAbilityToUseInConjunction(ragingBarbarianCombatant, order, AbilityAction.action)
+            .fold {
+              val (updatedAttacker, updatedTarget) =
+                attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
+              (updatedAttacker, updatedTarget.some)
+            }(nextAbility =>
+              useAdditionalAbility(nextAbility, ragingBarbarianCombatant, targetOfAttack))
       }
     }
 
@@ -60,12 +69,26 @@ object BaseBarbarianAbilities {
     val triggerMet: Boolean   = true
     val conditionMet: Boolean = true
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = (combatant, none[Combatant])
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      val recklessBarbarianCombatant =
+        Combatant.creatureLens.set(updateRecklessBarbarian(barbarian))(combatant)
 
-    def update: Creature = {
-      val recklessBarbarian = Creature.creatureAttackStatusLens.set(Advantage)(barbarian)
+      target match {
+        case None => (recklessBarbarianCombatant, none[Combatant])
+        case Some(targetOfAttack) =>
+          val (updatedAttacker, updatedTarget) =
+            attackAndDamage(recklessBarbarianCombatant, targetOfAttack)
 
-      Creature.creatureDefenseStatusLens.set(Disadvantage)(recklessBarbarian)
+          (updatedAttacker, updatedTarget.some)
+      }
+    }
+
+    def update: Creature = barbarian
+
+    private def updateRecklessBarbarian(calmBarbarian: BaseBarbarian): Creature = {
+      val advantageBarbarian = Creature.creatureAttackStatusLens.set(Advantage)(calmBarbarian)
+
+      Creature.creatureDefenseStatusLens.set(Disadvantage)(advantageBarbarian)
     }
   }
 }

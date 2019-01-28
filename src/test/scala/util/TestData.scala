@@ -97,6 +97,8 @@ object TestData {
 
     def withAttackStatus(attackStatus: AttackStatus) =
       creatureAttackStatusLens.set(attackStatus)(creature)
+    def withDefenseStatus(defenseStatus: AttackStatus) =
+      creatureDefenseStatusLens.set(defenseStatus)(creature)
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
