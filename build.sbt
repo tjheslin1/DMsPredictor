@@ -2,7 +2,7 @@ lazy val dmspredictor = (project in file("."))
   .settings(
     libraryDependencies ++= Seq(
       // format: off
-      "org.typelevel"               %% "cats-core"                        % "1.5.0",
+      "org.typelevel"               %% "cats-core"                        % "1.6.0",
       "com.github.wookietreiber"    %% "scala-chart"                      % "0.5.1",
       "ch.qos.logback"              %  "logback-classic"                  % "1.2.3",
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.2",
