@@ -48,7 +48,7 @@ object BaseBarbarianAbilities {
       val rageTurnsLeftBarbarian = rageTurnsLeftLens.set(10)(updatedBarbarian)
 
       val resistantBarbarian = creatureResistancesLens
-        .set(List(Bludgeoning, Piercing, Slashing))(rageTurnsLeftBarbarian)
+        .set(barbarian.resistances ++ List(Bludgeoning, Piercing, Slashing))(rageTurnsLeftBarbarian)
         .asInstanceOf[BaseBarbarian]
 
       val bonusActionUsedBarbarian =

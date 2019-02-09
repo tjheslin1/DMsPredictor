@@ -30,7 +30,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "increase the Barbarian's wepaon damage" in new TestContext {}
+    "increase the Barbarian's weapon damage" in new TestContext {}
 
     "update the barbarian's number of rages left" in new TestContext {
       val barbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
@@ -63,12 +63,12 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     }
 
     "add resistance to Bludgeoning, Piercing and Slashing damage" in new TestContext {
-      val barbarian = random[Barbarian].withNoResistancesOrImmunities().withCombatIndex(1)
+      val barbarian = random[Barbarian].withResistance(Fire).withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
         rage(Priority)(barbarian).useAbility(none[Combatant])
 
-      ragingBarbarian.resistances shouldBe List(Bludgeoning, Piercing, Slashing)
+      ragingBarbarian.resistances shouldBe List(Fire, Bludgeoning, Piercing, Slashing)
     }
 
     "use the Barbarian's bonus action" in new TestContext {
