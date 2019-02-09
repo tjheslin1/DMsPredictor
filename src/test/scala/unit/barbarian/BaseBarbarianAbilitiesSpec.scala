@@ -30,8 +30,6 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "increase the Barbarian's weapon damage" in new TestContext {}
-
     "update the barbarian's number of rages left" in new TestContext {
       val barbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
@@ -50,7 +48,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       ragingBarbarian.inRage shouldBe true
     }
 
-    "reset the rage turns count back to 10" in new TestContext {
+    "set the rage turns count to 10" in new TestContext {
       val barbarian = random[Barbarian]
         .withRageUsagesLeft(2)
         .withRageTurnsLeft(5)

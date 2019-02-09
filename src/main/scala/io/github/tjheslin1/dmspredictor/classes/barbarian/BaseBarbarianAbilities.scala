@@ -64,10 +64,10 @@ object BaseBarbarianAbilities {
     val name                         = "Reckless Attack"
     val order                        = currentOrder
     val abilityAction: AbilityAction = SingleAttack
-    val levelRequirement: Level      = LevelOne
+    val levelRequirement: Level      = LevelTwo
 
     val triggerMet: Boolean   = true
-    val conditionMet: Boolean = true
+    val conditionMet: Boolean = barbarian.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       val recklessBarbarianCombatant =

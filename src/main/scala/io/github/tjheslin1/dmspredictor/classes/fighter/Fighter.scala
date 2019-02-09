@@ -61,7 +61,7 @@ object Fighter {
 
   def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
     val health = calculateHealth(LevelOne, 14)
-    new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
+    Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
 
   val standardFighterAbilities: List[CombatantAbility] = List(

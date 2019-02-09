@@ -1,10 +1,16 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.Show
+import cats.syntax.option._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian._
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.calculateHealth
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
+import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
@@ -59,12 +65,18 @@ object Barbarian {
 
   val standardBarbarianAbilities: List[CombatantAbility] = List(
     rage(1),
-    recklessAttack(2)
+    recklessAttack(2),
+    extraAttack(3)
   )
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
     (D12.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(HitDice) + mod(
       constitutionScore)))
+
+  def levelOneBarbarian[_: RS](weapon: Weapon = Greatsword, armour: Armour = NoArmour): Barbarian = {
+    val health = calculateHealth(LevelOne, 14)
+    Barbarian(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, rageUsages = 3, NoArmour, none[Equipment], 2)
+  }
 
   def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {
     lazy val inRageDamage = if (inRage) weapon.damage + 2 else weapon.damage
