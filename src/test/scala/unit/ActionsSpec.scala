@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 import util.TestMonster
 
@@ -63,7 +64,7 @@ class ActionsSpec extends UnitSpecBase {
 
     "roll with Disadvantage if the attacking Creature has attackStatus set to Disadvantage" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        val iterator = Iterator(2, 20)
+        val iterator = Iterator(10, 1)
 
         val advantageFighter = fighter.withAttackStatus(Disadvantage).withCombatIndex(1)
         val monster = testMonster.withArmourClass(1).withCombatIndex(2)
@@ -73,20 +74,20 @@ class ActionsSpec extends UnitSpecBase {
     }
 
     "roll with Advantage if the target Creature has defenseStatus set to Disadvantage" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+      forAll { (fighter: Fighter, goblin: Goblin) =>
         val iterator = Iterator(2, 20)
 
-        val monster = testMonster.withDefenseStatus(Disadvantage).withCombatIndex(2)
+        val monster = goblin.withDefenseStatus(Disadvantage).withCombatIndex(2)
 
         attack(fighter.withCombatIndex(1), fighter.weapon, monster)(_ => iterator.next()) shouldBe CriticalHit
       }
     }
 
     "roll with Disadvantage if the Creature has defenseStatus set to Advantage" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+      forAll { (fighter: Fighter, goblin: Goblin) =>
         val iterator = Iterator(19, 1)
 
-        val monster = testMonster.withDefenseStatus(Advantage).withCombatIndex(2)
+        val monster = goblin.withDefenseStatus(Advantage).withCombatIndex(2)
 
         attack(fighter.withCombatIndex(1), fighter.weapon, monster)(_ => iterator.next()) shouldBe CriticalMiss
       }

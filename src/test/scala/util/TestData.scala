@@ -260,8 +260,8 @@ trait TestData extends RandomDataGenerator {
         val immunities: List[DamageType]       = creature.immunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
-        val attackStatus: AttackStatus =  creature.attackStatus
-        val defenseStatus: AttackStatus =  creature.defenseStatus
+        val attackStatus: AttackStatus         = creature.attackStatus
+        val defenseStatus: AttackStatus        = creature.defenseStatus
 
         def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
 
@@ -305,7 +305,7 @@ trait TestData extends RandomDataGenerator {
         val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
         val attackStatus: AttackStatus        = Regular
-        val defenseStatus: AttackStatus        = Regular
+        val defenseStatus: AttackStatus       = Regular
 
         def updateHealth(modification: Int): Creature =
           throw new NotImplementedError(
@@ -313,8 +313,8 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
-        def turnReset(): Creature = throw new NotImplementedError(
-          "Random generate should delegate to classes turnReset")
+        def turnReset(): Creature =
+          throw new NotImplementedError("Random generate should delegate to classes turnReset")
       }
   }
 
