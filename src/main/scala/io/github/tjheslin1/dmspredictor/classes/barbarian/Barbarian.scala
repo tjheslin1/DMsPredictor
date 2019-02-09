@@ -3,19 +3,16 @@ package io.github.tjheslin1.dmspredictor.classes.barbarian
 import cats.Show
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.calculateHealth
+import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -34,7 +31,7 @@ import monocle.macros.{GenLens, Lenses}
                                   bonusActionUsed: Boolean = false,
                                   abilities: List[CombatantAbility] = standardBarbarianAbilities,
                                   attackStatus: AttackStatus = Regular,
-                                  defenseStatus: AttackStatus = Regular,
+                                  defenseStatus: model.AttackStatus = Regular,
                                   inRage: Boolean = false,
                                   rageTurnsLeft: Int = 10,
                                   name: String = NameGenerator.randomName)
@@ -53,53 +50,24 @@ object Barbarian {
 
   import BaseBarbarianAbilities._
 
-  val HitDice = D12
-
-  val rageUsagesPerLevel: Map[Level, Int] = Map(
-    LevelOne -> 2,
-    LevelTwo -> 2,
-    LevelThree -> 3,
-    LevelFour -> 3,
-    LevelFive -> 3
-  )
-
   val standardBarbarianAbilities: List[CombatantAbility] = List(
     rage(1),
-    recklessAttack(2),
-    extraAttack(3)
+    extraAttack(2),
+    recklessAttack(3)
   )
 
-  def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
-    (D12.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(HitDice) + mod(
-      constitutionScore)))
-
-  def levelOneBarbarian[_: RS](weapon: Weapon = Greatsword, armour: Armour = NoArmour): Barbarian = {
+  def levelOneBarbarian[_: RS](weapon: Weapon = Greatsword,
+                               armour: Armour = NoArmour): Barbarian = {
     val health = calculateHealth(LevelOne, 14)
-    Barbarian(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, rageUsages = 3, NoArmour, none[Equipment], 2)
-  }
-
-  def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {
-    lazy val inRageDamage = if (inRage) weapon.damage + 2 else weapon.damage
-
-    Weapon(weapon.name,
-           weapon.weaponType,
-           weapon.damageType,
-           weapon.twoHanded,
-           inRageDamage,
-           weapon.hitBonus)
-  }
-
-  def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int = {
-    val baseArmourClass = armour.armourClass(stats.dexterity)
-    val shieldBonus = offHand match {
-      case Some(Shield) => Shield.armourClass(stats.dexterity)
-      case _            => 0
-    }
-
-    armour match {
-      case NoArmour => baseArmourClass + mod(stats.constitution) + shieldBonus // Unarmoured Defense
-      case _        => baseArmourClass + shieldBonus
-    }
+    Barbarian(LevelOne,
+              health,
+              health,
+              BaseStats(15, 13, 14, 12, 8, 10),
+              weapon,
+              rageUsages = 3,
+              NoArmour,
+              none[Equipment],
+              2)
   }
 
   implicit def barbarianShow[_: RS]: Show[Barbarian] = Show.show { barbarian =>

@@ -8,9 +8,8 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
-import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian.rageUsagesPerLevel
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, _}
+import io.github.tjheslin1.dmspredictor.classes.barbarian._
+import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -144,6 +143,14 @@ object TestData {
 
     def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(barbarian)
     def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(barbarian)
+  }
+
+  implicit class BerserkerOps(val berserker: Berserker) extends AnyVal {
+    import Berserker._
+
+    def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(berserker)
+    def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(berserker)
+    def withInFrenzy() = _inFrenzy.set(true)(berserker)
   }
 }
 
@@ -493,7 +500,34 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
-        rageUsagesPerLevel(level),
+        BaseBarbarian.rageUsagesPerLevel(level),
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        Barbarian.standardBarbarianAbilities,
+        inRage = false,
+        rageTurnsLeft = 10,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
+      )
+  }
+
+  implicit val arbBerserker: Arbitrary[Berserker] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      Berserker(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        BaseBarbarian.rageUsagesPerLevel(level),
         player.armour,
         player.offHand,
         player.proficiencyBonus,

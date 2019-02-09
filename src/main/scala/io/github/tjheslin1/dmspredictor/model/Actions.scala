@@ -24,17 +24,22 @@ case object CriticalMiss extends AttackResult {
 
 object Actions extends LazyLogging {
 
+  def rollAttack[_: RS](attacker: Combatant, target: Combatant): Int =
+    (attacker.creature.attackStatus, target.creature.defenseStatus) match {
+      case (Advantage, Advantage)       => D20.roll()
+      case (Disadvantage, Disadvantage) => D20.roll()
+      case (Advantage, _)               => D20.rollWithAdvantage()
+      case (_, Disadvantage)            => D20.rollWithAdvantage()
+      case (Disadvantage, _)            => D20.rollWithDisadvantage()
+      case (_, Advantage)               => D20.rollWithDisadvantage()
+      case _                            => D20.roll()
+    }
+
   def attack[_: RS](attacker: Combatant,
                     attackerWeapon: Weapon,
                     target: Combatant): AttackResult = {
 
-    val roll = (attacker.creature.attackStatus, target.creature.defenseStatus) match {
-      case (Advantage, _)    => D20.rollWithAdvantage()
-      case (_, Disadvantage) => D20.rollWithAdvantage()
-      case (Disadvantage, _) => D20.rollWithDisadvantage()
-      case (_, Advantage)    => D20.rollWithDisadvantage()
-      case _                 => D20.roll()
-    }
+    val roll = rollAttack(attacker, target)
 
     if (attacker.creature.scoresCritical(roll)) CriticalHit
     else if (roll == 1) CriticalMiss
