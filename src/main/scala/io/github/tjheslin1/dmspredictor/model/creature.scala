@@ -374,10 +374,10 @@ object Creature {
       case c: Champion       => Champion._level.set(lvl)(c)
       case c: Fighter        => Fighter._level.set(lvl)(c)
 
-      case c: Barbarian      => Barbarian._level.set(lvl)(c)
-      case c: Berserker      => Berserker._level.set(lvl)(c)
+      case c: Barbarian => Barbarian._level.set(lvl)(c)
+      case c: Berserker => Berserker._level.set(lvl)(c)
 
-      case c: Creature       => c
+      case c: Creature => c
     }
   }
 }

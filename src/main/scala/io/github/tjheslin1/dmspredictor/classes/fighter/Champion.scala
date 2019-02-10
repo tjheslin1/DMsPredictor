@@ -14,23 +14,23 @@ import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class Champion(
-                                  level: Level,
-                                  health: Int,
-                                  maxHealth: Int,
-                                  stats: BaseStats,
-                                  baseWeapon: Weapon,
-                                  armour: Armour = NoArmour,
-                                  offHand: Option[Equipment] = None,
-                                  fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
-                                  abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
-                                  proficiencyBonus: ProficiencyBonus = 0,
-                                  resistances: List[DamageType] = List.empty,
-                                  immunities: List[DamageType] = List.empty,
-                                  bonusActionUsed: Boolean = false,
-                                  abilities: List[CombatantAbility] = standardChampionAbilities,
-                                  attackStatus: AttackStatus = Regular,
-                                  defenseStatus: AttackStatus = Regular,
-                                  name: String = NameGenerator.randomName)
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
+    abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = standardChampionAbilities,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    name: String = NameGenerator.randomName)
     extends BaseFighter {
 
   import Fighter._

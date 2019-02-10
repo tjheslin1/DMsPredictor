@@ -23,11 +23,11 @@ object BaseBarbarian {
   val HitDice = D12
 
   val rageUsagesPerLevel: Map[Level, Int] = Map(
-    LevelOne -> 2,
-    LevelTwo -> 2,
+    LevelOne   -> 2,
+    LevelTwo   -> 2,
     LevelThree -> 3,
-    LevelFour -> 3,
-    LevelFive -> 3
+    LevelFour  -> 3,
+    LevelFive  -> 3
   )
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
@@ -38,11 +38,11 @@ object BaseBarbarian {
     lazy val inRageDamage = if (inRage) weapon.damage + 2 else weapon.damage
 
     Weapon(weapon.name,
-      weapon.weaponType,
-      weapon.damageType,
-      weapon.twoHanded,
-      inRageDamage,
-      weapon.hitBonus)
+           weapon.weaponType,
+           weapon.damageType,
+           weapon.twoHanded,
+           inRageDamage,
+           weapon.hitBonus)
   }
 
   def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int = {

@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
@@ -9,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 
-object BaseBarbarianAbilities {
+object BaseBarbarianAbilities extends LazyLogging {
 
   def rage(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val barbarian = combatant.creature.asInstanceOf[BaseBarbarian]
@@ -23,6 +24,8 @@ object BaseBarbarianAbilities {
     def conditionMet: Boolean = barbarian.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used Rage")
+
       val ragingBarbarianCombatant =
         Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
 
@@ -59,6 +62,7 @@ object BaseBarbarianAbilities {
   }
 
   def recklessAttack(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+    logger.debug(s"${combatant.creature.name} is recklessly attacking")
     val barbarian = combatant.creature.asInstanceOf[BaseBarbarian]
 
     val name                         = "Reckless Attack"

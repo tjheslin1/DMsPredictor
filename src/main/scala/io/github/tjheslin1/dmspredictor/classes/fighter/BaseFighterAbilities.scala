@@ -1,7 +1,9 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities.logger
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
@@ -12,7 +14,7 @@ import monocle.macros.GenLens
 
 case class BaseFighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolean)
 
-object BaseFighterAbilities {
+object BaseFighterAbilities extends LazyLogging {
 
   import Fighter._
 
@@ -37,6 +39,8 @@ object BaseFighterAbilities {
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](targetIgnored: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used Second wind")
+
       val updatedHealth =
         Math.min(combatant.creature.maxHealth,
                  combatant.creature.health + (1 * HitDice) + baseFighter.level.value)
@@ -68,7 +72,9 @@ object BaseFighterAbilities {
       case _ => false
     }
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used two weapon fighting")
+
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
@@ -90,6 +96,7 @@ object BaseFighterAbilities {
 
           (attacker2, attackTarget2.some)
       }
+    }
 
     def update: Creature = combatant.creature
   }
@@ -106,7 +113,9 @@ object BaseFighterAbilities {
       val triggerMet: Boolean   = true
       def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used Action Surge")
+
         target match {
           case None => (combatant, none[Combatant])
           case Some(target: Combatant) =>
@@ -123,6 +132,7 @@ object BaseFighterAbilities {
                 }
               }
         }
+      }
 
       def update: Creature =
         (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens)

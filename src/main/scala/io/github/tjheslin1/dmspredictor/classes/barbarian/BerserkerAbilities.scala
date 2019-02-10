@@ -1,15 +1,17 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities.logger
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, BonusAction}
 
-object BerserkerAbilities {
+object BerserkerAbilities extends LazyLogging {
 
   def frenzy(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val berserker = combatant.creature.asInstanceOf[Berserker]
@@ -23,6 +25,8 @@ object BerserkerAbilities {
     def conditionMet: Boolean = berserker.level >= levelRequirement && berserker.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used Frenzy")
+
       val ragingBarbarianCombatant =
         Combatant.creatureLens.set(updateFrenzyingBarbarian(berserker))(combatant)
 
@@ -71,8 +75,16 @@ object BerserkerAbilities {
     def conditionMet: Boolean =
       berserker.level >= levelRequirement && berserker.bonusActionUsed == false
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
-      ???
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used bonus attack during Frenzy")
+
+      target match {
+        case None => (combatant, none[Combatant])
+        case Some(targetOfAttack) =>
+          val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetOfAttack)
+          (updatedAttacker, updatedTarget.some)
+      }
+    }
 
     def update: Creature = Berserker._bonusActionUsed.set(true)(berserker)
   }
