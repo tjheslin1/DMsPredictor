@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.eq._
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.strategy._
@@ -10,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.util.QueueOps._
 import scala.collection.immutable.Queue
 import scala.util.{Random => JRandom}
 
-object Move {
+object Move extends LazyLogging {
 
   def takeMove[_: RS](queue: Queue[Combatant], focus: Focus): Queue[Combatant] = {
     val (unactedCombatant, others) = queue.dequeue
@@ -57,6 +58,8 @@ object Move {
       toAttack: Option[Combatant],
       optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) =
     toAttack.fold((combatant, none[Combatant])) { target =>
+      println(s"${combatant.creature.name} targets ${target.creature.name}")
+
       optAbility.fold {
         val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, target)
         (updatedAttacker, updatedTarget.some)

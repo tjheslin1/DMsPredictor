@@ -25,9 +25,11 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus)
 
           val updatedInitiative = updateInitiative(initiative, pcs, mobs)
 
-          pcs.foreach(pc => logger.debug(s"pc: ${pc.creature.name} - hp=${pc.creature.health}"))
+          println()
+          pcs.foreach(pc => println(s"pc: ${pc.creature.name} - hp=${pc.creature.health}"))
           mobs.foreach(mob =>
-            logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
+            println(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
+          println()
 
           determineOutcome(updatedInitiative, pcs, mobs)
         } else SimulationResult(Success, info)

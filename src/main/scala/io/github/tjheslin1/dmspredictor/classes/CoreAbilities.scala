@@ -5,7 +5,6 @@ import cats.data.NonEmptyList.one
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities.logger
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -30,7 +29,7 @@ object CoreAbilities extends LazyLogging {
     def conditionMet: Boolean = player.level >= levelRequirement && player.bonusActionUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      logger.debug(s"${combatant.creature.name} used Extra Attack ")
+      println(s"${combatant.creature.name} used Extra Attack ")
 
       target match {
         case None => (combatant, none[Combatant])

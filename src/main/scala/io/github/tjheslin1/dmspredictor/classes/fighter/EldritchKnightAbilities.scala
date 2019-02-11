@@ -26,7 +26,7 @@ object EldritchKnightAbilities extends LazyLogging {
       eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      logger.debug(s"${combatant.creature.name} used Cast Spell")
+      println(s"${combatant.creature.name} used Cast Spell")
 
       val spellSlot = highestSpellSlotAvailable(eldritchKnight.spellSlots)
       val spell     = eldritchKnight.spellsKnown(spellSlot.spellLevel)
