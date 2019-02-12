@@ -58,7 +58,7 @@ object Move extends LazyLogging {
       toAttack: Option[Combatant],
       optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) =
     toAttack.fold((combatant, none[Combatant])) { target =>
-      println(s"${combatant.creature.name} targets ${target.creature.name}")
+      logger.debug(s"${combatant.creature.name} targets ${target.creature.name}")
 
       optAbility.fold {
         val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, target)

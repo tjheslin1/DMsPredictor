@@ -25,7 +25,7 @@ object BerserkerAbilities extends LazyLogging {
     def conditionMet: Boolean = berserker.level >= levelRequirement && berserker.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} used Frenzy")
+      logger.debug(s"${combatant.creature.name} used Frenzy")
 
       val ragingBarbarianCombatant =
         Combatant.creatureLens.set(updateFrenzyingBarbarian(berserker))(combatant)
@@ -76,7 +76,7 @@ object BerserkerAbilities extends LazyLogging {
       berserker.level >= levelRequirement && berserker.bonusActionUsed == false
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} used bonus attack during Frenzy")
+      logger.debug(s"${combatant.creature.name} used bonus attack during Frenzy")
 
       target match {
         case None => (combatant, none[Combatant])

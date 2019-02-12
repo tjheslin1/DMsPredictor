@@ -41,7 +41,7 @@ object Actions extends LazyLogging {
 
     val roll = rollAttack(attacker, target)
 
-    println(s"D20.roll() of $roll")
+    logger.debug(s"D20.roll() of $roll")
 
     if (attacker.creature.scoresCritical(roll)) CriticalHit
     else if (roll == 1) CriticalMiss
@@ -85,7 +85,7 @@ object Actions extends LazyLogging {
       case _                                                             => dmg
     }
 
-    println(s"${attacker.creature.name} attacks ${target.creature.name} for $dmg ($adjustedDamage adjusted)")
+    logger.debug(s"${attacker.creature.name} attacks ${target.creature.name} for $dmg ($adjustedDamage adjusted)")
 
     val damagedTarget =
       target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
@@ -99,7 +99,7 @@ object Actions extends LazyLogging {
     if (attackResult.result > 0)
       resolveDamage(attacker, target, attacker.creature.weapon, attackResult)
     else {
-      println(s"${attacker.creature.name} misses regular attack")
+      logger.debug(s"${attacker.creature.name} misses regular attack")
       (attacker, target)
     }
   }

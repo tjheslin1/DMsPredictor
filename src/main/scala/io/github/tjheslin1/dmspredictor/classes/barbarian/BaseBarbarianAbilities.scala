@@ -24,7 +24,7 @@ object BaseBarbarianAbilities extends LazyLogging {
     def conditionMet: Boolean = barbarian.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} used Rage")
+      logger.debug(s"${combatant.creature.name} used Rage")
 
       val ragingBarbarianCombatant =
         Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
@@ -73,7 +73,7 @@ object BaseBarbarianAbilities extends LazyLogging {
     val conditionMet: Boolean = barbarian.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} is recklessly attacking")
+      logger.debug(s"${combatant.creature.name} is recklessly attacking")
 
       val recklessBarbarianCombatant =
         Combatant.creatureLens.set(updateRecklessBarbarian(barbarian))(combatant)

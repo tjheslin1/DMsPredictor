@@ -39,7 +39,7 @@ object BaseFighterAbilities extends LazyLogging {
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
     def useAbility[_: RS](targetIgnored: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} used Second wind")
+      logger.debug(s"${combatant.creature.name} used Second wind")
 
       val updatedHealth =
         Math.min(combatant.creature.maxHealth,
@@ -73,7 +73,7 @@ object BaseFighterAbilities extends LazyLogging {
     }
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} used two weapon fighting")
+      logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
       target match {
         case None => (combatant, none[Combatant])
@@ -114,7 +114,7 @@ object BaseFighterAbilities extends LazyLogging {
       def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-        println(s"${combatant.creature.name} used Action Surge")
+        logger.debug(s"${combatant.creature.name} used Action Surge")
 
         target match {
           case None => (combatant, none[Combatant])

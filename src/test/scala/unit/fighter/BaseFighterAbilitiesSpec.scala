@@ -41,6 +41,27 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the player's bonus action to be used" in {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val dualWieldingFighter = fighter
+            .withFightingStyle(TwoWeaponFighting)
+            .withBaseWeapon(trackedMainSword)
+            .withOffHand(trackedOffHandSword)
+            .withStrength(20)
+            .withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+
+          val (Combatant(_, updatedFighter: Fighter, _) =
+            twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(monster.some)
+
+          updatedFighter.bonusActionUsed shouldBe true
+        }
+    }
+
     "be used with Extra Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
@@ -96,6 +117,18 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(fighter).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Player has already used their bonus action this turn" in new TestContext {
+      val dualWieldingFighter = random[Fighter]
+        .withFightingStyle(TwoWeaponFighting)
+        .withBonusActionUsed()
+        .withBaseWeapon(trackedMainSword)
+        .withOffHand(trackedOffHandSword)
+        .withLevel(LevelFour)
+        .withCombatIndex(1)
+
+      twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe true
     }
   }
 

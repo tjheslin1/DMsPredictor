@@ -15,11 +15,12 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 //  val creatures: List[Creature] =
 //    List(Fighter.levelOneFighter(), Goblin.levelOneGoblin(), Goblin.levelOneGoblin())
 
-  val creatures: List[Creature] =
-    List(Barbarian.levelOneBarbarian(), Goblin.levelOneGoblin(), Goblin.levelOneGoblin())
+val barbarian = Barbarian.levelOneBarbarian().copy(level = LevelFive, name = "Barbarian")
 
-  creatures.foreach(c => println(s"${c.name}: ${c.health}/${c.maxHealth}\n$c\n"))
-  println()
+val creatures: List[Creature] =
+    List(barbarian, Goblin.levelOneGoblin(), Goblin.levelOneGoblin())
+
+  creatures.foreach(c => logger.debug(s"${c.name}: ${c.health}/${c.maxHealth}\n$c\n"))
 
   val simulation = "Fighter vs Goblin"
   println(s"$simulation simulation started")

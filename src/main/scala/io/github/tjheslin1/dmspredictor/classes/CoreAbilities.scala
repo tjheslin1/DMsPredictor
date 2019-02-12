@@ -26,10 +26,10 @@ object CoreAbilities extends LazyLogging {
     val abilityAction    = SingleAttack
 
     val triggerMet: Boolean   = true
-    def conditionMet: Boolean = player.level >= levelRequirement && player.bonusActionUsed == false
+    def conditionMet: Boolean = player.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-      println(s"${combatant.creature.name} used Extra Attack ")
+      logger.debug(s"${combatant.creature.name} used Extra Attack ")
 
       target match {
         case None => (combatant, none[Combatant])

@@ -37,19 +37,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "set the Player's Bonus Action used to true" in {
-      forAll { fighter: Fighter =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val updatedPlayer =
-            extraAttack(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[Player]
-
-          updatedPlayer.bonusActionUsed shouldBe true
-        }
-      }
-    }
-
     "delegate to an ability lower in the order which can be used during an Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {

@@ -30,7 +30,7 @@ object BattleMasterAbilities extends LazyLogging {
         battleMaster.level >= levelRequirement && battleMaster.superiorityDiceCount > 0
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-        println(s"${combatant.creature.name} used Disarming Attack")
+        logger.debug(s"${combatant.creature.name} used Disarming Attack")
 
         target match {
           case None => (combatant, none[Combatant])
