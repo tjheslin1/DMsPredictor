@@ -60,13 +60,14 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       ragingBarbarian.rageTurnsLeft shouldBe 10
     }
 
+    /* Duplicates appear so that when the resistances are removed the Barbarian retains those it already had  */
     "add resistance to Bludgeoning, Piercing and Slashing damage" in new TestContext {
-      val barbarian = random[Barbarian].withResistance(Fire).withCombatIndex(1)
+      val barbarian = random[Barbarian].withResistance(Fire, Slashing).withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
         rage(Priority)(barbarian).useAbility(none[Combatant])
 
-      ragingBarbarian.resistances shouldBe List(Fire, Bludgeoning, Piercing, Slashing)
+      ragingBarbarian.resistances shouldBe List(Fire, Slashing, Bludgeoning, Piercing, Slashing)
     }
 
     "use the Barbarian's bonus action" in new TestContext {

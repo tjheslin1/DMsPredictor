@@ -15,3 +15,12 @@ isn't working (e.g. a monster is immune to a particular type of damage). Therefo
 will choose the most advantageous choice they have.
 
 For example: An _Eldritch Knight_ will cast spells/cantrips if the enemy is resistant or immune to their weapon.
+
+##### Ability Score Increases
+
+Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in the characters stats.
+No validation against a Creature's Stats are made.
+
+For example:
+
+A Fighter could have `BaseStats(1, 1, 1, 1, 1, 1)` or `BaseStats(24, 24, 24, 24, 24, 24)`.

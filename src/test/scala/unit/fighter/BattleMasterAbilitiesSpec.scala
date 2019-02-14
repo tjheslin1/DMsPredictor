@@ -79,7 +79,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
         val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
           Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
 
-        updatedBattleMaster.superiorityDiceCount shouldBe 1
+        updatedBattleMaster.superiorityDiceCount shouldBe 0
       }
     }
   }

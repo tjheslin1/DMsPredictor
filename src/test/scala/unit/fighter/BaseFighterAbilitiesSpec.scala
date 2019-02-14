@@ -19,7 +19,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
   "Two Weapon Fighting" should {
 
-    "be used Player is if equipped with two weapons" in {
+    "be used if Player is equipped with two weapons" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -42,21 +42,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "set the player's bonus action to be used" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val dualWieldingFighter = fighter
-            .withFightingStyle(TwoWeaponFighting)
-            .withBaseWeapon(trackedMainSword)
-            .withOffHand(trackedOffHandSword)
-            .withStrength(20)
-            .withCombatIndex(1)
-
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
-
-          val (Combatant(_, updatedFighter: Fighter, _) =
-            twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(monster.some)
+          val updatedFighter =
+            twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update.asInstanceOf[Fighter]
 
           updatedFighter.bonusActionUsed shouldBe true
         }
@@ -88,7 +78,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
     "meet the condition if the Player wields two weapons" in new TestContext {
       val dualWieldingFighter = random[Fighter]
-          .withFightingStyle(TwoWeaponFighting)
+        .withFightingStyle(TwoWeaponFighting)
         .withBaseWeapon(trackedMainSword)
         .withOffHand(trackedOffHandSword)
         .withLevel(LevelFour)
@@ -128,7 +118,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         .withLevel(LevelFour)
         .withCombatIndex(1)
 
-      twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe true
+      twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe false
     }
   }
 

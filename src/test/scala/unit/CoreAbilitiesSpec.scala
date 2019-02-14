@@ -3,7 +3,6 @@ package unit
 import base.UnitSpecBase
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
-import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._

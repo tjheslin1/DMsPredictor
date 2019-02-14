@@ -5,7 +5,6 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities.logger
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._

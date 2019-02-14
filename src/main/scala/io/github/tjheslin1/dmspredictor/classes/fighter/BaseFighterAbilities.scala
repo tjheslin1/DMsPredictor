@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities.logger
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
@@ -67,8 +67,10 @@ object BaseFighterAbilities extends LazyLogging {
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
-        w.twoHanded == false && combatant.creature.baseWeapon.twoHanded == false && baseFighter.fightingStyles
-          .contains(TwoWeaponFighting)
+        baseFighter.bonusActionUsed == false &&
+          w.twoHanded == false &&
+          combatant.creature.baseWeapon.twoHanded == false &&
+          baseFighter.fightingStyles.contains(TwoWeaponFighting)
       case _ => false
     }
 
@@ -98,7 +100,7 @@ object BaseFighterAbilities extends LazyLogging {
       }
     }
 
-    def update: Creature = combatant.creature
+    def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseFighter)
   }
 
   def actionSurge(currentOrder: Int)(combatant: Combatant): Ability =

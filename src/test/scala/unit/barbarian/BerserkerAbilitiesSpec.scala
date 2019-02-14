@@ -42,7 +42,7 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
       frenzyingBerserker.rageUsages shouldBe 1
     }
 
-    "update the barbarian's inRage to true" in new TestContext {
+    "update the barbarian's inFrenzy to true" in new TestContext {
       val frenziesBerserker = random[Berserker].withRageUsagesLeft(2).withCombatIndex(1)
 
       val (Combatant(_, frenzyingBerserker: Berserker), _) =

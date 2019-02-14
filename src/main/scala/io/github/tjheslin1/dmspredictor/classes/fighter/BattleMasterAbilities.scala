@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities.logger
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
