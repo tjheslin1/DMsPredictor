@@ -8,6 +8,7 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -535,6 +536,34 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Barbarian.standardBarbarianAbilities,
+        inRage = false,
+        rageTurnsLeft = 10,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
+      )
+  }
+
+  implicit val arbTotemWarrior: Arbitrary[TotemWarrior] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      TotemWarrior(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        BaseBarbarian.rageUsagesPerLevel(level),
+        Bear,
+        TotemWarrior.standardTotemWarriorAbilities(Bear),
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
         inRage = false,
         rageTurnsLeft = 10,
         attackStatus = player.attackStatus,

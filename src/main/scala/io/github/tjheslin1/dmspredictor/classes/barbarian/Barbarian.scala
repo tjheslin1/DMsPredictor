@@ -9,7 +9,6 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
-import io.github.tjheslin1.dmspredictor.model
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -31,7 +30,7 @@ import monocle.macros.{GenLens, Lenses}
                                   bonusActionUsed: Boolean = false,
                                   abilities: List[CombatantAbility] = standardBarbarianAbilities,
                                   attackStatus: AttackStatus = Regular,
-                                  defenseStatus: model.AttackStatus = Regular,
+                                  defenseStatus: AttackStatus = Regular,
                                   inRage: Boolean = false,
                                   rageTurnsLeft: Int = 10,
                                   name: String = NameGenerator.randomName)

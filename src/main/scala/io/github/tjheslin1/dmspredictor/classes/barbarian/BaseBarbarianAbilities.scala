@@ -12,7 +12,9 @@ import io.github.tjheslin1.dmspredictor.model.ability._
 
 object BaseBarbarianAbilities extends LazyLogging {
 
-  def rage(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def rage(currentOrder: Int,
+           rageResistances: List[DamageType] = List(Bludgeoning, Piercing, Slashing))(
+      combatant: Combatant): Ability = new Ability(combatant) {
     val barbarian = combatant.creature.asInstanceOf[BaseBarbarian]
 
     val name                         = "Rage"
@@ -51,7 +53,7 @@ object BaseBarbarianAbilities extends LazyLogging {
       val rageTurnsLeftBarbarian = rageTurnsLeftLens.set(10)(updatedBarbarian)
 
       val resistantBarbarian = creatureResistancesLens
-        .set(barbarian.resistances ++ List(Bludgeoning, Piercing, Slashing))(rageTurnsLeftBarbarian)
+        .set(barbarian.resistances ++ rageResistances)(rageTurnsLeftBarbarian)
         .asInstanceOf[BaseBarbarian]
 
       val bonusActionUsedBarbarian =

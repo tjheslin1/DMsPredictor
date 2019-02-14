@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
+import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
@@ -53,6 +54,13 @@ object Berserker {
     recklessAttack(3),
     bonusFrenzyAttack(4)
   )
+
+  implicit def berserkerShow[_: RS]: Show[Berserker] = Show.show { berserker =>
+    s"Berserker: " +
+      s"Name: ${berserker.name}, " +
+      s"health: ${berserker.health}, " +
+      s"AC: ${berserker.armourClass}"
+  }
 
   val strengthLens: Lens[Berserker, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
