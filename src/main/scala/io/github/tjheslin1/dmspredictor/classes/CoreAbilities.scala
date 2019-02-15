@@ -3,14 +3,13 @@ package io.github.tjheslin1.dmspredictor.classes
 import cats.data.NonEmptyList
 import cats.data.NonEmptyList.one
 import cats.syntax.option._
-import cats.syntax.traverse._
-import cats.instances._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 
 object CoreAbilities extends LazyLogging {
@@ -68,80 +67,74 @@ object CoreAbilities extends LazyLogging {
   }
 
   def castSpell(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-    val player = combatant.creature.asInstanceOf[Player]
+    val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
     val name             = "Cast Spell"
     val order            = currentOrder
-    val levelRequirement = LevelThree
+    val levelRequirement = LevelOne
     val abilityAction    = WholeAction
 
-    val triggerMet: Boolean = true
-    def conditionMet: Boolean = player.spellSlots match {
-      case None => false
-      case Some(spellSlots) =>
-        player.cantripKnown.isDefined || player.spellsKnown.isDefined &&
-          player.level >= levelRequirement && available(spellSlots)
-    }
+    val triggerMet: Boolean   = true
+    def conditionMet: Boolean = spellCaster.level >= spellCaster.levelSpellcastingLearned
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-//      val spell = highestSpellSlotAvailable(player.spellSlots) match {
-//        case None =>
-//        case Some(spellLevel) => player.spellsKnown(spellLevel.spellLevel)
-//      }
+      val optSpell =
+        (spellCaster.cantripKnown, highestSpellSlotAvailable(spellCaster.spellSlots)) match {
+          case (cantrip, None)       => cantrip
+          case (_, Some(spellLevel)) => spellCaster.spellsKnown(spellLevel.spellLevel).some
+        }
 
-      (player.spellSlots, player.spellsKnown, target) match {
-        case (_, _, None) => (combatant, none[Combatant])
-        case (None, _, _) => (combatant, none[Combatant])
-        case (Some(spellSlots), Some(target: Combatant)) =>
-          val spell = (player.cantripKnown, highestSpellSlotAvailable(spellSlots)) match {
-            case (cantrip, None) => cantrip
-            case (_, Some(spellLevel)) =>
-              player.spellsKnown.traverse(x => x) //(sk => sk(spellLevel.spellLevel))
-          }
-
+      (target, optSpell) match {
+        case (_, None) => (combatant, none[Combatant])
+        case (None, _) => (combatant, none[Combatant])
+        case (Some(spellTarget), Some(spell)) =>
           val attackResult: AttackResult = spell.spellOffenseStyle match {
-            case MeleeSpellAttack       => spellAttack(spell, target.creature)
-            case RangedSpellAttack      => spellAttack(spell, target.creature)
-            case SavingThrow(attribute) => spellSavingThrow(spell, attribute, target.creature)
+            case MeleeSpellAttack       => spellAttack(spell, spellTarget.creature)
+            case RangedSpellAttack      => spellAttack(spell, spellTarget.creature)
+            case SavingThrow(attribute) => spellSavingThrow(spell, attribute, spellTarget.creature)
           }
 
           val dmg = Math.max(
             0,
             attackResult match {
               case CriticalHit =>
-                spell.damage(player.level) + spell.damage(player.level)
-              case Hit          => spell.damage(player.level)
+                spell.damage(spellCaster.level) + spell.damage(spellCaster.level)
+              case Hit          => spell.damage(spellCaster.level)
               case Miss         => 0
               case CriticalMiss => 0
             }
           )
 
           val adjustedDamage = spell.damageType match {
-            case damageType if target.creature.resistances.contains(damageType) =>
+            case damageType if spellTarget.creature.resistances.contains(damageType) =>
               math.floor(dmg / 2).toInt
-            case damageType if target.creature.immunities.contains(damageType) => 0
-            case _                                                             => dmg
+            case damageType if spellTarget.creature.immunities.contains(damageType) => 0
+            case _                                                                  => dmg
           }
 
           val damagedTarget =
-            target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
+            spellTarget.copy(
+              creature = spellTarget.creature.updateHealth(Math.negateExact(adjustedDamage)))
 
           (combatant, damagedTarget.some)
       }
     }
 
     def update: Creature = {
-      val spellSlotUsed         = highestSpellSlotAvailable(player.spellSlots)
+      highestSpellSlotAvailable(spellCaster.spellSlots) match {
+    case None => spellCaster
+    case Some(spellSlotUsed) =>
       val updatedSpellSlotCount = spellSlotUsed.count - 1
 
       val (spellSlotLens, spellSlotCountLens) = spellSlotUsed match {
         case FirstLevelSpellSlot(_) => (firstLevelSpellSlotLens, firstLevelSpellSlotCountLens)
       }
 
-      (Player.spellSlotsLens composeLens spellSlotLens composeLens spellSlotCountLens)
-        .set(updatedSpellSlotCount)(player)
+      (SpellCaster.spellSlotsLens composeLens spellSlotLens composeLens spellSlotCountLens)
+        .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
+  }
     }
 
     private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult =
@@ -149,13 +142,13 @@ object CoreAbilities extends LazyLogging {
         case 20 => CriticalHit
         case 1  => CriticalMiss
         case roll =>
-          if ((roll + spell.spellAttackBonus(player)) >= target.armourClass) Hit else Miss
+          if ((roll + spell.spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
       }
 
     private def spellSavingThrow[_: RS](spell: Spell,
                                         attribute: Attribute,
                                         target: Creature): AttackResult =
-      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(player))
+      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(spellCaster))
         Miss
       else Hit
   }

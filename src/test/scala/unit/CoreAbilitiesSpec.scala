@@ -153,6 +153,58 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
+
+    "deal half damage to a creature resistant to the damage type" in {
+      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val eldritchKnightCombatant = eldritchKnight
+            .withSpell(trackedMeleeSpellAttack)
+            .withAllBaseFighterAbilitiesUsed()
+            .withAllSpellSlotsAvailable()
+            .withLevel(LevelThree)
+            .withCombatIndex(1)
+
+          val monster = testMonster
+            .withHealth(10)
+            .withResistance(Fire)
+            .withArmourClass(10)
+            .withCombatIndex(2)
+
+          val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
+            castSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+
+          updatedMonster.health shouldBe 8
+        }
+      }
+    }
+
+    "deal zero damage to a creature immune to the damage type" in {
+      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val eldritchKnightCombatant = eldritchKnight
+            .withSpell(trackedMeleeSpellAttack)
+            .withAllBaseFighterAbilitiesUsed()
+            .withAllSpellSlotsAvailable()
+            .withLevel(LevelThree)
+            .withCombatIndex(1)
+
+          val monster = testMonster
+            .withHealth(10)
+            .withImmunity(Fire)
+            .withArmourClass(10)
+            .withCombatIndex(2)
+
+          val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
+            castSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+
+          updatedMonster.health shouldBe 10
+        }
+      }
+    }
   }
 
   private class TestContext {
@@ -232,13 +284,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     var meleeSpellUsedCount = 0
     val trackedMeleeSpellAttack = Spell(1, Evocation, OneAction, MeleeSpellAttack, Fire, {
       meleeSpellUsedCount += 1
-      1
+      4
     })
 
     var savingThrowSpellUsedCount = 0
     val trackedSavingThrowSpell = Spell(1, Evocation, OneAction, SavingThrow(Wisdom), Fire, {
       savingThrowSpellUsedCount += 1
-      1
+      4
     })
   }
 }

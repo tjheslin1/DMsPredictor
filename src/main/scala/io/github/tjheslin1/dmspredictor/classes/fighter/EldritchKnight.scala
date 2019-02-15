@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
 import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -10,8 +11,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -27,8 +27,8 @@ import monocle.macros.{GenLens, Lenses}
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
     abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
     proficiencyBonus: ProficiencyBonus = 0,
-    override val spellsKnown: Option[Map[SpellLevel, Spell]],
-    override val spellSlots: Option[SpellSlots],
+    val spellsKnown: Map[SpellLevel, Spell],
+    spellSlots: SpellSlots,
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,
@@ -36,9 +36,7 @@ import monocle.macros.{GenLens, Lenses}
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName)
-    extends BaseFighter {
-
-  import Fighter._
+    extends BaseFighter with SpellCaster {
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
@@ -48,6 +46,10 @@ import monocle.macros.{GenLens, Lenses}
     copy(health = Math.max(0, health + modification))
 
   def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
+
+  val levelSpellcastingLearned: Level = LevelThree
+
+  val cantripKnown: Option[Spell] = None
 }
 
 object EldritchKnight {

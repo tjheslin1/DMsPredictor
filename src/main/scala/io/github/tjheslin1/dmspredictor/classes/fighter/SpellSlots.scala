@@ -12,9 +12,6 @@ object SpellSlots {
   def highestSpellSlotAvailable(spellSlots: SpellSlots): Option[SpellSlot] =
     if (spellSlots.firstLevel.count > 0) Some(spellSlots.firstLevel) else none[SpellSlot]
 
-  def available(spellSlots: SpellSlots): Boolean = spellSlots.firstLevel.count > 0
-
-
   val firstLevelSpellSlotLens: Lens[SpellSlots, FirstLevelSpellSlot] =
     GenLens[SpellSlots](_.firstLevel)
 

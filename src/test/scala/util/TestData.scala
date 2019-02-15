@@ -17,6 +17,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shie
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
@@ -135,9 +136,9 @@ object TestData {
 
     def withSpell(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
     def withAllSpellSlotsAvailable() =
-      _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
+      _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
     def withNoSpellSlotsAvailable() =
-      _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
+      _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
@@ -152,7 +153,7 @@ object TestData {
 
     def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(berserker)
     def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(berserker)
-    def withInFrenzy() = _inFrenzy.set(true)(berserker)
+    def withInFrenzy()                 = _inFrenzy.set(true)(berserker)
   }
 }
 
@@ -465,7 +466,7 @@ trait TestData extends RandomDataGenerator {
       player         <- arbPlayer.arbitrary
       fightingStyles <- arbFighterFightingStyle.arbitrary
       level          <- arbLevel.arbitrary
-      spellSlots     <- arbEldritchKnightSpellSlots.arbitrary
+      spellSlots     <- arbSpellSlots.arbitrary
     } yield
       EldritchKnight(
         level,
@@ -574,27 +575,29 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCleric: Arbitrary[Cleric] = Arbitrary {
     for {
-    player <- arbPlayer.arbitrary
-    level <- arbLevel.arbitrary
-    firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
-    } yield Cleric(
-      level,
-      player.health,
-      player.health,
-      player.stats,
-      player.baseWeapon,
-      Map.empty[SpellLevel, Spell],
-      ClericSpellSlots(firstLevelSpellSlots),
-      player.armour,
-      player.offHand,
-      Cleric.standardClericAbilities,
-      player.proficiencyBonus,
-      player.resistances,
-      player.immunities,
-      player.bonusActionUsed,
-      attackStatus = player.attackStatus,
-      defenseStatus = player.defenseStatus,
-      name = player.name
-    )
+      player               <- arbPlayer.arbitrary
+      level                <- arbLevel.arbitrary
+      firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
+    } yield
+      Cleric(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        SacredFlame.some,
+        Map.empty[SpellLevel, Spell], // TODO add guiding bolt
+        SpellSlots(firstLevelSpellSlots),
+        player.armour,
+        player.offHand,
+        Cleric.standardClericAbilities,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
+      )
   }
 }
