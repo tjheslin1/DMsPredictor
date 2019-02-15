@@ -205,6 +205,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
+
+    "cast cantrip if defined and no spell slots are available" in {
+      fail("todo")
+    }
   }
 
   private class TestContext {

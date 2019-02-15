@@ -1,9 +1,10 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.castSpell
 import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
-import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric._
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -49,7 +50,7 @@ import monocle.macros.{GenLens, Lenses}
 object Cleric {
 
   val standardClericAbilities: List[CombatantAbility] = List(
-    sacredFlame(1)
+    castSpell(1)
   )
 
   val strengthLens: Lens[Cleric, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)

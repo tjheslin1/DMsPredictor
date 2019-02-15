@@ -17,7 +17,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shie
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{GuidingBolt, SacredFlame}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
@@ -586,7 +586,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         SacredFlame.some,
-        Map.empty[SpellLevel, Spell], // TODO add guiding bolt
+        Map(GuidingBolt.spellLevel -> GuidingBolt),
         SpellSlots(firstLevelSpellSlots),
         player.armour,
         player.offHand,

@@ -13,6 +13,7 @@ object WizardSpells {
 
     private val possibleDamageTypes = List(Acid, Cold, Fire, Lightning, Poison, Thunder)
 
+    val name = "Chromatic Orb"
     val school: SchoolOfMagic                = Evocation
     val castingTime: CastingTime             = OneAction
     val spellOffenseStyle: SpellOffenseStyle = RangedSpellAttack

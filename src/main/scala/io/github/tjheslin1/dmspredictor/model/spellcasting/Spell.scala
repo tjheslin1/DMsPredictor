@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 
 abstract class Spell {
 
+  val name: String
   val school: SchoolOfMagic
   val castingTime: CastingTime
   val spellOffenseStyle: SpellOffenseStyle
@@ -26,13 +27,15 @@ abstract class Spell {
 
 object Spell {
 
-  def apply(level: SpellLevel,
+  def apply(spellName: String,
+            level: SpellLevel,
             schoolOfMagic: SchoolOfMagic,
             castTime: CastingTime,
             offenseStyle: SpellOffenseStyle,
             `type`: DamageType,
             dmg: => Int): Spell = new Spell {
 
+    val name = spellName
     val school: spellcasting.SchoolOfMagic                = schoolOfMagic
     val castingTime: spellcasting.CastingTime             = castTime
     val spellOffenseStyle: spellcasting.SpellOffenseStyle = offenseStyle

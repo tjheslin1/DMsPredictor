@@ -90,11 +90,13 @@ object CoreAbilities extends LazyLogging {
         case (_, None) => (combatant, none[Combatant])
         case (None, _) => (combatant, none[Combatant])
         case (Some(spellTarget), Some(spell)) =>
-          val attackResult: AttackResult = spell.spellOffenseStyle match {
+          val attackResult = spell.spellOffenseStyle match {
             case MeleeSpellAttack       => spellAttack(spell, spellTarget.creature)
             case RangedSpellAttack      => spellAttack(spell, spellTarget.creature)
             case SavingThrow(attribute) => spellSavingThrow(spell, attribute, spellTarget.creature)
           }
+
+          logger.debug(s"casting ${spell.name} - $attackResult")
 
           val dmg = Math.max(
             0,
