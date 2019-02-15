@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric._
+import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model
@@ -21,8 +22,8 @@ import monocle.macros.{GenLens, Lenses}
                                maxHealth: Int,
                                stats: BaseStats,
                                baseWeapon: Weapon,
-                               spellsKnown: Map[SpellLevel, Spell],
-                               spellSlots: ClericSpellSlots,
+                               override val spellsKnown: Option[Map[SpellLevel, Spell]],
+                               override val spellSlots: Option[SpellSlots],
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                abilities: List[CombatantAbility] = standardClericAbilities,

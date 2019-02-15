@@ -4,12 +4,17 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
 import monocle.Lens
 
 trait Player extends Creature {
 
   val level: Level
   val bonusActionUsed: Boolean
+
+  val cantripKnown: Option[Spell]                 = None
+  val spellsKnown: Option[Map[SpellLevel, Spell]] = None
+  val spellSlots: Option[SpellSlots]              = None
 
   val creatureType: CreatureType = PlayerCharacter
 }
@@ -33,6 +38,14 @@ object Player {
         case _ =>
           throw new NotImplementedError(
             "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
+      }
+  }
+
+  val spellSlotsLens: Lens[Player, SpellSlots] = Lens[Player, SpellSlots](_.spellSlots) {
+    spellSlots =>
+      {
+        case c: EldritchKnight => EldritchKnight._spellSlots.set(spellSlots)(c)
+        case c: Cleric         => Cleric._spellSlots.set(spellSlots)(c)
       }
   }
 }

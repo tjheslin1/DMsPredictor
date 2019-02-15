@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -9,9 +10,6 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
 
 abstract class BaseCleric extends Player with Product with Serializable {
-
-  val spellsKnown: Map[SpellLevel, Spell]
-  val spellSlots: ClericSpellSlots
 
   def turnReset(): Creature = this
 }

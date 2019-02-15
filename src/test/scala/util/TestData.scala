@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
-import io.github.tjheslin1.dmspredictor.classes.cleric.{Cleric, ClericSpellSlots}
+import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
@@ -171,15 +171,14 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbFirstLevelSpellSlot: Arbitrary[FirstLevelSpellSlot] = Arbitrary {
     for {
-      // Currently on the Eldritch Knight has spell slots between 2 and 3 up to level five.
-      count <- Gen.choose(2, 3)
+      count <- Gen.choose(1, 3)
     } yield FirstLevelSpellSlot(count)
   }
 
-  implicit val arbEldritchKnightSpellSlots: Arbitrary[EldritchKnightSpellSlots] = Arbitrary {
+  implicit val arbSpellSlots: Arbitrary[SpellSlots] = Arbitrary {
     for {
       firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
-    } yield EldritchKnightSpellSlots(firstLevelSpellSlots)
+    } yield SpellSlots(firstLevelSpellSlots)
   }
 
   implicit val arbStat: Arbitrary[Stat] =

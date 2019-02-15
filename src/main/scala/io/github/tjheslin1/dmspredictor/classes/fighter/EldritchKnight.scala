@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
 import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -27,8 +27,8 @@ import monocle.macros.{GenLens, Lenses}
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
     abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
     proficiencyBonus: ProficiencyBonus = 0,
-    spellsKnown: Map[SpellLevel, Spell],
-    spellSlots: EldritchKnightSpellSlots ,
+    override val spellsKnown: Option[Map[SpellLevel, Spell]],
+    override val spellSlots: Option[SpellSlots],
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,
@@ -53,8 +53,6 @@ import monocle.macros.{GenLens, Lenses}
 object EldritchKnight {
 
   import BaseFighterAbilities._
-  import EldritchKnightAbilities._
-
   val HitDice = D10
 
   val standardEldritchKnightAbilities: List[CombatantAbility] = List(
