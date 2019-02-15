@@ -34,7 +34,7 @@ object BaseBarbarianAbilities extends LazyLogging {
       target match {
         case None => (ragingBarbarianCombatant, none[Combatant])
         case Some(targetOfAttack) =>
-          nextAbilityToUseInConjunction(ragingBarbarianCombatant, order, AbilityAction.action)
+          nextAbilityToUseInConjunction(ragingBarbarianCombatant, order, AbilityAction.Action)
             .fold {
               val (updatedAttacker, updatedTarget) =
                 attackAndDamage(ragingBarbarianCombatant, targetOfAttack)

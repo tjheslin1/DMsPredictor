@@ -121,13 +121,13 @@ object BaseFighterAbilities extends LazyLogging {
         target match {
           case None => (combatant, none[Combatant])
           case Some(target: Combatant) =>
-            nextAbilityToUseInConjunction(combatant, order, AbilityAction.any)
+            nextAbilityToUseInConjunction(combatant, order, AbilityAction.Any)
               .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
                 val (updatedAttacker, optUpdatedTarget) =
                   useAdditionalAbility(nextAbility, combatant, target)
 
                 optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                  nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.any)
+                  nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.Any)
                     .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
                       useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                     }

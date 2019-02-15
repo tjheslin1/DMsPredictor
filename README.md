@@ -1,6 +1,11 @@
 # DMsPredictor [![Build Status](https://travis-ci.com/tjheslin1/DMsPredictor.svg?branch=master)](https://travis-ci.com/tjheslin1/DMsPredictor)
 Combat encounter results predictor for DMs for Dungeons &amp; Dragons 5th Edition
 
+## Requests:
+
+If a subclass, spell or anything else is not present in the simulator, please raise an _Issue_ requesting this,
+or contribute yourself via a _Pull Request_!
+
 Assumptions:
 
 ##### Resources will be exhausted:

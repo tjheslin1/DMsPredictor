@@ -1,7 +1,6 @@
 package io.github.tjheslin1.dmspredictor
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
