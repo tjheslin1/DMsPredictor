@@ -19,6 +19,6 @@ object WizardSpells {
     val damageType: DamageType               = possibleDamageTypes(Random.nextInt(possibleDamageTypes.size))
     val spellLevel: SpellLevel               = 1
 
-    def damage(implicit rollStrategy: RollStrategy): Int = 3 * D8
+    def damage[_: RS](playerLevel: Level): Int = 3 * D8
   }
 }

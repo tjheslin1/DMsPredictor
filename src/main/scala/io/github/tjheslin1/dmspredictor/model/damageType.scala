@@ -13,6 +13,7 @@ object DamageType {
     Fire,
     Lightning,
     Poison,
+    Radiant,
     Thunder,
     Psychic
   )
@@ -28,5 +29,6 @@ case object Cold      extends DamageType
 case object Fire      extends DamageType
 case object Lightning extends DamageType
 case object Poison    extends DamageType
+case object Radiant    extends DamageType
 case object Thunder   extends DamageType
 case object Psychic   extends DamageType

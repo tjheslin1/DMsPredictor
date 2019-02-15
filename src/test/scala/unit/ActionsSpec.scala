@@ -63,7 +63,7 @@ class ActionsSpec extends UnitSpecBase {
         val iterator = Iterator(19, 20)
 
         val advantageFighter = fighter.withAttackStatus(Advantage).withCombatIndex(1)
-        val monster = goblin.withArmourClass(1).withDefenseStatus(Advantage).withCombatIndex(2)
+        val monster          = goblin.withArmourClass(1).withDefenseStatus(Advantage).withCombatIndex(2)
 
         rollAttack(advantageFighter, monster)(_ => iterator.next()) shouldBe 19
       }
@@ -74,7 +74,7 @@ class ActionsSpec extends UnitSpecBase {
         val iterator = Iterator(19, 20)
 
         val disadvantageFighter = fighter.withAttackStatus(Disadvantage).withCombatIndex(1)
-        val monster = goblin.withArmourClass(1).withDefenseStatus(Disadvantage).withCombatIndex(2)
+        val monster             = goblin.withArmourClass(1).withDefenseStatus(Disadvantage).withCombatIndex(2)
 
         rollAttack(disadvantageFighter, monster)(_ => iterator.next()) shouldBe 19
       }
@@ -83,64 +83,70 @@ class ActionsSpec extends UnitSpecBase {
 
   "attack" should {
     "hit if the attack roll was a natural 20" in {
-    forAll { (fighter: Fighter, monster: TestMonster) =>
-      attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))(_ => 20) shouldBe CriticalHit
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))(_ => 20) shouldBe CriticalHit
+      }
     }
-  }
 
     "hit a monster if the attack overcomes the monster's armour class" in {
-    forAll { (fighter: Fighter, monster: TestMonster) =>
-      val ac10Monster = monster.withArmourClass(10)
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val ac10Monster = monster.withArmourClass(10)
 
-      attack(fighter.withCombatIndex(1), fighter.weapon, ac10Monster.withCombatIndex(2))(_ => 19) shouldBe Hit
+        attack(fighter.withCombatIndex(1), fighter.weapon, ac10Monster.withCombatIndex(2))(_ => 19) shouldBe Hit
+      }
     }
-  }
 
     "miss a monster if the attack doesn't overcomes the monster's armour class" in {
-    forAll { (fighter: Fighter, monster: TestMonster) =>
-      val ac20Monster = monster.withArmourClass(30)
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val ac20Monster = monster.withArmourClass(30)
 
-      attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2))(_ => 2) shouldBe Miss
+        attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2))(_ => 2) shouldBe Miss
+      }
     }
-  }
 
     "miss if the attack roll was a natural 1" in {
-    forAll { (fighter: Fighter, monster: TestMonster) =>
-      attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))(_ => 1) shouldBe CriticalMiss
+      }
     }
-  }
 
     "score a CriticalHit against a target using a specific DetermineCritical strategy" in {
-    forAll { (champion: Champion, monster: TestMonster) =>
-      val levelThreeChampion = champion.withLevel(LevelThree)
+      forAll { (champion: Champion, monster: TestMonster) =>
+        val levelThreeChampion = champion.withLevel(LevelThree)
 
-      attack(levelThreeChampion.withCombatIndex(1),
-             levelThreeChampion.weapon,
-             monster.withCombatIndex(2))(_ => 19) shouldBe CriticalHit
+        attack(levelThreeChampion.withCombatIndex(1),
+               levelThreeChampion.weapon,
+               monster.withCombatIndex(2))(_ => 19) shouldBe CriticalHit
+      }
     }
-  }
   }
 
   "resolveDamageMainHand" should {
     "kill a monster if the damage is more than the monster's health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val oneHundredDamageWeapon =
-          fixedDamageWeapon("one hundred damage weapon", Melee, Slashing, twoHands = true, dmg = 100)
+          fixedDamageWeapon("one hundred damage weapon",
+                            Melee,
+                            Slashing,
+                            twoHands = true,
+                            dmg = 100)
         val player = fighter.withStrength(10).withBaseWeapon(oneHundredDamageWeapon)
 
         val playerCombatant  = player.withCombatIndex(1)
         val monsterCombatant = monster.withCombatIndex(2)
 
-        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant.withCreature(
-          monster.withHealth(0)))
+        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant
+          .withCreature(monster.withHealth(0)))
       }
     }
 
     "fail to kill a monster if the damage is less than the monster's health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val oneDamageWeapon = fixedDamageWeapon("one damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
+        val oneDamageWeapon =
+          fixedDamageWeapon("one damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
 
-        val playerCombatant  = fighter.withStrength(10).withBaseWeapon(oneDamageWeapon).withCombatIndex(1)
+        val playerCombatant =
+          fighter.withStrength(10).withBaseWeapon(oneDamageWeapon).withCombatIndex(1)
         val monsterCombatant = monster.withHealth(10).withCombatIndex(2)
 
         resolveDamageMainHand(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
@@ -150,9 +156,11 @@ class ActionsSpec extends UnitSpecBase {
 
     "deal at least one damage to a creature resistance to the damage type" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
+        val tenDamageWeapon =
+          fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
 
-        val playerCombatant = fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
+        val playerCombatant =
+          fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
         val modifiedMonster = monster.withResistance(Slashing).withHealth(100)
 
         val monsterCombatant = modifiedMonster
@@ -162,59 +170,27 @@ class ActionsSpec extends UnitSpecBase {
           (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(99)))
       }
     }
+  }
+
+  "adjustedDamage" should {
 
     "deal half damage rounded down to a creature resistance to the damage type" in {
-      forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 11)
+      forAll { monster: TestMonster =>
 
-        val playerCombatant =
-          fighter
-            .withNoAbilities()
-            .withStrength(10)
-            .withBaseWeapon(tenDamageWeapon)
-            .withCombatIndex(1)
-
-        val modifiedMonster = monster.withResistance(Slashing).withHealth(100)
-
-        val monsterCombatant = modifiedMonster
+        val monsterCombatant = monster.withResistance(Slashing).withHealth(100)
           .withCombatIndex(2)
 
-        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
-          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(95)))
-      }
-    }
-
-    "deal regular damage to a creature resistance to the damage type for a critical hit" in {
-      forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 11)
-
-        val playerCombatant = fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
-        val modifiedMonster = monster
-          .withResistance(Slashing)
-          .withHealth(100)
-
-        val monsterCombatant = modifiedMonster
-          .withCombatIndex(2)
-
-        resolveDamageMainHand(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
-          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(89)))
+        adjustedDamage(10, Slashing, monsterCombatant) shouldBe 5
       }
     }
 
     "deal no damage to a creature immune to the damage type" in {
-      forAll { (fighter: Fighter, monster: TestMonster) =>
-        val tenDamageWeapon = fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 10)
+      forAll { monster: TestMonster =>
 
-        val playerCombatant = fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
-        val modifiedMonster = monster
-          .withImmunity(Slashing)
-          .withHealth(100)
-
-        val monsterCombatant = modifiedMonster
+        val monsterCombatant = monster.withImmunity(Slashing).withHealth(100)
           .withCombatIndex(2)
 
-        resolveDamageMainHand(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
-          (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(100)))
+        adjustedDamage(10, Slashing, monsterCombatant) shouldBe 0
       }
     }
   }

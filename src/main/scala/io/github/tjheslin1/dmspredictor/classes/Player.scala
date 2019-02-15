@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
+import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
@@ -26,6 +27,12 @@ object Player {
         case c: Barbarian    => Barbarian._bonusActionUsed.set(bonusUsed)(c)
         case c: Berserker    => Berserker._bonusActionUsed.set(bonusUsed)(c)
         case c: TotemWarrior => TotemWarrior._bonusActionUsed.set(bonusUsed)(c)
+
+        case c: Cleric => Cleric._bonusActionUsed.set(bonusUsed)(c)
+
+        case _ =>
+          throw new NotImplementedError(
+            "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
       }
   }
 }

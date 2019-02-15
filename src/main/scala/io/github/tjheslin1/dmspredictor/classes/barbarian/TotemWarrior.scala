@@ -49,8 +49,7 @@ object TotemWarrior {
   import BaseBarbarianAbilities._
 
   def rageResistances(totem: Totem): List[DamageType] = totem match {
-    case Bear =>
-      List(Bludgeoning, Piercing, Slashing, Magical, Acid, Cold, Fire, Lightning, Poison, Thunder)
+    case Bear => DamageType.allDamageTypes diff List(Psychic)
   }
 
   def standardTotemWarriorAbilities(totem: Totem): List[CombatantAbility] = List(

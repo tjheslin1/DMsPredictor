@@ -6,7 +6,7 @@ import eu.timepit.refined.numeric.Interval
 
 package object spellcasting {
 
-  type SpellLevel = Int Refined Interval.ClosedOpen[W.`1`.T, W.`10`.T]
+  type SpellLevel = Int Refined Interval.ClosedOpen[W.`0`.T, W.`10`.T]
 
   sealed trait SchoolOfMagic extends Product with Serializable
 

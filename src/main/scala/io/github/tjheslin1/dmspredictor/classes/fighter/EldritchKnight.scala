@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
+import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
 import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
@@ -26,8 +27,8 @@ import monocle.macros.{GenLens, Lenses}
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
     abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
     proficiencyBonus: ProficiencyBonus = 0,
-    spellsKnown: Map[SpellLevel, Spell] = Map(ChromaticOrb.spellLevel -> ChromaticOrb),
-    spellSlots: EldritchKnightSpellSlots = EldritchKnightSpellSlots(FirstLevelSpellSlot(2)),
+    spellsKnown: Map[SpellLevel, Spell],
+    spellSlots: EldritchKnightSpellSlots ,
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,

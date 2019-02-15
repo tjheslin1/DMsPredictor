@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.model
 import cats.Show
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, Berserker, TotemWarrior}
+import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
@@ -65,6 +66,8 @@ object Creature {
       case c: Berserker    => Berserker._health.set(hp)(c)
       case c: TotemWarrior => TotemWarrior._health.set(hp)(c)
 
+      case c: Cleric => Cleric._health.set(hp)(c)
+
       case c: Goblin   => Goblin._health.set(hp)(c)
       case c: Werewolf => Werewolf._health.set(hp)(c)
     }
@@ -81,6 +84,8 @@ object Creature {
       case c: Berserker    => Berserker._maxHealth.set(hp)(c)
       case c: TotemWarrior => TotemWarrior._maxHealth.set(hp)(c)
 
+      case c: Cleric => Cleric._maxHealth.set(hp)(c)
+
       case c: Goblin   => Goblin._maxHealth.set(hp)(c)
       case c: Werewolf => Werewolf._maxHealth.set(hp)(c)
     }
@@ -96,6 +101,8 @@ object Creature {
       case c: Barbarian    => Barbarian._stats.set(stats)(c)
       case c: Berserker    => Berserker._stats.set(stats)(c)
       case c: TotemWarrior => TotemWarrior._stats.set(stats)(c)
+
+      case c: Cleric => Cleric._stats.set(stats)(c)
 
       case c: Goblin   => Goblin._stats.set(stats)(c)
       case c: Werewolf => Werewolf._stats.set(stats)(c)
@@ -114,6 +121,8 @@ object Creature {
         case c: Berserker    => Berserker.strengthLens.set(strScore)(c)
         case c: TotemWarrior => TotemWarrior.strengthLens.set(strScore)(c)
 
+        case c: Cleric => Cleric.strengthLens.set(strScore)(c)
+
         case c: Goblin   => Goblin.strengthLens.set(strScore)(c)
         case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
       }
@@ -130,6 +139,8 @@ object Creature {
         case c: Barbarian    => Barbarian.dexterityLens.set(dexScore)(c)
         case c: Berserker    => Berserker.dexterityLens.set(dexScore)(c)
         case c: TotemWarrior => TotemWarrior.dexterityLens.set(dexScore)(c)
+
+        case c: Cleric => Cleric.dexterityLens.set(dexScore)(c)
 
         case c: Goblin   => Goblin.dexterityLens.set(dexScore)(c)
         case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
@@ -148,6 +159,8 @@ object Creature {
         case c: Berserker    => Berserker.constitutionLens.set(conScore)(c)
         case c: TotemWarrior => TotemWarrior.constitutionLens.set(conScore)(c)
 
+        case c: Cleric => Cleric.constitutionLens.set(conScore)(c)
+
         case c: Goblin   => Goblin.constitutionLens.set(conScore)(c)
         case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
       }
@@ -163,6 +176,8 @@ object Creature {
       case c: Barbarian    => Barbarian.wisdomLens.set(wisScore)(c)
       case c: Berserker    => Berserker.wisdomLens.set(wisScore)(c)
       case c: TotemWarrior => TotemWarrior.wisdomLens.set(wisScore)(c)
+
+      case c: Cleric => Cleric.wisdomLens.set(wisScore)(c)
 
       case c: Goblin   => Goblin.wisdomLens.set(wisScore)(c)
       case c: Werewolf => Werewolf.wisdomLens.set(wisScore)(c)
@@ -181,6 +196,8 @@ object Creature {
         case c: Berserker    => Berserker.intelligenceLens.set(intScore)(c)
         case c: TotemWarrior => TotemWarrior.intelligenceLens.set(intScore)(c)
 
+        case c: Cleric => Cleric.intelligenceLens.set(intScore)(c)
+
         case c: Goblin   => Goblin.intelligenceLens.set(intScore)(c)
         case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
       }
@@ -198,6 +215,8 @@ object Creature {
         case c: Berserker    => Berserker.charismaLens.set(chaScore)(c)
         case c: TotemWarrior => TotemWarrior.charismaLens.set(chaScore)(c)
 
+        case c: Cleric => Cleric.charismaLens.set(chaScore)(c)
+
         case c: Goblin   => Goblin.charismaLens.set(chaScore)(c)
         case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
       }
@@ -213,6 +232,8 @@ object Creature {
       case c: Barbarian    => Barbarian._baseWeapon.set(wpn)(c)
       case c: Berserker    => Berserker._baseWeapon.set(wpn)(c)
       case c: TotemWarrior => TotemWarrior._baseWeapon.set(wpn)(c)
+
+      case c: Cleric => Cleric._baseWeapon.set(wpn)(c)
 
       case c: Goblin   => Goblin._baseWeapon.set(wpn)(c)
       case c: Werewolf => Werewolf._baseWeapon.set(wpn)(c)
@@ -230,6 +251,8 @@ object Creature {
       case c: Berserker    => Berserker._armour.set(armr)(c)
       case c: TotemWarrior => TotemWarrior._armour.set(armr)(c)
 
+      case c: Cleric => Cleric._armour.set(armr)(c)
+
       case c: Goblin   => Goblin._armour.set(armr)(c)
       case c: Werewolf => Werewolf._armour.set(armr)(c)
     }
@@ -246,6 +269,8 @@ object Creature {
         case c: Barbarian    => Barbarian._offHand.set(offH)(c)
         case c: Berserker    => Berserker._offHand.set(offH)(c)
         case c: TotemWarrior => TotemWarrior._offHand.set(offH)(c)
+
+        case c: Cleric => Cleric._offHand.set(offH)(c)
 
         case c: Goblin   => Goblin._offHand.set(offH)(c)
         case c: Werewolf => Werewolf._offHand.set(offH)(c)
@@ -275,6 +300,8 @@ object Creature {
       case c: Berserker    => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
       case c: TotemWarrior => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
 
+      case c: Cleric => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
+
       case _ => none[ProficiencyBonus]
     } { profBonus =>
       {
@@ -286,6 +313,8 @@ object Creature {
         case c: Barbarian    => Barbarian._proficiencyBonus.set(profBonus)(c)
         case c: Berserker    => Berserker._proficiencyBonus.set(profBonus)(c)
         case c: TotemWarrior => TotemWarrior._proficiencyBonus.set(profBonus)(c)
+
+        case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
 
         case c: Creature => c
       }
@@ -302,6 +331,8 @@ object Creature {
         case c: Barbarian    => Barbarian._resistances.set(res)(c)
         case c: Berserker    => Berserker._resistances.set(res)(c)
         case c: TotemWarrior => TotemWarrior._resistances.set(res)(c)
+
+        case c: Cleric => Cleric._resistances.set(res)(c)
 
         case c: Goblin   => Goblin._resistances.set(res)(c)
         case c: Werewolf => Werewolf._resistances.set(res)(c)
@@ -320,6 +351,8 @@ object Creature {
         case c: Berserker    => Berserker._immunities.set(res)(c)
         case c: TotemWarrior => TotemWarrior._immunities.set(res)(c)
 
+        case c: Cleric => Cleric._immunities.set(res)(c)
+
         case c: Goblin   => Goblin._immunities.set(res)(c)
         case c: Werewolf => Werewolf._immunities.set(res)(c)
       }
@@ -336,6 +369,8 @@ object Creature {
         case c: Barbarian    => Barbarian._abilities.set(res)(c)
         case c: Berserker    => Berserker._abilities.set(res)(c)
         case c: TotemWarrior => TotemWarrior._abilities.set(res)(c)
+
+        case c: Cleric => Cleric._abilities.set(res)(c)
 
         case c: Goblin   => Goblin._abilities.set(res)(c)
         case c: Werewolf => Werewolf._abilities.set(res)(c)
@@ -354,6 +389,8 @@ object Creature {
         case c: Berserker    => Berserker._attackStatus.set(status)(c)
         case c: TotemWarrior => TotemWarrior._attackStatus.set(status)(c)
 
+        case c: Cleric => Cleric._attackStatus.set(status)(c)
+
         case c: Goblin   => Goblin._attackStatus.set(status)(c)
         case c: Werewolf => Werewolf._attackStatus.set(status)(c)
       }
@@ -371,6 +408,8 @@ object Creature {
         case c: Berserker    => Berserker._defenseStatus.set(status)(c)
         case c: TotemWarrior => TotemWarrior._defenseStatus.set(status)(c)
 
+        case c: Cleric => Cleric._defenseStatus.set(status)(c)
+
         case c: Goblin   => Goblin._defenseStatus.set(status)(c)
         case c: Werewolf => Werewolf._defenseStatus.set(status)(c)
       }
@@ -386,6 +425,8 @@ object Creature {
     case c: Berserker    => val lvl: Level = c.level; lvl.some
     case c: TotemWarrior => val lvl: Level = c.level; lvl.some
 
+    case c: Cleric => val lvl: Level = c.level; lvl.some
+
     case _ => none[Level]
   } { lvl =>
     {
@@ -397,6 +438,8 @@ object Creature {
       case c: Barbarian    => Barbarian._level.set(lvl)(c)
       case c: Berserker    => Berserker._level.set(lvl)(c)
       case c: TotemWarrior => TotemWarrior._level.set(lvl)(c)
+
+      case c: Cleric => Cleric._level.set(lvl)(c)
 
       case c: Creature => c
     }

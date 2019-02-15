@@ -43,8 +43,9 @@ object EldritchKnightAbilities extends LazyLogging {
           val dmg = Math.max(
             0,
             attackResult match {
-              case CriticalHit  => spell.damage + spell.damage
-              case Hit          => spell.damage
+              case CriticalHit =>
+                spell.damage(eldritchKnight.level) + spell.damage(eldritchKnight.level)
+              case Hit          => spell.damage(eldritchKnight.level)
               case Miss         => 0
               case CriticalMiss => 0
             }

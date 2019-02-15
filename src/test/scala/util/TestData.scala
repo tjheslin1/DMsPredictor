@@ -10,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
+import io.github.tjheslin1.dmspredictor.classes.cleric.{Cleric, ClericSpellSlots}
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
@@ -17,7 +18,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
@@ -80,7 +81,7 @@ object TestData {
     def withStrength(strengthScore: Stat) = creatureStrengthLens.set(strengthScore)(creature)
     def withDexterity(dexScore: Stat)     = creatureDexterityLens.set(dexScore)(creature)
     def withConstitution(conScore: Stat)  = creatureConstitutionLens.set(conScore)(creature)
-    def withWisdom(wisScore: Stat)        = creatureConstitutionLens.set(wisScore)(creature)
+    def withWisdom(wisScore: Stat)        = creatureWisdomLens.set(wisScore)(creature)
     def withIntelligence(intScore: Stat)  = creatureIntelligenceLens.set(intScore)(creature)
     def withCharisma(chaScore: Stat)      = creatureCharismaLens.set(chaScore)(creature)
 
@@ -570,5 +571,31 @@ trait TestData extends RandomDataGenerator {
         defenseStatus = player.defenseStatus,
         name = player.name
       )
+  }
+
+  implicit val arbCleric: Arbitrary[Cleric] = Arbitrary {
+    for {
+    player <- arbPlayer.arbitrary
+    level <- arbLevel.arbitrary
+    firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
+    } yield Cleric(
+      level,
+      player.health,
+      player.health,
+      player.stats,
+      player.baseWeapon,
+      Map.empty[SpellLevel, Spell],
+      ClericSpellSlots(firstLevelSpellSlots),
+      player.armour,
+      player.offHand,
+      Cleric.standardClericAbilities,
+      player.proficiencyBonus,
+      player.resistances,
+      player.immunities,
+      player.bonusActionUsed,
+      attackStatus = player.attackStatus,
+      defenseStatus = player.defenseStatus,
+      name = player.name
+    )
   }
 }

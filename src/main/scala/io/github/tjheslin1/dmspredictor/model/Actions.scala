@@ -78,20 +78,21 @@ object Actions extends LazyLogging {
       }
     )
 
-    val adjustedDamage = weapon.damageType match {
-      case damageType if target.creature.resistances.contains(damageType) =>
-        math.max(1, math.floor(dmg / 2).toInt)
-      case damageType if target.creature.immunities.contains(damageType) => 0
-      case _                                                             => dmg
-    }
+    val adjustedDmg = adjustedDamage(dmg, weapon.damageType, target)
 
     logger.debug(
-      s"${attacker.creature.name} attacks ${target.creature.name} for $dmg ($adjustedDamage adjusted)")
+      s"${attacker.creature.name} attacks ${target.creature.name} for $dmg ($adjustedDmg adjusted)")
 
     val damagedTarget =
-      target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
+      target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDmg)))
 
     (attacker, damagedTarget)
+  }
+
+  def adjustedDamage(dmg: Int, damageType: DamageType, target: Combatant): Int = damageType match {
+    case dt if target.creature.resistances.contains(dt) => math.max(1, math.floor(dmg / 2).toInt)
+    case dt if target.creature.immunities.contains(dt) => 0
+    case _                                             => dmg
   }
 
   def attackAndDamage[_: RS](attacker: Combatant, target: Combatant): (Combatant, Combatant) = {
