@@ -24,10 +24,24 @@ case object CriticalMiss extends AttackResult {
 
 object Actions extends LazyLogging {
 
+  def rollAttack[_: RS](attacker: Combatant, target: Combatant): Int =
+    (attacker.creature.attackStatus, target.creature.defenseStatus) match {
+      case (Advantage, Advantage)       => D20.roll()
+      case (Disadvantage, Disadvantage) => D20.roll()
+      case (Advantage, _)               => D20.rollWithAdvantage()
+      case (_, Disadvantage)            => D20.rollWithAdvantage()
+      case (Disadvantage, _)            => D20.rollWithDisadvantage()
+      case (_, Advantage)               => D20.rollWithDisadvantage()
+      case _                            => D20.roll()
+    }
+
   def attack[_: RS](attacker: Combatant,
                     attackerWeapon: Weapon,
                     target: Combatant): AttackResult = {
-    val roll = D20.roll()
+
+    val roll = rollAttack(attacker, target)
+
+    logger.debug(s"D20.roll() of $roll")
 
     if (attacker.creature.scoresCritical(roll)) CriticalHit
     else if (roll == 1) CriticalMiss
@@ -72,7 +86,7 @@ object Actions extends LazyLogging {
     }
 
     logger.debug(
-      s"${attacker.creature.name} attacks ${target.creature.name} for $adjustedDamage damage")
+      s"${attacker.creature.name} attacks ${target.creature.name} for $dmg ($adjustedDamage adjusted)")
 
     val damagedTarget =
       target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
@@ -85,8 +99,10 @@ object Actions extends LazyLogging {
 
     if (attackResult.result > 0)
       resolveDamage(attacker, target, attacker.creature.weapon, attackResult)
-    else
+    else {
+      logger.debug(s"${attacker.creature.name} misses regular attack")
       (attacker, target)
+    }
   }
 
   def attackAndDamageTimes[_: RS](times: Int,

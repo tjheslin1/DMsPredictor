@@ -32,12 +32,12 @@ import monocle.macros.{GenLens, Lenses}
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardEldritchKnightAbilities,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName)
     extends BaseFighter {
 
   import Fighter._
-
-  val creatureType: CreatureType = PlayerCharacter
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 

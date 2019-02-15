@@ -1,4 +1,4 @@
-package unit
+package unit.fighter
 
 import base.UnitSpecBase
 import cats.syntax.option._
@@ -90,21 +90,21 @@ class FighterSpec extends UnitSpecBase {
     "calculate armour class for wearing a shield but no armour" in new TestContext {
       Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
-        Shield().some,
+        Shield.some,
         List.empty[FighterFightingStyle]) shouldBe 12
     }
 
     "calculate armour class for wearing armour and a shield" in new TestContext {
       Fighter.armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
-        Shield().some,
+        Shield.some,
         List.empty[FighterFightingStyle]) shouldBe 15
     }
 
     "calculate armour class for wearing armour, shield and with high dexterity" in new TestContext {
       Fighter.armourClassWithFightingStyle(BaseStats(14, 14, 14, 14, 14, 14),
         ChainShirt,
-        Shield().some,
+        Shield.some,
         List.empty[FighterFightingStyle]) shouldBe 17
     }
 

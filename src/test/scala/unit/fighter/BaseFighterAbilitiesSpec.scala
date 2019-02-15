@@ -1,4 +1,4 @@
-package unit
+package unit.fighter
 
 import base.UnitSpecBase
 import cats.syntax.option._
@@ -19,7 +19,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
   "Two Weapon Fighting" should {
 
-    "be used Player is if equipped with two weapons" in {
+    "be used if Player is equipped with two weapons" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -39,6 +39,17 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
           offHAndSwordUsedCount shouldBe 1
         }
       }
+    }
+
+    "set the player's bonus action to be used" in {
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val updatedFighter =
+            twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update.asInstanceOf[Fighter]
+
+          updatedFighter.bonusActionUsed shouldBe true
+        }
     }
 
     "be used with Extra Attack" in {
@@ -67,7 +78,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
     "meet the condition if the Player wields two weapons" in new TestContext {
       val dualWieldingFighter = random[Fighter]
-          .withFightingStyle(TwoWeaponFighting)
+        .withFightingStyle(TwoWeaponFighting)
         .withBaseWeapon(trackedMainSword)
         .withOffHand(trackedOffHandSword)
         .withLevel(LevelFour)
@@ -96,6 +107,18 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(fighter).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Player has already used their bonus action this turn" in new TestContext {
+      val dualWieldingFighter = random[Fighter]
+        .withFightingStyle(TwoWeaponFighting)
+        .withBonusActionUsed()
+        .withBaseWeapon(trackedMainSword)
+        .withOffHand(trackedOffHandSword)
+        .withLevel(LevelFour)
+        .withCombatIndex(1)
+
+      twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe false
     }
   }
 

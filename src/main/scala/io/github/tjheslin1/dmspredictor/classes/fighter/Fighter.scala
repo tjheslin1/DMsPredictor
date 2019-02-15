@@ -33,12 +33,12 @@ import monocle.macros.{GenLens, Lenses}
                                 immunities: List[DamageType] = List.empty,
                                 bonusActionUsed: Boolean = false,
                                 abilities: List[CombatantAbility] = standardFighterAbilities,
+                                attackStatus: AttackStatus = Regular,
+                                defenseStatus: AttackStatus = Regular,
                                 name: String = NameGenerator.randomName)
     extends BaseFighter {
 
   import Fighter._
-
-  val creatureType: CreatureType = PlayerCharacter
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
@@ -61,7 +61,7 @@ object Fighter {
 
   def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
     val health = calculateHealth(LevelOne, 14)
-    new Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
+    Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
   }
 
   val standardFighterAbilities: List[CombatantAbility] = List(
@@ -101,9 +101,10 @@ object Fighter {
                                    fightingStyles: List[FighterFightingStyle]): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
     val shieldBonus = offHand match {
-      case Some(Shield()) => 2
-      case _              => 0
+      case Some(Shield) => Shield.armourClass(stats.dexterity)
+      case _            => 0
     }
+
     val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
 
     armour match {

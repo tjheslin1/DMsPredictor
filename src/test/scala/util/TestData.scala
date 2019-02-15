@@ -8,7 +8,9 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, _}
+import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
+import io.github.tjheslin1.dmspredictor.classes.barbarian._
+import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -54,6 +56,8 @@ object TestData {
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
+    def withResetTurn(reset: Unit => Unit) = _turnResetTracker.set(reset)(testMonster)
+
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
   }
 
@@ -90,6 +94,11 @@ object TestData {
     def withNoResistances()             = creatureResistancesLens.set(List.empty)(creature)
     def withNoImmunities()              = creatureImmunitiesLens.set(List.empty)(creature)
     def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
+
+    def withAttackStatus(attackStatus: AttackStatus) =
+      creatureAttackStatusLens.set(attackStatus)(creature)
+    def withDefenseStatus(defenseStatus: AttackStatus) =
+      creatureDefenseStatusLens.set(defenseStatus)(creature)
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
@@ -128,6 +137,21 @@ object TestData {
       _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
     def withNoSpellSlotsAvailable() =
       _spellSlots.set(EldritchKnightSpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
+  }
+
+  implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
+    import Barbarian._
+
+    def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(barbarian)
+    def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(barbarian)
+  }
+
+  implicit class BerserkerOps(val berserker: Berserker) extends AnyVal {
+    import Berserker._
+
+    def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(berserker)
+    def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(berserker)
+    def withInFrenzy() = _inFrenzy.set(true)(berserker)
   }
 }
 
@@ -216,8 +240,8 @@ trait TestData extends RandomDataGenerator {
       }
   }
 
-  implicit val arbShield: Arbitrary[Option[Shield]] = Arbitrary {
-    Gen.oneOf(none[Shield], Shield().some) // TODO Gen any type of equipment
+  implicit val arbShield: Arbitrary[Option[Equipment]] = Arbitrary {
+    Gen.oneOf(none[Equipment], Shield.some) // TODO Gen any type of equipment
   }
 
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
@@ -229,11 +253,10 @@ trait TestData extends RandomDataGenerator {
         val level: Level             = lvl
         val bonusActionUsed: Boolean = false
 
-        val creatureType: CreatureType = creature.creatureType
-        val health: Int                = creature.health
-        val maxHealth: Int             = creature.maxHealth
-        val stats: BaseStats           = creature.stats
-        val baseWeapon: Weapon         = creature.baseWeapon
+        val health: Int        = creature.health
+        val maxHealth: Int     = creature.maxHealth
+        val stats: BaseStats   = creature.stats
+        val baseWeapon: Weapon = creature.baseWeapon
 
         def weapon[_: RS]: Weapon = creature.weapon
 
@@ -245,10 +268,14 @@ trait TestData extends RandomDataGenerator {
         val immunities: List[DamageType]       = creature.immunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
+        val attackStatus: AttackStatus         = creature.attackStatus
+        val defenseStatus: AttackStatus        = creature.defenseStatus
 
         def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
+
+        def turnReset(): Creature = creature.turnReset()
       }
   }
 
@@ -285,12 +312,17 @@ trait TestData extends RandomDataGenerator {
         val bonusActionUsed: Boolean          = false
         val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
+        val attackStatus: AttackStatus        = Regular
+        val defenseStatus: AttackStatus       = Regular
 
         def updateHealth(modification: Int): Creature =
           throw new NotImplementedError(
             "Impossible to implement, results in recursive definition of Creature")
 
         def scoresCritical(roll: Int): Boolean = roll == 20
+
+        def turnReset(): Creature =
+          throw new NotImplementedError("Random generate should delegate to classes turnReset")
       }
   }
 
@@ -309,6 +341,8 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?
+        creature.attackStatus,
+        creature.defenseStatus,
         creature.name
       )
   }
@@ -329,6 +363,9 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?
+        creature.attackStatus,
+        creature.defenseStatus,
+        turnResetTracker = () => _,
         creature.name
       )
   }
@@ -358,6 +395,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Fighter.standardFighterAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -385,6 +424,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Champion.standardChampionAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -413,6 +454,8 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         BattleMaster.standardBattleMasterAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
       )
   }
@@ -441,7 +484,91 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         EldritchKnight.standardEldritchKnightAbilities,
+        player.attackStatus,
+        player.defenseStatus,
         player.name
+      )
+  }
+
+  implicit val arbBarbarian: Arbitrary[Barbarian] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      Barbarian(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        BaseBarbarian.rageUsagesPerLevel(level),
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        Barbarian.standardBarbarianAbilities,
+        inRage = false,
+        rageTurnsLeft = 10,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
+      )
+  }
+
+  implicit val arbBerserker: Arbitrary[Berserker] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      Berserker(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        BaseBarbarian.rageUsagesPerLevel(level),
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        Barbarian.standardBarbarianAbilities,
+        inRage = false,
+        rageTurnsLeft = 10,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
+      )
+  }
+
+  implicit val arbTotemWarrior: Arbitrary[TotemWarrior] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      TotemWarrior(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        BaseBarbarian.rageUsagesPerLevel(level),
+        Bear,
+        TotemWarrior.standardTotemWarriorAbilities(Bear),
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        inRage = false,
+        rageTurnsLeft = 10,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
+        name = player.name
       )
   }
 }

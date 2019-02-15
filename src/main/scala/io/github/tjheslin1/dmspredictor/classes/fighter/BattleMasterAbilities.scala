@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
@@ -12,7 +13,7 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
   * In terms of combat, most Combat Maneuvers add a superiority dice roll to damage, therefore only one is implemented.
   * The other maneuvers grant more speed, etc, which is outside the scope of the simulator.
   */
-object BattleMasterAbilities {
+object BattleMasterAbilities extends LazyLogging {
 
   def disarmingAttackManeuver(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
@@ -27,7 +28,9 @@ object BattleMasterAbilities {
       def conditionMet: Boolean =
         battleMaster.level >= levelRequirement && battleMaster.superiorityDiceCount > 0
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used Disarming Attack")
+
         target match {
           case None => (combatant, none[Combatant])
           case Some(target: Combatant) =>
@@ -55,6 +58,7 @@ object BattleMasterAbilities {
                 }
             }
         }
+      }
 
       def update: Creature = {
         val updatedSuperiorityDiceCount = battleMaster.superiorityDiceCount - 1

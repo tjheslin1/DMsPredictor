@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.eq._
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.strategy._
@@ -10,11 +11,14 @@ import io.github.tjheslin1.dmspredictor.util.QueueOps._
 import scala.collection.immutable.Queue
 import scala.util.{Random => JRandom}
 
-object Move {
+object Move extends LazyLogging {
 
   def takeMove[_: RS](queue: Queue[Combatant], focus: Focus): Queue[Combatant] = {
     val (unactedCombatant, others) = queue.dequeue
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
+
+    val resetUnactedCombatant =
+      Combatant.creatureLens.set(unactedCombatant.creature.turnReset())(unactedCombatant)
 
     if (unactedCombatant.creature.isConscious) {
 
@@ -22,15 +26,15 @@ object Move {
       val pcToAttack  = nextToFocus(pcs, focus)
 
       val optAbility: Option[CombatantAbility] =
-        unactedCombatant.creature.abilities.sortBy(_(unactedCombatant).order).find {
+        resetUnactedCombatant.creature.abilities.sortBy(_(resetUnactedCombatant).order).find {
           combatantAbility =>
-            val ability = combatantAbility(unactedCombatant)
+            val ability = combatantAbility(resetUnactedCombatant)
             ability.conditionMet && ability.triggerMet
         }
 
-      val (actedCombatant, updatedTarget) = unactedCombatant.creature.creatureType match {
-        case PlayerCharacter => actionAgainstTarget(unactedCombatant, mobToAttack, optAbility)
-        case Monster         => actionAgainstTarget(unactedCombatant, pcToAttack, optAbility)
+      val (actedCombatant, updatedTarget) = resetUnactedCombatant.creature.creatureType match {
+        case PlayerCharacter => actionAgainstTarget(resetUnactedCombatant, mobToAttack, optAbility)
+        case Monster         => actionAgainstTarget(resetUnactedCombatant, pcToAttack, optAbility)
       }
 
       val updatedCombatant =
@@ -44,7 +48,7 @@ object Move {
     } else {
       val updatedCombatant =
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-          .set(false)(unactedCombatant)
+          .set(false)(resetUnactedCombatant)
       others.append(updatedCombatant)
     }
   }
@@ -54,6 +58,8 @@ object Move {
       toAttack: Option[Combatant],
       optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) =
     toAttack.fold((combatant, none[Combatant])) { target =>
+      logger.debug(s"${combatant.creature.name} targets ${target.creature.name}")
+
       optAbility.fold {
         val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, target)
         (updatedAttacker, updatedTarget.some)

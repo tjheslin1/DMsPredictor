@@ -3,12 +3,13 @@ package io.github.tjheslin1.dmspredictor.classes
 import cats.data.NonEmptyList
 import cats.data.NonEmptyList.one
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 
-object CoreAbilities {
+object CoreAbilities extends LazyLogging {
 
   val ExtraAttack = "Extra Attack"
 
@@ -25,9 +26,11 @@ object CoreAbilities {
     val abilityAction    = SingleAttack
 
     val triggerMet: Boolean   = true
-    def conditionMet: Boolean = player.level >= levelRequirement && player.bonusActionUsed == false
+    def conditionMet: Boolean = player.level >= levelRequirement
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used Extra Attack ")
+
       target match {
         case None => (combatant, none[Combatant])
         case Some(target: Combatant) =>
@@ -52,6 +55,7 @@ object CoreAbilities {
               }
             }
       }
+    }
 
     def update: Creature =
       (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)

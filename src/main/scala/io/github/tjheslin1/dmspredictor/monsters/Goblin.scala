@@ -23,6 +23,8 @@ import monocle.macros.{GenLens, Lenses}
                                resistances: List[DamageType] = List(),
                                immunities: List[DamageType] = List(),
                                abilities: List[CombatantAbility] = List.empty,
+                               attackStatus: AttackStatus = Regular,
+                               defenseStatus: AttackStatus = Regular,
                                name: String = NameGenerator.randomName)
     extends Creature {
 
@@ -34,6 +36,8 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
+
+  def turnReset(): Creature = this
 }
 
 object Goblin {

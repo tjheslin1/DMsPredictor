@@ -1,12 +1,15 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.model.Creature
 import monocle.Lens
 
 trait BaseFighter extends Player with Product with Serializable {
 
   val fightingStyles: List[FighterFightingStyle]
   val abilityUsages: BaseFighterAbilities
+
+  def turnReset(): Creature = this
 }
 
 object BaseFighter {

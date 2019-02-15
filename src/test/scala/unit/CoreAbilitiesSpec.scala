@@ -3,7 +3,6 @@ package unit
 import base.UnitSpecBase
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
-import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -33,19 +32,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .useAbility(monster.some)
 
           swordUsedCount shouldBe 2
-        }
-      }
-    }
-
-    "set the Player's Bonus Action used to true" in {
-      forAll { fighter: Fighter =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val updatedPlayer =
-            extraAttack(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[Player]
-
-          updatedPlayer.bonusActionUsed shouldBe true
         }
       }
     }

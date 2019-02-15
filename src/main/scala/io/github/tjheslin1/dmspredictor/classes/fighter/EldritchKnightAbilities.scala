@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifier
@@ -8,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import monocle.Lens
 import monocle.macros.GenLens
 
-object EldritchKnightAbilities {
+object EldritchKnightAbilities extends LazyLogging {
 
   import EldritchKnightSpellSlots._
 
@@ -25,6 +26,8 @@ object EldritchKnightAbilities {
       eldritchKnight.level >= levelRequirement && available(eldritchKnight.spellSlots)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used Cast Spell")
+
       val spellSlot = highestSpellSlotAvailable(eldritchKnight.spellSlots)
       val spell     = eldritchKnight.spellsKnown(spellSlot.spellLevel)
 
