@@ -34,7 +34,7 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelTwo
     val abilityAction    = WholeAction
 
-    def triggerMet = combatant.creature.health <= combatant.creature.maxHealth / 2
+    def triggerMet(target: Option[Combatant])= combatant.creature.health <= combatant.creature.maxHealth / 2
     def conditionMet =
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
@@ -63,7 +63,7 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelOne
     val abilityAction    = BonusAction
 
-    val triggerMet: Boolean = true
+    def triggerMet(target: Option[Combatant]) = true
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
@@ -112,7 +112,7 @@ object BaseFighterAbilities extends LazyLogging {
       val levelRequirement = LevelTwo
       val abilityAction    = WholeAction
 
-      val triggerMet: Boolean   = true
+      def triggerMet(target: Option[Combatant])   = true
       def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
@@ -121,13 +121,13 @@ object BaseFighterAbilities extends LazyLogging {
         target match {
           case None => (combatant, none[Combatant])
           case Some(target: Combatant) =>
-            nextAbilityToUseInConjunction(combatant, order, AbilityAction.Any)
+            nextAbilityToUseInConjunction(combatant, target.some, order, AbilityAction.Any)
               .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
                 val (updatedAttacker, optUpdatedTarget) =
                   useAdditionalAbility(nextAbility, combatant, target)
 
                 optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                  nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.Any)
+                  nextAbilityToUseInConjunction(updatedAttacker, updatedTarget.some, order, AbilityAction.Any)
                     .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
                       useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                     }

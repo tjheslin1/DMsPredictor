@@ -24,7 +24,7 @@ object BattleMasterAbilities extends LazyLogging {
       val levelRequirement = LevelThree
       val abilityAction    = SingleAttack
 
-      val triggerMet: Boolean = true
+      def triggerMet(target: Option[Combatant]) = true
       def conditionMet: Boolean =
         battleMaster.level >= levelRequirement && battleMaster.superiorityDiceCount > 0
 

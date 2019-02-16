@@ -28,7 +28,7 @@ object CoreAbilities extends LazyLogging {
     val levelRequirement = LevelFive
     val abilityAction    = SingleAttack
 
-    val triggerMet: Boolean   = true
+    def triggerMet(target: Option[Combatant])   = true
     def conditionMet: Boolean = player.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
@@ -36,8 +36,9 @@ object CoreAbilities extends LazyLogging {
 
       target match {
         case None => (combatant, none[Combatant])
-        case Some(target: Combatant) =>
+        case Some(target) =>
           nextAbilityToUseInConjunction(combatant,
+                          target.some,
                                         order,
                                         NonEmptyList.of(ability.BonusAction, SingleAttack))
             .fold {
@@ -48,7 +49,7 @@ object CoreAbilities extends LazyLogging {
                 useAdditionalAbility(nextAbility, combatant, target)
 
               updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedCombatant, order, one(SingleAttack)).fold {
+                nextAbilityToUseInConjunction(updatedCombatant, updatedTargetOfAbility, order, one(SingleAttack)).fold {
                   val (updatedAttacker, updatedAttackedTarget) =
                     attackAndDamageTimes(1, updatedCombatant, updatedTarget)
                   (updatedAttacker, updatedAttackedTarget.some)
@@ -74,7 +75,7 @@ object CoreAbilities extends LazyLogging {
     val levelRequirement = LevelOne
     val abilityAction    = WholeAction
 
-    val triggerMet: Boolean = true
+    def triggerMet(target: Option[Combatant]) = true
     def conditionMet: Boolean =
       spellCaster.level >= spellCaster.levelSpellcastingLearned &&
         (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined)

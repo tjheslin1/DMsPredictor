@@ -7,12 +7,13 @@ import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import org.scalatest.OptionValues
 import util.TestData._
 import util.TestMonster
 
 import scala.collection.immutable.Queue
 
-class MoveSpec extends UnitSpecBase {
+class MoveSpec extends UnitSpecBase with OptionValues {
 
   val Priority = 1
 
@@ -90,35 +91,6 @@ class MoveSpec extends UnitSpecBase {
       }
     }
 
-    "focus mob with lowest health first" in new TestContext {
-      forAll {
-        (fighter: Fighter,
-         monsterOne: TestMonster,
-         monsterTwo: TestMonster,
-         monsterThree: TestMonster) =>
-          val player = Fighter._abilityUsages
-            .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
-            .withStrength(10)
-            .withCombatIndex(1)
-
-          val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
-          val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)
-          val enemyThree = monsterThree.withHealth(50).withCombatIndex(4)
-
-          val queue = Queue(player, enemyOne, enemyTwo, enemyThree)
-
-          val Queue(Combatant(_, updatedEnemyOne),
-                    Combatant(_, updatedEnemyTwo),
-                    Combatant(_, updatedEnemyThree),
-                    _) =
-            takeMove(queue, LowestFirst)(D20.naturalTwenty)
-
-          updatedEnemyOne.health shouldBe 50
-          updatedEnemyTwo.health shouldBe 0
-          updatedEnemyThree.health shouldBe 50
-      }
-    }
-
     "call Ability" in new TestContext {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val trackedFighter =
@@ -128,6 +100,21 @@ class MoveSpec extends UnitSpecBase {
 
         trackedAbilityUsedCount shouldBe 1
         trackedAbilityUsed shouldBe true
+      }
+    }
+  }
+
+  "nextToFocus" should {
+
+    "focus mob with lowest health first" in new TestContext {
+      forAll { (monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
+        val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
+        val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)
+        val enemyThree = monsterThree.withHealth(50).withCombatIndex(4)
+
+        val enemies = Queue(enemyOne, enemyTwo, enemyThree)
+
+        nextToFocus(enemies, LowestFirst).value shouldBe enemyTwo
       }
     }
   }
@@ -144,7 +131,7 @@ class MoveSpec extends UnitSpecBase {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      val triggerMet: Boolean   = true
+      def triggerMet(target: Option[Combatant])   = true
       def conditionMet: Boolean = trackedAbilityUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {

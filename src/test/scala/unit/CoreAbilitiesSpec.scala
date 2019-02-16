@@ -9,10 +9,6 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
-  GuidingBolt,
-  SacredFlame
-}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
@@ -272,7 +268,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = SingleAttack
 
-        val triggerMet: Boolean   = true
+        def triggerMet(target: Option[Combatant])   = true
         def conditionMet: Boolean = true
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
@@ -292,7 +288,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = SingleAttack
 
-        val triggerMet: Boolean   = true
+        def triggerMet(target: Option[Combatant])   = true
         def conditionMet: Boolean = singleUseAttackAbilityUsed == false
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
@@ -315,7 +311,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        val triggerMet: Boolean   = true
+        def triggerMet(target: Option[Combatant])   = true
         def conditionMet: Boolean = trackedActionAbilityUsed == false
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {

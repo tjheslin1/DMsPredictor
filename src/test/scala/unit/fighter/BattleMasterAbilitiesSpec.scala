@@ -95,7 +95,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      val triggerMet: Boolean   = true
+      def triggerMet(target: Option[Combatant])   = true
       def conditionMet: Boolean = trackedAbilityUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {

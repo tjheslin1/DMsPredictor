@@ -9,7 +9,7 @@ abstract class Ability(combatant: Combatant) {
   val levelRequirement: Level
   val abilityAction: AbilityAction
 
-  def triggerMet: Boolean
+  def triggerMet(target: Option[Combatant]): Boolean
   def conditionMet: Boolean
 
   def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant])

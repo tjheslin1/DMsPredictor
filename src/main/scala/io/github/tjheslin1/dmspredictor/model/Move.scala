@@ -27,16 +27,13 @@ object Move extends LazyLogging {
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val optAbility: Option[CombatantAbility] =
-        conditionHandledCombatant.creature.abilities.sortBy(_(conditionHandledCombatant).order).find {
-          combatantAbility =>
-            val ability = combatantAbility(conditionHandledCombatant)
-            ability.conditionMet && ability.triggerMet
-        }
-
       val (actedCombatant, updatedTarget) = conditionHandledCombatant.creature.creatureType match {
-        case PlayerCharacter => actionAgainstTarget(conditionHandledCombatant, mobToAttack, optAbility)
-        case Monster         => actionAgainstTarget(conditionHandledCombatant, pcToAttack, optAbility)
+        case PlayerCharacter =>
+          val optAbility = availableAbility(conditionHandledCombatant, mobToAttack)
+          actionAgainstTarget(conditionHandledCombatant, mobToAttack, optAbility)
+        case Monster =>
+          val optAbility = availableAbility(conditionHandledCombatant, pcToAttack)
+          actionAgainstTarget(conditionHandledCombatant, pcToAttack, optAbility)
       }
 
       val updatedCombatant =
@@ -57,8 +54,15 @@ object Move extends LazyLogging {
 
   def handleCondition(combatant: Combatant): Combatant = combatant.creature.conditions match {
     case List() => combatant
-    case _ => ???
+    case _      => ???
   }
+
+  private def availableAbility(attacker: Combatant,
+                               target: Option[Combatant]): Option[CombatantAbility] =
+    attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
+      val ability = combatantAbility(attacker)
+      ability.conditionMet && ability.triggerMet(target)
+    }
 
   private def actionAgainstTarget[_: RS](
       combatant: Combatant,
@@ -78,9 +82,9 @@ object Move extends LazyLogging {
       }
     }
 
-  private def nextToFocus(combatants: Queue[Combatant], focus: Focus): Option[Combatant] = {
+  def nextToFocus(combatantsToAttack: Queue[Combatant], focus: Focus): Option[Combatant] = {
 
-    val consciousCombatants = combatants.filter(_.creature.isConscious)
+    val consciousCombatants = combatantsToAttack.filter(_.creature.isConscious)
     focus match {
       case LowestFirst => consciousCombatants.sortBy(_.creature.health).headOption
       case RandomFocus =>

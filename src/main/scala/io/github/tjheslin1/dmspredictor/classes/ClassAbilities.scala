@@ -10,6 +10,7 @@ object ClassAbilities {
 
   def nextAbilityToUseInConjunction[_: RS](
       attacker: Combatant,
+      target: Option[Combatant],
       currentOrder: Int,
       suitableAction: NonEmptyList[AbilityAction]): Option[CombatantAbility] =
     attacker.creature.abilities
@@ -18,7 +19,7 @@ object ClassAbilities {
         val nextAbility = ability(attacker)
         suitableAction.toList.contains(nextAbility.abilityAction) &&
         nextAbility.order > currentOrder &&
-        nextAbility.conditionMet && nextAbility.triggerMet
+        nextAbility.conditionMet && nextAbility.triggerMet(target)
       }
 
   def useAttackActionTwice[_: RS](attacker: Combatant,

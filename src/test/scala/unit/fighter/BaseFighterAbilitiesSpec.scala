@@ -42,14 +42,15 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "set the player's bonus action to be used" in {
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+      new TestContext {
+        implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val updatedFighter =
-            twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update.asInstanceOf[Fighter]
+        val updatedFighter =
+          twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update
+            .asInstanceOf[Fighter]
 
-          updatedFighter.bonusActionUsed shouldBe true
-        }
+        updatedFighter.bonusActionUsed shouldBe true
+      }
     }
 
     "be used with Extra Attack" in {
@@ -129,7 +130,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val lowHealthFighter =
           fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
-        secondWind(Priority)(lowHealthFighter).triggerMet shouldBe true
+        secondWind(Priority)(lowHealthFighter).triggerMet(none[Combatant]) shouldBe true
       }
     }
 
@@ -153,7 +154,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .withCombatIndex(1)
 
-        secondWind(Priority)(lowHealthFighter).triggerMet shouldBe false
+        secondWind(Priority)(lowHealthFighter).triggerMet(none[Combatant]) shouldBe false
       }
     }
   }
@@ -245,8 +246,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        val triggerMet: Boolean   = true
-        def conditionMet: Boolean = trackedAbilityOneUsed == false
+        def triggerMet(target: Option[Combatant]) = true
+        def conditionMet: Boolean                 = trackedAbilityOneUsed == false
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
           trackedAbilityOneUsedCount += 1
@@ -269,8 +270,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        val triggerMet: Boolean   = true
-        def conditionMet: Boolean = trackedAbilityTwoUsed == false
+        def triggerMet(target: Option[Combatant]) = true
+        def conditionMet: Boolean                 = trackedAbilityTwoUsed == false
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
           trackedAbilityTwoUsedCount += 1

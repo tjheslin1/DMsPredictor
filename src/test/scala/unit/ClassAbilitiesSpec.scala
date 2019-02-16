@@ -1,6 +1,7 @@
 package unit
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities.nextAbilityToUseInConjunction
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
@@ -20,7 +21,10 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
             .withCombatIndex(1)
 
           val expected = dummyAbility(3)(combatant)
-          val actual   = nextAbilityToUseInConjunction(combatant, 2, AbilityAction.Any).value.apply(combatant)
+          val actual = nextAbilityToUseInConjunction(combatant,
+                                                     none[Combatant],
+                                                     2,
+                                                     AbilityAction.Any).value.apply(combatant)
 
           actual.name shouldBe expected.name
           actual.order shouldBe expected.order
@@ -33,17 +37,19 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
 
     def dummyAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String            = s"test-ability-$currentOrder"
-      val order                   = currentOrder
+      val name: String     = s"test-ability-$currentOrder"
+      val order            = currentOrder
       val levelRequirement = LevelOne
-      val abilityAction           = WholeAction
+      val abilityAction    = WholeAction
 
-      val triggerMet: Boolean   = true
-      val conditionMet: Boolean = true
+      def triggerMet(target: Option[Combatant]) = true
+      val conditionMet: Boolean                 = true
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = (combatant, target)
+      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+        (combatant, target)
 
       def update: Creature = combatant.creature
+
     }
   }
 }
