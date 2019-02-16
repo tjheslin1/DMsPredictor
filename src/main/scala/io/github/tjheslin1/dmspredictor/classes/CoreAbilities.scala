@@ -75,7 +75,8 @@ object CoreAbilities extends LazyLogging {
     val abilityAction    = WholeAction
 
     val triggerMet: Boolean   = true
-    def conditionMet: Boolean = spellCaster.level >= spellCaster.levelSpellcastingLearned
+    def conditionMet: Boolean = spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+      (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")

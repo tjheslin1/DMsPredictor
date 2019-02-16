@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
-import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, _}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -19,7 +19,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{GuidingBolt, SacredFlame}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell, SpellLevel}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
@@ -134,11 +134,20 @@ object TestData {
     def withAllBaseFighterAbilitiesUsed() =
       _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
 
-    def withSpell(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
+    def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
     def withAllSpellSlotsAvailable() =
       _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
     def withNoSpellSlotsAvailable() =
       _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
+  }
+
+  implicit class ClericOps(val cleric: Cleric) extends AnyVal {
+    import Cleric._
+
+    def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(cleric)
+    def withNoCantrip() = _cantripKnown.set(none[Spell])(cleric)
+    def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(cleric)
+    def withNoSpellSlotsAvailable() = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {

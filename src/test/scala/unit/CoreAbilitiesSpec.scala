@@ -4,10 +4,15 @@ import base.UnitSpecBase
 import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
+import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, Fighter}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
+  GuidingBolt,
+  SacredFlame
+}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
@@ -91,7 +96,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val eldritchKnightCombatant = eldritchKnight
-            .withSpell(trackedMeleeSpellAttack)
+            .withSpellKnown(trackedMeleeSpellAttack)
             .withAllBaseFighterAbilitiesUsed()
             .withAllSpellSlotsAvailable()
             .withLevel(LevelThree)
@@ -112,7 +117,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val spellCastingEK = eldritchKnight
-            .withSpell(trackedSavingThrowSpell)
+            .withSpellKnown(trackedSavingThrowSpell)
             .withAllBaseFighterAbilitiesUsed()
             .withAllSpellSlotsAvailable()
 
@@ -138,7 +143,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val spellCastingEK = eldritchKnight
-            .withSpell(trackedMeleeSpellAttack)
+            .withSpellKnown(trackedMeleeSpellAttack)
             .withAllBaseFighterAbilitiesUsed()
             .withAllSpellSlotsAvailable()
 
@@ -160,7 +165,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val eldritchKnightCombatant = eldritchKnight
-            .withSpell(trackedMeleeSpellAttack)
+            .withSpellKnown(trackedMeleeSpellAttack)
             .withAllBaseFighterAbilitiesUsed()
             .withAllSpellSlotsAvailable()
             .withLevel(LevelThree)
@@ -186,7 +191,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val eldritchKnightCombatant = eldritchKnight
-            .withSpell(trackedMeleeSpellAttack)
+            .withSpellKnown(trackedMeleeSpellAttack)
             .withAllBaseFighterAbilitiesUsed()
             .withAllSpellSlotsAvailable()
             .withLevel(LevelThree)
@@ -206,8 +211,47 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "cast cantrip if defined and no spell slots are available" in {
-      fail("todo")
+    "cast cantrip if defined and no spell slots are available" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Cleric]
+        .withCantrip(trackedMeleeSpellAttack)
+        .withSpellKnown(trackedSavingThrowSpell)
+        .withNoSpellSlotsAvailable()
+        .withWisdom(24)
+        .withCombatIndex(1)
+
+      val monster = random[TestMonster].withWisdom(1).withCombatIndex(2)
+
+      castSpell(Priority)(cleric).useAbility(monster.some)
+
+      savingThrowSpellUsedCount shouldBe 0
+      meleeSpellUsedCount shouldBe 1
+    }
+
+    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
+        val cleric = random[Cleric]
+          .withNoCantrip()
+          .withSpellKnown(trackedSavingThrowSpell)
+          .withNoSpellSlotsAvailable()
+          .withWisdom(24)
+          .withCombatIndex(1)
+
+      castSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "must meet the level requirement to use spellcasting" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
+        val levelTwoEldritchKnight = random[EldritchKnight]
+          .withSpellKnown(trackedSavingThrowSpell)
+          .withNoSpellSlotsAvailable()
+          .withLevel(LevelTwo)
+          .withCombatIndex(1)
+
+      castSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
   }
 
@@ -286,13 +330,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
 
     var meleeSpellUsedCount = 0
-    val trackedMeleeSpellAttack = Spell(1, Evocation, OneAction, MeleeSpellAttack, Fire, {
+    val trackedMeleeSpellAttack = Spell("tracked-melee-spell-test", 1, Evocation, OneAction, MeleeSpellAttack, Fire, {
       meleeSpellUsedCount += 1
       4
     })
 
     var savingThrowSpellUsedCount = 0
-    val trackedSavingThrowSpell = Spell(1, Evocation, OneAction, SavingThrow(Wisdom), Fire, {
+    val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test", 1, Evocation, OneAction, SavingThrow(Wisdom), Fire, {
       savingThrowSpellUsedCount += 1
       4
     })

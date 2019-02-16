@@ -27,7 +27,7 @@ import monocle.macros.{GenLens, Lenses}
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
     abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
     proficiencyBonus: ProficiencyBonus = 0,
-    val spellsKnown: Map[SpellLevel, Spell],
+    spellsKnown: Map[SpellLevel, Spell],
     spellSlots: SpellSlots,
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
