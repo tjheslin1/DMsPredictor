@@ -15,14 +15,12 @@ import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class Goblin(health: Int,
                                maxHealth: Int,
-                               stats: BaseStats,
-                               armourClass: Int,
-                               baseWeapon: Weapon = Shortsword,
+                               stats: BaseStats = BaseStats(8, 14, 10, 10, 8, 8),
+                               armourClass: Int = 15,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                resistances: List[DamageType] = List(),
                                immunities: List[DamageType] = List(),
-                               abilities: List[CombatantAbility] = List.empty,
                                conditions: List[Condition] = List.empty,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
@@ -32,13 +30,16 @@ import monocle.macros.{GenLens, Lenses}
   val creatureType: CreatureType         = Monster
   val proficiencyBonus: ProficiencyBonus = 0
 
+  val abilities: List[CombatantAbility] = List.empty
+
+  val baseWeapon: Weapon = Shortsword
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def resetStartOfTurn(): Creature = this
+  def resetStartOfTurn[_: RS](): Creature = this
 }
 
 object Goblin {
@@ -47,7 +48,7 @@ object Goblin {
 
   def levelOneGoblin[_: RS](): Goblin = {
     val hp = calculateHealth
-    Goblin(hp, hp, BaseStats(8, 14, 10, 10, 8, 8), 15)
+    Goblin(hp, hp)
   }
 
   implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>

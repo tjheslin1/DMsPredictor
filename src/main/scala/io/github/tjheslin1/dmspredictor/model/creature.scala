@@ -44,7 +44,7 @@ trait Creature {
   def updateHealth(modification: Int): Creature
   def scoresCritical(roll: Int): Boolean
 
-  def resetStartOfTurn(): Creature
+  def resetStartOfTurn[_: RS](): Creature
 }
 
 object Creature {
@@ -71,6 +71,9 @@ object Creature {
 
       case c: Goblin   => Goblin._health.set(hp)(c)
       case c: Werewolf => Werewolf._health.set(hp)(c)
+      case c: Zombie => Zombie._health.set(hp)(c)
+
+      case _ => throw new NotImplementedError("Missing a case in creatureHealthLens")
     }
   }
 
@@ -89,6 +92,9 @@ object Creature {
 
       case c: Goblin   => Goblin._maxHealth.set(hp)(c)
       case c: Werewolf => Werewolf._maxHealth.set(hp)(c)
+      case c: Zombie => Zombie._maxHealth.set(hp)(c)
+
+      case _ => throw new NotImplementedError("Missing a case in creatureMaxHealthLens")
     }
   }
 
@@ -107,6 +113,8 @@ object Creature {
 
       case c: Goblin   => Goblin._stats.set(stats)(c)
       case c: Werewolf => Werewolf._stats.set(stats)(c)
+
+      case _ => throw new NotImplementedError("Missing a case in creatureStatsLens")
     }
   }
 
@@ -124,8 +132,7 @@ object Creature {
 
         case c: Cleric => Cleric.strengthLens.set(strScore)(c)
 
-        case c: Goblin   => Goblin.strengthLens.set(strScore)(c)
-        case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
+        case _ => throw new NotImplementedError("Missing a case in creatureStrengthLens")
       }
   }
 
@@ -143,8 +150,7 @@ object Creature {
 
         case c: Cleric => Cleric.dexterityLens.set(dexScore)(c)
 
-        case c: Goblin   => Goblin.dexterityLens.set(dexScore)(c)
-        case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
+        case _ => throw new NotImplementedError("Missing a case in creatureDexterityLens")
       }
   }
 
@@ -164,6 +170,9 @@ object Creature {
 
         case c: Goblin   => Goblin.constitutionLens.set(conScore)(c)
         case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
+        case c: Zombie => Zombie.constitutionLens.set(conScore)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureConstitutionLens")
       }
   }
 
@@ -180,8 +189,7 @@ object Creature {
 
       case c: Cleric => Cleric.wisdomLens.set(wisScore)(c)
 
-      case c: Goblin   => Goblin.wisdomLens.set(wisScore)(c)
-      case c: Werewolf => Werewolf.wisdomLens.set(wisScore)(c)
+      case _ => throw new NotImplementedError("Missing a case in creatureWisdomLens")
     }
   }
 
@@ -199,8 +207,7 @@ object Creature {
 
         case c: Cleric => Cleric.intelligenceLens.set(intScore)(c)
 
-        case c: Goblin   => Goblin.intelligenceLens.set(intScore)(c)
-        case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
+        case _ => throw new NotImplementedError("Missing a case in creatureIntelligenceLens")
       }
   }
 
@@ -218,8 +225,7 @@ object Creature {
 
         case c: Cleric => Cleric.charismaLens.set(chaScore)(c)
 
-        case c: Goblin   => Goblin.charismaLens.set(chaScore)(c)
-        case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
+        case _ => throw new NotImplementedError("Missing a case in creatureCharismaLens")
       }
   }
 
@@ -236,8 +242,7 @@ object Creature {
 
       case c: Cleric => Cleric._baseWeapon.set(wpn)(c)
 
-      case c: Goblin   => Goblin._baseWeapon.set(wpn)(c)
-      case c: Werewolf => Werewolf._baseWeapon.set(wpn)(c)
+      case _ => throw new NotImplementedError("Missing a case in creatureBaseWeaponLens")
     }
   }
 
@@ -254,8 +259,7 @@ object Creature {
 
       case c: Cleric => Cleric._armour.set(armr)(c)
 
-      case c: Goblin   => Goblin._armour.set(armr)(c)
-      case c: Werewolf => Werewolf._armour.set(armr)(c)
+      case _ => throw new NotImplementedError("Missing a case in creatureArmourLens")
     }
   }
 
@@ -273,19 +277,20 @@ object Creature {
 
         case c: Cleric => Cleric._offHand.set(offH)(c)
 
-        case c: Goblin   => Goblin._offHand.set(offH)(c)
-        case c: Werewolf => Werewolf._offHand.set(offH)(c)
+        case _ => throw new NotImplementedError("Missing a case in creatureWisdomLens")
       }
     }
 
   val creatureArmourClassOptional: Optional[Creature, Int] = Optional[Creature, Int] {
     case c: Goblin   => c.armourClass.some
     case c: Werewolf => c.armourClass.some
+    case c: Zombie => c.armourClass.some
     case _           => none[Int]
   } { ac =>
     {
       case c: Goblin   => Goblin._armourClass.set(ac)(c)
       case c: Werewolf => Werewolf._armourClass.set(ac)(c)
+      case c: Zombie => Zombie._armourClass.set(ac)(c)
       case c: Creature => c
     }
   }
@@ -337,6 +342,9 @@ object Creature {
 
         case c: Goblin   => Goblin._resistances.set(res)(c)
         case c: Werewolf => Werewolf._resistances.set(res)(c)
+        case c: Zombie => Zombie._resistances.set(res)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureResistancesLens")
       }
     }
 
@@ -356,6 +364,9 @@ object Creature {
 
         case c: Goblin   => Goblin._immunities.set(res)(c)
         case c: Werewolf => Werewolf._immunities.set(res)(c)
+        case c: Zombie => Zombie._immunities.set(res)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureImmunitiesLens")
       }
     }
 
@@ -373,8 +384,7 @@ object Creature {
 
         case c: Cleric => Cleric._abilities.set(res)(c)
 
-        case c: Goblin   => Goblin._abilities.set(res)(c)
-        case c: Werewolf => Werewolf._abilities.set(res)(c)
+        case _ => throw new NotImplementedError("Missing a case in creatureAbilitiesLens")
       }
     }
 
@@ -394,6 +404,9 @@ object Creature {
 
         case c: Goblin   => Goblin._attackStatus.set(status)(c)
         case c: Werewolf => Werewolf._attackStatus.set(status)(c)
+        case c: Zombie => Zombie._attackStatus.set(status)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureAttackStatusLens")
       }
     }
 
@@ -413,6 +426,9 @@ object Creature {
 
         case c: Goblin   => Goblin._defenseStatus.set(status)(c)
         case c: Werewolf => Werewolf._defenseStatus.set(status)(c)
+        case c: Zombie => Zombie._defenseStatus.set(status)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureDefenseStatusLens")
       }
     }
 

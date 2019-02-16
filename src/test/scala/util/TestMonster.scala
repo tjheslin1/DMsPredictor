@@ -37,7 +37,7 @@ import monocle.macros.{GenLens, Lenses}
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def resetStartOfTurn(): Creature = {
+  def resetStartOfTurn[_: RS](): Creature = {
     turnResetTracker()
     this
   }

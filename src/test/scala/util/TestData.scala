@@ -17,13 +17,10 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shie
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
-  GuidingBolt,
-  SacredFlame
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{GuidingBolt, SacredFlame}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -290,7 +287,7 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
-        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
+        def resetStartOfTurn[_: RS](): Creature = creature.resetStartOfTurn()
       }
   }
 
@@ -337,7 +334,7 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
-        def resetStartOfTurn(): Creature =
+        def resetStartOfTurn[_: RS](): Creature =
           throw new NotImplementedError("Random generate should delegate to classes turnReset")
       }
   }
@@ -349,19 +346,19 @@ trait TestData extends RandomDataGenerator {
       Goblin(
         creature.health,
         creature.health,
-        creature.stats,
-        creature.armourClass,
-        creature.baseWeapon,
-        creature.armour,
-        creature.offHand,
-        creature.resistances,
-        creature.immunities,
-        List.empty, // TODO add core abilities?
-        creature.conditions,
-        creature.attackStatus,
-        creature.defenseStatus,
-        creature.name
+        name = creature.name
       )
+  }
+
+  implicit val arbZombie: Arbitrary[Zombie] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary
+    } yield
+    Zombie(
+      creature.health,
+      creature.health,
+      name = creature.name
+    )
   }
 
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {

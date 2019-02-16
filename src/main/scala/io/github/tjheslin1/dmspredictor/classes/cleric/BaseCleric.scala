@@ -11,7 +11,7 @@ abstract class BaseCleric extends Player with SpellCaster {
 
   val levelSpellcastingLearned: Level = LevelOne
 
-  def resetStartOfTurn(): Creature = this
+  def resetStartOfTurn[_: RS](): Creature = this
 }
 
 object BaseCleric {

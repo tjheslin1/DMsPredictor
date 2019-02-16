@@ -15,7 +15,7 @@ trait BaseFighter extends Player with Product with Serializable {
   val fightingStyles: List[FighterFightingStyle]
   val abilityUsages: BaseFighterAbilities
 
-  def resetStartOfTurn(): Creature = this
+  def resetStartOfTurn[_: RS](): Creature = this
 }
 
 object BaseFighter {
