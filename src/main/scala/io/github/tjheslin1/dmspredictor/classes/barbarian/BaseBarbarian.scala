@@ -15,7 +15,7 @@ trait BaseBarbarian extends Player with Product with Serializable {
   val rageUsages: Int
   val rageTurnsLeft: Int
 
-  def turnReset(): Creature = resetStatus(this)
+  def resetStartOfTurn(): Creature = resetStatus(this)
 }
 
 object BaseBarbarian {

@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 
@@ -35,7 +35,7 @@ object Spell {
             `type`: DamageType,
             dmg: => Int): Spell = new Spell {
 
-    val name = spellName
+    val name                                              = spellName
     val school: spellcasting.SchoolOfMagic                = schoolOfMagic
     val castingTime: spellcasting.CastingTime             = castTime
     val spellOffenseStyle: spellcasting.SpellOffenseStyle = offenseStyle
@@ -54,12 +54,9 @@ object Spell {
   def attributeModifierForSchool(creature: Creature): Int =
     attributeModifier(creature, schoolAttribute(creature))
 
-  def attributeModifier(creature: Creature, attribute: Attribute): Int = attribute match {
-    case Strength     => mod(creature.stats.strength)
-    case Dexterity    => mod(creature.stats.dexterity)
-    case Constitution => mod(creature.stats.constitution)
-    case Wisdom       => mod(creature.stats.wisdom)
-    case Intelligence => mod(creature.stats.intelligence)
-    case Charisma     => mod(creature.stats.charisma)
-  }
+  def spellSavingThrowPassed[_: RS](caster: Creature,
+                                    spell: Spell,
+                                    attribute: Attribute,
+                                    target: Creature): Boolean =
+    SavingThrow.savingThrowPassed(spell.spellSaveDc(caster), attribute, target)
 }

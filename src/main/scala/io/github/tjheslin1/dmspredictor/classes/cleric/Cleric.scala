@@ -29,6 +29,7 @@ import monocle.macros.{GenLens, Lenses}
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                abilities: List[CombatantAbility] = standardClericAbilities,
+                               conditions: List[Condition] = List.empty,
                                proficiencyBonus: ProficiencyBonus = 0,
                                resistances: List[DamageType] = List.empty,
                                immunities: List[DamageType] = List.empty,

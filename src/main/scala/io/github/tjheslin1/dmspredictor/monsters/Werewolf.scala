@@ -23,6 +23,7 @@ import monocle.macros.{GenLens, Lenses}
                                  resistances: List[DamageType] = List(),
                                  immunities: List[DamageType] = List(),
                                  abilities: List[CombatantAbility] = List.empty,
+                                 conditions: List[Condition] = List.empty,
                                  attackStatus: AttackStatus = Regular,
                                  defenseStatus: AttackStatus = Regular,
                                  name: String = NameGenerator.randomName)
@@ -37,7 +38,7 @@ import monocle.macros.{GenLens, Lenses}
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def turnReset(): Creature = this
+  def resetStartOfTurn(): Creature = this
 }
 
 object Werewolf {

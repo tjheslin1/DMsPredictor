@@ -37,7 +37,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     ChainShirt,
     None,
     Cleric.standardClericAbilities,
-    2,
+    proficiencyBonus = 2,
     name = "Cleric"
   )
 

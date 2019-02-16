@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 
 object CoreAbilities extends LazyLogging {
@@ -74,9 +74,10 @@ object CoreAbilities extends LazyLogging {
     val levelRequirement = LevelOne
     val abilityAction    = WholeAction
 
-    val triggerMet: Boolean   = true
-    def conditionMet: Boolean = spellCaster.level >= spellCaster.levelSpellcastingLearned &&
-      (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined)
+    val triggerMet: Boolean = true
+    def conditionMet: Boolean =
+      spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+        (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined)
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
@@ -92,9 +93,11 @@ object CoreAbilities extends LazyLogging {
         case (None, _) => (combatant, none[Combatant])
         case (Some(spellTarget), Some(spell)) =>
           val attackResult = spell.spellOffenseStyle match {
-            case MeleeSpellAttack       => spellAttack(spell, spellTarget.creature)
-            case RangedSpellAttack      => spellAttack(spell, spellTarget.creature)
-            case SavingThrow(attribute) => spellSavingThrow(spell, attribute, spellTarget.creature)
+            case MeleeSpellAttack  => spellAttack(spell, spellTarget.creature)
+            case RangedSpellAttack => spellAttack(spell, spellTarget.creature)
+            case SpellSavingThrow(attribute) =>
+              if (spellSavingThrowPassed(spellCaster, spell, attribute, spellTarget.creature)) Miss
+              else Hit
           }
 
           logger.debug(s"casting ${spell.name} - $attackResult")
@@ -125,20 +128,19 @@ object CoreAbilities extends LazyLogging {
       }
     }
 
-    def update: Creature = {
+    def update: Creature =
       highestSpellSlotAvailable(spellCaster.spellSlots) match {
-    case None => spellCaster
-    case Some(spellSlotUsed) =>
-      val updatedSpellSlotCount = spellSlotUsed.count - 1
+        case None => spellCaster
+        case Some(spellSlotUsed) =>
+          val updatedSpellSlotCount = spellSlotUsed.count - 1
 
-      val (spellSlotLens, spellSlotCountLens) = spellSlotUsed match {
-        case FirstLevelSpellSlot(_) => (firstLevelSpellSlotLens, firstLevelSpellSlotCountLens)
+          val (spellSlotLens, spellSlotCountLens) = spellSlotUsed match {
+            case FirstLevelSpellSlot(_) => (firstLevelSpellSlotLens, firstLevelSpellSlotCountLens)
+          }
+
+          (SpellCaster.spellSlotsLens composeLens spellSlotLens composeLens spellSlotCountLens)
+            .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
       }
-
-      (SpellCaster.spellSlotsLens composeLens spellSlotLens composeLens spellSlotCountLens)
-        .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
-  }
-    }
 
     private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult =
       D20.roll() match {
@@ -147,13 +149,5 @@ object CoreAbilities extends LazyLogging {
         case roll =>
           if ((roll + spell.spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
       }
-
-    private def spellSavingThrow[_: RS](spell: Spell,
-                                        attribute: Attribute,
-                                        target: Creature): AttackResult =
-      if ((D20.roll() + attributeModifier(target, attribute)) >= spell.spellSaveDc(spellCaster))
-        Miss
-      else Hit
   }
-
 }

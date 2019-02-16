@@ -18,23 +18,25 @@ object Move extends LazyLogging {
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
     val resetUnactedCombatant =
-      Combatant.creatureLens.set(unactedCombatant.creature.turnReset())(unactedCombatant)
+      Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
 
-    if (unactedCombatant.creature.isConscious) {
+    val conditionHandledCombatant = handleCondition(resetUnactedCombatant)
+
+    if (conditionHandledCombatant.creature.isConscious) {
 
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
       val optAbility: Option[CombatantAbility] =
-        resetUnactedCombatant.creature.abilities.sortBy(_(resetUnactedCombatant).order).find {
+        conditionHandledCombatant.creature.abilities.sortBy(_(conditionHandledCombatant).order).find {
           combatantAbility =>
-            val ability = combatantAbility(resetUnactedCombatant)
+            val ability = combatantAbility(conditionHandledCombatant)
             ability.conditionMet && ability.triggerMet
         }
 
-      val (actedCombatant, updatedTarget) = resetUnactedCombatant.creature.creatureType match {
-        case PlayerCharacter => actionAgainstTarget(resetUnactedCombatant, mobToAttack, optAbility)
-        case Monster         => actionAgainstTarget(resetUnactedCombatant, pcToAttack, optAbility)
+      val (actedCombatant, updatedTarget) = conditionHandledCombatant.creature.creatureType match {
+        case PlayerCharacter => actionAgainstTarget(conditionHandledCombatant, mobToAttack, optAbility)
+        case Monster         => actionAgainstTarget(conditionHandledCombatant, pcToAttack, optAbility)
       }
 
       val updatedCombatant =
@@ -48,9 +50,14 @@ object Move extends LazyLogging {
     } else {
       val updatedCombatant =
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-          .set(false)(resetUnactedCombatant)
+          .set(false)(conditionHandledCombatant)
       others.append(updatedCombatant)
     }
+  }
+
+  def handleCondition(combatant: Combatant): Combatant = combatant.creature.conditions match {
+    case List() => combatant
+    case _ => ???
   }
 
   private def actionAgainstTarget[_: RS](

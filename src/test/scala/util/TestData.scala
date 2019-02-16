@@ -17,7 +17,10 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shie
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{GuidingBolt, SacredFlame}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
+  GuidingBolt,
+  SacredFlame
+}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
@@ -134,7 +137,8 @@ object TestData {
     def withAllBaseFighterAbilitiesUsed() =
       _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
 
-    def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
     def withAllSpellSlotsAvailable() =
       _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
     def withNoSpellSlotsAvailable() =
@@ -144,10 +148,10 @@ object TestData {
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
-    def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(cleric)
-    def withNoCantrip() = _cantripKnown.set(none[Spell])(cleric)
+    def withCantrip(cantrip: Spell)  = _cantripKnown.set(cantrip.some)(cleric)
+    def withNoCantrip()              = _cantripKnown.set(none[Spell])(cleric)
     def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(cleric)
-    def withNoSpellSlotsAvailable() = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
+    def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
@@ -278,6 +282,7 @@ trait TestData extends RandomDataGenerator {
         val immunities: List[DamageType]       = creature.immunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
+        val conditions: List[Condition]        = creature.conditions
         val attackStatus: AttackStatus         = creature.attackStatus
         val defenseStatus: AttackStatus        = creature.defenseStatus
 
@@ -285,7 +290,7 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
-        def turnReset(): Creature = creature.turnReset()
+        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
       }
   }
 
@@ -322,6 +327,7 @@ trait TestData extends RandomDataGenerator {
         val bonusActionUsed: Boolean          = false
         val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
+        val conditions: List[Condition]       = List.empty
         val attackStatus: AttackStatus        = Regular
         val defenseStatus: AttackStatus       = Regular
 
@@ -331,7 +337,7 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
-        def turnReset(): Creature =
+        def resetStartOfTurn(): Creature =
           throw new NotImplementedError("Random generate should delegate to classes turnReset")
       }
   }
@@ -351,6 +357,7 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?
+        creature.conditions,
         creature.attackStatus,
         creature.defenseStatus,
         creature.name
@@ -373,6 +380,7 @@ trait TestData extends RandomDataGenerator {
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?
+        creature.conditions,
         creature.attackStatus,
         creature.defenseStatus,
         turnResetTracker = () => _,
@@ -405,6 +413,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Fighter.standardFighterAbilities,
+        player.conditions,
         player.attackStatus,
         player.defenseStatus,
         player.name
@@ -434,6 +443,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Champion.standardChampionAbilities,
+        player.conditions,
         player.attackStatus,
         player.defenseStatus,
         player.name
@@ -464,6 +474,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         BattleMaster.standardBattleMasterAbilities,
+        player.conditions,
         player.attackStatus,
         player.defenseStatus,
         player.name
@@ -494,6 +505,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         EldritchKnight.standardEldritchKnightAbilities,
+        player.conditions,
         player.attackStatus,
         player.defenseStatus,
         player.name
@@ -519,6 +531,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Barbarian.standardBarbarianAbilities,
+        player.conditions,
         inRage = false,
         rageTurnsLeft = 10,
         attackStatus = player.attackStatus,
@@ -546,6 +559,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         Barbarian.standardBarbarianAbilities,
+        player.conditions,
         inRage = false,
         rageTurnsLeft = 10,
         attackStatus = player.attackStatus,
@@ -568,6 +582,7 @@ trait TestData extends RandomDataGenerator {
         BaseBarbarian.rageUsagesPerLevel(level),
         Bear,
         TotemWarrior.standardTotemWarriorAbilities(Bear),
+        player.conditions,
         player.armour,
         player.offHand,
         player.proficiencyBonus,
@@ -600,6 +615,7 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         Cleric.standardClericAbilities,
+        player.conditions,
         player.proficiencyBonus,
         player.resistances,
         player.immunities,

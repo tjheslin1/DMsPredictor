@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.Actions._
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack}
@@ -47,7 +47,7 @@ object BattleMasterAbilities extends LazyLogging {
               case Hit | CriticalHit =>
                 val targetCreature = updatedTarget.creature
 
-                if (strengthSavingThrowPassed(targetCreature))
+                if (savingThrowPassed(battleMaster.maneuverSaveDC, Strength, targetCreature))
                   (updatedAttacker, updatedTarget.some)
                 else {
                   val disarmedTarget =
@@ -64,8 +64,5 @@ object BattleMasterAbilities extends LazyLogging {
         val updatedSuperiorityDiceCount = battleMaster.superiorityDiceCount - 1
         BattleMaster._superiorityDiceCount.set(updatedSuperiorityDiceCount)(battleMaster)
       }
-
-      private def strengthSavingThrowPassed[_: RS](targetCreature: Creature) =
-        (D20.roll() + mod(targetCreature.stats.strength)) >= battleMaster.maneuverSaveDC
     }
 }

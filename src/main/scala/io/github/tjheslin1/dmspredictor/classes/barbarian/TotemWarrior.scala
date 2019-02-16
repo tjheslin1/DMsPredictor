@@ -22,6 +22,7 @@ import monocle.macros.{GenLens, Lenses}
                                      rageUsages: Int,
                                      totem: Totem,
                                      abilities: List[CombatantAbility],
+                                     conditions: List[Condition] = List.empty,
                                      armour: Armour = NoArmour,
                                      offHand: Option[Equipment] = None,
                                      proficiencyBonus: ProficiencyBonus = 0,

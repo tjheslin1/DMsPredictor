@@ -22,6 +22,7 @@ import monocle.macros.{GenLens, Lenses}
                                     resistances: List[DamageType] = List.empty,
                                     immunities: List[DamageType] = List.empty,
                                     abilities: List[CombatantAbility] = List.empty,
+                                    conditions: List[Condition] = List.empty,
                                     attackStatus: AttackStatus = Regular,
                                     defenseStatus: AttackStatus = Regular,
                                     turnResetTracker: Unit => Unit = () => _,
@@ -36,7 +37,7 @@ import monocle.macros.{GenLens, Lenses}
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def turnReset(): Creature = {
+  def resetStartOfTurn(): Creature = {
     turnResetTracker()
     this
   }

@@ -336,7 +336,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     })
 
     var savingThrowSpellUsedCount = 0
-    val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test", 1, Evocation, OneAction, SavingThrow(Wisdom), Fire, {
+    val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test", 1, Evocation, OneAction, SpellSavingThrow(Wisdom), Fire, {
       savingThrowSpellUsedCount += 1
       4
     })

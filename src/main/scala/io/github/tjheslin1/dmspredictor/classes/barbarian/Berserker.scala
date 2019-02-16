@@ -28,6 +28,7 @@ import monocle.macros.{GenLens, Lenses}
                                   immunities: List[DamageType] = List.empty,
                                   bonusActionUsed: Boolean = false,
                                   abilities: List[CombatantAbility] = standardBerserkerAbilities,
+                                  conditions: List[Condition] = List.empty,
                                   attackStatus: AttackStatus = Regular,
                                   defenseStatus: AttackStatus = Regular,
                                   inRage: Boolean = false,

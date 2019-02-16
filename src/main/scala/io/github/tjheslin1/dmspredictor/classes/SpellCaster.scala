@@ -1,7 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, SpellSlots}
-import io.github.tjheslin1.dmspredictor.model.{Creature, Level}
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
 import monocle.Lens
 

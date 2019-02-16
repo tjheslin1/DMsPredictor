@@ -37,13 +37,14 @@ trait Creature {
   val name: String
 
   val abilities: List[CombatantAbility]
+  val conditions: List[Condition]
 
   val isConscious = health > 0
 
   def updateHealth(modification: Int): Creature
   def scoresCritical(roll: Int): Boolean
 
-  def turnReset(): Creature
+  def resetStartOfTurn(): Creature
 }
 
 object Creature {

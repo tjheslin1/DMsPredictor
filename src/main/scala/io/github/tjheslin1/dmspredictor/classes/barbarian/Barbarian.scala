@@ -29,6 +29,7 @@ import monocle.macros.{GenLens, Lenses}
                                   immunities: List[DamageType] = List.empty,
                                   bonusActionUsed: Boolean = false,
                                   abilities: List[CombatantAbility] = standardBarbarianAbilities,
+                                  conditions: List[Condition] = List.empty,
                                   attackStatus: AttackStatus = Regular,
                                   defenseStatus: AttackStatus = Regular,
                                   inRage: Boolean = false,

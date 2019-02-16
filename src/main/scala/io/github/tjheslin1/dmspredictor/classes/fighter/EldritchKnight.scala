@@ -33,6 +33,7 @@ import monocle.macros.{GenLens, Lenses}
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardEldritchKnightAbilities,
+    conditions: List[Condition] = List.empty,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName)

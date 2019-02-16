@@ -22,5 +22,5 @@ package object spellcasting {
 
   case object MeleeSpellAttack                 extends SpellOffenseStyle
   case object RangedSpellAttack                extends SpellOffenseStyle
-  case class SavingThrow(attribute: Attribute) extends SpellOffenseStyle
+  case class SpellSavingThrow(attribute: Attribute) extends SpellOffenseStyle
 }
