@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.Show
 import cats.syntax.option._
+import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, Berserker, TotemWarrior}
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
@@ -41,19 +42,31 @@ trait Creature {
 
   val isConscious = health > 0
 
-  def updateHealth(modification: Int): Creature
   def scoresCritical(roll: Int): Boolean
 
-  def resetStartOfTurn[_: RS](): Creature
+  def resetStartOfTurn(): Creature
+
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature
 }
 
-object Creature {
+object Creature extends LazyLogging {
 
   implicit def creatureShow[_: RS]: Show[Creature] = Show.show { creature =>
     s"${creature.creatureType} - " +
       s"Name: ${creature.name}, " +
       s"health: ${creature.health}, " +
       s"AC: ${creature.armourClass}"
+  }
+
+  def adjustedDamage(dmg: Int, damageType: DamageType, creature: Creature): Int = {
+    val adjustedDmg = damageType match {
+      case dt if creature.resistances.contains(dt) => math.max(1, math.floor(dmg / 2).toInt)
+      case dt if creature.immunities.contains(dt)  => 0
+      case _                                       => dmg
+    }
+
+    logger.debug(s"${creature.name} took $adjustedDmg (adjusted) $damageType damage")
+    adjustedDmg
   }
 
   val creatureHealthLens: Lens[Creature, Int] = Lens[Creature, Int](_.health) { hp =>

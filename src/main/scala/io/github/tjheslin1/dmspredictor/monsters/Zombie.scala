@@ -35,21 +35,25 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  def updateHealth(modification: Int): Creature = _health.set(health - modification)(this)
+  def updateHealth[_: RS](dmg: Int,
+                          damageType: DamageType,
+                          attackResult: AttackResult): Creature = {
+    val adjustedDmg = Creature.adjustedDamage(dmg, damageType, this)
+    if ((health - adjustedDmg) <= 0 && attackResult != CriticalHit && damageType != Radiant) {
+
+      val dc = 5 + adjustedDmg
+      if (savingThrowPassed(dc, Constitution, this)) {
+        logger.debug("Zombie used Undead Fortitude to remain at 1 hp")
+        _health.set(1)(this)
+      } else _health.set(Math.max(0, health - adjustedDmg))(this)
+    } else _health.set(Math.max(0, health - adjustedDmg))(this)
+  }
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
   val abilities: List[CombatantAbility] = List.empty
 
-  // Undead Fortitude
-  def resetStartOfTurn[_: RS](): Creature =
-    if (health <= 0) {
-      val dc = Math.abs(health) + 5
-      if (savingThrowPassed(dc, Constitution, this)) {
-        logger.debug("Zombie used Undead Fortitude to remain at 1 hp")
-        _health.set(1)(this)
-      } else this
-    } else this
+  def resetStartOfTurn(): Creature = this
 }
 
 object Zombie {

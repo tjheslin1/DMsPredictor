@@ -174,6 +174,16 @@ class ActionsSpec extends UnitSpecBase {
 
   "adjustedDamage" should {
 
+    "deal full damage to a creature not resistance or immune to the damage type" in {
+      forAll { monster: TestMonster =>
+
+        val monsterCombatant = monster.withNoResistancesOrImmunities().withHealth(100)
+          .withCombatIndex(2)
+
+        adjustedDamage(10, Slashing, monsterCombatant) shouldBe 10
+      }
+    }
+
     "deal half damage rounded down to a creature resistance to the damage type" in {
       forAll { monster: TestMonster =>
 

@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Creature.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
@@ -44,8 +45,8 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def updateHealth(modification: Int): EldritchKnight =
-    copy(health = Math.max(0, health + modification))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): EldritchKnight =
+    copy(health = Math.max(0, adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
 

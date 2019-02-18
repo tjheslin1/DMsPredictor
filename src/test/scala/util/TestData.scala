@@ -283,11 +283,11 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus         = creature.attackStatus
         val defenseStatus: AttackStatus        = creature.defenseStatus
 
-        def updateHealth(modification: Int): Creature = creature.updateHealth(modification)
+        def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature = creature.updateHealth(modification)
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
-        def resetStartOfTurn[_: RS](): Creature = creature.resetStartOfTurn()
+        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
       }
   }
 
@@ -328,13 +328,13 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus        = Regular
         val defenseStatus: AttackStatus       = Regular
 
-        def updateHealth(modification: Int): Creature =
+        def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
           throw new NotImplementedError(
             "Impossible to implement, results in recursive definition of Creature")
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
-        def resetStartOfTurn[_: RS](): Creature =
+        def resetStartOfTurn(): Creature =
           throw new NotImplementedError("Random generate should delegate to classes turnReset")
       }
   }

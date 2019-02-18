@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Creature.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -35,11 +36,12 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Goblin =
+    copy(health = Math.max(0, adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def resetStartOfTurn[_: RS](): Creature = this
+  def resetStartOfTurn(): Creature = this
 }
 
 object Goblin {

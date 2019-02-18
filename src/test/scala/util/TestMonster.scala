@@ -33,11 +33,11 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature = copy(health = Math.max(health + modification, 0))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def resetStartOfTurn[_: RS](): Creature = {
+  def resetStartOfTurn(): Creature = {
     turnResetTracker()
     this
   }

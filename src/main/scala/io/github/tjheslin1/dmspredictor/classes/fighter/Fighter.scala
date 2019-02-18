@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, ChainShirt, NoArmour}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.Creature.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -39,13 +39,12 @@ import monocle.macros.{GenLens, Lenses}
                                 name: String = NameGenerator.randomName)
     extends BaseFighter {
 
-  import Fighter._
-
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def updateHealth(modification: Int): Fighter = copy(health = Math.max(0, health + modification))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Fighter =
+    copy(health = Math.max(0, adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 }
