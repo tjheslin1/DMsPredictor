@@ -17,6 +17,7 @@ import monocle.macros.{GenLens, Lenses}
                                maxHealth: Int,
                                stats: BaseStats = BaseStats(8, 14, 10, 10, 8, 8),
                                armourClass: Int = 15,
+                               baseWeapon: Weapon = Shortsword,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                resistances: List[DamageType] = List(),
@@ -32,7 +33,6 @@ import monocle.macros.{GenLens, Lenses}
 
   val abilities: List[CombatantAbility] = List.empty
 
-  val baseWeapon: Weapon = Shortsword
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth(modification: Int): Goblin = copy(health = Math.max(health + modification, 0))

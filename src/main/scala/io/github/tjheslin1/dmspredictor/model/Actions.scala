@@ -91,8 +91,8 @@ object Actions extends LazyLogging {
 
   def adjustedDamage(dmg: Int, damageType: DamageType, target: Combatant): Int = damageType match {
     case dt if target.creature.resistances.contains(dt) => math.max(1, math.floor(dmg / 2).toInt)
-    case dt if target.creature.immunities.contains(dt) => 0
-    case _                                             => dmg
+    case dt if target.creature.immunities.contains(dt)  => 0
+    case _                                              => dmg
   }
 
   def attackAndDamage[_: RS](attacker: Combatant, target: Combatant): (Combatant, Combatant) = {

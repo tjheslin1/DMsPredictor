@@ -40,11 +40,11 @@ object BaseFighter {
             damageRoll
         }
         Weapon(weapon.name,
-          weapon.weaponType,
-          weapon.damageType,
-          weapon.twoHanded,
-          rerollingDamage,
-          weapon.hitBonus)
+               weapon.weaponType,
+               weapon.damageType,
+               weapon.twoHanded,
+               rerollingDamage,
+               weapon.hitBonus)
       case _ => weapon
     }
 

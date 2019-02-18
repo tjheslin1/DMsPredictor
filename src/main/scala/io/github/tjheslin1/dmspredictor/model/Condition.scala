@@ -6,4 +6,3 @@ trait Condition extends Product with Serializable {
 }
 
 case class Turned(saveDc: Int, turnsLeft: Int) extends Condition
-

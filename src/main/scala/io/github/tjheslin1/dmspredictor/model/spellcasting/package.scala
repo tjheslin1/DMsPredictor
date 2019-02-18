@@ -20,7 +20,7 @@ package object spellcasting {
 
   sealed trait SpellOffenseStyle extends Product with Serializable
 
-  case object MeleeSpellAttack                 extends SpellOffenseStyle
-  case object RangedSpellAttack                extends SpellOffenseStyle
+  case object MeleeSpellAttack                      extends SpellOffenseStyle
+  case object RangedSpellAttack                     extends SpellOffenseStyle
   case class SpellSavingThrow(attribute: Attribute) extends SpellOffenseStyle
 }

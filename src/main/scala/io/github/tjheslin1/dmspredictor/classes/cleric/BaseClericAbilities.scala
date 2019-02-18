@@ -11,7 +11,7 @@ object BaseClericAbilities {
     val levelRequirement: Level      = LevelTwo
     val abilityAction: AbilityAction = WholeAction
 
-    def triggerMet(target: Option[Combatant]): Boolean                                                          = ???
+    def triggerMet(target: Option[Combatant]): Boolean                               = ???
     def conditionMet: Boolean                                                        = ???
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = ???
     def update: Creature                                                             = ???

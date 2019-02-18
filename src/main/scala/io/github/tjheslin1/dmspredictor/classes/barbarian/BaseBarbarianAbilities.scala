@@ -22,8 +22,8 @@ object BaseBarbarianAbilities extends LazyLogging {
     val abilityAction: AbilityAction = BonusAction
     val levelRequirement: Level      = LevelOne
 
-    def triggerMet(target: Option[Combatant]): Boolean   = barbarian.inRage == false
-    def conditionMet: Boolean = barbarian.rageUsages > 0
+    def triggerMet(target: Option[Combatant]): Boolean = barbarian.inRage == false
+    def conditionMet: Boolean                          = barbarian.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used Rage")
@@ -34,7 +34,10 @@ object BaseBarbarianAbilities extends LazyLogging {
       target match {
         case None => (ragingBarbarianCombatant, none[Combatant])
         case Some(targetOfAttack) =>
-          nextAbilityToUseInConjunction(ragingBarbarianCombatant, targetOfAttack.some, order, AbilityAction.Action)
+          nextAbilityToUseInConjunction(ragingBarbarianCombatant,
+                                        targetOfAttack.some,
+                                        order,
+                                        AbilityAction.Action)
             .fold {
               val (updatedAttacker, updatedTarget) =
                 attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
@@ -71,8 +74,8 @@ object BaseBarbarianAbilities extends LazyLogging {
     val abilityAction: AbilityAction = SingleAttack
     val levelRequirement: Level      = LevelTwo
 
-    def triggerMet(target: Option[Combatant])   = true
-    val conditionMet: Boolean = barbarian.level >= levelRequirement
+    def triggerMet(target: Option[Combatant]) = true
+    val conditionMet: Boolean                 = barbarian.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} is recklessly attacking")

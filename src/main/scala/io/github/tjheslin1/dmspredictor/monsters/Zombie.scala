@@ -22,12 +22,13 @@ import monocle.macros.{GenLens, Lenses}
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                conditions: List[Condition] = List.empty,
-                               resistances: List[DamageType]     = List.empty,
-                                 immunities: List[DamageType]      = List(Poison),
+                               resistances: List[DamageType] = List.empty,
+                               immunities: List[DamageType] = List(Poison),
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
                                name: String = NameGenerator.randomName)
-    extends Creature with LazyLogging {
+    extends Creature
+    with LazyLogging {
 
   val creatureType: CreatureType         = Monster
   val proficiencyBonus: ProficiencyBonus = 0

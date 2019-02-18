@@ -28,8 +28,8 @@ object CoreAbilities extends LazyLogging {
     val levelRequirement = LevelFive
     val abilityAction    = SingleAttack
 
-    def triggerMet(target: Option[Combatant])   = true
-    def conditionMet: Boolean = player.level >= levelRequirement
+    def triggerMet(target: Option[Combatant]) = true
+    def conditionMet: Boolean                 = player.level >= levelRequirement
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
@@ -38,7 +38,7 @@ object CoreAbilities extends LazyLogging {
         case None => (combatant, none[Combatant])
         case Some(target) =>
           nextAbilityToUseInConjunction(combatant,
-                          target.some,
+                                        target.some,
                                         order,
                                         NonEmptyList.of(ability.BonusAction, SingleAttack))
             .fold {
@@ -49,7 +49,10 @@ object CoreAbilities extends LazyLogging {
                 useAdditionalAbility(nextAbility, combatant, target)
 
               updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
-                nextAbilityToUseInConjunction(updatedCombatant, updatedTargetOfAbility, order, one(SingleAttack)).fold {
+                nextAbilityToUseInConjunction(updatedCombatant,
+                                              updatedTargetOfAbility,
+                                              order,
+                                              one(SingleAttack)).fold {
                   val (updatedAttacker, updatedAttackedTarget) =
                     attackAndDamageTimes(1, updatedCombatant, updatedTarget)
                   (updatedAttacker, updatedAttackedTarget.some)

@@ -37,7 +37,8 @@ import monocle.macros.{GenLens, Lenses}
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName)
-    extends BaseFighter with SpellCaster {
+    extends BaseFighter
+    with SpellCaster {
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 

@@ -7,7 +7,10 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Werewolf.{HydbridFormClaw, standardWerewolfAbilities}
+import io.github.tjheslin1.dmspredictor.monsters.Werewolf.{
+  standardWerewolfAbilities,
+  HydbridFormClaw
+}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
@@ -17,10 +20,12 @@ import monocle.macros.{GenLens, Lenses}
                                  maxHealth: Int,
                                  stats: BaseStats = BaseStats(15, 13, 14, 10, 11, 10),
                                  armourClass: Int = 12,
+                                 baseWeapon: Weapon = HydbridFormClaw,
                                  armour: Armour = NoArmour,
                                  offHand: Option[Equipment] = None,
                                  resistances: List[DamageType] = List.empty[DamageType],
-                                 immunities: List[DamageType] = List(Bludgeoning, Piercing, Slashing),
+                                 immunities: List[DamageType] =
+                                   List(Bludgeoning, Piercing, Slashing),
                                  conditions: List[Condition] = List.empty,
                                  attackStatus: AttackStatus = Regular,
                                  defenseStatus: AttackStatus = Regular,
@@ -32,7 +37,6 @@ import monocle.macros.{GenLens, Lenses}
 
   val abilities: List[CombatantAbility] = standardWerewolfAbilities
 
-  val baseWeapon: Weapon = HydbridFormClaw
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))

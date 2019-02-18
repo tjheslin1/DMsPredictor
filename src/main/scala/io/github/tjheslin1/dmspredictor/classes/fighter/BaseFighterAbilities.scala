@@ -34,7 +34,8 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelTwo
     val abilityAction    = WholeAction
 
-    def triggerMet(target: Option[Combatant])= combatant.creature.health <= combatant.creature.maxHealth / 2
+    def triggerMet(target: Option[Combatant]) =
+      combatant.creature.health <= combatant.creature.maxHealth / 2
     def conditionMet =
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
@@ -112,8 +113,8 @@ object BaseFighterAbilities extends LazyLogging {
       val levelRequirement = LevelTwo
       val abilityAction    = WholeAction
 
-      def triggerMet(target: Option[Combatant])   = true
-      def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
+      def triggerMet(target: Option[Combatant]) = true
+      def conditionMet: Boolean                 = baseFighter.abilityUsages.actionSurgeUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
@@ -127,7 +128,10 @@ object BaseFighterAbilities extends LazyLogging {
                   useAdditionalAbility(nextAbility, combatant, target)
 
                 optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                  nextAbilityToUseInConjunction(updatedAttacker, updatedTarget.some, order, AbilityAction.Any)
+                  nextAbilityToUseInConjunction(updatedAttacker,
+                                                updatedTarget.some,
+                                                order,
+                                                AbilityAction.Any)
                     .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
                       useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
                     }

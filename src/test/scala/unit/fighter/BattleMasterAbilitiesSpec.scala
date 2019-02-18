@@ -23,23 +23,16 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
 
     import BattleMaster._
 
-    "spend available superiority dice to use disarming attack" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(19)
-
-      forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
-        val battleMasterCombatant = battleMaster
-          .withAllAbilitiesUsed()
+    "spend available superiority dice to use disarming attack" in {
+        val battleMasterCombatant = random[BattleMaster]
           .withSuperiorityDiceCount(2)
           .withLevel(LevelThree)
           .withCombatIndex(1)
 
-        val monster = goblin.withStrength(1).withArmourClass(5).withCombatIndex(2)
-
-        val Queue(_, Combatant(_, updatedBattleMaster: BattleMaster)) =
-          Move.takeMove(Queue(battleMasterCombatant, monster), LowestFirst)
+        val updatedBattleMaster: BattleMaster =
+          disarmingAttackManeuver(Priority)(battleMasterCombatant).update.asInstanceOf[BattleMaster]
 
         updatedBattleMaster.superiorityDiceCount shouldBe 1
-      }
     }
 
     "disarm opponent permanently using Disarming Attack" in new TestContext {
@@ -47,7 +40,6 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
 
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         val battleMasterCombatant = battleMaster
-          .withAllAbilitiesUsed()
           .withSuperiorityDiceCount(1)
           .withLevel(LevelThree)
           .withStrength(20)

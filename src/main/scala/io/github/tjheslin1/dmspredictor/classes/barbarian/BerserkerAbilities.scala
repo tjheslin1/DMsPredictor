@@ -20,7 +20,8 @@ object BerserkerAbilities extends LazyLogging {
     val abilityAction: AbilityAction = BonusAction
     val levelRequirement: Level      = LevelThree
 
-    def triggerMet(target: Option[Combatant])   = berserker.inRage == false && berserker.inFrenzy == false
+    def triggerMet(target: Option[Combatant]) =
+      berserker.inRage == false && berserker.inFrenzy == false
     def conditionMet: Boolean = berserker.level >= levelRequirement && berserker.rageUsages > 0
 
     def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
@@ -32,7 +33,10 @@ object BerserkerAbilities extends LazyLogging {
       target match {
         case None => (ragingBarbarianCombatant, none[Combatant])
         case Some(targetOfAttack) =>
-          nextAbilityToUseInConjunction(ragingBarbarianCombatant, targetOfAttack.some, order, AbilityAction.Action)
+          nextAbilityToUseInConjunction(ragingBarbarianCombatant,
+                                        targetOfAttack.some,
+                                        order,
+                                        AbilityAction.Action)
             .fold {
               val (updatedAttacker, updatedTarget) =
                 attackAndDamage(ragingBarbarianCombatant, targetOfAttack)

@@ -9,7 +9,7 @@ object ClericSpells {
 
   case object SacredFlame extends Spell {
 
-    val name = "Sacred Flame"
+    val name                                 = "Sacred Flame"
     val school: SchoolOfMagic                = Evocation
     val castingTime: CastingTime             = OneAction
     val spellOffenseStyle: SpellOffenseStyle = SpellSavingThrow(Dexterity)
@@ -23,7 +23,7 @@ object ClericSpells {
   }
 
   case object GuidingBolt extends Spell {
-    val name = "Guiding Bolt"
+    val name                                 = "Guiding Bolt"
     val school: SchoolOfMagic                = Evocation
     val castingTime: CastingTime             = OneAction
     val spellOffenseStyle: SpellOffenseStyle = RangedSpellAttack
