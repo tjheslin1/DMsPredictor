@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
+import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
@@ -38,8 +39,8 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int,
                           damageType: DamageType,
                           attackResult: AttackResult): Creature = {
-    val adjustedDmg = Creature.adjustedDamage(dmg, damageType, this)
-    if ((health - adjustedDmg) <= 0 && attackResult != CriticalHit && damageType != Radiant) {
+    val adjustedDmg = adjustedDamage(dmg, damageType, this)
+    if ((health - adjustedDmg) <= 0 && attackResult == Hit && damageType != Radiant) {
 
       val dc = 5 + adjustedDmg
       if (savingThrowPassed(dc, Constitution, this)) {

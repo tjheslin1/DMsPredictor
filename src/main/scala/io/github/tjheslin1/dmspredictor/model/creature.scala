@@ -58,17 +58,6 @@ object Creature extends LazyLogging {
       s"AC: ${creature.armourClass}"
   }
 
-  def adjustedDamage(dmg: Int, damageType: DamageType, creature: Creature): Int = {
-    val adjustedDmg = damageType match {
-      case dt if creature.resistances.contains(dt) => math.max(1, math.floor(dmg / 2).toInt)
-      case dt if creature.immunities.contains(dt)  => 0
-      case _                                       => dmg
-    }
-
-    logger.debug(s"${creature.name} took $adjustedDmg (adjusted) $damageType damage")
-    adjustedDmg
-  }
-
   val creatureHealthLens: Lens[Creature, Int] = Lens[Creature, Int](_.health) { hp =>
     {
       case c: BattleMaster   => BattleMaster._health.set(hp)(c)

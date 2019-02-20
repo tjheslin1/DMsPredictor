@@ -17,7 +17,10 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shie
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{GuidingBolt, SacredFlame}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
+  GuidingBolt,
+  SacredFlame
+}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
@@ -283,7 +286,10 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus         = creature.attackStatus
         val defenseStatus: AttackStatus        = creature.defenseStatus
 
-        def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature = creature.updateHealth(modification)
+        def updateHealth[_: RS](dmg: Int,
+                                damageType: DamageType,
+                                attackResult: AttackResult): Creature =
+          creature.updateHealth(dmg, damageType, attackResult)
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
@@ -328,7 +334,9 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus        = Regular
         val defenseStatus: AttackStatus       = Regular
 
-        def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
+        def updateHealth[_: RS](dmg: Int,
+                                damageType: DamageType,
+                                attackResult: AttackResult): Creature =
           throw new NotImplementedError(
             "Impossible to implement, results in recursive definition of Creature")
 
@@ -354,11 +362,11 @@ trait TestData extends RandomDataGenerator {
     for {
       creature <- arbCreature.arbitrary
     } yield
-    Zombie(
-      creature.health,
-      creature.health,
-      name = creature.name
-    )
+      Zombie(
+        creature.health,
+        creature.health,
+        name = creature.name
+      )
   }
 
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {

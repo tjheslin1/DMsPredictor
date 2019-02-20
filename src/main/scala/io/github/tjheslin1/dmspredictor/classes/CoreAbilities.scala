@@ -36,17 +36,17 @@ object CoreAbilities extends LazyLogging {
 
       target match {
         case None => (combatant, none[Combatant])
-        case Some(target) =>
+        case Some(targetOfAbility) =>
           nextAbilityToUseInConjunction(combatant,
-                                        target.some,
+                                        targetOfAbility.some,
                                         order,
                                         NonEmptyList.of(ability.BonusAction, SingleAttack))
             .fold {
-              val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, target)
+              val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, targetOfAbility)
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
               val (updatedCombatant, updatedTargetOfAbility) =
-                useAdditionalAbility(nextAbility, combatant, target)
+                useAdditionalAbility(nextAbility, combatant, targetOfAbility)
 
               updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
                 nextAbilityToUseInConjunction(updatedCombatant,
@@ -117,16 +117,9 @@ object CoreAbilities extends LazyLogging {
             }
           )
 
-          val adjustedDamage = spell.damageType match {
-            case damageType if spellTarget.creature.resistances.contains(damageType) =>
-              math.floor(dmg / 2).toInt
-            case damageType if spellTarget.creature.immunities.contains(damageType) => 0
-            case _                                                                  => dmg
-          }
-
           val damagedTarget =
             spellTarget.copy(
-              creature = spellTarget.creature.updateHealth(Math.negateExact(adjustedDamage)))
+              creature = spellTarget.creature.updateHealth(dmg, spell.damageType, attackResult))
 
           (combatant, damagedTarget.some)
       }

@@ -23,6 +23,20 @@ class ZombieSpec extends UnitSpecBase {
       }
     }
 
+    "trigger Zombie's Undead Fortitude ability with a DC of 5 plus damage taken" in {
+      forAll { zombie: Zombie =>
+        new TestContext {
+          val lowHpZombie = zombie.withHealth(5).withConstitution(10).asInstanceOf[Zombie]
+          
+          val failedSaveZombie = lowHpZombie.updateHealth(10, Slashing, Hit)(_ => RollResult(14))
+          failedSaveZombie.health shouldBe 0
+
+          val passedSaveZombie = lowHpZombie.updateHealth(10, Slashing, Hit)(_ => RollResult(15))
+          passedSaveZombie.health shouldBe 1
+        }
+      }
+    }
+
     "keep Zombie unconscious if it fails it's Constitution saving throw" in {
       forAll { zombie: Zombie =>
         new TestContext {
@@ -38,19 +52,30 @@ class ZombieSpec extends UnitSpecBase {
     }
 
     "not trigger Undead Fortitude on a Critical Hit" in {
-      val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
+      forAll { zombie: Zombie =>
+        new TestContext {
+          implicit override val roll: RollStrategy = D20.naturalTwenty
 
-      val updatedZombie = lowHpZombie.updateHealth(10, Slashing, CriticalHit)
+          val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
-      updatedZombie.health shouldBe 0
+          val updatedZombie = lowHpZombie.updateHealth(10, Slashing, CriticalHit)
+
+          updatedZombie.health shouldBe 0
+        }
+      }
     }
 
     "not trigger Undead Fortitude for Radiant damage" in {
-      val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
+      forAll { zombie: Zombie =>
+        new TestContext {
+          implicit override val roll: RollStrategy = D20.naturalTwenty
+          val lowHpZombie                          = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
-      val updatedZombie = lowHpZombie.updateHealth(10, Radiant, Hit)
+          val updatedZombie = lowHpZombie.updateHealth(10, Radiant, Hit)
 
-      updatedZombie.health shouldBe 0
+          updatedZombie.health shouldBe 0
+        }
+      }
     }
   }
 
