@@ -289,7 +289,7 @@ trait TestData extends RandomDataGenerator {
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
                                 attackResult: AttackResult): Creature =
-          creature.updateHealth(dmg, damageType, attackResult)
+          throw new NotImplementedError("Random generation should delegate to specific updateHealth()")
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
@@ -343,7 +343,7 @@ trait TestData extends RandomDataGenerator {
         def scoresCritical(roll: Int): Boolean = roll == 20
 
         def resetStartOfTurn(): Creature =
-          throw new NotImplementedError("Random generate should delegate to classes turnReset")
+          throw new NotImplementedError("Random generation should delegate to specific resetStartOfTurn()")
       }
   }
 

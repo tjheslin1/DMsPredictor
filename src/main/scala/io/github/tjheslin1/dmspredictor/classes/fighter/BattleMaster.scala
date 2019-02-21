@@ -44,8 +44,10 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): BattleMaster =
-    copy(health = Math.max(0, adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int,
+                          damageType: DamageType,
+                          attackResult: AttackResult): BattleMaster =
+    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 

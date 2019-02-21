@@ -27,7 +27,7 @@ class ZombieSpec extends UnitSpecBase {
       forAll { zombie: Zombie =>
         new TestContext {
           val lowHpZombie = zombie.withHealth(5).withConstitution(10).asInstanceOf[Zombie]
-          
+
           val failedSaveZombie = lowHpZombie.updateHealth(10, Slashing, Hit)(_ => RollResult(14))
           failedSaveZombie.health shouldBe 0
 

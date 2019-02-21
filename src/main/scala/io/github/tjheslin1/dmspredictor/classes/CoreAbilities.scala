@@ -42,7 +42,8 @@ object CoreAbilities extends LazyLogging {
                                         order,
                                         NonEmptyList.of(ability.BonusAction, SingleAttack))
             .fold {
-              val (updatedAttacker, updatedTarget) = attackAndDamageTimes(2, combatant, targetOfAbility)
+              val (updatedAttacker, updatedTarget) =
+                attackAndDamageTimes(2, combatant, targetOfAbility)
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
               val (updatedCombatant, updatedTargetOfAbility) =

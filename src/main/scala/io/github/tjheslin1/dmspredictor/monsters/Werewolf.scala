@@ -8,7 +8,10 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Werewolf.{HydbridFormClaw, standardWerewolfAbilities}
+import io.github.tjheslin1.dmspredictor.monsters.Werewolf.{
+  standardWerewolfAbilities,
+  HydbridFormClaw
+}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
@@ -38,7 +41,7 @@ import monocle.macros.{GenLens, Lenses}
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
-    copy(health = Math.max(0, adjustedDamage(dmg, damageType, this)))
+    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
