@@ -21,6 +21,8 @@ object SpellCaster {
       {
         case c: EldritchKnight => EldritchKnight._spellSlots.set(spellSlots)(c)
         case c: Cleric         => Cleric._spellSlots.set(spellSlots)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }
   }
 }

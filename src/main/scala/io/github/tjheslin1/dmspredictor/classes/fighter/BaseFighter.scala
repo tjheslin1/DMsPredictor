@@ -75,6 +75,9 @@ object BaseFighter {
           EldritchKnight._abilityUsages.set(abilityUsages)(eldritchKnight)
         case champion: Champion => Champion._abilityUsages.set(abilityUsages)(champion)
         case fighter: Fighter   => Fighter._abilityUsages.set(abilityUsages)(fighter)
+
+        case _ => throw new NotImplementedError("Missing a case in abilityUsagesLens")
+
       }
     }
 }

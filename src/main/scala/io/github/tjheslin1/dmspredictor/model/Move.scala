@@ -31,7 +31,7 @@ object Move extends LazyLogging {
         case PlayerCharacter =>
           val optAbility = availableAbility(conditionHandledCombatant, mobToAttack)
           actionAgainstTarget(conditionHandledCombatant, mobToAttack, optAbility)
-        case Monster =>
+        case _ =>
           val optAbility = availableAbility(conditionHandledCombatant, pcToAttack)
           actionAgainstTarget(conditionHandledCombatant, pcToAttack, optAbility)
       }

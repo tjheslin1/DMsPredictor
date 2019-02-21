@@ -33,7 +33,7 @@ import monocle.macros.{GenLens, Lenses}
                                  name: String = NameGenerator.randomName)
     extends Creature {
 
-  val creatureType: CreatureType         = Monster
+  val creatureType: CreatureType         = Humanoid
   val proficiencyBonus: ProficiencyBonus = 0
 
   val abilities: List[CombatantAbility] = standardWerewolfAbilities

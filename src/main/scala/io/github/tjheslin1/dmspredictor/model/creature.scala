@@ -15,8 +15,9 @@ import monocle.{Lens, Optional}
 
 sealed trait CreatureType extends Product with Serializable
 
-case object Monster         extends CreatureType
 case object PlayerCharacter extends CreatureType
+case object Humanoid        extends CreatureType
+case object Undead          extends CreatureType
 
 trait Creature {
 
@@ -420,6 +421,28 @@ object Creature extends LazyLogging {
         case c: Cleric => Cleric._abilities.set(res)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureAbilitiesLens")
+      }
+    }
+
+  val creatureConditionsLens: Lens[Creature, List[Condition]] =
+    Lens[Creature, List[Condition]](_.conditions) { conditions =>
+      {
+        case c: BattleMaster   => BattleMaster._conditions.set(conditions)(c)
+        case c: EldritchKnight => EldritchKnight._conditions.set(conditions)(c)
+        case c: Champion       => Champion._conditions.set(conditions)(c)
+        case c: Fighter        => Fighter._conditions.set(conditions)(c)
+
+        case c: Barbarian    => Barbarian._conditions.set(conditions)(c)
+        case c: Berserker    => Berserker._conditions.set(conditions)(c)
+        case c: TotemWarrior => TotemWarrior._conditions.set(conditions)(c)
+
+        case c: Cleric => Cleric._conditions.set(conditions)(c)
+
+        case c: Goblin   => Goblin._conditions.set(conditions)(c)
+        case c: Werewolf => Werewolf._conditions.set(conditions)(c)
+        case c: Zombie   => Zombie._conditions.set(conditions)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureConditionsLens")
       }
     }
 

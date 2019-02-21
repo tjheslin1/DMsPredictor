@@ -27,6 +27,7 @@ import monocle.macros.{GenLens, Lenses}
                                cantripKnown: Option[Spell],
                                spellsKnown: Map[SpellLevel, Spell],
                                spellSlots: SpellSlots,
+                               channelDivinityUsed: Boolean = false,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                abilities: List[CombatantAbility] = standardClericAbilities,

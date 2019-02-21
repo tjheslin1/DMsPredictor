@@ -31,7 +31,7 @@ import monocle.macros.{GenLens, Lenses}
     extends Creature
     with LazyLogging {
 
-  val creatureType: CreatureType         = Monster
+  val creatureType: CreatureType         = Undead
   val proficiencyBonus: ProficiencyBonus = 0
 
   def weapon[_: RS]: Weapon = baseWeapon

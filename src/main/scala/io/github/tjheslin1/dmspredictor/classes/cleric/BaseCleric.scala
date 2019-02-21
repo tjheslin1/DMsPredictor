@@ -6,10 +6,12 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
+import monocle.Lens
 
 abstract class BaseCleric extends Player with SpellCaster {
 
   val levelSpellcastingLearned: Level = LevelOne
+  val channelDivinityUsed: Boolean
 
   def resetStartOfTurn(): Creature = this
 }
@@ -30,5 +32,14 @@ object BaseCleric {
     }
 
     baseArmourClass + shieldBonus
+  }
+
+  val channelDivinityUsedLens: Lens[BaseCleric, Boolean] = Lens[BaseCleric, Boolean](_.channelDivinityUsed){
+    channelDivinityUsed => {
+      case cleric: Cleric => Cleric._channelDivinityUsed.set(channelDivinityUsed)(cleric)
+
+      case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+
+    }
   }
 }

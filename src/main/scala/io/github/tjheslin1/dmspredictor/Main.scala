@@ -34,6 +34,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     SacredFlame.some,
     Map(GuidingBolt.spellLevel -> GuidingBolt),
     SpellSlots(FirstLevelSpellSlot(2)),
+    channelDivinityUsed = false,
     ChainShirt,
     None,
     Cleric.standardClericAbilities,

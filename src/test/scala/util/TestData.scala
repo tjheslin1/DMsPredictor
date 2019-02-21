@@ -152,6 +152,7 @@ object TestData {
     def withNoCantrip()              = _cantripKnown.set(none[Spell])(cleric)
     def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(cleric)
     def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
+    def withChannelDivinityUsed() = _channelDivinityUsed.set(true)(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
@@ -305,11 +306,10 @@ trait TestData extends RandomDataGenerator {
       wpn       <- arbWeapon.arbitrary
       armr      <- arbArmour.arbitrary
       optShield <- arbShield.arbitrary
-      cType     <- Gen.oneOf(PlayerCharacter, Monster)
       profBonus <- arbProficiencyBonus.arbitrary
     } yield
       new Creature {
-        val creatureType: CreatureType = cType
+        val creatureType: CreatureType = PlayerCharacter
         val health: Int                = hp
         val maxHealth: Int             = hp
         val stats: BaseStats           = baseStats
@@ -334,13 +334,14 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus        = Regular
         val defenseStatus: AttackStatus       = Regular
 
+        def scoresCritical(roll: Int): Boolean = roll == 20
+
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
                                 attackResult: AttackResult): Creature =
           throw new NotImplementedError(
             "Impossible to implement, results in recursive definition of Creature")
 
-        def scoresCritical(roll: Int): Boolean = roll == 20
 
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError("Random generation should delegate to specific resetStartOfTurn()")
@@ -617,6 +618,7 @@ trait TestData extends RandomDataGenerator {
         SacredFlame.some,
         Map(GuidingBolt.spellLevel -> GuidingBolt),
         SpellSlots(firstLevelSpellSlots),
+        channelDivinityUsed = false,
         player.armour,
         player.offHand,
         Cleric.standardClericAbilities,
@@ -624,7 +626,7 @@ trait TestData extends RandomDataGenerator {
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
-        player.bonusActionUsed,
+        bonusActionUsed = player.bonusActionUsed,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         name = player.name

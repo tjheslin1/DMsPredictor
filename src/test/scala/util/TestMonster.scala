@@ -30,7 +30,7 @@ import monocle.macros.{GenLens, Lenses}
                                     name: String = NameGenerator.randomName)
     extends Creature {
 
-  val creatureType: CreatureType = Monster
+  val creatureType: CreatureType = Humanoid
 
   def weapon[_: RS]: Weapon = baseWeapon
 
