@@ -34,12 +34,13 @@ object BaseCleric {
     baseArmourClass + shieldBonus
   }
 
-  val channelDivinityUsedLens: Lens[BaseCleric, Boolean] = Lens[BaseCleric, Boolean](_.channelDivinityUsed){
-    channelDivinityUsed => {
-      case cleric: Cleric => Cleric._channelDivinityUsed.set(channelDivinityUsed)(cleric)
+  val channelDivinityUsedLens: Lens[BaseCleric, Boolean] =
+    Lens[BaseCleric, Boolean](_.channelDivinityUsed) { channelDivinityUsed =>
+      {
+        case cleric: Cleric => Cleric._channelDivinityUsed.set(channelDivinityUsed)(cleric)
 
-      case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+        case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
 
+      }
     }
-  }
 }

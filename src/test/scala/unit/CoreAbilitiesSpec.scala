@@ -207,45 +207,49 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "cast cantrip if defined and no spell slots are available" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+    "cast cantrip if defined and no spell slots are available" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val noSpellSlotsCleric = cleric
+            .withCantrip(trackedMeleeSpellAttack)
+            .withSpellKnown(trackedSavingThrowSpell)
+            .withNoSpellSlotsAvailable()
+            .withWisdom(24)
+            .withCombatIndex(1)
+
+          val monster = random[TestMonster].withWisdom(1).withCombatIndex(2)
+
+          castSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
+
+          savingThrowSpellUsedCount shouldBe 0
+          meleeSpellUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
-        .withCantrip(trackedMeleeSpellAttack)
+        .withNoCantrip()
         .withSpellKnown(trackedSavingThrowSpell)
         .withNoSpellSlotsAvailable()
         .withWisdom(24)
         .withCombatIndex(1)
 
-      val monster = random[TestMonster].withWisdom(1).withCombatIndex(2)
-
-      castSpell(Priority)(cleric).useAbility(monster.some)
-
-      savingThrowSpellUsedCount shouldBe 0
-      meleeSpellUsedCount shouldBe 1
-    }
-
-    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
-
-        val cleric = random[Cleric]
-          .withNoCantrip()
-          .withSpellKnown(trackedSavingThrowSpell)
-          .withNoSpellSlotsAvailable()
-          .withWisdom(24)
-          .withCombatIndex(1)
-
       castSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
     "must meet the level requirement to use spellcasting" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
-        val levelTwoEldritchKnight = random[EldritchKnight]
-          .withSpellKnown(trackedSavingThrowSpell)
-          .withNoSpellSlotsAvailable()
-          .withLevel(LevelTwo)
-          .withCombatIndex(1)
+      val levelTwoEldritchKnight = random[EldritchKnight]
+        .withSpellKnown(trackedSavingThrowSpell)
+        .withNoSpellSlotsAvailable()
+        .withLevel(LevelTwo)
+        .withCombatIndex(1)
 
       castSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
@@ -268,8 +272,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = SingleAttack
 
-        def triggerMet(target: Option[Combatant])   = true
-        def conditionMet: Boolean = true
+        def triggerMet(target: Option[Combatant]) = true
+        def conditionMet: Boolean                 = true
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
           trackedAttackUsedCount += 1
@@ -288,8 +292,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = SingleAttack
 
-        def triggerMet(target: Option[Combatant])   = true
-        def conditionMet: Boolean = singleUseAttackAbilityUsed == false
+        def triggerMet(target: Option[Combatant]) = true
+        def conditionMet: Boolean                 = singleUseAttackAbilityUsed == false
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
           trackedAttackUsedCount += 1
@@ -311,8 +315,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        def triggerMet(target: Option[Combatant])   = true
-        def conditionMet: Boolean = trackedActionAbilityUsed == false
+        def triggerMet(target: Option[Combatant]) = true
+        def conditionMet: Boolean                 = trackedActionAbilityUsed == false
 
         def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
           trackedActionAbilityUsedCount += 1
@@ -326,15 +330,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
 
     var meleeSpellUsedCount = 0
-    val trackedMeleeSpellAttack = Spell("tracked-melee-spell-test", 1, Evocation, OneAction, MeleeSpellAttack, Fire, {
-      meleeSpellUsedCount += 1
-      4
-    })
+    val trackedMeleeSpellAttack =
+      Spell("tracked-melee-spell-test", 1, Evocation, OneAction, MeleeSpellAttack, Fire, {
+        meleeSpellUsedCount += 1
+        4
+      })
 
     var savingThrowSpellUsedCount = 0
-    val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test", 1, Evocation, OneAction, SpellSavingThrow(Wisdom), Fire, {
-      savingThrowSpellUsedCount += 1
-      4
-    })
+    val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test",
+                                        1,
+                                        Evocation,
+                                        OneAction,
+                                        SpellSavingThrow(Wisdom),
+                                        Fire, {
+                                          savingThrowSpellUsedCount += 1
+                                          4
+                                        })
   }
 }

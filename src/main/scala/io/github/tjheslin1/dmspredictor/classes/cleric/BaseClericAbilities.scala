@@ -4,8 +4,8 @@ import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
 
 object BaseClericAbilities extends LazyLogging {
@@ -41,8 +41,8 @@ object BaseClericAbilities extends LazyLogging {
 
             (combatant, updatedTarget.some)
           }
-    }
       }
+    }
 
     def update: Creature = BaseCleric.channelDivinityUsedLens.set(true)(baseCleric)
   }

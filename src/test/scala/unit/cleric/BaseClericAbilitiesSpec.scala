@@ -2,6 +2,7 @@ package unit.cleric
 
 import base.UnitSpecBase
 import cats.syntax.option._
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities.turnUndead
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
@@ -41,14 +42,13 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(15)
 
-          val clericCombatant = cleric.withCombatIndex(1)
-          val monster         = zombie.withCombatIndex(2)
+          val clericCombatant = cleric.withWisdom(24).withProficiencyBonus(2).withCombatIndex(1)
+          val monster         = zombie.withWisdom(10).withCombatIndex(2)
 
           val (_, Some(Combatant(_, updatedZombie: Zombie))) =
             turnUndead(Priority)(clericCombatant).useAbility(monster.some)
 
-          updatedZombie.conditions shouldBe List(Turned(15, Wisdom,
-            10))
+          updatedZombie.conditions shouldBe List(Turned(17, Wisdom, 10))
         }
       }
     }
