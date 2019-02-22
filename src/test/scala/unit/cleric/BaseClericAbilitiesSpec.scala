@@ -47,7 +47,8 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val (_, Some(Combatant(_, updatedZombie: Zombie))) =
             turnUndead(Priority)(clericCombatant).useAbility(monster.some)
 
-          updatedZombie.conditions shouldBe List(Turned(15, 10))
+          updatedZombie.conditions shouldBe List(Turned(15, Wisdom,
+            10))
         }
       }
     }

@@ -2,8 +2,11 @@ package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
+import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
 
 object BaseClericAbilities extends LazyLogging {
 
@@ -27,7 +30,17 @@ object BaseClericAbilities extends LazyLogging {
 
       target match {
         case None => (combatant, none[Combatant])
-        case Some(targetOfTurn) => ???
+        case Some(targetOfTurn) =>
+          val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
+
+          if (savingThrowPassed(dc, Wisdom, targetOfTurn.creature))
+            (combatant, none[Combatant])
+          else {
+            val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+              .set(targetOfTurn.creature.conditions ++ List(Turned(dc, Wisdom, 10)))(targetOfTurn)
+
+            (combatant, updatedTarget.some)
+          }
     }
       }
 

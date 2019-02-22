@@ -5,4 +5,4 @@ trait Condition extends Product with Serializable {
   val turnsLeft: Int
 }
 
-case class Turned(saveDc: Int, turnsLeft: Int) extends Condition
+case class Turned(saveDc: Int, attribute: Attribute, turnsLeft: Int) extends Condition
