@@ -27,6 +27,15 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
       turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe true
     }
 
+    "not be triggered for non Undead creatures" in {
+      val cleric      = random[Cleric].withCombatIndex(1)
+      val goblin      = random[Goblin].withCombatIndex(2)
+
+      val enemies = List(cleric, goblin)
+
+      turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe false
+    }
+
     "not be used if already used" in {
       val cleric = random[Cleric].withChannelDivinityUsed().withCombatIndex(1)
 
