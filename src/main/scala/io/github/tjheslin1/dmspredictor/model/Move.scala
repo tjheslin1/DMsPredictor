@@ -27,13 +27,18 @@ object Move extends LazyLogging {
       val mobToAttack = nextToFocus(mobs, focus)
       val pcToAttack  = nextToFocus(pcs, focus)
 
-      val (actedCombatant, updatedTarget) = conditionHandledCombatant.creature.creatureType match {
-        case PlayerCharacter =>
-          val optAbility = availableAbility(conditionHandledCombatant, mobToAttack)
-          actionAgainstTarget(conditionHandledCombatant, mobToAttack, optAbility)
-        case _ =>
-          val optAbility = availableAbility(conditionHandledCombatant, pcToAttack)
-          actionAgainstTarget(conditionHandledCombatant, pcToAttack, optAbility)
+      val attackTarget = conditionHandledCombatant.creature.creatureType match {
+        case PlayerCharacter => mobToAttack
+        case _               => pcToAttack
+      }
+
+      val (actedCombatant, updatedTarget) = {
+        val optAbility = availableAbility(conditionHandledCombatant, others.toList)
+        actionAgainstTarget(conditionHandledCombatant,
+                            attackTarget,
+                            others.toList,
+                            optAbility,
+                            focus)
       }
 
       val updatedCombatant =
@@ -63,28 +68,28 @@ object Move extends LazyLogging {
     }(combatant)
 
   private def availableAbility(attacker: Combatant,
-                               target: Option[Combatant]): Option[CombatantAbility] =
+                               others: List[Combatant]): Option[CombatantAbility] =
     attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
       val ability = combatantAbility(attacker)
-      ability.conditionMet && ability.triggerMet(target)
+      ability.conditionMet && ability.triggerMet(others)
     }
 
-  private def actionAgainstTarget[_: RS](
-      combatant: Combatant,
-      toAttack: Option[Combatant],
-      optAbility: Option[CombatantAbility]): (Combatant, Option[Combatant]) =
-    toAttack.fold((combatant, none[Combatant])) { target =>
-      logger.debug(s"${combatant.creature.name} targets ${target.creature.name}")
-
-      optAbility.fold {
-        val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, target)
-        (updatedAttacker, updatedTarget.some)
-      } { ability =>
-        val (actedCombatant, targetOfAbility) = ability(combatant).useAbility(target.some)
-        val updatedCombatant                  = combatant.copy(creature = ability(actedCombatant).update)
-
-        (updatedCombatant, targetOfAbility)
+  private def actionAgainstTarget[_: RS](combatant: Combatant,
+                                         target: Option[Combatant],
+                                         others: List[Combatant],
+                                         optAbility: Option[CombatantAbility],
+                                         focus: Focus): (Combatant, Option[Combatant]) =
+    optAbility.fold {
+      target.fold((combatant, none[Combatant])) { targetToAttack =>
+        val (a, t) = attackAndDamage(combatant, targetToAttack)
+        (a, t.some)
       }
+    } { ability =>
+      val (actedCombatant, targetOfAbility) = ability(combatant).useAbility(others, focus)
+      val updatedCombatant =
+        Combatant.creatureLens.set(ability(actedCombatant).update)(actedCombatant)
+
+      (updatedCombatant, targetOfAbility)
     }
 
   def nextToFocus(combatantsToAttack: Queue[Combatant], focus: Focus): Option[Combatant] = {
