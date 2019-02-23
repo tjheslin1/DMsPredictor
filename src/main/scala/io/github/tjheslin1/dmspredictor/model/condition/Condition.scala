@@ -14,9 +14,12 @@ trait Condition {
 object Condition {
 
   val conditionTurnsLeftLens: Lens[Condition, Int] = Lens[Condition, Int](_.turnsLeft) {
-    updatedTurnsLeft => {
-      case c: Turned => Turned._turnsLeft.set(updatedTurnsLeft)(c)
-      case c: Poisoned => Poisoned._turnsLeft.set(updatedTurnsLeft)(c)
-    }
-}
+    updatedTurnsLeft =>
+      {
+        case c: Turned   => Turned._turnsLeft.set(updatedTurnsLeft)(c)
+        case c: Poisoned => Poisoned._turnsLeft.set(updatedTurnsLeft)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in conditionTurnsLeftLens")
+      }
+  }
 }

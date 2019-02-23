@@ -14,8 +14,7 @@ import monocle.macros.Lenses
       val updatedConditions = creature.conditions diff List(turned)
 
       Creature.creatureConditionsLens.set(updatedConditions)(creature)
-    }
-    else {
+    } else {
       val turned            = creature.conditions.find(_.name == name).get
       val decrementedTurned = Condition.conditionTurnsLeftLens.set(turned.turnsLeft - 1)(turned)
 

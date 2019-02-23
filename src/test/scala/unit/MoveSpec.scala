@@ -105,17 +105,17 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       }
     }
 
-    "handle condition" in new TestContext {
+    "handle conditions" in new TestContext {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
           override implicit val roll = _ => RollResult(10)
 
-          val trackedGoblin = goblin.withCondition(trackedCondition(100)).withCombatIndex(1)
+          val trackedGoblin = goblin.withConditions(trackedCondition(100), trackedCondition(50)).withCombatIndex(1)
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
 
-          trackedConditionHandledCount shouldBe 1
+          trackedConditionHandledCount shouldBe 2
         }
       }
     }
