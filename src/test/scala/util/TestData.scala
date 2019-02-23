@@ -301,7 +301,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
-      n         <- Gen.alphaStr
+      n         <- Gen.alphaStr.filter(_.nonEmpty)
       hp        <- Gen.choose(10, 80)
       baseStats <- arbBaseStats.arbitrary
       wpn       <- arbWeapon.arbitrary

@@ -4,7 +4,7 @@ import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Target
+import io.github.tjheslin1.dmspredictor.strategy.Target._
 import org.scalatest.OptionValues
 import util.TestData._
 import util.TestMonster
@@ -23,7 +23,7 @@ class TargetSpec extends UnitSpecBase with OptionValues {
 
           val combatants = List(enemyOne, playerOne, enemyTwo, playerTwo, enemyThree)
 
-          Target.monsters(combatants) should contain theSameElementsAs List(enemyOne, enemyTwo, enemyThree)
+          monsters(combatants) should contain theSameElementsAs List(enemyOne, enemyTwo, enemyThree)
       }
     }
 
@@ -39,7 +39,7 @@ class TargetSpec extends UnitSpecBase with OptionValues {
 
           val combatants = List(enemyOne, playerOne, enemyTwo, playerTwo, enemyThree)
 
-          Target.monsters(combatants) should contain theSameElementsAs List(playerOne, playerTwo)
+          players(combatants) should contain theSameElementsAs List(playerOne, playerTwo)
       }
     }
 

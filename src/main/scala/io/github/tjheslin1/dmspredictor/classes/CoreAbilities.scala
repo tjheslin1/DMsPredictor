@@ -6,7 +6,7 @@ import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
-import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
+import io.github.tjheslin1.dmspredictor.model.Actions.{attackAndDamage, attackAndDamageTimes}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
@@ -65,7 +65,7 @@ object CoreAbilities extends LazyLogging {
                   nextToFocus(updatedEnemies, focus).fold(updatedCombatant, updatedEnemies) {
                     focusTarget =>
                       val (updatedAttacker, updatedAttackedTarget) =
-                        attackAndDamageTimes(1, updatedCombatant, focusTarget)
+                        attackAndDamage(updatedCombatant, focusTarget)
                       (updatedAttacker, List(updatedAttackedTarget))
                   }
                 } { nextAbility2 =>

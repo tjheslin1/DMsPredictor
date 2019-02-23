@@ -1,12 +1,12 @@
 package unit.barbarian
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, BonusAction, WholeAction}
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 import util.TestMonster
 
@@ -24,7 +24,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
         val monster = testMonster.withCombatIndex(2)
 
-        rage(Priority)(trackedBarbarian).useAbility(monster.some)
+        rage(Priority)(trackedBarbarian).useAbility(List(monster), LowestFirst)
 
         trackedAbilityUsedCount shouldBe 1
       }
@@ -34,7 +34,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       val barbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(none[Combatant])
+        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.rageUsages shouldBe 1
     }
@@ -43,7 +43,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       val ragedBarbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(ragedBarbarian).useAbility(none[Combatant])
+        rage(Priority)(ragedBarbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.inRage shouldBe true
     }
@@ -55,7 +55,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(none[Combatant])
+        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.rageTurnsLeft shouldBe 10
     }
@@ -65,7 +65,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       val barbarian = random[Barbarian].withResistance(Fire, Slashing).withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(none[Combatant])
+        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.resistances shouldBe List(Fire, Slashing, Bludgeoning, Piercing, Slashing)
     }
@@ -74,7 +74,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       val barbarian = random[Barbarian].withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(none[Combatant])
+        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.bonusActionUsed shouldBe true
     }
@@ -86,7 +86,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       val barbarian = random[Barbarian].withCombatIndex(1)
 
       val (Combatant(_, recklessBarbarian: Barbarian), _) =
-        recklessAttack(Priority)(barbarian).useAbility(none[Combatant])
+        recklessAttack(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       recklessBarbarian.attackStatus shouldBe Advantage
     }
@@ -95,7 +95,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
       val barbarian = random[Barbarian].withCombatIndex(1)
 
       val (Combatant(_, recklessBarbarian: Barbarian), _) =
-        recklessAttack(Priority)(barbarian).useAbility(none[Combatant])
+        recklessAttack(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
       recklessBarbarian.defenseStatus shouldBe Disadvantage
     }
@@ -113,7 +113,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-          recklessAttack(Priority)(trackedBarbarian).useAbility(monster.some)
+          recklessAttack(Priority)(trackedBarbarian).useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 1
           trackedAbilityUsedCount shouldBe 0
@@ -145,7 +145,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAbilityUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature = {
@@ -168,7 +168,7 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedBonusActionUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature = {

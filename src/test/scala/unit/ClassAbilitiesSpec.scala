@@ -1,12 +1,12 @@
 package unit
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities.nextAbilityToUseInConjunction
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 import org.scalatest.OptionValues
 import util.TestData._
 
@@ -22,7 +22,7 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
 
           val expected = dummyAbility(3)(combatant)
           val actual = nextAbilityToUseInConjunction(combatant,
-                                                     none[Combatant],
+                                                     List.empty[Combatant],
                                                      2,
                                                      AbilityAction.Any).value.apply(combatant)
 
@@ -43,10 +43,10 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
       val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
-      val conditionMet: Boolean                 = true
+      val conditionMet: Boolean               = true
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-        (combatant, target)
+        (combatant, others)
 
       def update: Creature = combatant.creature
 

@@ -7,6 +7,9 @@ import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model.Weapon.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack}
+import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 /**
@@ -25,36 +28,40 @@ object BattleMasterAbilities extends LazyLogging {
       val abilityAction    = SingleAttack
 
       def triggerMet(others: List[Combatant]) = true
+
       def conditionMet: Boolean =
         battleMaster.level >= levelRequirement && battleMaster.superiorityDiceCount > 0
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Disarming Attack")
 
+        val enemies = monsters(others)
+        val target = nextToFocus(enemies, focus)
+
         target match {
-          case None => (combatant, none[Combatant])
-          case Some(target: Combatant) =>
-            val attackResult = attack(combatant, combatant.creature.weapon, target)
+          case None => (combatant, List.empty[Combatant])
+          case Some(attackTarget: Combatant) =>
+            val attackResult = attack(combatant, combatant.creature.weapon, attackTarget)
             val (updatedAttacker, updatedTarget) =
               resolveDamageMainHand(combatant,
-                                    target,
+                                    attackTarget,
                                     attackResult,
                                     1 * BattleMaster.SuperiorityDice)
 
             attackResult match {
               case Miss | CriticalMiss =>
-                (updatedAttacker, updatedTarget.some)
+                (updatedAttacker, List(updatedTarget))
               case Hit | CriticalHit =>
                 val targetCreature = updatedTarget.creature
 
                 if (savingThrowPassed(battleMaster.maneuverSaveDC, Strength, targetCreature))
-                  (updatedAttacker, updatedTarget.some)
+                  (updatedAttacker, List(updatedTarget))
                 else {
                   val disarmedTarget =
                     (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens)
                       .set(UnarmedStrike(targetCreature))(updatedTarget)
 
-                  (updatedAttacker, disarmedTarget.some)
+                  (updatedAttacker, List(disarmedTarget))
                 }
             }
         }

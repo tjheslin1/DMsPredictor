@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player
@@ -125,8 +124,7 @@ object BaseFighterAbilities extends LazyLogging {
       def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean               = baseFighter.abilityUsages.actionSurgeUsed == false
 
-      def useAbility[_: RS](others: List[Combatant],
-                            focus: Focus): (Combatant, List[Combatant]) = {
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
         val enemies = monsters(others)
@@ -134,27 +132,28 @@ object BaseFighterAbilities extends LazyLogging {
 
         target match {
           case None => (combatant, List.empty[Combatant])
-          case Some(attackTarget: Combatant) =>
+          case Some(_) =>
             nextAbilityToUseInConjunction(combatant, enemies, order, AbilityAction.Any)
-              .fold(useAttackActionTwice(combatant, attackTarget)) { nextAbility =>
+              .fold(useAttackActionTwice(combatant, enemies, focus)) { nextAbility =>
                 val (updatedAttacker, updatedTargets) =
                   useAdditionalAbility(nextAbility, combatant, enemies, focus)
 
                 val updatedEnemies = enemies.replace(updatedTargets)
 
-                
-
-//                optUpdatedTarget.fold((updatedAttacker, List.empty[Combatant])) { updatedTarget =>
-//                  val updatedEnemies = enemies.replace(updatedTarget)
-//
-//                  nextAbilityToUseInConjunction(updatedAttacker,
-//                                                updatedEnemies,
-//                                                order,
-//                                                AbilityAction.Any)
-//                    .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
-//                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedEnemies, focus)
-//                    }
-                }
+                nextAbilityToUseInConjunction(updatedAttacker,
+                                              updatedEnemies,
+                                              order,
+                                              AbilityAction.Any)
+                  .fold {
+                    nextToFocus(updatedEnemies, focus).fold((updatedAttacker, updatedEnemies)) {
+                      nextTarget =>
+                        val (updatedAttacker2, updatedTarget2) =
+                          attackAndDamage(updatedAttacker, nextTarget)
+                        (updatedAttacker2, List(updatedTarget2))
+                    }
+                  } { nextAbility2 =>
+                    useAdditionalAbility(nextAbility2, updatedAttacker, updatedEnemies, focus)
+                  }
               }
         }
       }

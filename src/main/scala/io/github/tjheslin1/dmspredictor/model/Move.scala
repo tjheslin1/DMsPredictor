@@ -1,12 +1,11 @@
 package io.github.tjheslin1.dmspredictor.model
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
-import io.github.tjheslin1.dmspredictor.model.ability.Ability
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
 
 import scala.collection.immutable.Queue
@@ -23,6 +22,8 @@ object Move extends LazyLogging {
     val conditionHandledCombatant =
       handleCondition(resetUnactedCombatant)
 
+    val otherCombatants = others.toList
+
     if (conditionHandledCombatant.creature.isConscious) {
 
       val mobToAttack = nextToFocus(mobs.toList, focus)
@@ -33,11 +34,11 @@ object Move extends LazyLogging {
         case _               => pcToAttack
       }
 
-      val (actedCombatant, updatedTarget) = {
-        val optAbility = availableAbility(conditionHandledCombatant, others.toList)
+      val (actedCombatant, updatedTargets) = {
+        val optAbility = availableAbility(conditionHandledCombatant, otherCombatants)
         actionAgainstTarget(conditionHandledCombatant,
                             attackTarget,
-                            others.toList,
+                            otherCombatants,
                             optAbility,
                             focus)
       }
@@ -46,13 +47,8 @@ object Move extends LazyLogging {
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
           .set(false)(actedCombatant)
 
-      updatedTarget.fold(others.append(updatedCombatant)) { target =>
-        val updatedOthers = others.map {
-          case Combatant(target.index, _) => target
-          case c                          => c
-        }
-        updatedOthers.append(updatedCombatant)
-      }
+      val updatedOthersTargets = otherCombatants.replace(updatedTargets)
+      Queue(updatedOthersTargets:_*).append(updatedCombatant)
     } else {
       val updatedCombatant =
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
@@ -79,17 +75,17 @@ object Move extends LazyLogging {
                                          target: Option[Combatant],
                                          others: List[Combatant],
                                          optAbility: Option[CombatantAbility],
-                                         focus: Focus): (Combatant, Option[Combatant]) =
+                                         focus: Focus): (Combatant, List[Combatant]) =
     optAbility.fold {
-      target.fold((combatant, none[Combatant])) { targetToAttack =>
-        val (a, t) = attackAndDamage(combatant, targetToAttack)
-        (a, t.some)
+      target.fold((combatant, List.empty[Combatant])) { targetToAttack =>
+        val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetToAttack)
+        (updatedAttacker, List(updatedTarget))
       }
     } { ability =>
-      val (actedCombatant, targetOfAbility) = ability(combatant).useAbility(others, focus)
+      val (actedCombatant, targetsOfAbility) = ability(combatant).useAbility(others, focus)
       val updatedCombatant =
         Combatant.creatureLens.set(ability(actedCombatant).update)(actedCombatant)
 
-      (updatedCombatant, targetOfAbility)
+      (updatedCombatant, targetsOfAbility)
     }
 }

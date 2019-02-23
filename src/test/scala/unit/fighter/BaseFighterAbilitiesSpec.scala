@@ -1,13 +1,12 @@
 package unit.fighter
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
-import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 import util.TestMonster
 
@@ -33,7 +32,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-          twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(monster.some)
+          twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
 
           mainSwordUsedCount shouldBe 1
           offHAndSwordUsedCount shouldBe 1
@@ -67,7 +66,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             .withStrength(20)
             .withCombatIndex(1)
 
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withHealth(1000).withCombatIndex(2)
 
           Move.takeMove(Queue(dualWieldingFighter, monster), LowestFirst)
 
@@ -130,7 +129,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val lowHealthFighter =
           fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
-        secondWind(Priority)(lowHealthFighter).triggerMet(none[Combatant]) shouldBe true
+        secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
       }
     }
 
@@ -154,7 +153,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .withCombatIndex(1)
 
-        secondWind(Priority)(lowHealthFighter).triggerMet(none[Combatant]) shouldBe false
+        secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe false
       }
     }
   }
@@ -171,9 +170,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             .withBaseWeapon(trackedMainSword)
             .withCombatIndex(1)
 
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withHealth(1000).withCombatIndex(2)
 
-          actionSurge(Priority)(swordFighter).useAbility(monster.some)
+          actionSurge(Priority)(swordFighter).useAbility(List(monster), LowestFirst)
 
           mainSwordUsedCount shouldBe 2
         }
@@ -191,9 +190,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             .withBaseWeapon(trackedMainSword)
             .withCombatIndex(1)
 
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withHealth(1000).withCombatIndex(2)
 
-          actionSurge(Priority)(swordFighter).useAbility(monster.some)
+          actionSurge(Priority)(swordFighter).useAbility(List(monster), LowestFirst)
 
           mainSwordUsedCount shouldBe 4
         }
@@ -212,7 +211,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-          actionSurge(Priority)(trackedAbilityFighter).useAbility(monster.some)
+          actionSurge(Priority)(trackedAbilityFighter).useAbility(List(monster), LowestFirst)
 
           trackedAbilityOneUsedCount shouldBe 1
           trackedAbilityTwoUsedCount shouldBe 1
@@ -251,7 +250,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAbilityOneUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature = {
@@ -275,7 +274,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAbilityTwoUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature = {

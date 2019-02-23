@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 import util.TestMonster
 
@@ -35,7 +35,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
           extraAttack(Priority)(swordedFighter)
-            .useAbility(monster.some)
+            .useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 2
         }
@@ -53,8 +53,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
+          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+
           extraAttack(Priority)(trackedAbilityFighter)
-            .useAbility(testMonster.withArmourClass(5).withCombatIndex(2).some)
+            .useAbility(List(monster), LowestFirst)
 
           trackedAttackUsedCount shouldBe 2
           trackedActionAbilityUsedCount shouldBe 0
@@ -75,7 +77,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster: Combatant = testMonster.withArmourClass(5).withCombatIndex(2)
 
-          extraAttack(Priority)(trackedAbilityFighter).useAbility(monster.some)
+          extraAttack(Priority)(trackedAbilityFighter).useAbility(List(monster), LowestFirst)
 
           trackedAttackUsedCount shouldBe 1
           trackedActionAbilityUsedCount shouldBe 0
@@ -100,7 +102,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+          castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(List(monster), LowestFirst)
 
           meleeSpellUsedCount shouldBe 1
         }
@@ -173,8 +175,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(List(monster), LowestFirst)
 
           updatedMonster.health shouldBe 8
         }
@@ -199,8 +201,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(List(monster), LowestFirst)
 
           updatedMonster.health shouldBe 10
         }
@@ -221,7 +223,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(2).withCombatIndex(2)
 
-          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
+          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(List(monster), LowestFirst)
 
           savingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
@@ -277,7 +279,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAttackUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature =
@@ -297,7 +299,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAttackUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature = {
@@ -320,7 +322,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
         def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedActionAbilityUsedCount += 1
-          (combatant, target)
+          (combatant, others)
         }
 
         def update: Creature = {

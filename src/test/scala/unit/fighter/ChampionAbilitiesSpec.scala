@@ -17,7 +17,6 @@ class ChampionAbilitiesSpec extends UnitSpecBase {
     import Champion._
 
     "make 2 attacks using Action Surge to make two Attack actions" in {
-
       forAll { (champion: Champion, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
@@ -28,7 +27,7 @@ class ChampionAbilitiesSpec extends UnitSpecBase {
             .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withHealth(1000).withCombatIndex(2)
 
           Move.takeMove(Queue(swordFighter, monster), LowestFirst)
 

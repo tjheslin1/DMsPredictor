@@ -2,13 +2,13 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighterAbilities, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
-import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import org.scalatest.OptionValues
 import util.TestData._
 import util.TestMonster
@@ -76,13 +76,10 @@ class MoveSpec extends UnitSpecBase with OptionValues {
 
     "ignore unconscious mobs" in new TestContext {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player = Fighter._abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
-          .withStrength(10)
-          .withCombatIndex(1)
+        val player = fighter.withAllAbilitiesUsed().withStrength(20).withCombatIndex(1)
 
         val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
-        val enemyTwo = monsterTwo.withHealth(1).withCombatIndex(3)
+        val enemyTwo = monsterTwo.withArmourClass(1).withHealth(1).withCombatIndex(3)
 
         val queue = Queue(player, enemyOne, enemyTwo)
 
@@ -135,11 +132,11 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean                 = trackedAbilityUsed == false
+      def conditionMet: Boolean               = trackedAbilityUsed == false
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         trackedAbilityUsedCount += 1
-        (combatant, target)
+        (combatant, others)
       }
 
       def update: Creature = {
@@ -155,10 +152,10 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       val saveDc: Int    = dc
       val turnsLeft: Int = 10
 
-    def handle[_: RS](creature: Creature): Creature = {
-      trackedConditionHandledCount += 1
-      creature
-    }
+      def handle[_: RS](creature: Creature): Creature = {
+        trackedConditionHandledCount += 1
+        creature
+      }
     }
   }
 }
