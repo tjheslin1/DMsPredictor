@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
@@ -9,6 +8,9 @@ import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 
 object BaseBarbarianAbilities extends LazyLogging {
 
@@ -22,28 +24,30 @@ object BaseBarbarianAbilities extends LazyLogging {
     val abilityAction: AbilityAction = BonusAction
     val levelRequirement: Level      = LevelOne
 
-    def triggerMet(target: Option[Combatant]): Boolean = barbarian.inRage == false
-    def conditionMet: Boolean                          = barbarian.rageUsages > 0
+    def triggerMet(others: List[Combatant]): Boolean = barbarian.inRage == false
+    def conditionMet: Boolean                        = barbarian.rageUsages > 0
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used Rage")
 
       val ragingBarbarianCombatant =
         Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
 
+      val enemies = monsters(others)
+      val target  = nextToFocus(enemies, focus)
+
       target match {
-        case None => (ragingBarbarianCombatant, none[Combatant])
+        case None => (ragingBarbarianCombatant, List.empty[Combatant])
         case Some(targetOfAttack) =>
           nextAbilityToUseInConjunction(ragingBarbarianCombatant,
-                                        targetOfAttack.some,
+                                        enemies,
                                         order,
-                                        AbilityAction.Action)
-            .fold {
-              val (updatedAttacker, updatedTarget) =
-                attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
-              (updatedAttacker, updatedTarget.some)
-            }(nextAbility =>
-              useAdditionalAbility(nextAbility, ragingBarbarianCombatant, targetOfAttack))
+                                        AbilityAction.Action).fold {
+            val (updatedAttacker, updatedTarget) =
+              attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
+            (updatedAttacker, List(updatedTarget))
+          }(nextAbility =>
+            useAdditionalAbility(nextAbility, ragingBarbarianCombatant, enemies, focus))
       }
     }
 
@@ -74,22 +78,24 @@ object BaseBarbarianAbilities extends LazyLogging {
     val abilityAction: AbilityAction = SingleAttack
     val levelRequirement: Level      = LevelTwo
 
-    def triggerMet(target: Option[Combatant]) = true
-    val conditionMet: Boolean                 = barbarian.level >= levelRequirement
+    def triggerMet(others: List[Combatant]) = true
+    val conditionMet: Boolean               = barbarian.level >= levelRequirement
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} is recklessly attacking")
 
       val recklessBarbarianCombatant =
         Combatant.creatureLens.set(updateRecklessBarbarian(barbarian))(combatant)
 
+      val target = nextToFocus(monsters(others), focus)
+
       target match {
-        case None => (recklessBarbarianCombatant, none[Combatant])
+        case None => (recklessBarbarianCombatant, List.empty[Combatant])
         case Some(targetOfAttack) =>
           val (updatedAttacker, updatedTarget) =
             attackAndDamage(recklessBarbarianCombatant, targetOfAttack)
 
-          (updatedAttacker, updatedTarget.some)
+          (updatedAttacker, List(updatedTarget))
       }
     }
 

@@ -100,7 +100,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          castOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+          castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
 
           meleeSpellUsedCount shouldBe 1
         }
@@ -148,7 +148,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
           val updatedEldritchKnight: EldritchKnight =
-            castOffensiveSpell(Priority)(eldritchKnightCombatant).update.asInstanceOf[EldritchKnight]
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).update.asInstanceOf[EldritchKnight]
 
           updatedEldritchKnight.spellSlots.firstLevel.count shouldBe (spellCastingEK.spellSlots.firstLevel.count - 1)
         }
@@ -174,7 +174,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
-            castOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
 
           updatedMonster.health shouldBe 8
         }
@@ -200,7 +200,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
-            castOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
 
           updatedMonster.health shouldBe 10
         }
@@ -221,7 +221,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(2).withCombatIndex(2)
 
-          castOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
+          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
 
           savingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
@@ -239,7 +239,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withWisdom(24)
         .withCombatIndex(1)
 
-      castOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
+      castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
     "must meet the level requirement to use spellcasting" in new TestContext {
@@ -251,7 +251,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withLevel(LevelTwo)
         .withCombatIndex(1)
 
-      castOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
+      castSingleTargetOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
   }
 
@@ -272,10 +272,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = SingleAttack
 
-        def triggerMet(target: Option[Combatant]) = true
+        def triggerMet(others: List[Combatant]) = true
         def conditionMet: Boolean                 = true
 
-        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAttackUsedCount += 1
           (combatant, target)
         }
@@ -292,10 +292,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = SingleAttack
 
-        def triggerMet(target: Option[Combatant]) = true
+        def triggerMet(others: List[Combatant]) = true
         def conditionMet: Boolean                 = singleUseAttackAbilityUsed == false
 
-        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAttackUsedCount += 1
           (combatant, target)
         }
@@ -315,10 +315,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        def triggerMet(target: Option[Combatant]) = true
+        def triggerMet(others: List[Combatant]) = true
         def conditionMet: Boolean                 = trackedActionAbilityUsed == false
 
-        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedActionAbilityUsedCount += 1
           (combatant, target)
         }

@@ -32,7 +32,7 @@ object ClassAbilities {
   def useAdditionalAbility[_: RS](ability: CombatantAbility,
                                   attacker: Combatant,
                                   others: List[Combatant],
-                                    focus: Focus): (Combatant, Option[Combatant]) = {
+                                    focus: Focus): (Combatant, List[Combatant]) = {
     val (updatedAttacker, updatedTargetOfAbility) = ability(attacker).useAbility(others, focus)
     val updatedAttackingCreature                  = ability(updatedAttacker).update
 

@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
@@ -8,6 +7,8 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
+import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 
 object BaseClericAbilities extends LazyLogging {
 
@@ -20,28 +21,25 @@ object BaseClericAbilities extends LazyLogging {
     val abilityAction: AbilityAction = WholeAction
 
     def conditionMet: Boolean = baseCleric.channelDivinityUsed == false
-    def triggerMet(target: Option[Combatant]): Boolean = target match {
-      case None                                                               => false
-      case Some(targetOfTurn) if targetOfTurn.creature.creatureType == Undead => true
-      case _                                                                  => false
-    }
+    def triggerMet(others: List[Combatant]): Boolean =
+      monsters(others).exists(_.creature.creatureType == Undead)
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${baseCleric.name} used $name")
 
-      target match {
-        case None => (combatant, none[Combatant])
-        case Some(targetOfTurn) =>
+      monsters(others).filter(_.creature.creatureType == Undead) match {
+        case List() => (combatant, List.empty[Combatant])
+        case undeadTargets: List[Combatant] =>
           val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
 
-          if (savingThrowPassed(dc, Wisdom, targetOfTurn.creature))
-            (combatant, none[Combatant])
-          else {
-            val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-              .set(targetOfTurn.creature.conditions ++ List(Turned(dc, 10)))(targetOfTurn)
-
-            (combatant, updatedTarget.some)
+          val updatedUndead = undeadTargets.map { undead =>
+            if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
+            else
+              (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+                .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
           }
+
+          (combatant, updatedUndead)
       }
     }
 

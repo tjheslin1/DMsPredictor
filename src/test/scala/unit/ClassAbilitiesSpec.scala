@@ -42,10 +42,10 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(target: Option[Combatant]) = true
+      def triggerMet(others: List[Combatant]) = true
       val conditionMet: Boolean                 = true
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) =
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
         (combatant, target)
 
       def update: Creature = combatant.creature

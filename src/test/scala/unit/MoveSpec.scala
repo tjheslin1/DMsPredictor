@@ -134,10 +134,10 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(target: Option[Combatant]) = true
+      def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean                 = trackedAbilityUsed == false
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         trackedAbilityUsedCount += 1
         (combatant, target)
       }

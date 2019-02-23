@@ -1,10 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model.ability
 
-import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst, RandomFocus}
-
-import scala.util.{Random => JRandom}
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 abstract class Ability(combatant: Combatant) {
 
@@ -16,6 +13,6 @@ abstract class Ability(combatant: Combatant) {
   def triggerMet(others: List[Combatant]): Boolean
   def conditionMet: Boolean
 
-  def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, Option[Combatant])
+  def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant])
   def update: Creature
 }

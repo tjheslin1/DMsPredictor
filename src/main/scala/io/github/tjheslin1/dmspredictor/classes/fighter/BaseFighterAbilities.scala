@@ -8,7 +8,11 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.Lens
 import monocle.macros.GenLens
 
@@ -34,12 +38,13 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelTwo
     val abilityAction    = WholeAction
 
-    def triggerMet(target: Option[Combatant]) =
+    def triggerMet(others: List[Combatant]) =
       combatant.creature.health <= combatant.creature.maxHealth / 2
+
     def conditionMet =
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
-    def useAbility[_: RS](targetIgnored: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used Second wind")
 
       val updatedHealth =
@@ -48,7 +53,7 @@ object BaseFighterAbilities extends LazyLogging {
       val updatedCombatant =
         (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
-      (updatedCombatant, None)
+      (updatedCombatant, List.empty[Combatant])
     }
 
     def update: Creature =
@@ -64,7 +69,7 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelOne
     val abilityAction    = BonusAction
 
-    def triggerMet(target: Option[Combatant]) = true
+    def triggerMet(others: List[Combatant]) = true
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
@@ -75,18 +80,22 @@ object BaseFighterAbilities extends LazyLogging {
       case _ => false
     }
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
+      val enemies = monsters(others)
+      val target  = nextToFocus(enemies, focus)
+
       target match {
-        case None => (combatant, none[Combatant])
-        case Some(target: Combatant) =>
-          val mainHandAttack = attack(combatant, combatant.creature.weapon, target)
+        case None => (combatant, List.empty[Combatant])
+        case Some(attackTarget: Combatant) =>
+          val mainHandAttack = attack(combatant, combatant.creature.weapon, attackTarget)
 
           val (attacker1, attackTarget1) =
-            if (mainHandAttack.result > 0) resolveDamageMainHand(combatant, target, mainHandAttack)
+            if (mainHandAttack.result > 0)
+              resolveDamageMainHand(combatant, attackTarget, mainHandAttack)
             else
-              (combatant, target)
+              (combatant, attackTarget)
 
           val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
           val offHandAttack = attack(attacker1, offHandWeapon, attackTarget1)
@@ -97,7 +106,7 @@ object BaseFighterAbilities extends LazyLogging {
             else
               (attacker1, attackTarget1)
 
-          (attacker2, attackTarget2.some)
+          (attacker2, List(attackTarget2))
       }
     }
 
@@ -113,28 +122,38 @@ object BaseFighterAbilities extends LazyLogging {
       val levelRequirement = LevelTwo
       val abilityAction    = WholeAction
 
-      def triggerMet(target: Option[Combatant]) = true
-      def conditionMet: Boolean                 = baseFighter.abilityUsages.actionSurgeUsed == false
+      def triggerMet(others: List[Combatant]) = true
+      def conditionMet: Boolean               = baseFighter.abilityUsages.actionSurgeUsed == false
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      def useAbility[_: RS](others: List[Combatant],
+                            focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-        target match {
-          case None => (combatant, none[Combatant])
-          case Some(target: Combatant) =>
-            nextAbilityToUseInConjunction(combatant, target.some, order, AbilityAction.Any)
-              .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
-                val (updatedAttacker, optUpdatedTarget) =
-                  useAdditionalAbility(nextAbility, combatant, target)
+        val enemies = monsters(others)
+        val target  = nextToFocus(enemies, focus)
 
-                optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                  nextAbilityToUseInConjunction(updatedAttacker,
-                                                updatedTarget.some,
-                                                order,
-                                                AbilityAction.Any)
-                    .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
-                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
-                    }
+        target match {
+          case None => (combatant, List.empty[Combatant])
+          case Some(attackTarget: Combatant) =>
+            nextAbilityToUseInConjunction(combatant, enemies, order, AbilityAction.Any)
+              .fold(useAttackActionTwice(combatant, attackTarget)) { nextAbility =>
+                val (updatedAttacker, updatedTargets) =
+                  useAdditionalAbility(nextAbility, combatant, enemies, focus)
+
+                val updatedEnemies = enemies.replace(updatedTargets)
+
+                
+
+//                optUpdatedTarget.fold((updatedAttacker, List.empty[Combatant])) { updatedTarget =>
+//                  val updatedEnemies = enemies.replace(updatedTarget)
+//
+//                  nextAbilityToUseInConjunction(updatedAttacker,
+//                                                updatedEnemies,
+//                                                order,
+//                                                AbilityAction.Any)
+//                    .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
+//                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedEnemies, focus)
+//                    }
                 }
               }
         }

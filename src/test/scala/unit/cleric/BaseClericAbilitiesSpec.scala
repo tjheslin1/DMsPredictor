@@ -1,13 +1,13 @@
 package unit.cleric
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities.turnUndead
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
 class BaseClericAbilitiesSpec extends UnitSpecBase {
@@ -15,13 +15,16 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
   val Priority = 1
 
   "turnUndead" should {
-    "only target Undead creature" in {
-      val cleric = random[Cleric].withCombatIndex(1)
-      val goblin = random[Goblin].withCombatIndex(2)
-      val zombie = random[Zombie].withCombatIndex(3)
+    "be triggered for Undead creatures" in {
+      val cleric      = random[Cleric].withCombatIndex(1)
+      val goblin      = random[Goblin].withCombatIndex(2)
+      val zombieOne   = random[Zombie].withCombatIndex(3)
+      val zombieTwo   = random[Zombie].withCombatIndex(3)
+      val zombieThree = random[Zombie].withCombatIndex(3)
 
-      turnUndead(Priority)(cleric).triggerMet(goblin.some) shouldBe false
-      turnUndead(Priority)(cleric).triggerMet(zombie.some) shouldBe true
+      val enemies = List(cleric, goblin, zombieOne, zombieTwo, zombieThree)
+
+      turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe true
     }
 
     "not be used if already used" in {
@@ -38,18 +41,24 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
       updatedCleric.channelDivinityUsed shouldBe true
     }
 
-    "apply the Turned condition on the Undead target" in {
-      forAll { (cleric: Cleric, zombie: Zombie) =>
+    "apply the Turned condition on the Undead targets" in {
+      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, goblin: Goblin) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(15)
 
           val clericCombatant = cleric.withWisdom(24).withProficiencyBonus(2).withCombatIndex(1)
-          val monster         = zombie.withWisdom(10).withCombatIndex(2)
 
-          val (_, Some(Combatant(_, updatedZombie: Zombie))) =
-            turnUndead(Priority)(clericCombatant).useAbility(monster.some)
+          val enemies = List(zombieOne.withCombatIndex(1),
+                             zombieTwo.withCombatIndex(2),
+                             goblin.withCombatIndex(2))
 
-          updatedZombie.conditions shouldBe List(Turned(17, 10))
+          val (_,
+               List(Combatant(_, updatedZombieOne: Zombie),
+                    Combatant(_, updatedZombieTwo: Zombie))) =
+            turnUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
+
+          updatedZombieOne.conditions shouldBe List(Turned(17, 10))
+          updatedZombieTwo.conditions shouldBe List(Turned(17, 10))
         }
       }
     }

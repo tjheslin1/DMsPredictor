@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.ability.Ability
-import io.github.tjheslin1.dmspredictor.model.ability.Ability.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
 

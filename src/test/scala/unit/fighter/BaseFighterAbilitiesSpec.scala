@@ -246,10 +246,10 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        def triggerMet(target: Option[Combatant]) = true
+        def triggerMet(others: List[Combatant]) = true
         def conditionMet: Boolean                 = trackedAbilityOneUsed == false
 
-        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAbilityOneUsedCount += 1
           (combatant, target)
         }
@@ -270,10 +270,10 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        def triggerMet(target: Option[Combatant]) = true
+        def triggerMet(others: List[Combatant]) = true
         def conditionMet: Boolean                 = trackedAbilityTwoUsed == false
 
-        def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
           trackedAbilityTwoUsedCount += 1
           (combatant, target)
         }
