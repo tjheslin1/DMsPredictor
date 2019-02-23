@@ -61,6 +61,9 @@ object TestData {
 
     def withResetTurn(reset: Unit => Unit) = _turnResetTracker.set(reset)(testMonster)
 
+    def withCreatureType(creatureType: CreatureType) = _creatureType.set(creatureType)(testMonster)
+    def withChallengeRating(cr: Double)              = _challengeRating.set(cr)(testMonster)
+
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
   }
 
@@ -99,7 +102,8 @@ object TestData {
     def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
 
     def withCondition(condition: Condition) = creatureConditionsLens.set(List(condition))(creature)
-    def withConditions(conditions: Condition*) = creatureConditionsLens.set(conditions.toList)(creature)
+    def withConditions(conditions: Condition*) =
+      creatureConditionsLens.set(conditions.toList)(creature)
 
     def withAttackStatus(attackStatus: AttackStatus) =
       creatureAttackStatusLens.set(attackStatus)(creature)
@@ -153,7 +157,7 @@ object TestData {
     def withNoCantrip()              = _cantripKnown.set(none[Spell])(cleric)
     def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(cleric)
     def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
-    def withChannelDivinityUsed() = _channelDivinityUsed.set(true)(cleric)
+    def withChannelDivinityUsed()    = _channelDivinityUsed.set(true)(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
@@ -260,6 +264,14 @@ trait TestData extends RandomDataGenerator {
     Gen.oneOf(none[Equipment], Shield.some) // TODO Gen any type of equipment
   }
 
+  implicit val arbChallengeRating: Arbitrary[Double] = Arbitrary {
+    Gen.oneOf(0.25, 0.5, 1, 2, 3, 5)
+  }
+
+  implicit val arbMonsterType: Arbitrary[CreatureType] = Arbitrary {
+    Gen.oneOf(Undead, Humanoid)
+  }
+
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
       lvl      <- arbLevel.arbitrary
@@ -291,7 +303,8 @@ trait TestData extends RandomDataGenerator {
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
                                 attackResult: AttackResult): Creature =
-          throw new NotImplementedError("Random generation should delegate to specific updateHealth()")
+          throw new NotImplementedError(
+            "Random generation should delegate to specific updateHealth()")
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
@@ -343,9 +356,9 @@ trait TestData extends RandomDataGenerator {
           throw new NotImplementedError(
             "Impossible to implement, results in recursive definition of Creature")
 
-
         def resetStartOfTurn(): Creature =
-          throw new NotImplementedError("Random generation should delegate to specific resetStartOfTurn()")
+          throw new NotImplementedError(
+            "Random generation should delegate to specific resetStartOfTurn()")
       }
   }
 
@@ -373,7 +386,9 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
-      creature <- arbCreature.arbitrary
+      creature     <- arbCreature.arbitrary
+      creatureType <- arbMonsterType.arbitrary
+      cr           <- arbChallengeRating.arbitrary
     } yield
       TestMonster(
         creature.health,
@@ -391,6 +406,8 @@ trait TestData extends RandomDataGenerator {
         creature.attackStatus,
         creature.defenseStatus,
         turnResetTracker = () => _,
+        creatureType,
+        cr,
         creature.name
       )
   }

@@ -36,7 +36,7 @@ object BattleMasterAbilities extends LazyLogging {
         logger.debug(s"${combatant.creature.name} used Disarming Attack")
 
         val enemies = monsters(others)
-        val target = nextToFocus(enemies, focus)
+        val target  = nextToFocus(enemies, focus)
 
         target match {
           case None => (combatant, List.empty[Combatant])

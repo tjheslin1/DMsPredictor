@@ -48,7 +48,7 @@ object Move extends LazyLogging {
           .set(false)(actedCombatant)
 
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
-      Queue(updatedOthersTargets:_*).append(updatedCombatant)
+      Queue(updatedOthersTargets: _*).append(updatedCombatant)
     } else {
       val updatedCombatant =
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)

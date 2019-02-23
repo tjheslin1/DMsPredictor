@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -28,10 +29,10 @@ import monocle.macros.{GenLens, Lenses}
                                     attackStatus: AttackStatus = Regular,
                                     defenseStatus: AttackStatus = Regular,
                                     turnResetTracker: Unit => Unit = () => _,
+                                    creatureType: CreatureType = Humanoid,
+                                    challengeRating: Double = 1,
                                     name: String = NameGenerator.randomName)
-    extends Creature {
-
-  val creatureType: CreatureType = Humanoid
+    extends Monster {
 
   def weapon[_: RS]: Weapon = baseWeapon
 

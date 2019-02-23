@@ -2,13 +2,14 @@ package unit.cleric
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities.turnUndead
+import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
+import util.TestMonster
 
 class BaseClericAbilitiesSpec extends UnitSpecBase {
 
@@ -28,8 +29,8 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not be triggered for non Undead creatures" in {
-      val cleric      = random[Cleric].withCombatIndex(1)
-      val goblin      = random[Goblin].withCombatIndex(2)
+      val cleric = random[Cleric].withCombatIndex(1)
+      val goblin = random[Goblin].withCombatIndex(2)
 
       val enemies = List(cleric, goblin)
 
@@ -69,6 +70,41 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           updatedZombieOne.conditions shouldBe List(Turned(17, 10))
           updatedZombieTwo.conditions shouldBe List(Turned(17, 10))
         }
+      }
+    }
+  }
+
+  "destroyUndead" should {
+    "destroy (set health to 0) undead enemies who fail their save and are CR 1/2 or lower" in {
+      forAll {
+        (cleric: Cleric,
+         zombieOne: Zombie,
+         zombieTwo: Zombie,
+         zombieThree: Zombie,
+         goblin: Goblin) =>
+          new TestContext {
+            implicit override val roll: RollStrategy = _ => RollResult(10)
+
+            val clericCombatant = cleric.withWisdom(10).withProficiencyBonus(2).withCombatIndex(1)
+
+            val toughUndead = zombieOne.withWisdom(20).withCombatIndex(2)
+            val weakUndead = zombieTwo.withWisdom(1).withCombatIndex(3)
+            val weakHighCrUndead = zombieThree.withWisdom(1).withCombatIndex(4)
+
+            val enemies = List(toughUndead, weakUndead, weakHighCrUndead, goblin.withCombatIndex(2))
+
+            val (_,
+                 List(Combatant(_, updatedUndeadOne: TestMonster),
+                      Combatant(_, updatedUndeadTwo: TestMonster),
+                      Combatant(_, updatedUndeadThree: TestMonster))) =
+              destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
+
+            updatedUndeadOne.health shouldBe zombieOne.health
+            updatedUndeadTwo.health shouldBe 0
+
+            updatedUndeadThree.health shouldBe zombieThree.health
+            updatedUndeadThree.conditions should contain theSameElementsAs List(Turned(17, 10))
+          }
       }
     }
   }

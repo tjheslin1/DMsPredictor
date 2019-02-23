@@ -29,8 +29,10 @@ import monocle.macros.{GenLens, Lenses}
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
                                name: String = NameGenerator.randomName)
-    extends Creature
+    extends Monster
     with LazyLogging {
+
+  val challengeRating: Double = 0.25
 
   val creatureType: CreatureType         = Undead
   val proficiencyBonus: ProficiencyBonus = 0

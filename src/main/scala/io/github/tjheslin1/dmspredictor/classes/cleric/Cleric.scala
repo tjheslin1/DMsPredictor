@@ -54,8 +54,12 @@ import monocle.macros.{GenLens, Lenses}
 
 object Cleric {
 
+  import BaseClericAbilities._
+
   val standardClericAbilities: List[CombatantAbility] = List(
-    castSingleTargetOffensiveSpell(1)
+    destroyUndead(1),
+    turnUndead(2),
+    castSingleTargetOffensiveSpell(3)
   )
 
   val strengthLens: Lens[Cleric, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

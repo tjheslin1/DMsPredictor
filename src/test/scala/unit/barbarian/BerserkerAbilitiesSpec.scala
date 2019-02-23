@@ -1,7 +1,6 @@
 package unit.barbarian
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Berserker
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BerserkerAbilities._
 import io.github.tjheslin1.dmspredictor.model._

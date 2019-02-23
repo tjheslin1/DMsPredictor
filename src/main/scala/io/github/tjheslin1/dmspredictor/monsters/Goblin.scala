@@ -28,7 +28,9 @@ import monocle.macros.{GenLens, Lenses}
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
                                name: String = NameGenerator.randomName)
-    extends Creature {
+    extends Monster {
+
+  val challengeRating: Double = 0.25
 
   val creatureType: CreatureType         = Humanoid
   val proficiencyBonus: ProficiencyBonus = 0
