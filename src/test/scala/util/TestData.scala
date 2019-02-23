@@ -11,16 +11,14 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
-import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, _}
+import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
-  GuidingBolt,
-  SacredFlame
-}
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
@@ -99,6 +97,9 @@ object TestData {
     def withNoResistances()             = creatureResistancesLens.set(List.empty)(creature)
     def withNoImmunities()              = creatureImmunitiesLens.set(List.empty)(creature)
     def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
+
+    def withCondition(condition: Condition) = creatureConditionsLens.set(List(condition))(creature)
+    def withConditions(conditions: Condition*) = creatureConditionsLens.set(conditions.toList)(creature)
 
     def withAttackStatus(attackStatus: AttackStatus) =
       creatureAttackStatusLens.set(attackStatus)(creature)

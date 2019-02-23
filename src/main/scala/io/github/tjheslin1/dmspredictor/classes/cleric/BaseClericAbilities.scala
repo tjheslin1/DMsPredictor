@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
 
 object BaseClericAbilities extends LazyLogging {
@@ -37,7 +38,7 @@ object BaseClericAbilities extends LazyLogging {
             (combatant, none[Combatant])
           else {
             val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-              .set(targetOfTurn.creature.conditions ++ List(Turned(dc, Wisdom, 10)))(targetOfTurn)
+              .set(targetOfTurn.creature.conditions ++ List(Turned(dc, 10)))(targetOfTurn)
 
             (combatant, updatedTarget.some)
           }

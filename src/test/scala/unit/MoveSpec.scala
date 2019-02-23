@@ -6,6 +6,8 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighterAbilities, F
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
 import util.TestData._
@@ -102,6 +104,21 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         trackedAbilityUsed shouldBe true
       }
     }
+
+    "handle condition" in new TestContext {
+      forAll { (fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll = _ => RollResult(10)
+
+          val trackedGoblin = goblin.withCondition(trackedCondition(100)).withCombatIndex(1)
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
+
+          trackedConditionHandledCount shouldBe 1
+        }
+      }
+    }
   }
 
   "nextToFocus" should {
@@ -131,8 +148,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(target: Option[Combatant])   = true
-      def conditionMet: Boolean = trackedAbilityUsed == false
+      def triggerMet(target: Option[Combatant]) = true
+      def conditionMet: Boolean                 = trackedAbilityUsed == false
 
       def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
         trackedAbilityUsedCount += 1
@@ -143,6 +160,19 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         trackedAbilityUsed = true
         combatant.creature
       }
+    }
+
+    var trackedConditionHandledCount = 0
+    def trackedCondition(dc: Int): Condition = new Condition {
+      val name = "tracked-condition"
+
+      val saveDc: Int    = dc
+      val turnsLeft: Int = 10
+
+    def handle[_: RS](creature: Creature): Creature = {
+      trackedConditionHandledCount += 1
+      creature
+    }
     }
   }
 }

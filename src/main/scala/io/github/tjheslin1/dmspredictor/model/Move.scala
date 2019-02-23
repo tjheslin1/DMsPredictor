@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.model
 
-import cats.syntax.eq._
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
@@ -20,7 +19,8 @@ object Move extends LazyLogging {
     val resetUnactedCombatant =
       Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
 
-    val conditionHandledCombatant = handleCondition(resetUnactedCombatant)
+    val conditionHandledCombatant =
+      handleCondition(resetUnactedCombatant)
 
     if (conditionHandledCombatant.creature.isConscious) {
 
@@ -41,7 +41,10 @@ object Move extends LazyLogging {
           .set(false)(actedCombatant)
 
       updatedTarget.fold(others.append(updatedCombatant)) { target =>
-        val updatedOthers = others.map(c => if (c === target) target else c)
+        val updatedOthers = others.map {
+          case Combatant(target.index, _) => target
+          case c                          => c
+        }
         updatedOthers.append(updatedCombatant)
       }
     } else {
@@ -52,10 +55,12 @@ object Move extends LazyLogging {
     }
   }
 
-  def handleCondition(combatant: Combatant): Combatant = combatant.creature.conditions match {
-    case List() => combatant
-    case _      => ???
-  }
+  def handleCondition[_: RS](combatant: Combatant): Combatant =
+    Combatant.creatureLens.set {
+      combatant.creature.conditions.foldLeft(combatant.creature) {
+        case (creature, condition) => condition.handle(creature)
+      }
+    }(combatant)
 
   private def availableAbility(attacker: Combatant,
                                target: Option[Combatant]): Option[CombatantAbility] =

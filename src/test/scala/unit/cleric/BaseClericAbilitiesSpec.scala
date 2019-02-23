@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities.turnUndead
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import util.TestData._
 
@@ -48,7 +49,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val (_, Some(Combatant(_, updatedZombie: Zombie))) =
             turnUndead(Priority)(clericCombatant).useAbility(monster.some)
 
-          updatedZombie.conditions shouldBe List(Turned(17, Wisdom, 10))
+          updatedZombie.conditions shouldBe List(Turned(17, 10))
         }
       }
     }

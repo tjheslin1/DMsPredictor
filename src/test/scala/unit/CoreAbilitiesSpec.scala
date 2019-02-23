@@ -208,7 +208,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "cast cantrip if defined and no spell slots are available" in {
-      forAll { cleric: Cleric =>
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
@@ -219,7 +219,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withWisdom(24)
             .withCombatIndex(1)
 
-          val monster = random[TestMonster].withWisdom(1).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(2).withCombatIndex(2)
 
           castSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
 
