@@ -100,7 +100,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          castSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+          castOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
 
           meleeSpellUsedCount shouldBe 1
         }
@@ -148,7 +148,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
           val updatedEldritchKnight: EldritchKnight =
-            castSpell(Priority)(eldritchKnightCombatant).update.asInstanceOf[EldritchKnight]
+            castOffensiveSpell(Priority)(eldritchKnightCombatant).update.asInstanceOf[EldritchKnight]
 
           updatedEldritchKnight.spellSlots.firstLevel.count shouldBe (spellCastingEK.spellSlots.firstLevel.count - 1)
         }
@@ -174,7 +174,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
-            castSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+            castOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
 
           updatedMonster.health shouldBe 8
         }
@@ -200,7 +200,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, Some(Combatant(_, updatedMonster: TestMonster))) =
-            castSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
+            castOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(monster.some)
 
           updatedMonster.health shouldBe 10
         }
@@ -221,7 +221,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(2).withCombatIndex(2)
 
-          castSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
+          castOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(monster.some)
 
           savingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
@@ -239,7 +239,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withWisdom(24)
         .withCombatIndex(1)
 
-      castSpell(Priority)(cleric).conditionMet shouldBe false
+      castOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
     "must meet the level requirement to use spellcasting" in new TestContext {
@@ -251,7 +251,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withLevel(LevelTwo)
         .withCombatIndex(1)
 
-      castSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
+      castOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
   }
 

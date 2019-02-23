@@ -108,30 +108,16 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "handle conditions" in new TestContext {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
-          override implicit val roll = _ => RollResult(10)
+          implicit override val roll = _ => RollResult(10)
 
-          val trackedGoblin = goblin.withConditions(trackedCondition(100), trackedCondition(50)).withCombatIndex(1)
+          val trackedGoblin =
+            goblin.withConditions(trackedCondition(100), trackedCondition(50)).withCombatIndex(1)
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
 
           trackedConditionHandledCount shouldBe 2
         }
-      }
-    }
-  }
-
-  "nextToFocus" should {
-
-    "focus mob with lowest health first" in new TestContext {
-      forAll { (monsterOne: TestMonster, monsterTwo: TestMonster, monsterThree: TestMonster) =>
-        val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
-        val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)
-        val enemyThree = monsterThree.withHealth(50).withCombatIndex(4)
-
-        val enemies = Queue(enemyOne, enemyTwo, enemyThree)
-
-        nextToFocus(enemies, LowestFirst).value shouldBe enemyTwo
       }
     }
   }

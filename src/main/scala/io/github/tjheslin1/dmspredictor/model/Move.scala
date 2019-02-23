@@ -4,11 +4,12 @@ import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
+import io.github.tjheslin1.dmspredictor.model.ability.Ability
+import io.github.tjheslin1.dmspredictor.model.ability.Ability.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.QueueOps._
 
 import scala.collection.immutable.Queue
-import scala.util.{Random => JRandom}
 
 object Move extends LazyLogging {
 
@@ -24,8 +25,8 @@ object Move extends LazyLogging {
 
     if (conditionHandledCombatant.creature.isConscious) {
 
-      val mobToAttack = nextToFocus(mobs, focus)
-      val pcToAttack  = nextToFocus(pcs, focus)
+      val mobToAttack = nextToFocus(mobs.toList, focus)
+      val pcToAttack  = nextToFocus(pcs.toList, focus)
 
       val attackTarget = conditionHandledCombatant.creature.creatureType match {
         case PlayerCharacter => mobToAttack
@@ -91,15 +92,4 @@ object Move extends LazyLogging {
 
       (updatedCombatant, targetOfAbility)
     }
-
-  def nextToFocus(combatantsToAttack: Queue[Combatant], focus: Focus): Option[Combatant] = {
-
-    val consciousCombatants = combatantsToAttack.filter(_.creature.isConscious)
-    focus match {
-      case LowestFirst => consciousCombatants.sortBy(_.creature.health).headOption
-      case RandomFocus =>
-        if (consciousCombatants.isEmpty) None
-        else consciousCombatants(JRandom.nextInt(consciousCombatants.size)).some
-    }
-  }
 }

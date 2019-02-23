@@ -11,6 +11,10 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object CoreAbilities extends LazyLogging {
 
@@ -28,17 +32,19 @@ object CoreAbilities extends LazyLogging {
     val levelRequirement = LevelFive
     val abilityAction    = SingleAttack
 
-    def triggerMet(target: Option[Combatant]) = true
-    def conditionMet: Boolean                 = player.level >= levelRequirement
+    def triggerMet(others: List[Combatant]) = true
+    def conditionMet: Boolean               = player.level >= levelRequirement
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      target match {
+      val enemies = monsters(others)
+
+      nextToFocus(enemies, focus) match {
         case None => (combatant, none[Combatant])
         case Some(targetOfAbility) =>
           nextAbilityToUseInConjunction(combatant,
-                                        targetOfAbility.some,
+                                        enemies,
                                         order,
                                         NonEmptyList.of(ability.BonusAction, SingleAttack))
             .fold {
@@ -47,19 +53,22 @@ object CoreAbilities extends LazyLogging {
               (updatedAttacker, updatedTarget.some)
             } { nextAbility =>
               val (updatedCombatant, updatedTargetOfAbility) =
-                useAdditionalAbility(nextAbility, combatant, targetOfAbility)
+                useAdditionalAbility(nextAbility, combatant, enemies, focus)
 
               updatedTargetOfAbility.fold((updatedCombatant, none[Combatant])) { updatedTarget =>
+                val updatedEnemies = enemies.replace(updatedTarget)
+
                 nextAbilityToUseInConjunction(updatedCombatant,
-                                              updatedTargetOfAbility,
+                                              updatedEnemies,
                                               order,
-                                              one(SingleAttack)).fold {
-                  val (updatedAttacker, updatedAttackedTarget) =
-                    attackAndDamageTimes(1, updatedCombatant, updatedTarget)
-                  (updatedAttacker, updatedAttackedTarget.some)
-                } { nextAbility2 =>
-                  useAdditionalAbility(nextAbility2, updatedCombatant, updatedTarget)
-                }
+                                              one(SingleAttack))
+                  .fold {
+                    val (updatedAttacker, updatedAttackedTarget) =
+                      attackAndDamageTimes(1, updatedCombatant, updatedTarget)
+                    (updatedAttacker, updatedAttackedTarget.some)
+                  } { nextAbility2 =>
+                    useAdditionalAbility(nextAbility2, updatedCombatant, updatedEnemies, focus)
+                  }
               }
             }
       }
@@ -71,7 +80,7 @@ object CoreAbilities extends LazyLogging {
         .creature
   }
 
-  def castSpell(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def castOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
     val name             = "Cast Spell"
@@ -79,12 +88,12 @@ object CoreAbilities extends LazyLogging {
     val levelRequirement = LevelOne
     val abilityAction    = WholeAction
 
-    def triggerMet(target: Option[Combatant]) = true
+    def triggerMet(others: List[Combatant]) = true
     def conditionMet: Boolean =
       spellCaster.level >= spellCaster.levelSpellcastingLearned &&
         (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined)
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, Option[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
       val optSpell =
@@ -92,6 +101,9 @@ object CoreAbilities extends LazyLogging {
           case (cantrip, None)       => cantrip
           case (_, Some(spellLevel)) => spellCaster.spellsKnown(spellLevel.spellLevel).some
         }
+
+      val enemies = monsters(others)
+      val target = nextToFocus(enemies, focus)
 
       (target, optSpell) match {
         case (_, None) => (combatant, none[Combatant])

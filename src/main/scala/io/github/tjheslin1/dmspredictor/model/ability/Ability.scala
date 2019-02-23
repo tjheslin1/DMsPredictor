@@ -1,7 +1,10 @@
 package io.github.tjheslin1.dmspredictor.model.ability
 
+import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst, RandomFocus}
+
+import scala.util.{Random => JRandom}
 
 abstract class Ability(combatant: Combatant) {
 

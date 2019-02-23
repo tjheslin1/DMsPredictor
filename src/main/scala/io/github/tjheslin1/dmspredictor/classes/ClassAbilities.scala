@@ -5,12 +5,13 @@ import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamageTimes
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.AbilityAction
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 object ClassAbilities {
 
   def nextAbilityToUseInConjunction[_: RS](
       attacker: Combatant,
-      target: Option[Combatant],
+      others: List[Combatant],
       currentOrder: Int,
       suitableAction: NonEmptyList[AbilityAction]): Option[CombatantAbility] =
     attacker.creature.abilities
@@ -19,7 +20,7 @@ object ClassAbilities {
         val nextAbility = ability(attacker)
         suitableAction.toList.contains(nextAbility.abilityAction) &&
         nextAbility.order > currentOrder &&
-        nextAbility.conditionMet && nextAbility.triggerMet(target)
+        nextAbility.conditionMet && nextAbility.triggerMet(others)
       }
 
   def useAttackActionTwice[_: RS](attacker: Combatant,
@@ -30,8 +31,9 @@ object ClassAbilities {
 
   def useAdditionalAbility[_: RS](ability: CombatantAbility,
                                   attacker: Combatant,
-                                  abilityTarget: Combatant): (Combatant, Option[Combatant]) = {
-    val (updatedAttacker, updatedTargetOfAbility) = ability(attacker).useAbility(abilityTarget.some)
+                                  others: List[Combatant],
+                                    focus: Focus): (Combatant, Option[Combatant]) = {
+    val (updatedAttacker, updatedTargetOfAbility) = ability(attacker).useAbility(others, focus)
     val updatedAttackingCreature                  = ability(updatedAttacker).update
 
     val updatedAttackingCombatant = Combatant.creatureLens.set(updatedAttackingCreature)(attacker)

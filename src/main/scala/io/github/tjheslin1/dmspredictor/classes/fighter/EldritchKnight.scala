@@ -66,7 +66,7 @@ object EldritchKnight {
   val standardEldritchKnightAbilities: List[CombatantAbility] = List(
     actionSurge(1),
     secondWind(2),
-    castSpell(3),
+    castOffensiveSpell(3),
     extraAttack(4),
     twoWeaponFighting(5)
   )
