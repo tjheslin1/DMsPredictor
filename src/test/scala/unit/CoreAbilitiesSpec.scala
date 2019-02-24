@@ -120,9 +120,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withAllSpellSlotsAvailable()
 
           val eldritchKnightCombatant = spellCastingEK
+            .withProficiencyBonus(6)
             .withLevel(LevelThree)
             .withIntelligence(10)
-            .withProficiencyBonus(6)
             .withCombatIndex(1)
 
           val monster = testMonster.withWisdom(10).withCombatIndex(2)

@@ -32,7 +32,6 @@ trait Creature {
   val armour: Armour
   val offHand: Option[Equipment]
   val armourClass: Int
-  val proficiencyBonus: ProficiencyBonus
   val resistances: List[DamageType]
   val immunities: List[DamageType]
   val attackStatus: AttackStatus
@@ -76,6 +75,7 @@ object Creature extends LazyLogging {
       case c: Goblin   => Goblin._health.set(hp)(c)
       case c: Werewolf => Werewolf._health.set(hp)(c)
       case c: Zombie   => Zombie._health.set(hp)(c)
+      case c: Vampire   => Vampire._health.set(hp)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureHealthLens")
     }
@@ -96,7 +96,8 @@ object Creature extends LazyLogging {
 
       case c: Goblin   => Goblin._maxHealth.set(hp)(c)
       case c: Werewolf => Werewolf._maxHealth.set(hp)(c)
-      case c: Zombie   => Zombie._maxHealth.set(hp)(c)
+      case c: Zombie => Zombie._maxHealth.set(hp)(c)
+      case c: Vampire => Vampire._maxHealth.set(hp)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureMaxHealthLens")
     }
@@ -117,7 +118,8 @@ object Creature extends LazyLogging {
 
       case c: Goblin   => Goblin._stats.set(stats)(c)
       case c: Werewolf => Werewolf._stats.set(stats)(c)
-      case c: Zombie   => Zombie._stats.set(stats)(c)
+      case c: Zombie => Zombie._stats.set(stats)(c)
+      case c: Vampire => Vampire._stats.set(stats)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureStatsLens")
     }
@@ -139,7 +141,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin.strengthLens.set(strScore)(c)
         case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
-        case c: Zombie   => Zombie.strengthLens.set(strScore)(c)
+        case c: Zombie => Zombie.strengthLens.set(strScore)(c)
+        case c: Vampire => Vampire.strengthLens.set(strScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureStrengthLens")
       }
@@ -161,7 +164,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin.dexterityLens.set(dexScore)(c)
         case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
-        case c: Zombie   => Zombie.dexterityLens.set(dexScore)(c)
+        case c: Zombie => Zombie.dexterityLens.set(dexScore)(c)
+        case c: Vampire => Vampire.dexterityLens.set(dexScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureDexterityLens")
       }
@@ -183,7 +187,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin.constitutionLens.set(conScore)(c)
         case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
-        case c: Zombie   => Zombie.constitutionLens.set(conScore)(c)
+        case c: Zombie => Zombie.constitutionLens.set(conScore)(c)
+        case c: Vampire => Vampire.constitutionLens.set(conScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureConstitutionLens")
       }
@@ -204,7 +209,8 @@ object Creature extends LazyLogging {
 
       case c: Goblin   => Goblin.wisdomLens.set(wisScore)(c)
       case c: Werewolf => Werewolf.wisdomLens.set(wisScore)(c)
-      case c: Zombie   => Zombie.wisdomLens.set(wisScore)(c)
+      case c: Zombie => Zombie.wisdomLens.set(wisScore)(c)
+      case c: Vampire => Vampire.wisdomLens.set(wisScore)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureWisdomLens")
     }
@@ -226,7 +232,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin.intelligenceLens.set(intScore)(c)
         case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
-        case c: Zombie   => Zombie.intelligenceLens.set(intScore)(c)
+        case c: Zombie => Zombie.intelligenceLens.set(intScore)(c)
+        case c: Vampire => Vampire.intelligenceLens.set(intScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureIntelligenceLens")
       }
@@ -248,7 +255,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin.charismaLens.set(chaScore)(c)
         case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
-        case c: Zombie   => Zombie.charismaLens.set(chaScore)(c)
+        case c: Zombie => Zombie.charismaLens.set(chaScore)(c)
+        case c: Vampire => Vampire.charismaLens.set(chaScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureCharismaLens")
       }
@@ -269,7 +277,8 @@ object Creature extends LazyLogging {
 
       case c: Goblin   => Goblin._baseWeapon.set(wpn)(c)
       case c: Werewolf => Werewolf._baseWeapon.set(wpn)(c)
-      case c: Zombie   => Zombie._baseWeapon.set(wpn)(c)
+      case c: Zombie => Zombie._baseWeapon.set(wpn)(c)
+      case c: Vampire => Vampire._baseWeapon.set(wpn)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureBaseWeaponLens")
     }
@@ -290,7 +299,8 @@ object Creature extends LazyLogging {
 
       case c: Goblin   => Goblin._armour.set(armr)(c)
       case c: Werewolf => Werewolf._armour.set(armr)(c)
-      case c: Zombie   => Zombie._armour.set(armr)(c)
+      case c: Zombie => Zombie._armour.set(armr)(c)
+      case c: Vampire => Vampire._armour.set(armr)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureArmourLens")
     }
@@ -312,7 +322,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin._offHand.set(offH)(c)
         case c: Werewolf => Werewolf._offHand.set(offH)(c)
-        case c: Zombie   => Zombie._offHand.set(offH)(c)
+        case c: Zombie => Zombie._offHand.set(offH)(c)
+        case c: Vampire => Vampire._offHand.set(offH)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureOffHandLens")
       }
@@ -321,47 +332,19 @@ object Creature extends LazyLogging {
   val creatureArmourClassOptional: Optional[Creature, Int] = Optional[Creature, Int] {
     case c: Goblin   => c.armourClass.some
     case c: Werewolf => c.armourClass.some
-    case c: Zombie   => c.armourClass.some
+    case c: Vampire   => c.armourClass.some
+
     case _           => none[Int]
   } { ac =>
     {
       case c: Goblin   => Goblin._armourClass.set(ac)(c)
       case c: Werewolf => Werewolf._armourClass.set(ac)(c)
       case c: Zombie   => Zombie._armourClass.set(ac)(c)
+      case c: Vampire   => Vampire._armourClass.set(ac)(c)
+
       case c: Creature => c
     }
   }
-
-  val creatureProficiencyBonusOptional: Optional[Creature, ProficiencyBonus] =
-    Optional[Creature, ProficiencyBonus] {
-      case c: BattleMaster   => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-      case c: EldritchKnight => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-      case c: Champion       => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-      case c: Fighter        => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-
-      case c: Barbarian    => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-      case c: Berserker    => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-      case c: TotemWarrior => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-
-      case c: Cleric => val pb: ProficiencyBonus = c.proficiencyBonus; pb.some
-
-      case _ => none[ProficiencyBonus]
-    } { profBonus =>
-      {
-        case c: BattleMaster   => BattleMaster._proficiencyBonus.set(profBonus)(c)
-        case c: EldritchKnight => EldritchKnight._proficiencyBonus.set(profBonus)(c)
-        case c: Champion       => Champion._proficiencyBonus.set(profBonus)(c)
-        case c: Fighter        => Fighter._proficiencyBonus.set(profBonus)(c)
-
-        case c: Barbarian    => Barbarian._proficiencyBonus.set(profBonus)(c)
-        case c: Berserker    => Berserker._proficiencyBonus.set(profBonus)(c)
-        case c: TotemWarrior => TotemWarrior._proficiencyBonus.set(profBonus)(c)
-
-        case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
-
-        case c: Creature => c
-      }
-    }
 
   val creatureResistancesLens: Lens[Creature, List[DamageType]] =
     Lens[Creature, List[DamageType]](_.resistances) { res =>
@@ -379,7 +362,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin._resistances.set(res)(c)
         case c: Werewolf => Werewolf._resistances.set(res)(c)
-        case c: Zombie   => Zombie._resistances.set(res)(c)
+        case c: Zombie => Zombie._resistances.set(res)(c)
+        case c: Vampire => Vampire._resistances.set(res)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureResistancesLens")
       }
@@ -401,7 +385,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin._immunities.set(res)(c)
         case c: Werewolf => Werewolf._immunities.set(res)(c)
-        case c: Zombie   => Zombie._immunities.set(res)(c)
+        case c: Zombie => Zombie._immunities.set(res)(c)
+        case c: Vampire => Vampire._immunities.set(res)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureImmunitiesLens")
       }
@@ -441,7 +426,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin._conditions.set(conditions)(c)
         case c: Werewolf => Werewolf._conditions.set(conditions)(c)
-        case c: Zombie   => Zombie._conditions.set(conditions)(c)
+        case c: Zombie => Zombie._conditions.set(conditions)(c)
+        case c: Vampire => Vampire._conditions.set(conditions)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureConditionsLens")
       }
@@ -463,7 +449,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin._attackStatus.set(status)(c)
         case c: Werewolf => Werewolf._attackStatus.set(status)(c)
-        case c: Zombie   => Zombie._attackStatus.set(status)(c)
+        case c: Zombie => Zombie._attackStatus.set(status)(c)
+        case c: Vampire => Vampire._attackStatus.set(status)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureAttackStatusLens")
       }
@@ -485,7 +472,8 @@ object Creature extends LazyLogging {
 
         case c: Goblin   => Goblin._defenseStatus.set(status)(c)
         case c: Werewolf => Werewolf._defenseStatus.set(status)(c)
-        case c: Zombie   => Zombie._defenseStatus.set(status)(c)
+        case c: Zombie => Zombie._defenseStatus.set(status)(c)
+        case c: Vampire => Vampire._defenseStatus.set(status)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureDefenseStatusLens")
       }

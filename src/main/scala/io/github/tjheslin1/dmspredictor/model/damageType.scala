@@ -12,6 +12,7 @@ object DamageType {
     Cold,
     Fire,
     Lightning,
+    Necrotic,
     Poison,
     Radiant,
     Thunder,
@@ -28,6 +29,7 @@ case object Acid      extends DamageType
 case object Cold      extends DamageType
 case object Fire      extends DamageType
 case object Lightning extends DamageType
+case object Necrotic extends DamageType
 case object Poison    extends DamageType
 case object Radiant   extends DamageType
 case object Thunder   extends DamageType

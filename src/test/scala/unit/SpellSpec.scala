@@ -17,7 +17,7 @@ class SpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val caster  = cleric.withWisdom(10).withProficiencyBonus(2)
+          val caster  = cleric.withProficiencyBonus(2).withWisdom(10)
           val monster = testMonster.withDexterity(10)
 
           spellSavingThrowPassed(caster, SacredFlame, Dexterity, monster) shouldBe true
@@ -30,7 +30,7 @@ class SpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val caster  = cleric.withWisdom(10).withProficiencyBonus(2)
+          val caster  = cleric.withProficiencyBonus(2).withWisdom(10)
           val monster = testMonster.withDexterity(14)
 
           spellSavingThrowPassed(caster, SacredFlame, Dexterity, monster) shouldBe true
@@ -43,7 +43,7 @@ class SpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val caster  = cleric.withWisdom(14).withProficiencyBonus(2)
+          val caster  = cleric.withProficiencyBonus(2).withWisdom(14)
           val monster = testMonster.withDexterity(10)
 
           spellSavingThrowPassed(caster, SacredFlame, Dexterity, monster) shouldBe false

@@ -35,7 +35,6 @@ import monocle.macros.{GenLens, Lenses}
   val challengeRating: Double = 0.25
 
   val creatureType: CreatureType         = Undead
-  val proficiencyBonus: ProficiencyBonus = 0
 
   def weapon[_: RS]: Weapon = baseWeapon
 

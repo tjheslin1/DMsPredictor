@@ -21,7 +21,7 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Vampire, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -80,9 +80,6 @@ object TestData {
     def withAbilities(ablts: List[CombatantAbility]) = creatureAbilitiesLens.set(ablts)(creature)
     def withNoAbilities()                            = creatureAbilitiesLens.set(List.empty)(creature)
 
-    def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
-      creatureProficiencyBonusOptional.set(proficiencyBonus)(creature)
-
     def withStrength(strengthScore: Stat) = creatureStrengthLens.set(strengthScore)(creature)
     def withDexterity(dexScore: Stat)     = creatureDexterityLens.set(dexScore)(creature)
     def withConstitution(conScore: Stat)  = creatureConstitutionLens.set(conScore)(creature)
@@ -112,6 +109,13 @@ object TestData {
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
+  }
+
+  implicit class PlayerOps(val player: Player) extends AnyVal {
+    import Player._
+
+    def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
+      playerProficiencyBonusLens.set(proficiencyBonus)(player)
   }
 
   implicit class FighterOps(val fighter: Fighter) extends AnyVal {
@@ -276,6 +280,7 @@ trait TestData extends RandomDataGenerator {
     for {
       lvl      <- arbLevel.arbitrary
       creature <- arbCreature.arbitrary
+      profBonus <- arbProficiencyBonus.arbitrary
     } yield
       new Player {
         val level: Level             = lvl
@@ -291,7 +296,7 @@ trait TestData extends RandomDataGenerator {
         val armour: Armour                     = creature.armour
         val offHand: Option[Equipment]         = creature.offHand
         val armourClass: Int                   = creature.armourClass
-        val proficiencyBonus: ProficiencyBonus = creature.proficiencyBonus
+        val proficiencyBonus: ProficiencyBonus = profBonus
         val resistances: List[DamageType]      = creature.resistances
         val immunities: List[DamageType]       = creature.immunities
         val name: String                       = creature.name
@@ -320,7 +325,6 @@ trait TestData extends RandomDataGenerator {
       wpn       <- arbWeapon.arbitrary
       armr      <- arbArmour.arbitrary
       optShield <- arbShield.arbitrary
-      profBonus <- arbProficiencyBonus.arbitrary
     } yield
       new Creature {
         val creatureType: CreatureType = PlayerCharacter
@@ -336,8 +340,6 @@ trait TestData extends RandomDataGenerator {
         val offHand: Option[Equipment] = optShield
 
         val armourClass: Int = armour.armourClass(stats.dexterity)
-
-        val proficiencyBonus: ProficiencyBonus = profBonus
 
         val resistances: List[DamageType]     = List.empty
         val immunities: List[DamageType]      = List.empty
@@ -384,6 +386,17 @@ trait TestData extends RandomDataGenerator {
       )
   }
 
+  implicit val arbVampire: Arbitrary[Vampire] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary
+    } yield
+      Vampire(
+        creature.health,
+        creature.health,
+        name = creature.name
+      )
+  }
+
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
       creature     <- arbCreature.arbitrary
@@ -398,7 +411,6 @@ trait TestData extends RandomDataGenerator {
         creature.baseWeapon,
         creature.armour,
         creature.offHand,
-        0,
         creature.resistances,
         creature.immunities,
         List.empty, // TODO add core abilities?

@@ -23,8 +23,7 @@ import monocle.macros.{GenLens, Lenses}
                                  armour: Armour = NoArmour,
                                  offHand: Option[Equipment] = None,
                                  resistances: List[DamageType] = List.empty[DamageType],
-                                 immunities: List[DamageType] =
-                                   List(Bludgeoning, Piercing, Slashing),
+                                 immunities: List[DamageType] = List(Bludgeoning, Piercing, Slashing),
                                  conditions: List[Condition] = List.empty,
                                  attackStatus: AttackStatus = Regular,
                                  defenseStatus: AttackStatus = Regular,
@@ -34,7 +33,6 @@ import monocle.macros.{GenLens, Lenses}
   val challengeRating: Double = 3.0
 
   val creatureType: CreatureType         = Humanoid
-  val proficiencyBonus: ProficiencyBonus = 0
 
   val abilities: List[CombatantAbility] = standardWerewolfAbilities
 

@@ -3,14 +3,15 @@ package io.github.tjheslin1.dmspredictor.classes
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
 import monocle.Lens
 
 trait Player extends Creature {
 
   val level: Level
   val bonusActionUsed: Boolean
+  val proficiencyBonus: ProficiencyBonus
 
   val creatureType: CreatureType = PlayerCharacter
 }
@@ -36,4 +37,22 @@ object Player {
             "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
       }
   }
+
+  val playerProficiencyBonusLens: Lens[Player, ProficiencyBonus] =
+    Lens[Player, ProficiencyBonus](_.proficiencyBonus) { profBonus =>
+      {
+        case c: BattleMaster   => BattleMaster._proficiencyBonus.set(profBonus)(c)
+        case c: EldritchKnight => EldritchKnight._proficiencyBonus.set(profBonus)(c)
+        case c: Champion       => Champion._proficiencyBonus.set(profBonus)(c)
+        case c: Fighter        => Fighter._proficiencyBonus.set(profBonus)(c)
+
+        case c: Barbarian    => Barbarian._proficiencyBonus.set(profBonus)(c)
+        case c: Berserker    => Berserker._proficiencyBonus.set(profBonus)(c)
+        case c: TotemWarrior => TotemWarrior._proficiencyBonus.set(profBonus)(c)
+
+        case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
+
+        case c: Creature => c
+      }
+    }
 }

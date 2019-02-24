@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 
 sealed trait AttackResult {
@@ -46,10 +47,17 @@ object Actions extends LazyLogging {
     if (attacker.creature.scoresCritical(roll)) CriticalHit
     else if (roll == 1) CriticalMiss
     else {
-      val totalAttackRoll = roll +
-        mod(attacker.creature.stats.strength) +
-        attackerWeapon.hitBonus +
-        attacker.creature.proficiencyBonus
+      val totalAttackRoll = attacker.creature match {
+        case player: Player =>
+          roll +
+            mod(player.stats.strength) +
+            attackerWeapon.hitBonus +
+            player.proficiencyBonus
+        case monster =>
+          roll +
+            mod(monster.stats.strength) +
+            attackerWeapon.hitBonus
+      }
 
       if (totalAttackRoll >= target.creature.armourClass) Hit else Miss
     }

@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting
 
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
@@ -16,11 +17,15 @@ abstract class Spell {
   val damageType: DamageType
   val spellLevel: SpellLevel
 
-  def spellAttackBonus(creature: Creature): Int =
-    creature.proficiencyBonus + attributeModifierForSchool(creature)
+  def spellAttackBonus(creature: Creature): Int = creature match {
+      case player: Player => player.proficiencyBonus + attributeModifierForSchool(player)
+      case monster => attributeModifierForSchool(monster)
+    }
 
-  def spellSaveDc(creature: Creature): Int =
-    8 + creature.proficiencyBonus + attributeModifierForSchool(creature)
+  def spellSaveDc(creature: Creature): Int = creature match {
+    case player: Player => 8 + player.proficiencyBonus + attributeModifierForSchool(player)
+    case monster => 8 + attributeModifierForSchool(monster)
+    }
 
   def damage[_: RS](playerLevel: Level): Int
 }

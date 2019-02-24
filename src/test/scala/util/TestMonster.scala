@@ -21,7 +21,6 @@ import monocle.macros.{GenLens, Lenses}
                                     baseWeapon: Weapon,
                                     armour: Armour = NoArmour,
                                     offHand: Option[Equipment] = none[Equipment],
-                                    proficiencyBonus: ProficiencyBonus = 0,
                                     resistances: List[DamageType] = List.empty,
                                     immunities: List[DamageType] = List.empty,
                                     abilities: List[CombatantAbility] = List.empty,
