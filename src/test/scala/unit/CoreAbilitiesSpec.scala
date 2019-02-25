@@ -1,7 +1,6 @@
 package unit
 
 import base.UnitSpecBase
-import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
@@ -257,8 +256,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  private abstract class TestContext {
+    implicit val roll: RollStrategy
 
     var swordUsedCount = 0
     val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {

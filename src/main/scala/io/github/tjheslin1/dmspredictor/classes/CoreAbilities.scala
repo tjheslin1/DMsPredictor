@@ -42,14 +42,14 @@ object CoreAbilities extends LazyLogging {
 
       nextToFocus(enemies, focus) match {
         case None => (combatant, List.empty[Combatant])
-        case Some(targetOfAbility) =>
+        case Some(target) =>
           nextAbilityToUseInConjunction(combatant,
                                         enemies,
                                         order,
                                         NonEmptyList.of(ability.BonusAction, SingleAttack))
             .fold {
               val (updatedAttacker, updatedTarget) =
-                attackAndDamageTimes(2, combatant, targetOfAbility)
+                attackAndDamageTimes(2, combatant, target)
               (updatedAttacker, List(updatedTarget))
             } { nextAbility =>
               val (updatedCombatant, updatedTargets) =

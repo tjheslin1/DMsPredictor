@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.strategy
-import io.github.tjheslin1.dmspredictor.model.{Combatant, PlayerCharacter}
+
+import io.github.tjheslin1.dmspredictor.model._
 
 object Target {
 
