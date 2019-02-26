@@ -3,7 +3,7 @@ package unit.conditions
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Poisoned, Turned}
+import io.github.tjheslin1.dmspredictor.model.condition.{Grappled, Poisoned, Turned}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 
@@ -15,7 +15,7 @@ class GrappledSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
-          val grappled          = Grappled(1, 10)
+          val grappled          = Grappled(1)
           val poisoned        = Poisoned(10, 10)
           val conditionGolbin = goblin.withStrength(20).withConditions(grappled, poisoned)
 
