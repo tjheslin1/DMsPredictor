@@ -88,6 +88,14 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
+    "use Strength, hitBonus and proficiencyBonus to determine an attack result for a player" in {
+      fail("todo")
+    }
+
+    "use only hitBonus to determine an attack result for a monster" in {
+      fail("todo")
+    }
+
     "hit a monster if the attack overcomes the monster's armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val ac10Monster = monster.withArmourClass(10)

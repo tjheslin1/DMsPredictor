@@ -53,10 +53,8 @@ object Actions extends LazyLogging {
             mod(player.stats.strength) +
             attackerWeapon.hitBonus +
             player.proficiencyBonus
-        case monster =>
-          roll +
-            mod(monster.stats.strength) +
-            attackerWeapon.hitBonus
+        case _ =>
+          roll + attackerWeapon.hitBonus
       }
 
       if (totalAttackRoll >= target.creature.armourClass) Hit else Miss

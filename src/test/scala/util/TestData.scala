@@ -21,7 +21,8 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Vampire, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 

@@ -32,7 +32,7 @@ import monocle.macros.{GenLens, Lenses}
 
   val challengeRating: Double = 0.25
 
-  val creatureType: CreatureType         = Humanoid
+  val creatureType: CreatureType = Humanoid
 
   val abilities: List[CombatantAbility] = List.empty
 

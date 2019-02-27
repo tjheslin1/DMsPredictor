@@ -1,17 +1,14 @@
-package io.github.tjheslin1.dmspredictor.monsters
+package io.github.tjheslin1.dmspredictor.monsters.vampire
 
-import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, SingleAttack}
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Grappled}
-import io.github.tjheslin1.dmspredictor.monsters.Vampire.UnarmedStrike
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, Target}
-import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.Monster
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
@@ -61,48 +58,7 @@ import monocle.macros.{GenLens, Lenses}
     }
 }
 
-object Vampire extends LazyLogging {
-
-  def bite(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-    val vampire = combatant.creature.asInstanceOf[Vampire]
-
-    val name: String = "Bite (Vampire)"
-    val order: Int   = currentOrder
-
-    val levelRequirement: Level      = LevelOne
-    val abilityAction: AbilityAction = SingleAttack
-
-    def triggerMet(others: List[Combatant]): Boolean =
-      others.exists(_.creature.conditions.map(_.name).contains(Grappled.name))
-
-    def conditionMet: Boolean = vampire.biteUsed == false
-
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      logger.debug(s"Vampire used $name")
-
-      val grappledEnemies = Target.players(others).filter(_.creature.conditions.map(_.name).contains(Grappled.name))
-
-      nextToFocus(grappledEnemies, focus) match {
-        case None => (combatant, List.empty[Combatant])
-        case Some(grappledTarget) =>
-
-      }
-    }
-
-
-    def update: Creature = vampire.copy(biteUsed = true)
-  }
-
-  case object Bite extends Weapon {
-    val name: String           = "Bite (Vampire)"
-    val weaponType: WeaponType = Melee
-    val damageType: DamageType = Piercing
-    val twoHanded: Boolean     = true
-
-    override val hitBonus: Int = 9
-
-    def damage(implicit rollStrategy: RollStrategy): Int = (1 * D6) + 4
-  }
+object Vampire {
 
   case object UnarmedStrike extends Weapon {
     val name: String           = "Unarmed Strike (Vampire)"
@@ -112,7 +68,7 @@ object Vampire extends LazyLogging {
 
     override val hitBonus: Int = 9
 
-    def damage(implicit rollStrategy: RollStrategy): Int = (1 * D8) + 4
+    def damage(implicit rollStrategy: RollStrategy): Int = 1 * D8 // +4 from Strength
   }
 
   val strengthLens: Lens[Vampire, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

@@ -18,14 +18,14 @@ abstract class Spell {
   val spellLevel: SpellLevel
 
   def spellAttackBonus(creature: Creature): Int = creature match {
-      case player: Player => player.proficiencyBonus + attributeModifierForSchool(player)
-      case monster => attributeModifierForSchool(monster)
-    }
+    case player: Player => player.proficiencyBonus + attributeModifierForSchool(player)
+    case monster        => attributeModifierForSchool(monster)
+  }
 
   def spellSaveDc(creature: Creature): Int = creature match {
     case player: Player => 8 + player.proficiencyBonus + attributeModifierForSchool(player)
-    case monster => 8 + attributeModifierForSchool(monster)
-    }
+    case monster        => 8 + attributeModifierForSchool(monster)
+  }
 
   def damage[_: RS](playerLevel: Level): Int
 }
