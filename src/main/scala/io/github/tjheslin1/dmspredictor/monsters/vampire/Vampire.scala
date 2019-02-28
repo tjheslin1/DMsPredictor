@@ -48,6 +48,8 @@ import monocle.macros.{GenLens, Lenses}
       case _ => copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
     }
 
+  def restoreHealth(healing: Int): Creature = copy(health = Math.min(maxHealth, health + healing))
+
   def scoresCritical(roll: Int): Boolean = roll == 20
 
   def resetStartOfTurn(): Creature =

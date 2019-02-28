@@ -32,24 +32,37 @@ object VampireAbilities extends LazyLogging {
       val grappledEnemies =
         players(others).filter(_.creature.conditions.map(_.name).contains(Grappled.name))
 
-//      nextToFocus(grappledEnemies, focus) match {
-//        case None => (combatant, List.empty[Combatant])
-//        case Some(grappledTarget) =>
-//          val attackResult = attack(combatant, Bite, grappledTarget)
-//          val (updatedVampire, updatedTarget) =
-//            resolveDamage(combatant, grappledTarget, Bite, attackResult)
-//
-//          val necroticDamage = attackResult match {
-//            case CriticalHit  => Bite.necroticDamage + Bite.necroticDamage
-//            case Hit          => Bite.necroticDamage
-//            case Miss         => 0
-//            case CriticalMiss => 0
-//          }
-//
-//        //          updatedVampire.creature.
-//      }
+      nextToFocus(grappledEnemies, focus) match {
+        case None => (combatant, List.empty[Combatant])
+        case Some(grappledTarget) =>
+          val attackResult = attack(combatant, Bite, grappledTarget)
 
-      ???
+          val (updatedVampireCombatant, updatedTarget) =
+            resolveDamage(combatant, grappledTarget, Bite, attackResult)
+
+          val necroticDamage = attackResult match {
+            case CriticalHit  => Bite.necroticDamage + Bite.necroticDamage
+            case Hit          => Bite.necroticDamage
+            case Miss         => 0
+            case CriticalMiss => 0
+          }
+
+          val updatedVampire = updatedVampireCombatant.creature.asInstanceOf[Vampire]
+
+          val restoredVampire = Combatant.creatureLens.set(
+            updatedVampire.restoreHealth(necroticDamage))(updatedVampireCombatant)
+
+          val updatedHealth    = updatedTarget.creature.health - necroticDamage
+          val updatedMaxHealth = updatedTarget.creature.maxHealth - necroticDamage
+
+          val updatedHealthCleric = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+            .set(updatedHealth)(updatedTarget)
+          val updatedMaxHealthCleric =
+            (Combatant.creatureLens composeLens Creature.creatureMaxHealthLens)
+              .set(updatedMaxHealth)(updatedHealthCleric)
+
+          (restoredVampire, List(updatedMaxHealthCleric))
+      }
     }
 
     def update: Creature = vampire.copy(biteUsed = true)
@@ -68,3 +81,4 @@ object VampireAbilities extends LazyLogging {
     def necroticDamage[_: RS] = 3 * D6
   }
 }
+

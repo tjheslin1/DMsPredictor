@@ -21,24 +21,78 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withStrength(1).withDexterity(1).withCombatIndex(2)
-          val clericCombatant =
-            cleric.withCondition(Grappled(18)).withStrength(1).withDexterity(1).withCombatIndex(3)
 
-          val (Combatant(_, updatedVampire: Vampire),
-               List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedCleric: Cleric))) =
+          val clericCombatant =
+            cleric
+              .withCondition(Grappled(18))
+              .withNoArmour()
+              .withStrength(1)
+              .withDexterity(1)
+              .withCombatIndex(3)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
             bite(1)(vampireCombatant)
               .useAbility(List(fighterCombatant, clericCombatant), LowestFirst)
 
+          updatedCleric.health < cleric.health
         }
       }
     }
 
     "restore the Vampires health equal to the necrotic damage dealt" in {
-      fail("todo")
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(5)
+
+          val vampireCombatant =
+            vampire.withHealth(50).withMaxHealth(100).withStrength(20).withCombatIndex(1)
+
+          val clericCombatant =
+            cleric
+              .withCondition(Grappled(18))
+              .withNoArmour()
+              .withStrength(1)
+              .withDexterity(1)
+              .withCombatIndex(3)
+
+          val (Combatant(_, updatedVampire: Vampire), _) =
+            bite(1)(vampireCombatant)
+              .useAbility(List(clericCombatant), LowestFirst)
+
+          updatedVampire.health shouldBe 65
+        }
+      }
     }
 
     "reduce the creatures maxHealth (and health accordingly) equal to the necrotic damage taken" in {
-      fail("todo")
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(5)
+
+          val vampireCombatant =
+            vampire.withHealth(50).withMaxHealth(100).withStrength(20).withCombatIndex(1)
+
+          val clericCombatant =
+            cleric
+              .withHealth(50)
+              .withMaxHealth(60)
+              .withCondition(Grappled(18))
+              .withNoArmour()
+              .withStrength(1)
+              .withDexterity(1)
+              .withCombatIndex(3)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+            bite(1)(vampireCombatant)
+              .useAbility(List(clericCombatant), LowestFirst)
+
+          val expectedPiercingDamage = 10
+          val expectedNecroticDamage = 15
+
+          updatedCleric.health shouldBe 50 - expectedPiercingDamage - expectedNecroticDamage
+          updatedCleric.maxHealth shouldBe 60 - expectedNecroticDamage
+        }
+      }
     }
   }
 
