@@ -329,23 +329,6 @@ object Creature extends LazyLogging {
       }
     }
 
-  val creatureArmourClassOptional: Optional[Creature, Int] = Optional[Creature, Int] {
-    case c: Goblin   => c.armourClass.some
-    case c: Werewolf => c.armourClass.some
-    case c: Vampire  => c.armourClass.some
-
-    case _ => none[Int]
-  } { ac =>
-    {
-      case c: Goblin   => Goblin._armourClass.set(ac)(c)
-      case c: Werewolf => Werewolf._armourClass.set(ac)(c)
-      case c: Zombie   => Zombie._armourClass.set(ac)(c)
-      case c: Vampire  => Vampire._armourClass.set(ac)(c)
-
-      case c: Creature => c
-    }
-  }
-
   val creatureResistancesLens: Lens[Creature, List[DamageType]] =
     Lens[Creature, List[DamageType]](_.resistances) { res =>
       {

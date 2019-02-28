@@ -4,7 +4,6 @@ import cats.syntax.option._
 import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
 import eu.timepit.refined.W
-import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.Player
@@ -22,7 +21,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -68,6 +67,13 @@ object TestData {
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
   }
 
+  implicit class MonsterOps(val monster: Monster) extends AnyVal {
+    import Monster._
+
+    def withArmourClass(ac: Int) = monsterArmourClassLens.set(ac)(monster)
+
+  }
+
   implicit class CreatureOps(val creature: Creature) extends AnyVal {
     import Creature._
 
@@ -77,7 +83,6 @@ object TestData {
     def withBaseWeapon(baseWeapon: Weapon)           = creatureBaseWeaponLens.set(baseWeapon)(creature)
     def withArmour(armour: Armour)                   = creatureArmourLens.set(armour)(creature)
     def withOffHand(offHand: Equipment)              = creatureOffHandLens.set(offHand.some)(creature)
-    def withArmourClass(ac: Int)                     = creatureArmourClassOptional.set(ac)(creature)
     def withAbilities(ablts: List[CombatantAbility]) = creatureAbilitiesLens.set(ablts)(creature)
     def withNoAbilities()                            = creatureAbilitiesLens.set(List.empty)(creature)
 
@@ -279,8 +284,8 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
-      lvl      <- arbLevel.arbitrary
-      creature <- arbCreature.arbitrary
+      lvl       <- arbLevel.arbitrary
+      creature  <- arbCreature.arbitrary
       profBonus <- arbProficiencyBonus.arbitrary
     } yield
       new Player {

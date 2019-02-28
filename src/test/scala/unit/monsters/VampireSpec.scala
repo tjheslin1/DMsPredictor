@@ -79,7 +79,7 @@ class VampireSpec extends UnitSpecBase {
 
           val vampireCombatant =
             vampire.withStrength(20).withBaseWeapon(trackedSword).withCombatIndex(1)
-          val fighterCombatant = fighter.withDexterity(1).withArmourClass(1).withCombatIndex(1)
+          val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(1)
 
           val (Combatant(_, updatedVampire: Vampire), _) = MonsterAbilities
             .multiAttack(1, 2)(vampireCombatant)
