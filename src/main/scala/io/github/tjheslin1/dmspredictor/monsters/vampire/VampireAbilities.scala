@@ -68,6 +68,23 @@ object VampireAbilities extends LazyLogging {
     def update: Creature = vampire.copy(biteUsed = true)
   }
 
+  def unarmedStrike(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+    val vampire = combatant.creature.asInstanceOf[Vampire]
+
+    val name: String = "Bite (Vampire)"
+    val order: Int = currentOrder
+
+    val levelRequirement: Level = LevelOne
+    val abilityAction: AbilityAction = _
+
+    def triggerMet(others:  List[Combatant]): Boolean = true
+    def conditionMet: Boolean = true
+
+    def useAbility[_ : RS](others:  List[Combatant], focus:  Focus): (Combatant, List[Combatant]) = ???
+
+    def update: Creature =  vampire
+  }
+
   case object Bite extends Weapon {
     val name: String           = "Bite (Vampire)"
     val weaponType: WeaponType = Melee

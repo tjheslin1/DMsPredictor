@@ -34,6 +34,25 @@ class MonsterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "attack a high number of times equal to the total provided" in {
+      val totalNumberOfAttacks = 5
+
+      forAll { (testMonster: TestMonster, fighter: Fighter) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val monsterCombatant =
+            testMonster.withStrength(20).withBaseWeapon(trackedSword).withCombatIndex(1)
+          val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
+
+          multiAttack(Priority, totalNumberOfAttacks)(monsterCombatant)
+            .useAbility(List(fighterCombatant), LowestFirst)
+
+          swordUsedCount shouldBe 5
+        }
+      }
+    }
+
     "delegate to a SingleAttack ability" in {
       val totalNumberOfAttacks = 2
 

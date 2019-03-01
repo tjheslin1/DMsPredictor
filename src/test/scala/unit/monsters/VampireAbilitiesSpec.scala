@@ -1,6 +1,7 @@
 package unit.monsters
 
 import base.UnitSpecBase
+import com.apple.concurrent.Dispatch.Priority
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
@@ -8,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Grappled
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
-import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 
 class VampireAbilitiesSpec extends UnitSpecBase {
@@ -80,7 +81,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
               .withNoArmour()
               .withStrength(1)
               .withDexterity(1)
-              .withCombatIndex(3)
+              .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedCleric: Cleric))) =
             bite(1)(vampireCombatant)
@@ -91,6 +92,24 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           updatedCleric.health shouldBe 50 - expectedPiercingDamage - expectedNecroticDamage
           updatedCleric.maxHealth shouldBe 60 - expectedNecroticDamage
+        }
+      }
+    }
+  }
+
+  "unarmedStrike" should {
+    "attempt to grapple a target instead of dealing damage" in {
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(5)
+
+          val vampireCombatant =
+            vampire.withStrength(20).withCombatIndex(1)
+
+          val clericCombatant =
+            cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+
+          unarmedStrike(Priority)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
         }
       }
     }
