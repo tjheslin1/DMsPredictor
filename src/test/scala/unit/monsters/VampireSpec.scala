@@ -27,6 +27,19 @@ class VampireSpec extends UnitSpecBase {
           updatedVampire.radiantDamageTaken shouldBe true
         }
       }
+
+    "set radiantDamageTaken to false if Radiant damage taken but the adjustedDamage was 0" in
+      forAll { vampire: Vampire =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val healthyVampire = vampire.withHealth(50).withMaxHealth(100)
+
+          val updatedVampire = healthyVampire.updateHealth(0, Radiant, Hit).asInstanceOf[Vampire]
+
+          updatedVampire.radiantDamageTaken shouldBe false
+        }
+      }
   }
 
   "resetStartOfTurn" should {
@@ -69,7 +82,7 @@ class VampireSpec extends UnitSpecBase {
           .resetStartOfTurn()
           .asInstanceOf[Vampire]
 
-        biteVampire.radiantDamageTaken shouldBe false
+        biteVampire.biteUsed shouldBe false
       }
     }
   }

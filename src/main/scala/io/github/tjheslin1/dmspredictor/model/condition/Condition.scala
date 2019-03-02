@@ -7,6 +7,7 @@ trait Condition {
   val name: String
   val saveDc: Int
   val turnsLeft: Int
+  val missesTurn: Boolean
 
   def handle[_: RS](creature: Creature): Creature
 }

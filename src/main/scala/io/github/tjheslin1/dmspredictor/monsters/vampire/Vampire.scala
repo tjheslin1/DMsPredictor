@@ -46,8 +46,10 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     damageType match {
       case Radiant =>
-        copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)),
-             radiantDamageTaken = true)
+        val updatedVampire = copy(
+          health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+        if (dmg > 0) updatedVampire.copy(radiantDamageTaken = true)
+        else updatedVampire.copy(radiantDamageTaken = false)
       case _ => copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
     }
 
@@ -55,17 +57,29 @@ import monocle.macros.{GenLens, Lenses}
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def resetStartOfTurn(): Creature =
-    if (radiantDamageTaken) copy(radiantDamageTaken = false)
-    else {
-      val regeneratedHp = Math.min(maxHealth, health + 20)
-      Creature.creatureHealthLens.set(regeneratedHp)(copy(radiantDamageTaken = false))
-    }
+  def resetStartOfTurn(): Creature = {
+    println(s"vampire radiantDamageTaken $radiantDamageTaken")
+
+    val radiantCalculatedVampire =
+      if (radiantDamageTaken) copy(radiantDamageTaken = false)
+      else {
+        val regeneratedHp = Math.min(maxHealth, health + 20)
+        println(s"vampire regenerated from $health to $regeneratedHp")
+        Creature.creatureHealthLens
+          .set(regeneratedHp)(copy(radiantDamageTaken = false))
+          .asInstanceOf[Vampire]
+      }
+
+    println(s"vampire radiantDamageTaken updated ${radiantCalculatedVampire.radiantDamageTaken}")
+
+    radiantCalculatedVampire.copy(biteUsed = false)
+  }
 }
 
 object Vampire {
 
   val TotalAttacks = 2
+  val CharmDC      = 17
 
   val vampireAbilities: List[CombatantAbility] = List(
     multiAttack(1, TotalAttacks),

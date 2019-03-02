@@ -1,11 +1,12 @@
 package io.github.tjheslin1.dmspredictor.monsters.vampire
 
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
+import io.github.tjheslin1.dmspredictor.model.Actions._
+import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, SingleAttack}
-import io.github.tjheslin1.dmspredictor.model.condition.Grappled
-import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.UnarmedStrike
+import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.condition._
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.{CharmDC, UnarmedStrike}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
@@ -88,7 +89,9 @@ object VampireAbilities extends LazyLogging {
         case None => (combatant, List.empty[Combatant])
         case Some(target) =>
           val updatedTarget = attack(combatant, UnarmedStrike, target) match {
-            case CriticalMiss | Miss => target
+            case CriticalMiss | Miss =>
+              println(s"$name missed")
+              target
             case attackResult @ (CriticalHit | Hit) =>
               if (vampire.firstAttack) {
                 val updatedConditions =
@@ -107,6 +110,42 @@ object VampireAbilities extends LazyLogging {
     }
 
     def update: Creature = if (vampire.firstAttack) vampire.copy(firstAttack = false) else vampire
+  }
+
+  def charm(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+    val vampire = combatant.creature.asInstanceOf[Vampire]
+
+    val name: String = "Charm (Vampire)"
+    val order: Int   = currentOrder
+
+    val levelRequirement: Level      = LevelOne
+    val abilityAction: AbilityAction = WholeAction
+
+    def triggerMet(others: List[Combatant]): Boolean =
+      others.exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
+
+    def conditionMet: Boolean = true
+
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+      logger.debug(s"Vampire used $name")
+
+      nextToFocus(players(others), focus) match {
+        case None => (combatant, List.empty[Combatant])
+        case Some(target) =>
+          if (savingThrowPassed(CharmDC, Wisdom, target.creature))
+            (combatant, List(target))
+          else {
+            logger.debug(s"${target.creature.name} has been Charmed")
+
+            val charmedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+              .set(target.creature.conditions ++ List(Charmed(CharmDC)))(target)
+
+            (combatant, List(charmedTarget))
+          }
+      }
+    }
+
+    def update: Creature = vampire
   }
 
   case object Bite extends Weapon {

@@ -77,18 +77,14 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
   "destroyUndead" should {
     "destroy (set health to 0) undead enemies who fail their save and are CR 1/2 or lower" in {
       forAll {
-        (cleric: Cleric,
-         zombieOne: Zombie,
-         zombieTwo: Zombie,
-         vampire: Vampire,
-         goblin: Goblin) =>
+        (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, vampire: Vampire, goblin: Goblin) =>
           new TestContext {
             implicit override val roll: RollStrategy = _ => RollResult(10)
 
             val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(10).withCombatIndex(1)
 
-            val toughUndead      = zombieOne.withWisdom(20).withCombatIndex(2)
-            val weakUndead       = zombieTwo.withWisdom(1).withCombatIndex(3)
+            val toughUndead = zombieOne.withWisdom(20).withCombatIndex(2)
+            val weakUndead  = zombieTwo.withWisdom(1).withCombatIndex(3)
             val weakVampire = vampire.withWisdom(1).withCombatIndex(4)
 
             val enemies = List(toughUndead, weakUndead, weakVampire, goblin.withCombatIndex(5))

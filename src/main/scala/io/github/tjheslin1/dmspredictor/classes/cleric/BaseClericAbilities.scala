@@ -71,12 +71,17 @@ object BaseClericAbilities extends LazyLogging {
 
           val updatedUndead = undeadTargets.map { undead =>
             if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
-            else if (undead.creature.asInstanceOf[Monster].challengeRating <= 0.5)
+            else if (undead.creature.asInstanceOf[Monster].challengeRating <= 0.5) {
+              logger.debug(s"${undead.creature.name} has been Destroyed")
+
               (Combatant.creatureLens composeLens Creature.creatureHealthLens)
                 .set(0)(undead)
-            else
+            } else {
+              logger.debug(s"${undead.creature.name} has been Turned")
+
               (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
                 .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
+            }
           }
 
           (combatant, updatedUndead)

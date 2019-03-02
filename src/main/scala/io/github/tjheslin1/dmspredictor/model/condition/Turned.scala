@@ -6,7 +6,9 @@ import monocle.macros.Lenses
 
 @Lenses("_") case class Turned(saveDc: Int, turnsLeft: Int, name: String = "Turned")
     extends Condition {
+
   val attribute: Attribute = Wisdom
+  val missesTurn: Boolean  = true
 
   def handle[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, attribute, creature)) {

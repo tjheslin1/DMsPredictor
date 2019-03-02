@@ -19,12 +19,12 @@ object Move extends LazyLogging {
     val resetUnactedCombatant =
       Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
 
-    val conditionHandledCombatant =
+    val (conditionHandledCombatant, missesTurn) =
       handleCondition(resetUnactedCombatant)
 
     val otherCombatants = others.toList
 
-    if (conditionHandledCombatant.creature.isConscious) {
+    if (conditionHandledCombatant.creature.isConscious && missesTurn == false) {
 
       val mobToAttack = nextToFocus(mobs.toList, focus)
       val pcToAttack  = nextToFocus(pcs.toList, focus)
@@ -57,12 +57,17 @@ object Move extends LazyLogging {
     }
   }
 
-  def handleCondition[_: RS](combatant: Combatant): Combatant =
-    Combatant.creatureLens.set {
+  def handleCondition[_: RS](combatant: Combatant): (Combatant, Boolean) = {
+    val updatedCombatant = Combatant.creatureLens.set {
       combatant.creature.conditions.foldLeft(combatant.creature) {
         case (creature, condition) => condition.handle(creature)
       }
     }(combatant)
+
+    val missesTurn = updatedCombatant.creature.conditions.exists(_.missesTurn)
+
+    (updatedCombatant, missesTurn)
+  }
 
   private def availableAbility(attacker: Combatant,
                                others: List[Combatant]): Option[CombatantAbility] =

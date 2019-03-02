@@ -7,7 +7,8 @@ import monocle.macros.Lenses
 
 @Lenses("_") case class Grappled(saveDc: Int, name: String = Grappled.name) extends Condition {
 
-  val turnsLeft: Int = 0
+  val turnsLeft: Int      = 0
+  val missesTurn: Boolean = false
 
   def handle[_: RS](creature: Creature): Creature = {
     val attribute = if (creature.stats.strength > creature.stats.dexterity) Strength else Dexterity

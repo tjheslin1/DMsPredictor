@@ -9,11 +9,9 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlot
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
-  GuidingBolt,
-  SacredFlame
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{GuidingBolt, SacredFlame}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
 
@@ -43,10 +41,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
   )
 
   val creatures = List(cleric,
-                       Goblin.levelOneGoblin(),
-                       Goblin.levelOneGoblin(),
-                       Goblin.levelOneGoblin(),
-                       Goblin.levelOneGoblin())
+    Vampire(144, 144, name = "Vampire"))
 
   val simulation = "Fighter vs Goblin"
   val (losses, wins) =

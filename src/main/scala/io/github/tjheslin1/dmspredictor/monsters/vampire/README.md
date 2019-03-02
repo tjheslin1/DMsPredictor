@@ -9,3 +9,7 @@ It is assumed from the description of _Unarmed Strike_ in the Vampire's stat blo
 automatically applies the _Grapple_ condition to a target that it hits with __Unarmed Strike_.
 
 ### Limitations
+
+Currently no Legendary Actions are implemented.
+
+Children of the Night (1/Day) is not implemeted.

@@ -30,6 +30,7 @@ class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrateg
         nextCombatant(nextTurnQueue, combatantMovesLeft - 1)
       }
 
+    logger.debug("-------------")
     nextCombatant(initiativeOrder, initiatives.size)
   }
 }

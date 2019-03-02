@@ -3,23 +3,23 @@ package unit.conditions
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Grappled, Poisoned}
+import io.github.tjheslin1.dmspredictor.model.condition.{Charmed, Poisoned}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 
-class GrappledSpec extends UnitSpecBase {
+class CharmedSpec extends UnitSpecBase {
 
   "handle" should {
-    "remove Grappled condition if passed" in new TestContext {
+    "remove Charmed condition if passed" in new TestContext {
       forAll { goblin: Goblin =>
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
-          val grappled          = Grappled(1)
+          val charmed         = Charmed(1)
           val poisoned        = Poisoned(10, 10)
-          val conditionGolbin = goblin.withStrength(20).withConditions(grappled, poisoned)
+          val conditionGolbin = goblin.withStrength(20).withConditions(charmed, poisoned)
 
-          val updatedGoblin = grappled.handle(conditionGolbin)
+          val updatedGoblin = charmed.handle(conditionGolbin)
 
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
         }

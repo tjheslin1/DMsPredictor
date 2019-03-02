@@ -117,10 +117,33 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         }
       }
     }
+
+    "miss the combatants turn if a condition saving throw is failed" in new TestContext {
+      forAll { (fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val trackedGoblin =
+            goblin.withBaseWeapon(trackedSword).withConditions(trackedCondition(100, turnMissed = true)).withCombatIndex(1)
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
+
+          trackedConditionHandledCount shouldBe 1
+          swordUsedCount shouldBe 0
+        }
+      }
+    }
   }
 
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+    var swordUsedCount = 0
+    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+      swordUsedCount += 1
+      1
+    })
 
     var trackedAbilityUsedCount = 0
     var trackedAbilityUsed      = false
@@ -146,8 +169,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     }
 
     var trackedConditionHandledCount = 0
-    def trackedCondition(dc: Int): Condition = new Condition {
+    def trackedCondition(dc: Int, turnMissed: Boolean = false): Condition = new Condition {
       val name = "tracked-condition"
+      val missesTurn = turnMissed
 
       val saveDc: Int    = dc
       val turnsLeft: Int = 10

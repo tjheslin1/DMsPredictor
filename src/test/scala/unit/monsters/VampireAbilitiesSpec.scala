@@ -1,15 +1,14 @@
 package unit.monsters
 
 import base.UnitSpecBase
-import com.apple.concurrent.Dispatch.Priority
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Grappled
+import io.github.tjheslin1.dmspredictor.model.condition.{Charmed, Grappled}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
 class VampireAbilitiesSpec extends UnitSpecBase {
@@ -119,10 +118,11 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
 
-          val clericCombatant = cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+          val clericCombatant =
+            cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedCleric: Cleric))) =
-          unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+            unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(Grappled(18))
         }
@@ -134,15 +134,57 @@ class VampireAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(5)
 
-          val vampireCombatant = vampire.copy(firstAttack = false).withStrength(20).withCombatIndex(1)
+          val vampireCombatant =
+            vampire.copy(firstAttack = false).withStrength(20).withCombatIndex(1)
 
-          val clericCombatant = cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+          val clericCombatant =
+            cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedCleric: Cleric))) =
-          unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+            unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List()
           updatedCleric.health < cleric.health
+        }
+      }
+    }
+  }
+
+  "charm" should {
+    "be used if no enemies are already charmed" in {
+      new TestContext {
+        implicit val roll: RollStrategy = D20.naturalTwenty
+      }
+      val vampire = random[Vampire].withCombatIndex(1)
+      val fighter = random[Fighter].withCombatIndex(2)
+      val cleric  = random[Cleric].withCombatIndex(3)
+
+      charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe true
+    }
+
+    "not be used if an enemy is already charmed" in {
+      new TestContext {
+        implicit val roll: RollStrategy = D20.naturalTwenty
+      }
+      val vampire = random[Vampire].withCombatIndex(1)
+      val fighter = random[Fighter].withCombatIndex(2)
+      val cleric  = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
+
+      charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe false
+    }
+
+    "apply the Charmed condition" in {
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit val roll: RollStrategy = D20.naturalTwenty
+
+          val vampireCombatant = vampire.withCombatIndex(1)
+          val clericCombatant = cleric.withWisdom(1).withCombatIndex(1)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+          charm(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+
+          updatedCleric.conditions shouldBe List(Charmed(Vampire.CharmDC))
         }
       }
     }
