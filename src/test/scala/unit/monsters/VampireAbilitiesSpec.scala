@@ -98,18 +98,51 @@ class VampireAbilitiesSpec extends UnitSpecBase {
   }
 
   "unarmedStrike" should {
-    "attempt to grapple a target instead of dealing damage" in {
+    "update the Vampires firstAttack to false" in {
+      forAll { vampire: Vampire =>
+        new TestContext {
+          implicit override val roll: RollStrategy = D20.naturalTwenty
+
+          val vampireCombatant = vampire.withCombatIndex(1)
+
+          val updatedVampire = unarmedStrike(1)(vampireCombatant).update.asInstanceOf[Vampire]
+
+          updatedVampire.firstAttack shouldBe false
+        }
+      }
+    }
+
+    "attempt to grapple a target instead of dealing damage on its first attack" in {
       forAll { (vampire: Vampire, cleric: Cleric) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(5)
 
-          val vampireCombatant =
-            vampire.withStrength(20).withCombatIndex(1)
+          val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
 
-          val clericCombatant =
-            cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+          val clericCombatant = cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
 
-          unarmedStrike(Priority)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+          unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+
+          updatedCleric.conditions shouldBe List(Grappled(18))
+        }
+      }
+    }
+
+    "perform a regular damaging attack on the Vampires second attack" in {
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(5)
+
+          val vampireCombatant = vampire.copy(firstAttack = false).withStrength(20).withCombatIndex(1)
+
+          val clericCombatant = cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+          unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+
+          updatedCleric.conditions shouldBe List()
+          updatedCleric.health < cleric.health
         }
       }
     }

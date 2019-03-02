@@ -43,7 +43,7 @@ class MonsterAbilitiesSpec extends UnitSpecBase {
 
           val monsterCombatant =
             testMonster.withStrength(20).withBaseWeapon(trackedSword).withCombatIndex(1)
-          val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
+          val fighterCombatant = fighter.withHealth(200).withDexterity(1).withNoArmour().withCombatIndex(2)
 
           multiAttack(Priority, totalNumberOfAttacks)(monsterCombatant)
             .useAbility(List(fighterCombatant), LowestFirst)

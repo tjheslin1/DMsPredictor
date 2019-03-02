@@ -11,8 +11,8 @@ trait Monster extends Creature {
 
 object Monster {
 
-  val monsterArmourClassLens: Lens[Monster, Int] = Lens[Monster, Int](_.armourClass) {
-    ac => {
+  val monsterArmourClassLens: Lens[Monster, Int] = Lens[Monster, Int](_.armourClass) { ac =>
+    {
       case c: Goblin   => Goblin._armourClass.set(ac)(c)
       case c: Werewolf => Werewolf._armourClass.set(ac)(c)
       case c: Vampire  => Vampire._armourClass.set(ac)(c)

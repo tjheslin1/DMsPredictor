@@ -8,7 +8,9 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.monsters.Monster
-import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.UnarmedStrike
+import io.github.tjheslin1.dmspredictor.monsters.MonsterAbilities.multiAttack
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire._
+import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
@@ -28,15 +30,16 @@ import monocle.macros.{GenLens, Lenses}
                                 attackStatus: AttackStatus = Regular,
                                 defenseStatus: AttackStatus = Regular,
                                 radiantDamageTaken: Boolean = false,
+                                firstAttack: Boolean = true,
                                 biteUsed: Boolean = false,
                                 name: String = NameGenerator.randomName)
     extends Monster {
 
-  val challengeRating: Double = 3.0
+  val challengeRating: Double = 13.0
 
   val creatureType: CreatureType = Undead
 
-  val abilities: List[CombatantAbility] = List.empty[CombatantAbility]
+  val abilities: List[CombatantAbility] = vampireAbilities
 
   def weapon[_: RS]: Weapon = baseWeapon
 
@@ -62,6 +65,14 @@ import monocle.macros.{GenLens, Lenses}
 
 object Vampire {
 
+  val TotalAttacks = 2
+
+  val vampireAbilities: List[CombatantAbility] = List(
+    multiAttack(1, TotalAttacks),
+    bite(2),
+    unarmedStrike(3)
+  )
+
   case object UnarmedStrike extends Weapon {
     val name: String           = "Unarmed Strike (Vampire)"
     val weaponType: WeaponType = Melee
@@ -71,6 +82,8 @@ object Vampire {
     override val hitBonus: Int = 9
 
     def damage(implicit rollStrategy: RollStrategy): Int = 1 * D8 // +4 from Strength
+
+    val GrappleDc = 18
   }
 
   val strengthLens: Lens[Vampire, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

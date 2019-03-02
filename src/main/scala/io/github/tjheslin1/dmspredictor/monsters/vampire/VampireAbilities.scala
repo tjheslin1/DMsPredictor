@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, SingleAttack}
 import io.github.tjheslin1.dmspredictor.model.condition.Grappled
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.UnarmedStrike
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
@@ -22,7 +23,7 @@ object VampireAbilities extends LazyLogging {
     val abilityAction: AbilityAction = SingleAttack
 
     def triggerMet(others: List[Combatant]): Boolean =
-      others.exists(_.creature.conditions.map(_.name).contains(Grappled.name))
+      others.exists(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
     def conditionMet: Boolean = vampire.biteUsed == false
 
@@ -30,7 +31,7 @@ object VampireAbilities extends LazyLogging {
       logger.debug(s"Vampire used $name")
 
       val grappledEnemies =
-        players(others).filter(_.creature.conditions.map(_.name).contains(Grappled.name))
+        players(others).filter(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
       nextToFocus(grappledEnemies, focus) match {
         case None => (combatant, List.empty[Combatant])
@@ -71,18 +72,41 @@ object VampireAbilities extends LazyLogging {
   def unarmedStrike(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val vampire = combatant.creature.asInstanceOf[Vampire]
 
-    val name: String = "Bite (Vampire)"
-    val order: Int = currentOrder
+    val name: String = "Unarmed Strike (Vampire)"
+    val order: Int   = currentOrder
 
-    val levelRequirement: Level = LevelOne
-    val abilityAction: AbilityAction = _
+    val levelRequirement: Level      = LevelOne
+    val abilityAction: AbilityAction = SingleAttack
 
-    def triggerMet(others:  List[Combatant]): Boolean = true
-    def conditionMet: Boolean = true
+    def triggerMet(others: List[Combatant]): Boolean = true
+    def conditionMet: Boolean                        = true
 
-    def useAbility[_ : RS](others:  List[Combatant], focus:  Focus): (Combatant, List[Combatant]) = ???
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+      logger.debug(s"Vampire used $name")
 
-    def update: Creature =  vampire
+      nextToFocus(players(others), focus) match {
+        case None => (combatant, List.empty[Combatant])
+        case Some(target) =>
+          val updatedTarget = attack(combatant, UnarmedStrike, target) match {
+            case CriticalMiss | Miss => target
+            case attackResult @ (CriticalHit | Hit) =>
+              if (vampire.firstAttack) {
+                val updatedConditions =
+                  target.creature.conditions :+ Grappled(UnarmedStrike.GrappleDc)
+                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+                  .set(updatedConditions)(target)
+              } else {
+                val (_, updatedTarget) =
+                  resolveDamage(combatant, target, UnarmedStrike, attackResult)
+                updatedTarget
+              }
+          }
+
+          (combatant, List(updatedTarget))
+      }
+    }
+
+    def update: Creature = if (vampire.firstAttack) vampire.copy(firstAttack = false) else vampire
   }
 
   case object Bite extends Weapon {
@@ -98,4 +122,3 @@ object VampireAbilities extends LazyLogging {
     def necroticDamage[_: RS] = 3 * D6
   }
 }
-

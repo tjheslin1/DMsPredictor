@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
@@ -79,7 +80,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
         (cleric: Cleric,
          zombieOne: Zombie,
          zombieTwo: Zombie,
-         zombieThree: Zombie,
+         vampire: Vampire,
          goblin: Goblin) =>
           new TestContext {
             implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -88,21 +89,21 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
             val toughUndead      = zombieOne.withWisdom(20).withCombatIndex(2)
             val weakUndead       = zombieTwo.withWisdom(1).withCombatIndex(3)
-            val weakHighCrUndead = zombieThree.withWisdom(1).withCombatIndex(4)
+            val weakVampire = vampire.withWisdom(1).withCombatIndex(4)
 
-            val enemies = List(toughUndead, weakUndead, weakHighCrUndead, goblin.withCombatIndex(5))
+            val enemies = List(toughUndead, weakUndead, weakVampire, goblin.withCombatIndex(5))
 
             val (_,
                  List(Combatant(_, updatedToughUndead: Zombie),
                       Combatant(_, updatedWeakUndead: Zombie),
-                      Combatant(_, updatedWeakHighCrUndead: Zombie))) =
+                      Combatant(_, updatedVampire: Vampire))) =
               destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
             updatedToughUndead.health shouldBe zombieOne.health
             updatedWeakUndead.health shouldBe 0
 
-            updatedWeakHighCrUndead.health shouldBe zombieThree.health
-            updatedWeakHighCrUndead.conditions should contain theSameElementsAs List(Turned(17, 10))
+            updatedVampire.health shouldBe weakVampire.creature.health
+            updatedVampire.conditions should contain theSameElementsAs List(Turned(10, 10))
           }
       }
     }
