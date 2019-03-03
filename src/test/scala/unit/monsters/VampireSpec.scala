@@ -85,6 +85,17 @@ class VampireSpec extends UnitSpecBase {
         biteVampire.biteUsed shouldBe false
       }
     }
+
+    "reset firstAttack to true" in {
+      forAll { vampire: Vampire =>
+        val biteVampire = vampire
+          .copy(firstAttack = false)
+          .resetStartOfTurn()
+          .asInstanceOf[Vampire]
+
+        biteVampire.firstAttack shouldBe true
+      }
+    }
   }
 
   "Vampire" should {

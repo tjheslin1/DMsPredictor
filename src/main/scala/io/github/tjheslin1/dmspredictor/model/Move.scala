@@ -19,8 +19,12 @@ object Move extends LazyLogging {
     val resetUnactedCombatant =
       Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
 
+    val bonusActionUnusedCombatant =
+      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
+        .set(false)(resetUnactedCombatant)
+
     val (conditionHandledCombatant, missesTurn) =
-      handleCondition(resetUnactedCombatant)
+      handleCondition(bonusActionUnusedCombatant)
 
     val otherCombatants = others.toList
 
@@ -43,17 +47,10 @@ object Move extends LazyLogging {
                             focus)
       }
 
-      val updatedCombatant =
-        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-          .set(false)(actedCombatant)
-
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
-      Queue(updatedOthersTargets: _*).append(updatedCombatant)
+      Queue(updatedOthersTargets: _*).append(actedCombatant)
     } else {
-      val updatedCombatant =
-        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-          .set(false)(conditionHandledCombatant)
-      others.append(updatedCombatant)
+      others.append(conditionHandledCombatant)
     }
   }
 
@@ -82,7 +79,7 @@ object Move extends LazyLogging {
                                          optAbility: Option[CombatantAbility],
                                          focus: Focus): (Combatant, List[Combatant]) =
     optAbility.fold {
-      target.fold((combatant, List.empty[Combatant])) { targetToAttack =>
+      target.fold((combatant, others)) { targetToAttack =>
         val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetToAttack)
         (updatedAttacker, List(updatedTarget))
       }
@@ -91,6 +88,6 @@ object Move extends LazyLogging {
       val updatedCombatant =
         Combatant.creatureLens.set(ability(actedCombatant).update)(actedCombatant)
 
-      (updatedCombatant, targetsOfAbility)
+      (updatedCombatant, others.replace(targetsOfAbility))
     }
 }

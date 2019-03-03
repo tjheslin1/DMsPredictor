@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BaseBarbarianAbilities extends LazyLogging {
 
@@ -37,7 +38,7 @@ object BaseBarbarianAbilities extends LazyLogging {
       val target  = nextToFocus(enemies, focus)
 
       target match {
-        case None => (ragingBarbarianCombatant, List.empty[Combatant])
+        case None => (ragingBarbarianCombatant, others)
         case Some(targetOfAttack) =>
           nextAbilityToUseInConjunction(ragingBarbarianCombatant,
                                         enemies,
@@ -46,8 +47,11 @@ object BaseBarbarianAbilities extends LazyLogging {
             val (updatedAttacker, updatedTarget) =
               attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
             (updatedAttacker, List(updatedTarget))
-          }(nextAbility =>
-            useAdditionalAbility(nextAbility, ragingBarbarianCombatant, enemies, focus))
+          } { nextAbility =>
+            val (updatedAttacker, updatedEnemies) =
+              useAdditionalAbility(nextAbility, ragingBarbarianCombatant, enemies, focus)
+            (updatedAttacker, others.replace(updatedEnemies))
+          }
       }
     }
 
@@ -90,12 +94,12 @@ object BaseBarbarianAbilities extends LazyLogging {
       val target = nextToFocus(monsters(others), focus)
 
       target match {
-        case None => (recklessBarbarianCombatant, List.empty[Combatant])
+        case None => (recklessBarbarianCombatant, others)
         case Some(targetOfAttack) =>
           val (updatedAttacker, updatedTarget) =
             attackAndDamage(recklessBarbarianCombatant, targetOfAttack)
 
-          (updatedAttacker, List(updatedTarget))
+          (updatedAttacker, others.replace(updatedTarget))
       }
     }
 

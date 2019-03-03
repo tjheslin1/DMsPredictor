@@ -30,7 +30,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
               .withDexterity(1)
               .withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+          val (_, List(_, Combatant(_, updatedCleric: Cleric))) =
             bite(1)(vampireCombatant)
               .useAbility(List(fighterCombatant, clericCombatant), LowestFirst)
 
@@ -94,6 +94,14 @@ class VampireAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
+
+    "set biteUsed to true" in {
+      val vampire = random[Vampire].copy(biteUsed = false)
+
+      val updatedVampire = bite(1)(vampire.withCombatIndex(1)).update.asInstanceOf[Vampire]
+
+      updatedVampire.biteUsed shouldBe true
+    }
   }
 
   "unarmedStrike" should {
@@ -125,6 +133,24 @@ class VampireAbilitiesSpec extends UnitSpecBase {
             unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(Grappled(18))
+        }
+      }
+    }
+
+    "not attempt to grapple a target if an enemy is already grappled" in {
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(5)
+
+          val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
+
+          val clericCombatant =
+            cleric.withCondition(Grappled(18)).withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+            unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+
+          updatedCleric.health < cleric.health
         }
       }
     }

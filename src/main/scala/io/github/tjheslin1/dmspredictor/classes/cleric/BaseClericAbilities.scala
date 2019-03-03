@@ -10,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifi
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BaseClericAbilities extends LazyLogging {
 
@@ -21,7 +22,8 @@ object BaseClericAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelTwo
     val abilityAction: AbilityAction = WholeAction
 
-    def conditionMet: Boolean = baseCleric.channelDivinityUsed == false
+    def conditionMet: Boolean =
+      baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
 
     def triggerMet(others: List[Combatant]): Boolean =
       monsters(others).exists(_.creature.creatureType == Undead)
@@ -41,7 +43,7 @@ object BaseClericAbilities extends LazyLogging {
                 .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
           }
 
-          (combatant, updatedUndead)
+          (combatant, others.replace(updatedUndead))
       }
     }
 
@@ -56,7 +58,8 @@ object BaseClericAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelFive
     val abilityAction: AbilityAction = WholeAction
 
-    def conditionMet: Boolean = baseCleric.channelDivinityUsed == false
+    def conditionMet: Boolean =
+      baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
 
     def triggerMet(others: List[Combatant]): Boolean =
       monsters(others).exists(_.creature.creatureType == Undead)
@@ -65,7 +68,7 @@ object BaseClericAbilities extends LazyLogging {
       logger.debug(s"${baseCleric.name} used $name")
 
       monsters(others).filter(_.creature.creatureType == Undead) match {
-        case List() => (combatant, List.empty[Combatant])
+        case List() => (combatant, others)
         case undeadTargets: List[Combatant] =>
           val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
 
@@ -84,7 +87,7 @@ object BaseClericAbilities extends LazyLogging {
             }
           }
 
-          (combatant, updatedUndead)
+          (combatant, others.replace(updatedUndead))
       }
     }
 

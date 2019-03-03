@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
@@ -11,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 /**
   * In terms of combat, most Combat Maneuvers add a superiority dice roll to damage, therefore only one is implemented.
@@ -39,7 +39,7 @@ object BattleMasterAbilities extends LazyLogging {
         val target  = nextToFocus(enemies, focus)
 
         target match {
-          case None => (combatant, List.empty[Combatant])
+          case None => (combatant, others)
           case Some(attackTarget: Combatant) =>
             val attackResult = attack(combatant, combatant.creature.weapon, attackTarget)
             val (updatedAttacker, updatedTarget) =
@@ -50,18 +50,18 @@ object BattleMasterAbilities extends LazyLogging {
 
             attackResult match {
               case Miss | CriticalMiss =>
-                (updatedAttacker, List(updatedTarget))
+                (updatedAttacker, others.replace(updatedTarget))
               case Hit | CriticalHit =>
                 val targetCreature = updatedTarget.creature
 
                 if (savingThrowPassed(battleMaster.maneuverSaveDC, Strength, targetCreature))
-                  (updatedAttacker, List(updatedTarget))
+                  (updatedAttacker, others.replace(updatedTarget))
                 else {
                   val disarmedTarget =
                     (Combatant.creatureLens composeLens Creature.creatureBaseWeaponLens)
                       .set(UnarmedStrike(targetCreature))(updatedTarget)
 
-                  (updatedAttacker, List(disarmedTarget))
+                  (updatedAttacker, others.replace(disarmedTarget))
                 }
             }
         }

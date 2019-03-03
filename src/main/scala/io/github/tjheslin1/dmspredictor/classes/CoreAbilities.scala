@@ -41,7 +41,7 @@ object CoreAbilities extends LazyLogging {
       val enemies = monsters(others)
 
       nextToFocus(enemies, focus) match {
-        case None => (combatant, List.empty[Combatant])
+        case None => (combatant, others)
         case Some(target) =>
           nextAbilityToUseInConjunction(combatant,
                                         enemies,
@@ -50,7 +50,7 @@ object CoreAbilities extends LazyLogging {
             .fold {
               val (updatedAttacker, updatedTarget) =
                 attackAndDamageTimes(2, combatant, target)
-              (updatedAttacker, List(updatedTarget))
+              (updatedAttacker, others.replace(updatedTarget))
             } { nextAbility =>
               val (updatedCombatant, updatedTargets) =
                 useAdditionalAbility(nextAbility, combatant, enemies, focus)
@@ -66,10 +66,13 @@ object CoreAbilities extends LazyLogging {
                     focusTarget =>
                       val (updatedAttacker, updatedAttackedTarget) =
                         attackAndDamage(updatedCombatant, focusTarget)
-                      (updatedAttacker, List(updatedAttackedTarget))
+                      (updatedAttacker,
+                       others.replace(updatedEnemies).replace(updatedAttackedTarget))
                   }
                 } { nextAbility2 =>
-                  useAdditionalAbility(nextAbility2, updatedCombatant, updatedEnemies, focus)
+                  val (updatedAttacker, updatedEnemies2) =
+                    useAdditionalAbility(nextAbility2, updatedCombatant, updatedEnemies, focus)
+                  (updatedAttacker, others.replace(updatedEnemies2))
                 }
             }
       }
@@ -108,8 +111,8 @@ object CoreAbilities extends LazyLogging {
         val target  = nextToFocus(enemies, focus)
 
         (target, optSpell) match {
-          case (_, None) => (combatant, List.empty[Combatant])
-          case (None, _) => (combatant, List.empty[Combatant])
+          case (_, None) => (combatant, others)
+          case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
             val attackResult = spell.spellOffenseStyle match {
               case MeleeSpellAttack  => spellAttack(spell, spellTarget.creature)
@@ -137,7 +140,7 @@ object CoreAbilities extends LazyLogging {
               spellTarget.copy(
                 creature = spellTarget.creature.updateHealth(dmg, spell.damageType, attackResult))
 
-            (combatant, List(damagedTarget))
+            (combatant, others.replace(damagedTarget))
         }
       }
 

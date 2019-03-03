@@ -28,10 +28,18 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       }
     }
 
+    "replace unconscious creature to back of queue after attacking" in new TestContext {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        val queue = Queue(fighter.withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
+
+        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name, fighter.name)
+      }
+    }
+
     "reset player's bonus action to unused" in new TestContext {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         val queue =
-          Queue(fighter.withBonusActionUsed().withCombatIndex(1), monster.withCombatIndex(2))
+          Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
 
         val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 

@@ -49,6 +49,6 @@ object ClassAbilities {
     val updatedAttackingCreature                  = ability(updatedAttacker).update
 
     val updatedAttackingCombatant = Combatant.creatureLens.set(updatedAttackingCreature)(attacker)
-    (updatedAttackingCombatant, updatedTargetOfAbility)
+    (updatedAttackingCombatant, others.replace(updatedTargetOfAbility))
   }
 }

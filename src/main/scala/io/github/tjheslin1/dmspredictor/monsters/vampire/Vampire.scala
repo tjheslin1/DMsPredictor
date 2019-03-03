@@ -58,21 +58,16 @@ import monocle.macros.{GenLens, Lenses}
   def scoresCritical(roll: Int): Boolean = roll == 20
 
   def resetStartOfTurn(): Creature = {
-    println(s"vampire radiantDamageTaken $radiantDamageTaken")
-
     val radiantCalculatedVampire =
       if (radiantDamageTaken) copy(radiantDamageTaken = false)
       else {
         val regeneratedHp = Math.min(maxHealth, health + 20)
-        println(s"vampire regenerated from $health to $regeneratedHp")
         Creature.creatureHealthLens
           .set(regeneratedHp)(copy(radiantDamageTaken = false))
           .asInstanceOf[Vampire]
       }
 
-    println(s"vampire radiantDamageTaken updated ${radiantCalculatedVampire.radiantDamageTaken}")
-
-    radiantCalculatedVampire.copy(biteUsed = false)
+    radiantCalculatedVampire.copy(biteUsed = false, firstAttack = true)
   }
 }
 

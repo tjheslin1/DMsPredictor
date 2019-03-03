@@ -64,7 +64,8 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
           val (_,
                List(Combatant(_, updatedZombieOne: Zombie),
-                    Combatant(_, updatedZombieTwo: Zombie))) =
+                    Combatant(_, updatedZombieTwo: Zombie),
+                    _)) =
             turnUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
           updatedZombieOne.conditions shouldBe List(Turned(17, 10))
@@ -92,7 +93,8 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
             val (_,
                  List(Combatant(_, updatedToughUndead: Zombie),
                       Combatant(_, updatedWeakUndead: Zombie),
-                      Combatant(_, updatedVampire: Vampire))) =
+                      Combatant(_, updatedVampire: Vampire),
+                      _)) =
               destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
             updatedToughUndead.health shouldBe zombieOne.health

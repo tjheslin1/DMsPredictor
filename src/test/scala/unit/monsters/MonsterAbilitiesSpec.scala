@@ -24,12 +24,13 @@ class MonsterAbilitiesSpec extends UnitSpecBase {
 
           val monsterCombatant =
             testMonster.withStrength(20).withBaseWeapon(trackedSword).withCombatIndex(1)
-          val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
+          val healthFighter = fighter.withHealth(100).withDexterity(1).withNoArmour()
 
-          multiAttack(Priority, totalNumberOfAttacks)(monsterCombatant)
-            .useAbility(List(fighterCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedFighter: Fighter))) = multiAttack(Priority, totalNumberOfAttacks)(monsterCombatant)
+            .useAbility(List(healthFighter.withCombatIndex(2)), LowestFirst)
 
           swordUsedCount shouldBe 2
+          updatedFighter.health shouldBe healthFighter.health - 12 // wpn damage (1) + strength (5) * 2
         }
       }
     }

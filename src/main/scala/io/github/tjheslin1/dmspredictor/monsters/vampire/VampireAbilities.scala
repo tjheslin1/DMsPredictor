@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object VampireAbilities extends LazyLogging {
 
@@ -35,7 +36,7 @@ object VampireAbilities extends LazyLogging {
         players(others).filter(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
       nextToFocus(grappledEnemies, focus) match {
-        case None => (combatant, List.empty[Combatant])
+        case None => (combatant, others)
         case Some(grappledTarget) =>
           val attackResult = attack(combatant, Bite, grappledTarget)
 
@@ -57,17 +58,17 @@ object VampireAbilities extends LazyLogging {
           val updatedHealth    = updatedTarget.creature.health - necroticDamage
           val updatedMaxHealth = updatedTarget.creature.maxHealth - necroticDamage
 
-          val updatedHealthCleric = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+          val updatedHealthTarget = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
             .set(updatedHealth)(updatedTarget)
-          val updatedMaxHealthCleric =
+          val updatedMaxHealthTarget =
             (Combatant.creatureLens composeLens Creature.creatureMaxHealthLens)
-              .set(updatedMaxHealth)(updatedHealthCleric)
+              .set(updatedMaxHealth)(updatedHealthTarget)
 
-          (restoredVampire, List(updatedMaxHealthCleric))
+          (restoredVampire, others.replace(updatedMaxHealthTarget))
       }
     }
 
-    def update: Creature = vampire.copy(biteUsed = true)
+    def update: Creature = vampire.copy(biteUsed = true, firstAttack = false)
   }
 
   def unarmedStrike(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
@@ -85,27 +86,32 @@ object VampireAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"Vampire used $name")
 
-      nextToFocus(players(others), focus) match {
-        case None => (combatant, List.empty[Combatant])
+      val enemies = players(others)
+
+      nextToFocus(enemies, focus) match {
+        case None => (combatant, others)
         case Some(target) =>
           val updatedTarget = attack(combatant, UnarmedStrike, target) match {
             case CriticalMiss | Miss =>
-              println(s"$name missed")
               target
             case attackResult @ (CriticalHit | Hit) =>
-              if (vampire.firstAttack) {
+              if (vampire.firstAttack &&
+                  enemies.exists(_.creature.conditions
+                    .map(_.name)
+                    .contains(Grappled(UnarmedStrike.GrappleDc))) == false) {
+
                 val updatedConditions =
                   target.creature.conditions :+ Grappled(UnarmedStrike.GrappleDc)
                 (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
                   .set(updatedConditions)(target)
               } else {
-                val (_, updatedTarget) =
+                val (_, updatedAttackTarget) =
                   resolveDamage(combatant, target, UnarmedStrike, attackResult)
-                updatedTarget
+                updatedAttackTarget
               }
           }
 
-          (combatant, List(updatedTarget))
+          (combatant, others.replace(updatedTarget))
       }
     }
 
@@ -130,7 +136,7 @@ object VampireAbilities extends LazyLogging {
       logger.debug(s"Vampire used $name")
 
       nextToFocus(players(others), focus) match {
-        case None => (combatant, List.empty[Combatant])
+        case None => (combatant, others)
         case Some(target) =>
           if (savingThrowPassed(CharmDC, Wisdom, target.creature))
             (combatant, List(target))
@@ -140,7 +146,7 @@ object VampireAbilities extends LazyLogging {
             val charmedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
               .set(target.creature.conditions ++ List(Charmed(CharmDC)))(target)
 
-            (combatant, List(charmedTarget))
+            (combatant, others.replace(charmedTarget))
           }
       }
     }
