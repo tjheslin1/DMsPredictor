@@ -139,7 +139,7 @@ object VampireAbilities extends LazyLogging {
         case None => (combatant, others)
         case Some(target) =>
           if (savingThrowPassed(CharmDC, Wisdom, target.creature))
-            (combatant, List(target))
+            (combatant, others)
           else {
             logger.debug(s"${target.creature.name} has been Charmed")
 
