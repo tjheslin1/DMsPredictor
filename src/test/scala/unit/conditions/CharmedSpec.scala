@@ -17,9 +17,9 @@ class CharmedSpec extends UnitSpecBase {
 
           val charmed         = Charmed(1)
           val poisoned        = Poisoned(10, 10)
-          val conditionGolbin = goblin.withStrength(20).withConditions(charmed, poisoned)
+          val conditionGoblin = goblin.withStrength(20).withConditions(charmed, poisoned)
 
-          val updatedGoblin = charmed.handle(conditionGolbin)
+          val updatedGoblin = charmed.handle(conditionGoblin)
 
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
         }

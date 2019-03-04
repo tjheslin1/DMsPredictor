@@ -3,10 +3,17 @@ package io.github.tjheslin1.dmspredictor
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
+import io.github.tjheslin1.dmspredictor.classes.barbarian.{
+  Barbarian,
+  BaseBarbarian,
+  Berserker,
+  TotemWarrior
+}
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, SpellSlots}
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
-import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlot
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
@@ -25,12 +32,12 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 //  val creatures: List[Creature] =
 //    List(Fighter.levelOneFighter(), Goblin.levelOneGoblin(), Goblin.levelOneGoblin())
 
-  val clericHp = BaseCleric.calculateHealth(LevelOne, 10) + 20
+  val clericHp = BaseCleric.calculateHealth(LevelFive, 10)
   val cleric = Cleric(
-    LevelOne,
+    LevelFive,
     clericHp,
     clericHp,
-    BaseStats(10, 10, 10, 10, 10, 10),
+    BaseStats(10, 10, 10, 14, 14, 14),
     Shortsword,
     SacredFlame.some,
     Map(GuidingBolt.spellLevel -> GuidingBolt),
@@ -43,7 +50,21 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     name = "Cleric"
   )
 
-  val creatures = List(cleric, Vampire(144, 144, name = "Vampire"))
+  val barbarianHp = BaseBarbarian.calculateHealth(LevelFive, 10)
+  val barbarian = TotemWarrior(
+    LevelFive,
+    barbarianHp,
+    barbarianHp,
+    BaseStats(14, 14, 14, 10, 10, 10),
+    Greatsword,
+    4,
+    Bear,
+    TotemWarrior.standardTotemWarriorAbilities(Bear),
+    proficiencyBonus = 2,
+    name = "Totem Warrior"
+  )
+
+  val creatures = List(cleric, barbarian, Vampire(144, 144, name = "Vampire"))
 
   val simulation = "Fighter vs Goblin"
   val (losses, wins) =

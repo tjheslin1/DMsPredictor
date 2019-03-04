@@ -180,6 +180,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     def trackedCondition(dc: Int, turnMissed: Boolean = false): Condition = new Condition {
       val name = "tracked-condition"
       val missesTurn = turnMissed
+      val handleOnDamage: Boolean = false
 
       val saveDc: Int    = dc
       val turnsLeft: Int = 10
@@ -188,6 +189,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         trackedConditionHandledCount += 1
         creature
       }
+
+      def handleOnDamage[_: RS](creature: Creature): Creature = creature
     }
   }
 }

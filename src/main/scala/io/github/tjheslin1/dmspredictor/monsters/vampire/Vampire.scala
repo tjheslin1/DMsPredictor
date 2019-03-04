@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.monsters.vampire
 
+import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
@@ -33,7 +34,8 @@ import monocle.macros.{GenLens, Lenses}
                                 firstAttack: Boolean = true,
                                 biteUsed: Boolean = false,
                                 name: String = NameGenerator.randomName)
-    extends Monster {
+    extends Monster
+    with LazyLogging {
 
   val challengeRating: Double = 13.0
 
@@ -62,6 +64,9 @@ import monocle.macros.{GenLens, Lenses}
       if (radiantDamageTaken) copy(radiantDamageTaken = false)
       else {
         val regeneratedHp = Math.min(maxHealth, health + 20)
+
+        logger.debug(s"$name regenerated health")
+
         Creature.creatureHealthLens
           .set(regeneratedHp)(copy(radiantDamageTaken = false))
           .asInstanceOf[Vampire]
@@ -77,9 +82,10 @@ object Vampire {
   val CharmDC      = 17
 
   val vampireAbilities: List[CombatantAbility] = List(
-    multiAttack(1, TotalAttacks),
-    bite(2),
-    unarmedStrike(3)
+    charm(1),
+    multiAttack(2, TotalAttacks),
+    bite(3),
+    unarmedStrike(4)
   )
 
   case object UnarmedStrike extends Weapon {

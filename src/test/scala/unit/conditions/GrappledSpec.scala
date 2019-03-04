@@ -17,9 +17,9 @@ class GrappledSpec extends UnitSpecBase {
 
           val grappled          = Grappled(1)
           val poisoned        = Poisoned(10, 10)
-          val conditionGolbin = goblin.withStrength(20).withConditions(grappled, poisoned)
+          val conditionGoblin = goblin.withStrength(20).withConditions(grappled, poisoned)
 
-          val updatedGoblin = grappled.handle(conditionGolbin)
+          val updatedGoblin = grappled.handle(conditionGoblin)
 
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
         }

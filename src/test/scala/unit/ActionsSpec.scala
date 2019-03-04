@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 import util.TestMonster
@@ -100,13 +101,17 @@ class ActionsSpec extends UnitSpecBase {
           val plusTwoWeapon = weaponWithHitBonus(2)
 
           val fighterCombatant = fighter
-            .withProficiencyBonus(4)        // + 4
-            .withStrength(14)               // + 2
-            .withBaseWeapon(plusTwoWeapon)  // + 2
+            .withProficiencyBonus(4) // + 4
+            .withStrength(14) // + 2
+            .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
-          attack(fighterCombatant, plusTwoWeapon, testMonster.withArmourClass(19).withCombatIndex(2)) shouldBe Miss
-          attack(fighterCombatant, plusTwoWeapon, testMonster.withArmourClass(18).withCombatIndex(2)) shouldBe Hit
+          attack(fighterCombatant,
+                 plusTwoWeapon,
+                 testMonster.withArmourClass(19).withCombatIndex(2)) shouldBe Miss
+          attack(fighterCombatant,
+                 plusTwoWeapon,
+                 testMonster.withArmourClass(18).withCombatIndex(2)) shouldBe Hit
         }
       }
     }
@@ -175,6 +180,23 @@ class ActionsSpec extends UnitSpecBase {
           attack(levelThreeChampion.withCombatIndex(1),
                  levelThreeChampion.weapon,
                  monster.withCombatIndex(2)) shouldBe CriticalHit
+        }
+      }
+    }
+  }
+
+  "resolveDamage" should {
+    "handle conditions which trigger on damage" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val turnedFighter = fighter.withCondition(Turned(10, 10)).withCombatIndex(2)
+
+          val (_, Combatant(_, updatedFighter: Fighter)) =
+            resolveDamage(monster.withCombatIndex(1), turnedFighter, monster.baseWeapon, Hit)
+
+          updatedFighter.conditions shouldBe List()
         }
       }
     }

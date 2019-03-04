@@ -8,8 +8,10 @@ trait Condition {
   val saveDc: Int
   val turnsLeft: Int
   val missesTurn: Boolean
+  val handleOnDamage: Boolean
 
   def handle[_: RS](creature: Creature): Creature
+  def handleOnDamage[_: RS](creature: Creature): Creature
 }
 
 object Condition {

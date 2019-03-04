@@ -200,17 +200,35 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     }
 
     "apply the Charmed condition" in {
-      forAll { (vampire: Vampire, cleric: Cleric) =>
+      forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
         new TestContext {
           implicit val roll: RollStrategy = D20.naturalTwenty
 
           val vampireCombatant = vampire.withCombatIndex(1)
-          val clericCombatant = cleric.withWisdom(1).withCombatIndex(1)
+          val clericCombatant = cleric.withWisdom(1).withHealth(50).withCombatIndex(2)
+          val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
-          charm(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
+          charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(Charmed(Vampire.CharmDC))
+        }
+      }
+    }
+
+    "not apply the Charmed condition if the saving throw was passed" in {
+      forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(15)
+
+          val vampireCombatant = vampire.withCombatIndex(1)
+          val clericCombatant = cleric.withWisdom(24).withHealth(50).withCombatIndex(2)
+          val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
+          charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
+
+          updatedCleric.conditions shouldBe List()
         }
       }
     }

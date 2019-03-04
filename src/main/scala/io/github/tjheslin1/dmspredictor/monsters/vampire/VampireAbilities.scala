@@ -50,6 +50,8 @@ object VampireAbilities extends LazyLogging {
             case CriticalMiss => 0
           }
 
+          logger.debug(s"$name deals $necroticDamage necrotic damage")
+
           val updatedVampire = updatedVampireCombatant.creature.asInstanceOf[Vampire]
 
           val restoredVampire = Combatant.creatureLens.set(
@@ -97,8 +99,9 @@ object VampireAbilities extends LazyLogging {
             case attackResult @ (CriticalHit | Hit) =>
               if (vampire.firstAttack &&
                   enemies.exists(_.creature.conditions
-                    .map(_.name)
                     .contains(Grappled(UnarmedStrike.GrappleDc))) == false) {
+
+                logger.debug(s"${vampire.name} grapples ${target.creature.name}")
 
                 val updatedConditions =
                   target.creature.conditions :+ Grappled(UnarmedStrike.GrappleDc)

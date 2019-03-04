@@ -10,7 +10,7 @@ import util.TestData._
 class TurnedSpec extends UnitSpecBase {
 
   "handle" should {
-    "decrement turnsLeft if failed saving throw" in {
+    "decrement turnsLeft" in {
       forAll { goblin: Goblin =>
         new TestContext {
           implicit override val roll = D20.naturalTwenty
@@ -24,16 +24,16 @@ class TurnedSpec extends UnitSpecBase {
       }
     }
 
-    "remove Turned condition if passed" in new TestContext {
+    "remove Turned condition if damage taken" in new TestContext {
       forAll { goblin: Goblin =>
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
           val turned          = Turned(1, 10)
           val poisoned        = Poisoned(10, 10)
-          val conditionGolbin = goblin.withWisdom(20).withConditions(turned, poisoned)
+          val conditionGoblin = goblin.withWisdom(20).withConditions(turned, poisoned)
 
-          val updatedGoblin = turned.handle(conditionGolbin)
+          val updatedGoblin = turned.handleOnDamage(conditionGoblin)
 
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
         }
