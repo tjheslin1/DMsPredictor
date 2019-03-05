@@ -31,9 +31,9 @@ class TurnedSpec extends UnitSpecBase {
 
           val turned          = Turned(1, 10)
           val poisoned        = Poisoned(10, 10)
-          val conditionGoblin = goblin.withWisdom(20).withConditions(turned, poisoned)
+          val conditionGolbin = goblin.withWisdom(20).withConditions(turned, poisoned)
 
-          val updatedGoblin = turned.handleOnDamage(conditionGoblin)
+          val updatedGoblin = turned.handleOnDamage(conditionGolbin)
 
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
         }
