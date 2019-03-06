@@ -88,7 +88,7 @@ object CoreAbilities extends LazyLogging {
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
-      val name             = "Cast Spell"
+      val name             = "Cast Spell (Offensive)"
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
@@ -114,13 +114,16 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => (combatant, others)
           case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
-            val attackResult = spell.spellOffenseStyle match {
+            val attackResult = spell.spellTargetStyle match {
               case MeleeSpellAttack  => spellAttack(spell, spellTarget.creature)
               case RangedSpellAttack => spellAttack(spell, spellTarget.creature)
               case SpellSavingThrow(attribute) =>
                 if (spellSavingThrowPassed(spellCaster, spell, attribute, spellTarget.creature))
                   Miss
                 else Hit
+              case Healing =>
+                logger.error(s"Healing spell ${spell.name} attempted to be casting using $name")
+                Miss
             }
 
             logger.debug(s"casting ${spell.name} - $attackResult")
@@ -165,5 +168,25 @@ object CoreAbilities extends LazyLogging {
           case roll =>
             if ((roll + spell.spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
         }
+    }
+
+  def castSingleTargetHealingSpell(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
+
+      val name             = "Cast Spell (Healing)"
+      val order            = currentOrder
+      val levelRequirement = LevelOne
+      val abilityAction    = WholeAction
+
+      def triggerMet(others: List[Combatant]): Boolean =
+        ??? // players contains someone at half health
+
+      def conditionMet: Boolean = ???
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
+        ???
+
+      def update: Creature = ???
     }
 }

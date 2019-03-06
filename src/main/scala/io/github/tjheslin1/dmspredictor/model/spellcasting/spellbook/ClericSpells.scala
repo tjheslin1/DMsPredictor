@@ -12,7 +12,7 @@ object ClericSpells {
     val name                                 = "Sacred Flame"
     val school: SchoolOfMagic                = Evocation
     val castingTime: CastingTime             = OneAction
-    val spellOffenseStyle: SpellOffenseStyle = SpellSavingThrow(Dexterity)
+    val spellTargetStyle: SpellTargetStyle = SpellSavingThrow(Dexterity)
     val damageType: DamageType               = Radiant
     val spellLevel: SpellLevel               = 0
 
@@ -26,7 +26,7 @@ object ClericSpells {
     val name                                 = "Guiding Bolt"
     val school: SchoolOfMagic                = Evocation
     val castingTime: CastingTime             = OneAction
-    val spellOffenseStyle: SpellOffenseStyle = RangedSpellAttack
+    val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val damageType: DamageType               = Radiant
     val spellLevel: SpellLevel               = 1
 

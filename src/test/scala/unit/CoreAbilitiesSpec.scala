@@ -85,9 +85,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  "Cast Spell" should {
+  "castSingleTargetOffensiveSpell" should {
 
-    "cast a spell (spell attack) using the highest available spell slot" in {
+    "cast a spell (spell attack)" in {
       forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -101,7 +101,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(List(monster), LowestFirst)
+          castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant)
+            .useAbility(List(monster), LowestFirst)
 
           meleeSpellUsedCount shouldBe 1
         }
@@ -149,7 +150,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
           val updatedEldritchKnight: EldritchKnight =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).update.asInstanceOf[EldritchKnight]
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).update
+              .asInstanceOf[EldritchKnight]
 
           updatedEldritchKnight.spellSlots.firstLevel.count shouldBe (spellCastingEK.spellSlots.firstLevel.count - 1)
         }
@@ -175,7 +177,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(List(monster), LowestFirst)
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant)
+              .useAbility(List(monster), LowestFirst)
 
           updatedMonster.health shouldBe 8
         }
@@ -201,7 +204,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).useAbility(List(monster), LowestFirst)
+            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant)
+              .useAbility(List(monster), LowestFirst)
 
           updatedMonster.health shouldBe 10
         }
@@ -222,7 +226,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(2).withCombatIndex(2)
 
-          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(List(monster), LowestFirst)
+          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(List(monster),
+                                                                                  LowestFirst)
 
           savingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
@@ -256,7 +261,31 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  "castSingleTargetHealingSpell" should {
+
+    "cast a spell (heaing) using the highest available spell slot" in {
+      forAll { (cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val healingCleric = cleric.withWisdom(12).withCombatIndex(1)
+          val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
+
+          val (_, List(Combatant(_, healedFighter: Fighter))) = castSingleTargetHealingSpell(Priority)(healingCleric).useAbility(List(damagedFighter), LowestFirst)
+
+          healedFighter.creature.health shouldBe 21
+        }
+      }
+    }
+
+    "spend the highest available spell slot" in {}
+
+    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {}
+
+    "must meet the level requirement to use spellcasting" in new TestContext {}
+  }
+
+  abstract private class TestContext {
     implicit val roll: RollStrategy
 
     var swordUsedCount = 0
@@ -274,9 +303,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val abilityAction    = SingleAttack
 
         def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean                 = true
+        def conditionMet: Boolean               = true
 
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant],
+                              focus: Focus): (Combatant, List[Combatant]) = {
           trackedAttackUsedCount += 1
           (combatant, others)
         }
@@ -294,9 +324,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val abilityAction    = SingleAttack
 
         def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean                 = singleUseAttackAbilityUsed == false
+        def conditionMet: Boolean               = singleUseAttackAbilityUsed == false
 
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant],
+                              focus: Focus): (Combatant, List[Combatant]) = {
           trackedAttackUsedCount += 1
           (combatant, others)
         }
@@ -317,9 +348,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val abilityAction    = WholeAction
 
         def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean                 = trackedActionAbilityUsed == false
+        def conditionMet: Boolean               = trackedActionAbilityUsed == false
 
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant],
+                              focus: Focus): (Combatant, List[Combatant]) = {
           trackedActionAbilityUsedCount += 1
           (combatant, others)
         }

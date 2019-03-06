@@ -18,9 +18,10 @@ package object spellcasting {
   case object OneAction   extends CastingTime
   case object BonusAction extends CastingTime
 
-  sealed trait SpellOffenseStyle extends Product with Serializable
+  sealed trait SpellTargetStyle extends Product with Serializable
 
-  case object MeleeSpellAttack                      extends SpellOffenseStyle
-  case object RangedSpellAttack                     extends SpellOffenseStyle
-  case class SpellSavingThrow(attribute: Attribute) extends SpellOffenseStyle
+  case object MeleeSpellAttack                      extends SpellTargetStyle
+  case object RangedSpellAttack                     extends SpellTargetStyle
+  case class SpellSavingThrow(attribute: Attribute) extends SpellTargetStyle
+  case object Healing extends SpellTargetStyle
 }

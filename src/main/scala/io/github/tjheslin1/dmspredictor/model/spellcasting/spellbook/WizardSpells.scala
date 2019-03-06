@@ -16,7 +16,7 @@ object WizardSpells {
     val name                                 = "Chromatic Orb"
     val school: SchoolOfMagic                = Evocation
     val castingTime: CastingTime             = OneAction
-    val spellOffenseStyle: SpellOffenseStyle = RangedSpellAttack
+    val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val damageType: DamageType               = possibleDamageTypes(Random.nextInt(possibleDamageTypes.size))
     val spellLevel: SpellLevel               = 1
 

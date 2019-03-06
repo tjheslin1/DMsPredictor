@@ -13,7 +13,7 @@ abstract class Spell {
   val name: String
   val school: SchoolOfMagic
   val castingTime: CastingTime
-  val spellOffenseStyle: SpellOffenseStyle
+  val spellTargetStyle: SpellTargetStyle
   val damageType: DamageType
   val spellLevel: SpellLevel
 
@@ -36,14 +36,14 @@ object Spell {
             level: SpellLevel,
             schoolOfMagic: SchoolOfMagic,
             castTime: CastingTime,
-            offenseStyle: SpellOffenseStyle,
+            offenseStyle: SpellTargetStyle,
             `type`: DamageType,
             dmg: => Int): Spell = new Spell {
 
     val name                                              = spellName
     val school: spellcasting.SchoolOfMagic                = schoolOfMagic
     val castingTime: spellcasting.CastingTime             = castTime
-    val spellOffenseStyle: spellcasting.SpellOffenseStyle = offenseStyle
+    val spellTargetStyle: spellcasting.SpellTargetStyle = offenseStyle
     val damageType: DamageType                            = `type`
     val spellLevel: SpellLevel                            = level
 
