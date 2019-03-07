@@ -3,11 +3,15 @@ package unit
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, Fighter}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 import util.TestMonster
@@ -235,14 +239,20 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "not meet the condition if the Spell Caster has only a healing spell to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Cleric].withNoCantrip().withSpellKnown(CureWounds).withCombatIndex(1)
+
+      castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
         .withNoCantrip()
-        .withSpellKnown(trackedSavingThrowSpell)
         .withNoSpellSlotsAvailable()
-        .withWisdom(24)
         .withCombatIndex(1)
 
       castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
@@ -251,11 +261,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "must meet the level requirement to use spellcasting" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val levelTwoEldritchKnight = random[EldritchKnight]
-        .withSpellKnown(trackedSavingThrowSpell)
-        .withNoSpellSlotsAvailable()
-        .withLevel(LevelTwo)
-        .withCombatIndex(1)
+      val levelTwoEldritchKnight = random[EldritchKnight].withLevel(LevelTwo).withCombatIndex(1)
 
       castSingleTargetOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
@@ -263,26 +269,85 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
   "castSingleTargetHealingSpell" should {
 
-    "cast a spell (heaing) using the highest available spell slot" in {
+    "trigger when a players health is below 50%" in new TestContext {
+      implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val healingCleric    = random[Cleric].withWisdom(12).withCombatIndex(1)
+      val damagedFighter   = random[Fighter].withHealth(25).withMaxHealth(100).withCombatIndex(2)
+      val healthyBarbarian = random[Barbarian].withHealth(100).withMaxHealth(100).withCombatIndex(3)
+      val goblin           = random[Goblin].withCombatIndex(4)
+
+      castSingleTargetHealingSpell(Priority)(healingCleric)
+        .triggerMet(List(damagedFighter, healthyBarbarian, goblin)) shouldBe true
+    }
+
+    "not trigger when no players health are below 50%" in new TestContext {
+      implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val healingCleric    = random[Cleric].withWisdom(12).withCombatIndex(1)
+      val healthyFighter   = random[Fighter].withHealth(90).withMaxHealth(100).withCombatIndex(2)
+      val healthyBarbarian = random[Barbarian].withHealth(100).withMaxHealth(100).withCombatIndex(3)
+      val goblin           = random[Goblin].withHealth(10).withMaxHealth(50).withCombatIndex(4)
+
+      castSingleTargetHealingSpell(Priority)(healingCleric)
+        .triggerMet(List(healthyFighter, healthyBarbarian, goblin)) shouldBe false
+    }
+
+    "cast a spell (healing) using the highest available spell slot" in {
       forAll { (cleric: Cleric, fighter: Fighter) =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val healingCleric = cleric.withWisdom(12).withCombatIndex(1)
+          val healingCleric  = cleric.withWisdom(12).withCombatIndex(1)
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) = castSingleTargetHealingSpell(Priority)(healingCleric).useAbility(List(damagedFighter), LowestFirst)
+          val (_, List(Combatant(_, healedFighter: Fighter))) = castSingleTargetHealingSpell(
+            Priority)(healingCleric).useAbility(List(damagedFighter), LowestFirst)
 
           healedFighter.creature.health shouldBe 21
         }
       }
     }
 
-    "spend the highest available spell slot" in {}
+    "spend the highest available spell slot" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
 
-    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {}
+          val healingCleric = cleric.withWisdom(12).asInstanceOf[Cleric]
 
-    "must meet the level requirement to use spellcasting" in new TestContext {}
+          val updatedCleric =
+            castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1)).update
+              .asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.firstLevel.count shouldBe (healingCleric.spellSlots.firstLevel.count - 1)
+        }
+      }
+    }
+
+    "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
+
+      castSingleTargetHealingSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
+
+      castSingleTargetHealingSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "must meet the level requirement to use spellcasting" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val levelTwoEldritchKnight = random[EldritchKnight].withLevel(LevelTwo).withCombatIndex(1)
+
+      castSingleTargetOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
+    }
   }
 
   abstract private class TestContext {
@@ -364,16 +429,23 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
     var meleeSpellUsedCount = 0
     val trackedMeleeSpellAttack =
-      Spell("tracked-melee-spell-test", 1, Evocation, OneAction, MeleeSpellAttack, Fire, {
-        meleeSpellUsedCount += 1
-        4
-      })
+      Spell("tracked-melee-spell-test",
+            1,
+            Evocation,
+            OneAction,
+            DamageSpell,
+            MeleeSpellAttack,
+            Fire, {
+              meleeSpellUsedCount += 1
+              4
+            })
 
     var savingThrowSpellUsedCount = 0
     val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test",
                                         1,
                                         Evocation,
                                         OneAction,
+                                        DamageSpell,
                                         SpellSavingThrow(Wisdom),
                                         Fire, {
                                           savingThrowSpellUsedCount += 1

@@ -13,7 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellEffect, SpellLevel}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -29,7 +29,7 @@ import monocle.macros.{GenLens, Lenses}
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],
     abilityUsages: BaseFighterAbilities = BaseFighterAbilities.allUnused(),
     proficiencyBonus: ProficiencyBonus = 0,
-    spellsKnown: Map[SpellLevel, Spell],
+    spellsKnown: Map[(SpellLevel, SpellEffect), Spell],
     spellSlots: SpellSlots,
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,

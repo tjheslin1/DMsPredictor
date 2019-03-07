@@ -1,25 +1,23 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
-import scala.util.Random
-
 object WizardSpells {
 
-  case object ChromaticOrb extends Spell {
+  case object MagicMissile extends Spell {
 
-    private val possibleDamageTypes = List(Acid, Cold, Fire, Lightning, Poison, Thunder)
-
-    val name                                 = "Chromatic Orb"
-    val school: SchoolOfMagic                = Evocation
-    val castingTime: CastingTime             = OneAction
+    val name                               = "Chromatic Orb"
+    val school: SchoolOfMagic              = Evocation
+    val castingTime: CastingTime           = OneAction
+    val spellEffect: SpellEffect           = DamageSpell
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
-    val damageType: DamageType               = possibleDamageTypes(Random.nextInt(possibleDamageTypes.size))
-    val spellLevel: SpellLevel               = 1
+    val damageType: DamageType             = Force
+    val spellLevel: SpellLevel             = 1
 
-    def damage[_: RS](playerLevel: Level): Int = 3 * D8
+    def effect[_: RS](spellCaster: SpellCaster): Int = (3 * D4) + 3
   }
 }

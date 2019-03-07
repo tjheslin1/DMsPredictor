@@ -23,5 +23,9 @@ package object spellcasting {
   case object MeleeSpellAttack                      extends SpellTargetStyle
   case object RangedSpellAttack                     extends SpellTargetStyle
   case class SpellSavingThrow(attribute: Attribute) extends SpellTargetStyle
-  case object Healing extends SpellTargetStyle
+
+  sealed trait SpellEffect extends Product with Serializable
+
+  case object DamageSpell extends SpellEffect
+  case object HealingSpell extends SpellEffect
 }

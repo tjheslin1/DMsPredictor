@@ -13,7 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThro
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
-import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
+import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object CoreAbilities extends LazyLogging {
@@ -96,15 +96,19 @@ object CoreAbilities extends LazyLogging {
       def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean =
         spellCaster.level >= spellCaster.levelSpellcastingLearned &&
-          (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined)
+          (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined) &&
+          spellCaster.spellsKnown.exists {
+            case ((_, spellEffect: SpellEffect), _) => spellEffect == DamageSpell
+          }
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
 
         val optSpell =
           (spellCaster.cantripKnown, highestSpellSlotAvailable(spellCaster.spellSlots)) match {
-            case (cantrip, None)       => cantrip
-            case (_, Some(spellLevel)) => spellCaster.spellsKnown(spellLevel.spellLevel).some
+            case (cantrip, None) => cantrip
+            case (_, Some(spellSlot)) =>
+              spellCaster.spellsKnown((spellSlot.spellLevel, DamageSpell)).some
           }
 
         val enemies = monsters(others)
@@ -121,9 +125,6 @@ object CoreAbilities extends LazyLogging {
                 if (spellSavingThrowPassed(spellCaster, spell, attribute, spellTarget.creature))
                   Miss
                 else Hit
-              case Healing =>
-                logger.error(s"Healing spell ${spell.name} attempted to be casting using $name")
-                Miss
             }
 
             logger.debug(s"casting ${spell.name} - $attackResult")
@@ -132,8 +133,8 @@ object CoreAbilities extends LazyLogging {
               0,
               attackResult match {
                 case CriticalHit =>
-                  spell.damage(spellCaster.level) + spell.damage(spellCaster.level)
-                case Hit          => spell.damage(spellCaster.level)
+                  spell.effect(spellCaster) + spell.effect(spellCaster)
+                case Hit          => spell.effect(spellCaster)
                 case Miss         => 0
                 case CriticalMiss => 0
               }
@@ -180,13 +181,61 @@ object CoreAbilities extends LazyLogging {
       val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]): Boolean =
-        ??? // players contains someone at half health
+        players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 
-      def conditionMet: Boolean = ???
+      def conditionMet: Boolean =
+        spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+          highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
+          spellCaster.spellsKnown.exists {
+            case ((_, spellEffect: SpellEffect), _) => spellEffect == HealingSpell
+          }
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-        ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
 
-      def update: Creature = ???
+        val optSpell =
+          highestSpellSlotAvailable(spellCaster.spellSlots) match {
+            case None => None
+            case Some(spellSlot) =>
+              spellCaster.spellsKnown((spellSlot.spellLevel, HealingSpell)).some
+          }
+
+        val allies = players(others)
+        val target = nextToFocus(allies, focus)
+
+        val optHealedAlly = (target, optSpell) match {
+          case (_, None) => None
+          case (None, _) => None
+          case (Some(spellTarget), Some(spell)) =>
+            val healing = spell.effect(spellCaster)
+
+            val updatedHealth =
+              Math.min(spellTarget.creature.maxHealth, spellTarget.creature.health + healing)
+
+            logger.debug(s"${spellTarget.creature.name} was healed for $healing")
+
+            (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+              .set(updatedHealth)(spellTarget)
+              .some
+        }
+
+        optHealedAlly.fold((combatant, others))(updatedTarget =>
+          (combatant, others.replace(updatedTarget)))
+      }
+
+      def update: Creature =
+        highestSpellSlotAvailable(spellCaster.spellSlots) match {
+          case None => spellCaster
+          case Some(spellSlotUsed) =>
+            val updatedSpellSlotCount = spellSlotUsed.count - 1
+
+            val (spellSlotLens, spellSlotCountLens) = spellSlotUsed match {
+              case FirstLevelSpellSlot(_) => (firstLevelSpellSlotLens, firstLevelSpellSlotCountLens)
+            }
+
+            (SpellCaster.spellSlotsLens composeLens spellSlotLens composeLens spellSlotCountLens)
+              .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
+        }
+
     }
 }

@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric._
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
@@ -15,6 +14,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{CureWounds, GuidingBolt, SacredFlame}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -25,8 +25,8 @@ import monocle.macros.{GenLens, Lenses}
                                stats: BaseStats,
                                baseWeapon: Weapon,
                                cantripKnown: Option[Spell],
-                               spellsKnown: Map[SpellLevel, Spell],
                                spellSlots: SpellSlots,
+                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardClericSpellList,
                                channelDivinityUsed: Boolean = false,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
@@ -54,6 +54,12 @@ import monocle.macros.{GenLens, Lenses}
 object Cleric {
 
   import BaseClericAbilities._
+
+  val standardClericSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
+    (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
+    (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
+    (CureWounds.spellLevel, CureWounds.spellEffect) -> GuidingBolt
+  )
 
   val standardClericAbilities: List[CombatantAbility] = List(
     castSingleTargetHealingSpell(1),

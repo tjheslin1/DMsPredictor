@@ -18,7 +18,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ChromaticOrb
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Zombie}
@@ -153,7 +153,7 @@ object TestData {
       _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map(spell.spellLevel -> spell))(eldritchKnight)
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(eldritchKnight)
     def withAllSpellSlotsAvailable() =
       _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
     def withNoSpellSlotsAvailable() =
@@ -165,7 +165,7 @@ object TestData {
 
     def withCantrip(cantrip: Spell)  = _cantripKnown.set(cantrip.some)(cleric)
     def withNoCantrip()              = _cantripKnown.set(none[Spell])(cleric)
-    def withSpellKnown(spell: Spell) = _spellsKnown.set(Map(spell.spellLevel -> spell))(cleric)
+    def withSpellKnown(spell: Spell) = _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(cleric)
     def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
     def withChannelDivinityUsed()    = _channelDivinityUsed.set(true)(cleric)
   }
@@ -541,7 +541,7 @@ trait TestData extends RandomDataGenerator {
         fightingStyles.toList,
         BaseFighterAbilities.allUnused(),
         player.proficiencyBonus,
-        Map(ChromaticOrb.spellLevel -> ChromaticOrb), // TODO randomise spells
+        Map((MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile), // TODO randomise spells
         spellSlots,
         player.resistances,
         player.immunities,
@@ -652,8 +652,8 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         SacredFlame.some,
-        Map(GuidingBolt.spellLevel -> GuidingBolt),
         SpellSlots(firstLevelSpellSlots),
+        Cleric.standardClericSpellList,
         channelDivinityUsed = false,
         player.armour,
         player.offHand,

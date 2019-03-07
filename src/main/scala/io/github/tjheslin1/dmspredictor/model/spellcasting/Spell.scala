@@ -1,9 +1,9 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting
 
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric
-import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter
+import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
+import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
@@ -13,21 +13,24 @@ abstract class Spell {
   val name: String
   val school: SchoolOfMagic
   val castingTime: CastingTime
+  val spellEffect: SpellEffect
   val spellTargetStyle: SpellTargetStyle
   val damageType: DamageType
   val spellLevel: SpellLevel
 
   def spellAttackBonus(creature: Creature): Int = creature match {
-    case player: Player => player.proficiencyBonus + attributeModifierForSchool(player)
-    case monster        => attributeModifierForSchool(monster)
+    case playerSpellcaster: Player with SpellCaster =>
+      playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
+    case spellcaster: SpellCaster => attributeModifierForSchool(spellcaster)
   }
 
   def spellSaveDc(creature: Creature): Int = creature match {
-    case player: Player => 8 + player.proficiencyBonus + attributeModifierForSchool(player)
-    case monster        => 8 + attributeModifierForSchool(monster)
+    case playerSpellcaster: Player with SpellCaster =>
+      8 + playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
+    case spellcaster: SpellCaster => 8 + attributeModifierForSchool(spellcaster)
   }
 
-  def damage[_: RS](playerLevel: Level): Int
+  def effect[_: RS](spellCaster: SpellCaster): Int
 }
 
 object Spell {
@@ -36,28 +39,30 @@ object Spell {
             level: SpellLevel,
             schoolOfMagic: SchoolOfMagic,
             castTime: CastingTime,
+            spellEff: SpellEffect,
             offenseStyle: SpellTargetStyle,
             `type`: DamageType,
             dmg: => Int): Spell = new Spell {
 
-    val name                                              = spellName
-    val school: spellcasting.SchoolOfMagic                = schoolOfMagic
-    val castingTime: spellcasting.CastingTime             = castTime
+    val name                                            = spellName
+    val school: spellcasting.SchoolOfMagic              = schoolOfMagic
+    val castingTime: spellcasting.CastingTime           = castTime
+    val spellEffect: SpellEffect                        = spellEff
     val spellTargetStyle: spellcasting.SpellTargetStyle = offenseStyle
-    val damageType: DamageType                            = `type`
-    val spellLevel: SpellLevel                            = level
+    val damageType: DamageType                          = `type`
+    val spellLevel: SpellLevel                          = level
 
-    def damage[_: RS](playerLevel: Level): Int = dmg
+    def effect[_: RS](spellCaster: SpellCaster): Int = dmg
   }
 
-  def schoolAttribute(creature: Creature): Attribute = creature match {
-    case _: BaseFighter => Intelligence
-    case _: BaseCleric  => Wisdom
-    case _              => ???
+  def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
+    case _: EldritchKnight => Intelligence
+    case _: Cleric         => Wisdom
+    case _: BaseCleric     => Wisdom
   }
 
-  def attributeModifierForSchool(creature: Creature): Int =
-    attributeModifier(creature, schoolAttribute(creature))
+  def attributeModifierForSchool(spellcaster: SpellCaster): Int =
+    attributeModifier(spellcaster, schoolAttribute(spellcaster))
 
   def spellSavingThrowPassed[_: RS](caster: Creature,
                                     spell: Spell,
