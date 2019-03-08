@@ -14,7 +14,11 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{CureWounds, GuidingBolt, SacredFlame}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
+  CureWounds,
+  GuidingBolt,
+  SacredFlame
+}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -26,7 +30,8 @@ import monocle.macros.{GenLens, Lenses}
                                baseWeapon: Weapon,
                                cantripKnown: Option[Spell],
                                spellSlots: SpellSlots,
-                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardClericSpellList,
+                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =
+                                 standardClericSpellList,
                                channelDivinityUsed: Boolean = false,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
@@ -58,7 +63,7 @@ object Cleric {
   val standardClericSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
     (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
-    (CureWounds.spellLevel, CureWounds.spellEffect) -> GuidingBolt
+    (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds
   )
 
   val standardClericAbilities: List[CombatantAbility] = List(

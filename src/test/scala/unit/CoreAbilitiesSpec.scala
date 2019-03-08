@@ -301,8 +301,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val healingCleric  = cleric.withWisdom(12).withCombatIndex(1)
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) = castSingleTargetHealingSpell(
-            Priority)(healingCleric).useAbility(List(damagedFighter), LowestFirst)
+          val (_, List(Combatant(_, healedFighter: Fighter))) =
+            castSingleTargetHealingSpell(Priority)(healingCleric)
+              .useAbility(List(damagedFighter), LowestFirst)
 
           healedFighter.creature.health shouldBe 21
         }

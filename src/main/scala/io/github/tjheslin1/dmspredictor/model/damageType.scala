@@ -29,7 +29,7 @@ case object Magical     extends DamageType
 case object Acid      extends DamageType
 case object Cold      extends DamageType
 case object Fire      extends DamageType
-case object Force      extends DamageType
+case object Force     extends DamageType
 case object Lightning extends DamageType
 case object Necrotic  extends DamageType
 case object Poison    extends DamageType

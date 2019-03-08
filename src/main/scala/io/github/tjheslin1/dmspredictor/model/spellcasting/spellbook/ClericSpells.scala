@@ -1,10 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
-import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
-import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -22,12 +19,9 @@ object ClericSpells {
     val damageType: DamageType             = Radiant
     val spellLevel: SpellLevel             = 0
 
-    def effect[_: RS](spellCaster: SpellCaster): Int = {
-      println(s"SacredFlameSacredFlameSacredFlameSacredFlame")
-      spellCaster match {
-    case p: Player if p.level == LevelFive => 2 * D8
-    case _                                 => 1 * D8
-  }
+    def effect[_: RS](spellCaster: SpellCaster): Int = spellCaster match {
+      case p: Player if p.level == LevelFive => 2 * D8
+      case _                                 => 1 * D8
     }
   }
 
@@ -40,9 +34,7 @@ object ClericSpells {
     val damageType: DamageType             = Radiant
     val spellLevel: SpellLevel             = 1
 
-    def effect[_: RS](spellCaster: SpellCaster): Int = {
-      println(s"GuidingBoltGuidingBoltGuidingBoltGuidingBoltGuidit")
-      4 * D6}
+    def effect[_: RS](spellCaster: SpellCaster): Int = 4 * D6
   }
 
   case object CureWounds extends Spell {
@@ -54,12 +46,7 @@ object ClericSpells {
     val damageType: DamageType             = Radiant
     val spellLevel: SpellLevel             = 1
 
-    def effect[_: RS](spellCaster: SpellCaster): Int = {
-      val stat: Stat = Refined.unsafeApply(attributeModifierForSchool(spellCaster))
-
-      println(s">>>>>>> HEALING ${1 * D8} + ${mod(stat)}")
-
-      (1 * D8) + mod(stat)
-    }
+    def effect[_: RS](spellCaster: SpellCaster): Int =
+      (1 * D8) + attributeModifierForSchool(spellCaster)
   }
 }
