@@ -347,7 +347,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
       val levelTwoEldritchKnight = random[EldritchKnight].withLevel(LevelTwo).withCombatIndex(1)
 
-      castSingleTargetOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
+      castSingleTargetHealingSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
   }
 

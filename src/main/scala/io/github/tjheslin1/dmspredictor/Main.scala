@@ -3,24 +3,14 @@ package io.github.tjheslin1.dmspredictor
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
-import io.github.tjheslin1.dmspredictor.classes.barbarian.{
-  Barbarian,
-  BaseBarbarian,
-  Berserker,
-  TotemWarrior
-}
+import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Fighter, SpellSlots}
+import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlot
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
-  GuidingBolt,
-  SacredFlame
-}
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
@@ -51,22 +41,20 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
   )
 
   val barbarianHp = BaseBarbarian.calculateHealth(LevelFive, 10)
-  val barbarian = TotemWarrior(
+  val barbarian = Berserker(
     LevelFive,
     barbarianHp,
     barbarianHp,
     BaseStats(14, 14, 14, 10, 10, 10),
     Greatsword,
     4,
-    Bear,
-    TotemWarrior.standardTotemWarriorAbilities(Bear),
     proficiencyBonus = 2,
-    name = "Totem Warrior"
+    name = "Berserker"
   )
 
   val creatures = List(cleric, barbarian, Vampire(144, 144, name = "Vampire"))
 
-  val simulation = "Fighter vs Goblin"
+  val simulation = "Cleric and Barbarian vs Vampire"
   val (losses, wins) =
     SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
 

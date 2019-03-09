@@ -22,7 +22,7 @@ object BaseBarbarianAbilities extends LazyLogging {
 
     val name                         = "Rage"
     val order                        = currentOrder
-    val abilityAction: AbilityAction = BonusAction
+    val abilityAction: AbilityAction = WholeAction
     val levelRequirement: Level      = LevelOne
 
     def triggerMet(others: List[Combatant]): Boolean = barbarian.inRage == false

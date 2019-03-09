@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.model
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
+import io.github.tjheslin1.dmspredictor.model.ability.{AbilityAction, BonusAction}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -39,7 +40,7 @@ object Move extends LazyLogging {
       }
 
       val (actedCombatant, updatedTargets) = {
-        val optAbility = availableAbility(conditionHandledCombatant, otherCombatants)
+        val optAbility = availableActionAbility(conditionHandledCombatant, otherCombatants)
         actionAgainstTarget(conditionHandledCombatant,
                             attackTarget,
                             otherCombatants,
@@ -48,7 +49,11 @@ object Move extends LazyLogging {
       }
 
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
-      Queue(updatedOthersTargets: _*).append(actedCombatant)
+
+      availableBonusAction(actedCombatant, updatedOthersTargets).fold(
+        Queue(updatedOthersTargets: _*).append(actedCombatant)) { bonusActionAbility =>
+        useBonusActionAbility(actedCombatant, updatedOthersTargets, bonusActionAbility, focus)
+      }
     } else {
       others.append(conditionHandledCombatant)
     }
@@ -66,11 +71,23 @@ object Move extends LazyLogging {
     (updatedCombatant, missesTurn)
   }
 
-  private def availableAbility(attacker: Combatant,
-                               others: List[Combatant]): Option[CombatantAbility] =
+  private def availableActionAbility(attacker: Combatant,
+                                     others: List[Combatant]): Option[CombatantAbility] =
     attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
       val ability = combatantAbility(attacker)
-      ability.conditionMet && ability.triggerMet(others)
+      AbilityAction.Action.toList.contains(ability.abilityAction) && ability.conditionMet && ability
+        .triggerMet(others)
+    }
+
+  private def availableBonusAction(attacker: Combatant,
+                                   others: List[Combatant]): Option[CombatantAbility] =
+    attacker.creature match {
+      case player: Player if player.bonusActionUsed == false =>
+        attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
+          val ability = combatantAbility(attacker)
+          ability.abilityAction == BonusAction && ability.conditionMet && ability.triggerMet(others)
+        }
+      case _ => None
     }
 
   private def actionAgainstTarget[_: RS](combatant: Combatant,
@@ -90,4 +107,18 @@ object Move extends LazyLogging {
 
       (updatedCombatant, others.replace(targetsOfAbility))
     }
+
+  def useBonusActionAbility[_: RS](combatant: Combatant,
+                                   others: List[Combatant],
+                                   bonusActionAbility: CombatantAbility,
+                                   focus: Focus): Queue[Combatant] = {
+    val (bonusActionUsedAttacker, updatedOthersAfterBonusAction) =
+      bonusActionAbility(combatant).useAbility(others, focus)
+
+    val updatedBonusActionUsedAttacker = Combatant.creatureLens.set(
+      bonusActionAbility(bonusActionUsedAttacker).update)(bonusActionUsedAttacker)
+
+    Queue(others.replace(updatedOthersAfterBonusAction): _*)
+      .append(updatedBonusActionUsedAttacker)
+  }
 }

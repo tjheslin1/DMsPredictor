@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
-import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.fighter._§§
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -163,11 +163,15 @@ object TestData {
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
-    def withCantrip(cantrip: Spell)  = _cantripKnown.set(cantrip.some)(cleric)
-    def withNoCantrip()              = _cantripKnown.set(none[Spell])(cleric)
-    def withSpellKnown(spell: Spell) = _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(cleric)
-    def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
-    def withChannelDivinityUsed()    = _channelDivinityUsed.set(true)(cleric)
+    def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(cleric)
+    def withNoCantrip()             = _cantripKnown.set(none[Spell])(cleric)
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(cleric)
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        cleric)
+    def withNoSpellSlotsAvailable() = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
+    def withChannelDivinityUsed()   = _channelDivinityUsed.set(true)(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
@@ -183,6 +187,8 @@ object TestData {
     def withRageUsagesLeft(count: Int) = _rageUsages.set(count)(berserker)
     def withRageTurnsLeft(count: Int)  = _rageTurnsLeft.set(count)(berserker)
     def withInFrenzy()                 = _inFrenzy.set(true)(berserker)
+
+    def withBonusActionUsed() = _bonusActionUsed.set(true)(berserker)
   }
 }
 

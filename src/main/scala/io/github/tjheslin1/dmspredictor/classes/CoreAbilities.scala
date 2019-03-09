@@ -46,7 +46,7 @@ object CoreAbilities extends LazyLogging {
           nextAbilityToUseInConjunction(combatant,
                                         enemies,
                                         order,
-                                        NonEmptyList.of(ability.BonusAction, SingleAttack))
+                                        NonEmptyList.of(SingleAttack))
             .fold {
               val (updatedAttacker, updatedTarget) =
                 attackAndDamageTimes(2, combatant, target)
@@ -78,10 +78,7 @@ object CoreAbilities extends LazyLogging {
       }
     }
 
-    def update: Creature =
-      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-        .set(true)(combatant)
-        .creature
+    def update: Creature = player
   }
 
   def castSingleTargetOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability =
@@ -171,34 +168,26 @@ object CoreAbilities extends LazyLogging {
         }
     }
 
-  def castSingleTargetHealingSpell(currentOrder: Int)(combatant: Combatant): Ability =
+  val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
+
+  def castSingleTargetHealingSpell(currentOrder: Int, bonusHealing: Int = 0)(
+      combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
-      val name             = "Cast Spell (Healing)"
+      val name             = CastSingleTargetHealingSpellName
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
+      def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean =
-        spellCaster.level >= spellCaster.levelSpellcastingLearned &&
-          highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
-          spellCaster.spellsKnown.exists {
-            case ((_, spellEffect: SpellEffect), _) => spellEffect == HealingSpell
-          }
+      def conditionMet: Boolean = healingSpellConditionMet(spellCaster)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
 
-        val optSpell =
-          highestSpellSlotAvailable(spellCaster.spellSlots) match {
-            case None => None
-            case Some(spellSlot) =>
-              spellCaster.spellsKnown((spellSlot.spellLevel, HealingSpell)).some
-          }
+        val optSpell = healingSpellInHighestSlot(spellCaster)
 
         val allies = players(others)
         val target = nextToFocus(allies, focus)
@@ -207,7 +196,7 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => None
           case (None, _) => None
           case (Some(spellTarget), Some(spell)) =>
-            val healing = spell.effect(spellCaster)
+            val healing = spell.effect(spellCaster) + bonusHealing
 
             val updatedHealth =
               Math.min(spellTarget.creature.maxHealth, spellTarget.creature.health + healing)
@@ -236,6 +225,22 @@ object CoreAbilities extends LazyLogging {
             (SpellCaster.spellSlotsLens composeLens spellSlotLens composeLens spellSlotCountLens)
               .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
         }
+    }
 
+  def healingSpellTriggerMet(others: List[Combatant]): Boolean =
+    players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
+
+  def healingSpellConditionMet(spellCaster: Player with SpellCaster): Boolean =
+    spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+      highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
+      spellCaster.spellsKnown.exists {
+        case ((_, spellEffect: SpellEffect), _) => spellEffect == HealingSpell
+      }
+
+  def healingSpellInHighestSlot(spellCaster: SpellCaster): Option[Spell] =
+    highestSpellSlotAvailable(spellCaster.spellSlots) match {
+      case None => None
+      case Some(spellSlot) =>
+        spellCaster.spellsKnown((spellSlot.spellLevel, HealingSpell)).some
     }
 }

@@ -35,7 +35,7 @@ object BaseFighterAbilities extends LazyLogging {
     val name             = "Second Wind"
     val order            = currentOrder
     val levelRequirement = LevelTwo
-    val abilityAction    = WholeAction
+    val abilityAction    = BonusAction
 
     def triggerMet(others: List[Combatant]) =
       combatant.creature.health <= combatant.creature.maxHealth / 2
@@ -55,9 +55,12 @@ object BaseFighterAbilities extends LazyLogging {
       (updatedCombatant, others)
     }
 
-    def update: Creature =
-      (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
+    def update: Creature = {
+      val secondWindUsedFighter = (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
         .set(true)(baseFighter)
+
+      Player.playerBonusActionUsedLens.set(true)(secondWindUsedFighter)
+    }
   }
 
   def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
@@ -66,7 +69,7 @@ object BaseFighterAbilities extends LazyLogging {
     val name             = "Two Weapon Fighting"
     val order            = currentOrder
     val levelRequirement = LevelOne
-    val abilityAction    = BonusAction
+    val abilityAction    = SingleAttack
 
     def triggerMet(others: List[Combatant]) = true
 

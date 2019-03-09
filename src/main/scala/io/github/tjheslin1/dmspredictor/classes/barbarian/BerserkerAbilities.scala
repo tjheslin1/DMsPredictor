@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
+import cats.data.NonEmptyList
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
@@ -7,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, BonusAction}
+import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
@@ -20,7 +21,7 @@ object BerserkerAbilities extends LazyLogging {
 
     val name                         = "Frenzy"
     val order                        = currentOrder
-    val abilityAction: AbilityAction = BonusAction
+    val abilityAction: AbilityAction = WholeAction
     val levelRequirement: Level      = LevelThree
 
     def triggerMet(others: List[Combatant]) =
@@ -83,20 +84,31 @@ object BerserkerAbilities extends LazyLogging {
     val abilityAction: AbilityAction = BonusAction
     val levelRequirement: Level      = LevelThree
 
-    def triggerMet(others: List[Combatant]) = berserker.inFrenzy == true
+    def triggerMet(others: List[Combatant]): Boolean = berserker.inFrenzy == true
     def conditionMet: Boolean =
       berserker.level >= levelRequirement && berserker.bonusActionUsed == false
 
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      logger.debug(s"${combatant.creature.name} used bonus attack during Frenzy")
+      logger.debug(s"${combatant.creature.name} used $name")
 
-      val target = nextToFocus(monsters(others), focus)
+      val enemies = monsters(others)
+      val target  = nextToFocus(enemies, focus)
 
       target match {
         case None => (combatant, others)
         case Some(targetOfAttack) =>
-          val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetOfAttack)
-          (updatedAttacker, others.replace(updatedTarget))
+          nextAbilityToUseInConjunction(combatant, enemies, order, NonEmptyList.of(SingleAttack))
+            .fold {
+              val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetOfAttack)
+              (updatedAttacker, others.replace(updatedTarget))
+            } { singleAttackAbility =>
+              val (updatedCombatant, updatedTargets) =
+                useAdditionalAbility(singleAttackAbility, combatant, enemies, focus)
+
+              val updatedEnemies = enemies.replace(updatedTargets)
+
+              (updatedCombatant, updatedEnemies)
+            }
       }
     }
 

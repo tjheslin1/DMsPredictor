@@ -2,10 +2,12 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities.secondWind
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, BonusAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
@@ -20,97 +22,134 @@ class MoveSpec extends UnitSpecBase with OptionValues {
   val Priority = 1
 
   "takeMove" should {
-    "replace creature to back of queue after attacking" in new TestContext {
+    "replace creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
-        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name, fighter.name)
+          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
+                                                                           fighter.name)
+        }
       }
     }
 
-    "replace unconscious creature to back of queue after attacking" in new TestContext {
+    "replace unconscious creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          val queue = Queue(fighter.withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
 
-        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name, fighter.name)
+          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
+                                                                           fighter.name)
+        }
       }
     }
 
-    "reset player's bonus action to unused" in new TestContext {
+    "use a players bonus action ability if unused after main action" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue =
-          Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          val bonusActionFighter = fighter.withAbilities(List(trackedBonusAction(1))).withCombatIndex(1)
 
-        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+          val queue = Queue(bonusActionFighter,
+                  monster.withCombatIndex(2))
 
-        updatedFighter.bonusActionUsed shouldBe false
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+          updatedFighter.bonusActionUsed shouldBe true
+          trackedBonusActionUsed shouldBe true
+        }
       }
     }
 
-    "call a creature's resetTurn at the beginning of their move" in new TestContext {
+    "reset player's bonus action to unused" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        new TestContext {
+          val queue =
+            Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
+                  monster.withCombatIndex(2))
+
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+          updatedFighter.bonusActionUsed shouldBe false
+        }
+      }
+    }
+
+    "call a creature's resetTurn at the beginning of their move" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        var turnReset = false
-        val monster   = testMonster.withResetTurn(_ => turnReset = true)
+        new TestContext {
+          var turnReset = false
+          val monster   = testMonster.withResetTurn(_ => turnReset = true)
 
-        val queue =
-          Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
+          val queue =
+            Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
 
-        takeMove(queue, LowestFirst)
+          takeMove(queue, LowestFirst)
 
-        turnReset shouldBe true
+          turnReset shouldBe true
+        }
       }
     }
 
-    "reset unconscious creatures bonus action to unused" in new TestContext {
+    "reset unconscious creatures bonus action to unused" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
-                          monster.withCombatIndex(2))
+        new TestContext {
+          val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
+                            monster.withCombatIndex(2))
 
-        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
-        updatedFighter.bonusActionUsed shouldBe false
+          updatedFighter.bonusActionUsed shouldBe false
+        }
       }
     }
 
-    "update head enemy after attack" in new TestContext {
+    "update head enemy after attack" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
-        val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
+          val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
 
-        updatedEnemy.health should (be <= monster.health)
+          updatedEnemy.health should (be <= monster.health)
+        }
       }
     }
 
-    "ignore unconscious mobs" in new TestContext {
+    "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player = fighter.withAllAbilitiesUsed().withStrength(20).withCombatIndex(1)
+        new TestContext {
 
-        val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
-        val enemyTwo = monsterTwo.withArmourClass(1).withHealth(1).withCombatIndex(3)
+          val player = fighter.withAllAbilitiesUsed().withStrength(20).withCombatIndex(1)
 
-        val queue = Queue(player, enemyOne, enemyTwo)
+          val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
+          val enemyTwo = monsterTwo.withArmourClass(1).withHealth(1).withCombatIndex(3)
 
-        val Queue(_, Combatant(_, updatedEnemyTwo), _) =
-          takeMove(queue, LowestFirst)(D20.naturalTwenty)
+          val queue = Queue(player, enemyOne, enemyTwo)
 
-        updatedEnemyTwo.health shouldBe 0
+          val Queue(_, Combatant(_, updatedEnemyTwo), _) =
+            takeMove(queue, LowestFirst)(D20.naturalTwenty)
+
+          updatedEnemyTwo.health shouldBe 0
+        }
       }
     }
 
-    "call Ability" in new TestContext {
+    "call Ability" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val trackedFighter =
-          fighter.withAbilities(List(trackedAbility(Priority))).withCombatIndex(1)
+        new TestContext {
 
-        takeMove(Queue(trackedFighter, monster.withCombatIndex(2)), LowestFirst)
+          val trackedFighter =
+            fighter.withAbilities(List(trackedAbility(Priority))).withCombatIndex(1)
 
-        trackedAbilityUsedCount shouldBe 1
-        trackedAbilityUsed shouldBe true
+          takeMove(Queue(trackedFighter, monster.withCombatIndex(2)), LowestFirst)
+
+          trackedAbilityUsedCount shouldBe 1
+          trackedAbilityUsed shouldBe true
+        }
       }
     }
 
-    "handle conditions" in new TestContext {
+    "handle conditions" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
           implicit override val roll = _ => RollResult(10)
@@ -126,13 +165,16 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       }
     }
 
-    "miss the combatants turn if a condition saving throw is failed" in new TestContext {
+    "miss the combatants turn if a condition saving throw is failed" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
           val trackedGoblin =
-            goblin.withBaseWeapon(trackedSword).withConditions(trackedCondition(100, turnMissed = true)).withCombatIndex(1)
+            goblin
+              .withBaseWeapon(trackedSword)
+              .withConditions(trackedCondition(100, turnMissed = true))
+              .withCombatIndex(1)
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
@@ -155,7 +197,6 @@ class MoveSpec extends UnitSpecBase with OptionValues {
 
     var trackedAbilityUsedCount = 0
     var trackedAbilityUsed      = false
-
     def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
       val name: String     = "test-tracked-ability-one"
       val order            = currentOrder
@@ -176,10 +217,30 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       }
     }
 
+    var trackedBonusActionUsed      = false
+    def trackedBonusAction(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+      val name: String     = "test-tracked--bonus-ability"
+      val order            = currentOrder
+      val levelRequirement = LevelOne
+      val abilityAction    = BonusAction
+
+      def triggerMet(others: List[Combatant]) = true
+      def conditionMet: Boolean               = true
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        (combatant, others)
+      }
+
+      def update: Creature = {
+        trackedBonusActionUsed = true
+        Player.playerBonusActionUsedLens.set(true)(combatant.creature.asInstanceOf[Player])
+      }
+    }
+
     var trackedConditionHandledCount = 0
     def trackedCondition(dc: Int, turnMissed: Boolean = false): Condition = new Condition {
-      val name = "tracked-condition"
-      val missesTurn = turnMissed
+      val name                    = "tracked-condition"
+      val missesTurn              = turnMissed
       val handleOnDamage: Boolean = false
 
       val saveDc: Int    = dc

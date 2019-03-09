@@ -21,7 +21,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "be used if Player is equipped with two weapons" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val dualWieldingFighter = fighter
             .withFightingStyle(TwoWeaponFighting)
@@ -40,9 +40,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "set the player's bonus action to be used" in {
-      new TestContext {
-        implicit override val roll: RollStrategy = _ => RollResult(19)
+    "set the player's bonus action to be used" in new TestContext {
+        override implicit val roll: RollStrategy = _ => RollResult(19)
 
         val updatedFighter =
           twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update
@@ -50,12 +49,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
         updatedFighter.bonusActionUsed shouldBe true
       }
-    }
 
     "be used with Extra Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val dualWieldingFighter = fighter
             .withAllAbilitiesUsed()
@@ -77,6 +75,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "meet the condition if the Player wields two weapons" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
       val dualWieldingFighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
         .withBaseWeapon(trackedMainSword)
@@ -85,9 +85,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe true
-    }
+}
 
     "not meet the condition if the Player does not wield two weapons" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
       val fighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
         .withBaseWeapon(trackedMainSword)
@@ -99,6 +101,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Player does not have the Two Weapon Fighting fighting style" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
       val fighter = random[Fighter]
         .withFightingStyle(GreatWeaponFighting)
         .withBaseWeapon(trackedMainSword)
@@ -110,6 +114,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Player has already used their bonus action this turn" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
       val dualWieldingFighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
         .withBonusActionUsed()
@@ -124,17 +130,24 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
   "Second Wind" should {
 
-    "be used when the below health condition has been met" in new TestContext {
-      forAll { fighter: Fighter =>
+    "be used when the below health condition has been met" in {
+    forAll { fighter: Fighter =>
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
         val lowHealthFighter =
           fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
         secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
       }
     }
+  }
 
-    "update usage when used" in new TestContext {
-      forAll { fighter: Fighter =>
+    "update usage when used" in {
+    forAll { fighter: Fighter =>
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
         val lowHealthFighter =
           fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
@@ -143,9 +156,13 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         updatedFighter.abilityUsages.secondWindUsed shouldBe true
       }
     }
+  }
 
-    "not be used when the below health condition has not been met" in new TestContext {
-      forAll { fighter: Fighter =>
+    "not be used when the below health condition has not been met" in {
+    forAll { fighter: Fighter =>
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
         val lowHealthFighter =
           fighter
             .withHealth(4)
@@ -158,12 +175,38 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
   }
 
+    "updated bonus action used to true" in {
+    forAll { fighter: Fighter =>
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val updatedBaseFighter =
+          secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
+
+        updatedBaseFighter.bonusActionUsed shouldBe true
+      }
+    }
+  }
+  }
+
+    "updated second wind to used" in {
+      forAll { fighter: Fighter =>
+    new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val updatedBaseFighter = secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
+
+      updatedBaseFighter.abilityUsages.secondWindUsed shouldBe true
+    }
+  }
+    }
+
   "Action Surge" should {
 
     "make two Attack actions" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val swordFighter = fighter
             .withLevel(LevelTwo)
@@ -182,7 +225,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "make 4 attacks using two Extra Attack actions" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val swordFighter = Fighter._abilityUsages
             .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
@@ -202,7 +245,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "use additional abilities in conjunction with Action Surge" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val trackedAbilityFighter = fighter
             .withLevel(LevelTwo)
@@ -220,8 +263,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  private abstract class TestContext {
+    implicit val roll: RollStrategy
 
     var mainSwordUsedCount = 0
     val trackedMainSword = Weapon("sword", Melee, Slashing, twoHands = false, {
@@ -283,4 +326,4 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         }
       }
   }
-}
+    }

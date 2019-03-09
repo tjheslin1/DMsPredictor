@@ -55,8 +55,8 @@ object Berserker {
   val standardBerserkerAbilities: List[CombatantAbility] = List(
     frenzy(1),
     extraAttack(2),
-    recklessAttack(3),
-    bonusFrenzyAttack(4)
+    bonusFrenzyAttack(3),
+    recklessAttack(4)
   )
 
   implicit def berserkerShow[_: RS]: Show[Berserker] = Show.show { berserker =>

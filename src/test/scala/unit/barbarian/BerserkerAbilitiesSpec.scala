@@ -4,7 +4,7 @@ import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Berserker
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BerserkerAbilities._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, BonusAction, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 import util.TestMonster
@@ -92,6 +92,7 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
           val frenzyingBerserker = berserker
             .withInFrenzy()
             .withBaseWeapon(trackedSword)
+            .withAbilities(List())
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(1).withCombatIndex(2)
@@ -99,6 +100,26 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
           bonusFrenzyAttack(Priority)(frenzyingBerserker).useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "delegate to a SingleAttack action ability" in {
+      forAll { (berserker: Berserker, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = D20.naturalTwenty
+
+          val frenzyingBerserker = berserker
+            .withInFrenzy()
+            .withBaseWeapon(trackedSword)
+            .withAbilities(List(bonusFrenzyAttack(1), trackedSingleAttack(2)))
+            .withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(1).withCombatIndex(2)
+
+          bonusFrenzyAttack(Priority)(frenzyingBerserker).useAbility(List(monster), LowestFirst)
+
+          trackedSingleAttackUsed shouldBe true
         }
       }
     }
@@ -122,10 +143,11 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = WholeAction
 
-        def triggerMet(others: List[Combatant])   = true
-        def conditionMet: Boolean = trackedAbilityUsed == false
+        def triggerMet(others: List[Combatant]) = true
+        def conditionMet: Boolean               = trackedAbilityUsed == false
 
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant],
+                              focus: Focus): (Combatant, List[Combatant]) = {
           trackedAbilityUsedCount += 1
           (combatant, others)
         }
@@ -145,16 +167,37 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
         val levelRequirement = LevelOne
         val abilityAction    = BonusAction
 
-        def triggerMet(others: List[Combatant])   = true
-        def conditionMet: Boolean = trackedBonusActionUsed == false
+        def triggerMet(others: List[Combatant]) = true
+        def conditionMet: Boolean               = trackedBonusActionUsed == false
 
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        def useAbility[_: RS](others: List[Combatant],
+                              focus: Focus): (Combatant, List[Combatant]) = {
           trackedBonusActionUsedCount += 1
           (combatant, others)
         }
 
         def update: Creature = {
           trackedBonusActionUsed = true
+          combatant.creature
+        }
+      }
+
+    var trackedSingleAttackUsed = false
+    def trackedSingleAttack(currentOrder: Int)(combatant: Combatant): Ability =
+      new Ability(combatant) {
+        val name: String     = "test-tracked-ability-single-attack"
+        val order            = currentOrder
+        val levelRequirement = LevelOne
+        val abilityAction    = SingleAttack
+
+        def triggerMet(others: List[Combatant]) = true
+        def conditionMet: Boolean               = trackedSingleAttackUsed == false
+
+        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
+          (combatant, others)
+
+        def update: Creature = {
+          trackedSingleAttackUsed = true
           combatant.creature
         }
       }
