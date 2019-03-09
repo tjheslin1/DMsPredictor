@@ -37,7 +37,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
       turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe false
     }
 
-    "not be used if already used" in {
+    "not be used if Channel Divinity is already used" in {
       val cleric = random[Cleric].withChannelDivinityUsed().withCombatIndex(1)
 
       turnUndead(Priority)(cleric).conditionMet shouldBe false

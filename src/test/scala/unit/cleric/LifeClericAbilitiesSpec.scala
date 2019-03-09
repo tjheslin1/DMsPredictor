@@ -4,9 +4,10 @@ import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.castSingleTargetHealingSpell
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
-import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
@@ -101,6 +102,89 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
 
       discipleOfLife(Priority)(cleric).conditionMet shouldBe false
+    }
+  }
+
+  "preserveLife" should {
+    "restore a number of hit points equal to five times your cleric level" in {
+      preserveLifeHealing(LevelTwo) shouldBe 10
+      preserveLifeHealing(LevelFive) shouldBe 25
+    }
+
+    "restore up to 50% of an allies health using all points" in {
+      forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val weakFighter   = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
+          val weakBarbarian = barbarian.withHealth(10).withMaxHealth(100).withCombatIndex(3)
+
+          val (_,
+               List(Combatant(_, updatedFighter: Fighter),
+                    Combatant(_, updatedBarbarian: Barbarian))) =
+            preserveLife(Priority)(cleric.withLevel(LevelTwo).withCombatIndex(1))
+              .useAbility(List(weakFighter, weakBarbarian), LowestFirst)
+
+          updatedFighter.health shouldBe 20
+          updatedBarbarian.health shouldBe 10
+        }
+      }
+    }
+
+    "restore up to 50% of an allies health using as many points as allowed" in {
+      forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian, champion: Champion) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val healthyFighter = fighter.withHealth(100).withMaxHealth(100).withCombatIndex(2)
+          val weakBarbarian  = barbarian.withHealth(10).withMaxHealth(25).withCombatIndex(3)
+          val weakChampion   = champion.withHealth(10).withMaxHealth(25).withCombatIndex(3)
+
+          val (_,
+               List(_,
+               Combatant(_, updatedBarbarian: Barbarian),
+                    Combatant(_, updatedChampion: Champion))) =
+            preserveLife(Priority)(cleric.withLevel(LevelFive).withCombatIndex(1))
+              .useAbility(List(healthyFighter, weakBarbarian, weakChampion), LowestFirst)
+
+          updatedBarbarian.health shouldBe 12
+          updatedChampion.health shouldBe 12
+        }
+      }
+    }
+
+    "trigger when more than half of allies are below half health" in {
+      val cleric = random[Cleric].withLevel(LevelTwo).withCombatIndex(1)
+
+      val healthyFighter = random[Fighter].withHealth(100).withMaxHealth(100).withCombatIndex(2)
+      val weakBarbarian  = random[Barbarian].withHealth(10).withMaxHealth(25).withCombatIndex(3)
+      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(3)
+
+      preserveLife(Priority)(cleric).triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe true
+    }
+
+    "not trigger when more than half of allies are above half health" in {
+      val cleric = random[Cleric].withLevel(LevelTwo).withCombatIndex(1)
+
+      val healthyFighter = random[Fighter].withHealth(100).withMaxHealth(100).withCombatIndex(2)
+      val weakBarbarian  = random[Barbarian].withHealth(25).withMaxHealth(25).withCombatIndex(3)
+      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(3)
+
+      preserveLife(Priority)(cleric).triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe false
+    }
+
+    "not be used if Channel Divinity is already used" in {
+      val cleric = random[Cleric].withChannelDivinityUsed().withCombatIndex(1)
+
+      preserveLife(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "update the BaseCleric's channelDivinityUsed to true" in {
+      val cleric = random[Cleric].withCombatIndex(1)
+
+      val updatedCleric = preserveLife(Priority)(cleric).update.asInstanceOf[BaseCleric]
+
+      updatedCleric.channelDivinityUsed shouldBe true
     }
   }
 

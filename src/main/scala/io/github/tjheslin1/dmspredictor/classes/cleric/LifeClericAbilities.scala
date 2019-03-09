@@ -6,7 +6,8 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellLevel
-import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Target.players
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, Target}
 
 object LifeClericAbilities extends LazyLogging {
 
@@ -45,4 +46,29 @@ object LifeClericAbilities extends LazyLogging {
 
       def update: Creature = lifeCleric
     }
+
+  def preserveLifeHealing(level: Level): Int = 5 * level
+
+  def preserveLife(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+    val baseCleric = combatant.creature.asInstanceOf[BaseCleric]
+
+    val name: String = "Preserve Life"
+    val order: Int = currentOrder
+
+    val levelRequirement: Level = LevelTwo
+    val abilityAction: AbilityAction = WholeAction
+
+    def triggerMet(others:  List[Combatant]): Boolean = {
+      val allies = players(others)
+      val alliesBelowHalfHealth = allies.count(player => player.creature.health <= (player.creature.maxHealth / 2))
+
+      alliesBelowHalfHealth >= Math.ceil(1 + allies.size / 2)
+    }
+
+    def conditionMet: Boolean = baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
+
+    def useAbility[_ : RS](others:  List[Combatant], focus:  Focus): (Combatant, List[Combatant]) = ???
+
+    def update: Creature = BaseCleric.channelDivinityUsedLens.set(true)(baseCleric)
+  }
 }
