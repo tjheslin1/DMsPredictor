@@ -138,11 +138,11 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
           val healthyFighter = fighter.withHealth(100).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian  = barbarian.withHealth(10).withMaxHealth(25).withCombatIndex(3)
-          val weakChampion   = champion.withHealth(10).withMaxHealth(25).withCombatIndex(3)
+          val weakChampion   = champion.withHealth(10).withMaxHealth(25).withCombatIndex(4)
 
           val (_,
                List(_,
-               Combatant(_, updatedBarbarian: Barbarian),
+                    Combatant(_, updatedBarbarian: Barbarian),
                     Combatant(_, updatedChampion: Champion))) =
             preserveLife(Priority)(cleric.withLevel(LevelFive).withCombatIndex(1))
               .useAbility(List(healthyFighter, weakBarbarian, weakChampion), LowestFirst)
@@ -153,14 +153,24 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "trigger when when there is one ally" in {
+      val cleric = random[Cleric].withLevel(LevelTwo).withCombatIndex(1)
+
+      val healthyFighter = random[Fighter].withHealth(20).withMaxHealth(100).withCombatIndex(2)
+
+      preserveLife(Priority)(cleric)
+        .triggerMet(List(healthyFighter)) shouldBe true
+    }
+
     "trigger when more than half of allies are below half health" in {
       val cleric = random[Cleric].withLevel(LevelTwo).withCombatIndex(1)
 
       val healthyFighter = random[Fighter].withHealth(100).withMaxHealth(100).withCombatIndex(2)
       val weakBarbarian  = random[Barbarian].withHealth(10).withMaxHealth(25).withCombatIndex(3)
-      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(3)
+      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(4)
 
-      preserveLife(Priority)(cleric).triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe true
+      preserveLife(Priority)(cleric)
+        .triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe true
     }
 
     "not trigger when more than half of allies are above half health" in {
@@ -168,9 +178,10 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
       val healthyFighter = random[Fighter].withHealth(100).withMaxHealth(100).withCombatIndex(2)
       val weakBarbarian  = random[Barbarian].withHealth(25).withMaxHealth(25).withCombatIndex(3)
-      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(3)
+      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(4)
 
-      preserveLife(Priority)(cleric).triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe false
+      preserveLife(Priority)(cleric)
+        .triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe false
     }
 
     "not be used if Channel Divinity is already used" in {
@@ -185,6 +196,26 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val updatedCleric = preserveLife(Priority)(cleric).update.asInstanceOf[BaseCleric]
 
       updatedCleric.channelDivinityUsed shouldBe true
+    }
+  }
+
+  "restoreHealthUsingPool" should {
+    "use as many points as possible in the pool to heal allies to 50% of their max hp" in {
+      val healthyFighter = random[Fighter].withHealth(100).withMaxHealth(100).withCombatIndex(1)
+      val weakBarbarian  = random[Barbarian].withHealth(25).withMaxHealth(80).withCombatIndex(2)
+      val weakChampion   = random[Champion].withHealth(10).withMaxHealth(30).withCombatIndex(3)
+      val weakCleric     = random[Cleric].withHealth(80).withMaxHealth(200).withCombatIndex(4)
+
+      val List(Combatant(_, updatedFighter: Fighter),
+               Combatant(_, updatedBarbarian: Barbarian),
+               Combatant(_, updatedChampion: Champion),
+               Combatant(_, updatedCleric: Cleric)) =
+        restoreHealthUsingPool(20, List(healthyFighter, weakBarbarian, weakChampion, weakCleric))
+
+      updatedFighter.health shouldBe 100
+      updatedBarbarian.health shouldBe 40
+      updatedChampion.health shouldBe 15
+      updatedCleric.health shouldBe 80
     }
   }
 

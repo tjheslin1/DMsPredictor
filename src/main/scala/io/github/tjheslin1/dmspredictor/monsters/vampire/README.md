@@ -12,4 +12,4 @@ automatically applies the _Grapple_ condition to a target that it hits with __Un
 
 Currently no Legendary Actions are implemented.
 
-Children of the Night (1/Day) is not implemeted.
+Children of the Night (1/Day) is not implemented.

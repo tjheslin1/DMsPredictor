@@ -6,8 +6,11 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellLevel
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, Target}
+import io.github.tjheslin1.dmspredictor.util.ListOps._
+
+import scala.annotation.tailrec
 
 object LifeClericAbilities extends LazyLogging {
 
@@ -53,22 +56,54 @@ object LifeClericAbilities extends LazyLogging {
     val baseCleric = combatant.creature.asInstanceOf[BaseCleric]
 
     val name: String = "Preserve Life"
-    val order: Int = currentOrder
+    val order: Int   = currentOrder
 
-    val levelRequirement: Level = LevelTwo
+    val levelRequirement: Level      = LevelTwo
     val abilityAction: AbilityAction = WholeAction
 
-    def triggerMet(others:  List[Combatant]): Boolean = {
+    def triggerMet(others: List[Combatant]): Boolean = {
       val allies = players(others)
-      val alliesBelowHalfHealth = allies.count(player => player.creature.health <= (player.creature.maxHealth / 2))
+      val alliesBelowHalfHealth =
+        allies.count(player => player.creature.health <= (player.creature.maxHealth / 2))
 
-      alliesBelowHalfHealth >= Math.ceil(1 + allies.size / 2)
+      allies.nonEmpty && alliesBelowHalfHealth >= Math.ceil(1 + allies.size / 2)
     }
 
-    def conditionMet: Boolean = baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
+    def conditionMet: Boolean =
+      baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
 
-    def useAbility[_ : RS](others:  List[Combatant], focus:  Focus): (Combatant, List[Combatant]) = ???
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+      logger.debug(s"${baseCleric.name} used $name")
+
+      val damagedAllies = players(others)
+        .filter(player => player.creature.health < player.creature.maxHealth)
+
+      val healingPool = preserveLifeHealing(baseCleric.level)
+
+      val updatedAllies = restoreHealthUsingPool(healingPool, damagedAllies)
+
+      (combatant, others.replace(updatedAllies))
+    }
 
     def update: Creature = BaseCleric.channelDivinityUsedLens.set(true)(baseCleric)
   }
+
+  def restoreHealthUsingPool(pool: Int, damagedAllies: List[Combatant]): List[Combatant] =
+    if (pool <= 0 || damagedAllies.isEmpty) damagedAllies
+    else {
+      damagedAllies.sortBy(_.creature.health)
+        .find(player => player.creature.health < (player.creature.maxHealth / 2))
+        .fold(damagedAllies){ targetAlly =>
+          val maxRestoredHealth = (targetAlly.creature.maxHealth / 2) - targetAlly.creature.health
+          val healthToRestore   = Math.min(pool, maxRestoredHealth)
+
+          val healedAlly = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+            .set(targetAlly.creature.health + healthToRestore)(targetAlly)
+
+          logger.debug(s"${healedAlly.creature.name} was healed for $healthToRestore")
+
+          val updatedPool = pool - healthToRestore
+          restoreHealthUsingPool(updatedPool, damagedAllies.replace(healedAlly))
+        }
+    }
 }

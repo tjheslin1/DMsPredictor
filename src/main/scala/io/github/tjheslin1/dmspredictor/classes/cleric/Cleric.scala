@@ -4,7 +4,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric._
-import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities.discipleOfLife
+import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
@@ -68,11 +68,12 @@ object Cleric {
   )
 
   val standardClericAbilities: List[CombatantAbility] = List(
-    discipleOfLife(1),
-    castSingleTargetHealingSpell(2),
-    destroyUndead(3),
-    turnUndead(4),
-    castSingleTargetOffensiveSpell(5)
+    preserveLife(1),
+    discipleOfLife(2),
+    castSingleTargetHealingSpell(3),
+    destroyUndead(4),
+    turnUndead(5),
+    castSingleTargetOffensiveSpell(6)
   )
 
   val strengthLens: Lens[Cleric, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
