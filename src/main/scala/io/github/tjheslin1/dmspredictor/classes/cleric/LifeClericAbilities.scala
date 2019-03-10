@@ -91,9 +91,10 @@ object LifeClericAbilities extends LazyLogging {
   def restoreHealthUsingPool(pool: Int, damagedAllies: List[Combatant]): List[Combatant] =
     if (pool <= 0 || damagedAllies.isEmpty) damagedAllies
     else {
-      damagedAllies.sortBy(_.creature.health)
+      damagedAllies
+        .sortBy(_.creature.health)
         .find(player => player.creature.health < (player.creature.maxHealth / 2))
-        .fold(damagedAllies){ targetAlly =>
+        .fold(damagedAllies) { targetAlly =>
           val maxRestoredHealth = (targetAlly.creature.maxHealth / 2) - targetAlly.creature.health
           val healthToRestore   = Math.min(pool, maxRestoredHealth)
 

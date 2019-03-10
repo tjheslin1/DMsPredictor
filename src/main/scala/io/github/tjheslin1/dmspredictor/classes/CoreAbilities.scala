@@ -43,10 +43,7 @@ object CoreAbilities extends LazyLogging {
       nextToFocus(enemies, focus) match {
         case None => (combatant, others)
         case Some(target) =>
-          nextAbilityToUseInConjunction(combatant,
-                                        enemies,
-                                        order,
-                                        NonEmptyList.of(SingleAttack))
+          nextAbilityToUseInConjunction(combatant, enemies, order, NonEmptyList.of(SingleAttack))
             .fold {
               val (updatedAttacker, updatedTarget) =
                 attackAndDamageTimes(2, combatant, target)
@@ -95,7 +92,7 @@ object CoreAbilities extends LazyLogging {
         spellCaster.level >= spellCaster.levelSpellcastingLearned &&
           (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined) &&
           spellCaster.spellsKnown.exists {
-            case ((_, spellEffect: SpellEffect), _) => spellEffect == DamageSpell
+            case ((_, spellEffect: SpellEffect), _) => spellEffect.isInstanceOf[DamageSpell]
           }
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
@@ -115,6 +112,9 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => (combatant, others)
           case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
+
+            // TODO move all to Spell#effect
+
             val attackResult = spell.spellTargetStyle match {
               case MeleeSpellAttack  => spellAttack(spell, spellTarget.creature)
               case RangedSpellAttack => spellAttack(spell, spellTarget.creature)
@@ -161,7 +161,7 @@ object CoreAbilities extends LazyLogging {
 
       private def spellAttack[_: RS](spell: Spell, target: Creature): AttackResult =
         D20.roll() match {
-          case 20 => CriticalHit
+          case roll if spellCaster.scoresCritical(roll) => CriticalHit
           case 1  => CriticalMiss
           case roll =>
             if ((roll + spell.spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
@@ -196,6 +196,8 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => None
           case (None, _) => None
           case (Some(spellTarget), Some(spell)) =>
+
+            // TODO CureWounds#effect should apply healing. this ability will add the bonus
             val healing = spell.effect(spellCaster) + bonusHealing
 
             val updatedHealth =
@@ -234,7 +236,7 @@ object CoreAbilities extends LazyLogging {
     spellCaster.level >= spellCaster.levelSpellcastingLearned &&
       highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
       spellCaster.spellsKnown.exists {
-        case ((_, spellEffect: SpellEffect), _) => spellEffect == HealingSpell
+        case ((_, spellEffect: SpellEffect), _) => spellEffect.isInstanceOf[HealingSpell]
       }
 
   def healingSpellInHighestSlot(spellCaster: SpellCaster): Option[Spell] =

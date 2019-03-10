@@ -15,8 +15,8 @@ abstract class Spell {
   val castingTime: CastingTime
   val spellEffect: SpellEffect
   val spellTargetStyle: SpellTargetStyle
-  val damageType: DamageType
   val spellLevel: SpellLevel
+  val concentration: Boolean
 
   def spellAttackBonus(creature: Creature): Int = creature match {
     case playerSpellcaster: Player with SpellCaster =>
@@ -30,30 +30,10 @@ abstract class Spell {
     case spellcaster: SpellCaster => 8 + attributeModifierForSchool(spellcaster)
   }
 
-  def effect[_: RS](spellCaster: SpellCaster): Int
+  def effect[_: RS](spellCaster: SpellCaster, targets: List[Combatant]): (SpellCaster, List[Combatant])
 }
 
 object Spell {
-
-  def apply(spellName: String,
-            level: SpellLevel,
-            schoolOfMagic: SchoolOfMagic,
-            castTime: CastingTime,
-            spellEff: SpellEffect,
-            offenseStyle: SpellTargetStyle,
-            `type`: DamageType,
-            dmg: => Int): Spell = new Spell {
-
-    val name                                            = spellName
-    val school: spellcasting.SchoolOfMagic              = schoolOfMagic
-    val castingTime: spellcasting.CastingTime           = castTime
-    val spellEffect: SpellEffect                        = spellEff
-    val spellTargetStyle: spellcasting.SpellTargetStyle = offenseStyle
-    val damageType: DamageType                          = `type`
-    val spellLevel: SpellLevel                          = level
-
-    def effect[_: RS](spellCaster: SpellCaster): Int = dmg
-  }
 
   def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
     case _: EldritchKnight => Intelligence
@@ -69,4 +49,6 @@ object Spell {
                                     attribute: Attribute,
                                     target: Creature): Boolean =
     SavingThrow.savingThrowPassed(spell.spellSaveDc(caster), attribute, target)
+
+
 }

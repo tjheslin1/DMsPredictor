@@ -12,6 +12,7 @@ package object spellcasting {
 
   case object Evocation  extends SchoolOfMagic
   case object Abjuration extends SchoolOfMagic
+  case object Enchantment extends SchoolOfMagic
 
   sealed trait CastingTime extends Product with Serializable
 
@@ -26,6 +27,7 @@ package object spellcasting {
 
   sealed trait SpellEffect extends Product with Serializable
 
-  case object DamageSpell  extends SpellEffect
+  case class DamageSpell(damageType: DamageType)  extends SpellEffect
   case object HealingSpell extends SpellEffect
+  case object ConditionSpell extends SpellEffect
 }

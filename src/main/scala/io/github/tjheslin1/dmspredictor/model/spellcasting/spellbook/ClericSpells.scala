@@ -14,12 +14,13 @@ object ClericSpells {
     val name                               = "Sacred Flame"
     val school: SchoolOfMagic              = Evocation
     val castingTime: CastingTime           = OneAction
-    val spellEffect: SpellEffect           = DamageSpell
+    val spellEffect: SpellEffect           = DamageSpell(Radiant)
     val spellTargetStyle: SpellTargetStyle = SpellSavingThrow(Dexterity)
-    val damageType: DamageType             = Radiant
     val spellLevel: SpellLevel             = 0
+    val concentration: Boolean             = false
 
-    def effect[_: RS](spellCaster: SpellCaster): Int = spellCaster match {
+    def effect[_: RS](spellCaster: SpellCaster, targets: List[Combatant]): (SpellCaster, List[Combatant]) =
+      spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D8
       case _                                 => 1 * D8
     }
@@ -29,12 +30,12 @@ object ClericSpells {
     val name                               = "Guiding Bolt"
     val school: SchoolOfMagic              = Evocation
     val castingTime: CastingTime           = OneAction
-    val spellEffect: SpellEffect           = DamageSpell
+    val spellEffect: SpellEffect           = DamageSpell(Radiant)
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
-    val damageType: DamageType             = Radiant
     val spellLevel: SpellLevel             = 1
+    val concentration: Boolean             = false
 
-    def effect[_: RS](spellCaster: SpellCaster): Int = 4 * D6
+    def effect[_: RS](spellCaster: SpellCaster, targets: List[Combatant]): (SpellCaster, List[Combatant]) = 4 * D6
   }
 
   case object CureWounds extends Spell {
@@ -43,10 +44,25 @@ object ClericSpells {
     val castingTime: CastingTime           = OneAction
     val spellEffect: SpellEffect           = HealingSpell
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
-    val damageType: DamageType             = Radiant
     val spellLevel: SpellLevel             = 1
+    val concentration: Boolean             = false
 
-    def effect[_: RS](spellCaster: SpellCaster): Int =
+    def effect[_: RS](spellCaster: SpellCaster, targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+      val target = targets.head
+
       (1 * D8) + attributeModifierForSchool(spellCaster)
+    }
   }
+
+  case object HoldPerson extends Spell {
+    val name: String = "Hold Person"
+    val school: SchoolOfMagic = Enchantment
+    val castingTime: CastingTime = OneAction
+    val spellEffect: SpellEffect = ConditionSpell
+    val spellTargetStyle: SpellTargetStyle = SpellSavingThrow(Wisdom)
+    val spellLevel: SpellLevel = 2
+    val concentration: Boolean = true
+
+    def effect[_: RS](spellCaster: SpellCaster, targets: List[Combatant]): (SpellCaster, List[Combatant]) = ???
+}
 }

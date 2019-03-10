@@ -163,6 +163,8 @@ object TestData {
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
+    def withConcentrating(concentrating: Boolean) = _concentrating.set(concentrating)(cleric)
+
     def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(cleric)
     def withNoCantrip()             = _cantripKnown.set(none[Spell])(cleric)
     def withSpellKnown(spell: Spell) =
@@ -556,6 +558,7 @@ trait TestData extends RandomDataGenerator {
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
+        concentrating = false,
         player.name
       )
   }
@@ -671,6 +674,7 @@ trait TestData extends RandomDataGenerator {
         bonusActionUsed = player.bonusActionUsed,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
+        concentrating = false,
         name = player.name
       )
   }

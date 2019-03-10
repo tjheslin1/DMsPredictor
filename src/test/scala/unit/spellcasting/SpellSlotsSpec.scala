@@ -1,4 +1,4 @@
-package unit
+package unit.spellcasting
 
 import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots

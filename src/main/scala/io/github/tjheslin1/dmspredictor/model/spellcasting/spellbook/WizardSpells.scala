@@ -13,10 +13,10 @@ object WizardSpells {
     val name                               = "Chromatic Orb"
     val school: SchoolOfMagic              = Evocation
     val castingTime: CastingTime           = OneAction
-    val spellEffect: SpellEffect           = DamageSpell
+    val spellEffect: SpellEffect           = DamageSpell(Force)
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
-    val damageType: DamageType             = Force
     val spellLevel: SpellLevel             = 1
+    val concentration: Boolean             = false
 
     def effect[_: RS](spellCaster: SpellCaster): Int = (3 * D4) + 3
   }

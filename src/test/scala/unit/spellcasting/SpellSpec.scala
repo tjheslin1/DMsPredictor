@@ -1,4 +1,4 @@
-package unit
+package unit.spellcasting
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._

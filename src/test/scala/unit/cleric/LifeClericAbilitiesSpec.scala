@@ -231,6 +231,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
       val damageType: DamageType             = Radiant
       val spellLevel: SpellLevel             = 1
+      val concentration: Boolean  = false
 
       def effect[_: RS](spellCaster: SpellCaster): Int = {
         trackedHealingSpellUsed = true

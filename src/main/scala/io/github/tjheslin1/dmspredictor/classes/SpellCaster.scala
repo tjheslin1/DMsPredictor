@@ -11,11 +11,22 @@ trait SpellCaster extends Creature {
   val cantripKnown: Option[Spell]
   val spellsKnown: Map[(SpellLevel, SpellEffect), Spell]
   val spellSlots: SpellSlots
+  val concentrating: Boolean
 
   val levelSpellcastingLearned: Level
 }
 
 object SpellCaster {
+
+  val concentratingLens: Lens[SpellCaster, Boolean] = Lens[SpellCaster, Boolean](_.concentrating) {
+    concentrating =>
+      {
+        case c: EldritchKnight => EldritchKnight._concentrating.set(concentrating)(c)
+        case c: Cleric         => Cleric._concentrating.set(concentrating)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
+      }
+  }
 
   val spellSlotsLens: Lens[SpellCaster, SpellSlots] = Lens[SpellCaster, SpellSlots](_.spellSlots) {
     spellSlots =>

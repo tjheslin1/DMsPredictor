@@ -44,6 +44,7 @@ import monocle.macros.{GenLens, Lenses}
                                bonusActionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: model.AttackStatus = Regular,
+                               concentrating: Boolean = false,
                                name: String = NameGenerator.randomName)
     extends BaseCleric {
 
@@ -51,8 +52,13 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature = {
+    val damageTaken = adjustedDamage(dmg, damageType, this)
+    val updatedCleric = copy(health = Math.max(0, health - damageTaken))
+
+    if (updatedCleric.isConscious && concentrating) Concentration.handleConcentration(updatedCleric, damageTaken)
+    else updatedCleric
+  }
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 }
