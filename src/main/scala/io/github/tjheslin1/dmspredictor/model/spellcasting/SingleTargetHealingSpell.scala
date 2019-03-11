@@ -9,13 +9,13 @@ abstract class SingleTargetHealingSpell extends Spell with LazyLogging {
 
   val spellEffect: SpellEffect = HealingSpell
 
-  def healing[_: RS](spellCaster: SpellCaster): Int
+  def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
-  def effect[_: RS](spellCaster: SpellCaster,
+  def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel,
                     targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
     val target = targets.head
 
-    val healthRestored = healing(spellCaster)
+    val healthRestored = healing(spellCaster, spellLevel)
     val updatedHealth  = Math.min(target.creature.maxHealth, target.creature.health + healthRestored)
 
     logger.debug(s"${target.creature.name} was healed for $healthRestored")

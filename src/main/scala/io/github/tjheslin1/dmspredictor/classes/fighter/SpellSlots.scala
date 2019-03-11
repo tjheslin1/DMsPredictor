@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import monocle.{Lens, Optional}
+import monocle.Lens
 import monocle.macros.GenLens
 
 case class SpellSlots(firstLevel: FirstLevelSpellSlots,

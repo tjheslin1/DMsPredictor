@@ -21,7 +21,7 @@ object ClericSpells {
     val spellLevel: SpellLevel   = 0
     val concentration: Boolean   = false
 
-    def damage[_: RS](spellCaster: SpellCaster): Int = spellCaster match {
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D8
       case _                                 => 1 * D8
     }
@@ -36,7 +36,7 @@ object ClericSpells {
     val spellLevel: SpellLevel             = 1
     val concentration: Boolean             = false
 
-    def damage[_: RS](spellCaster: SpellCaster): Int = 4 * D6
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
   }
 
   case object CureWounds extends SingleTargetHealingSpell {
@@ -47,8 +47,8 @@ object ClericSpells {
     val spellLevel: SpellLevel             = 1
     val concentration: Boolean             = false
 
-    def healing[_: RS](spellCaster: SpellCaster): Int =
-      (1 * D8) + attributeModifierForSchool(spellCaster)
+    def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
   }
 
   case object HoldPerson extends SingleTargetConditionSpell {

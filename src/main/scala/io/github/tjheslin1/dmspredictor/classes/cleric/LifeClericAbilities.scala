@@ -3,9 +3,11 @@ package io.github.tjheslin1.dmspredictor.classes.cleric
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
+import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots.highestSpellSlotAvailable
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellLevel
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfTypeBelowLevel
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -35,7 +37,13 @@ object LifeClericAbilities extends LazyLogging {
               .map(_(combatant).name)
               .contains(CastSingleTargetHealingSpellName)) {
 
-          healingSpellInHighestSlot(lifeCleric).fold((combatant, others)) { healingSpell =>
+          val optSpell = highestSpellSlotAvailable(lifeCleric.spellSlots) match {
+            case None => None
+            case Some(spellSlot) =>
+              spellOfTypeBelowLevel(lifeCleric.spellsKnown, HealingSpell, spellSlot.spellLevel)
+          }
+
+          optSpell.fold((combatant, others)) { healingSpell =>
             castSingleTargetHealingSpell(
               order,
               bonusHealing = discipleOfLifeBonusHealing(healingSpell.spellLevel))(combatant)

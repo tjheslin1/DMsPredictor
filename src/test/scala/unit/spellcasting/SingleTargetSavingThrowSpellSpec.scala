@@ -19,7 +19,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
 
           val savingThrowSpell = dexteritySavingThrowSpell(damageOnSave = false)
 
-          val fireSpellCleric = cleric
+          val trackedCleric = cleric
             .withSpellKnown(savingThrowSpell)
             .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
@@ -32,7 +32,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            savingThrowSpell.effect(fireSpellCleric, List(monster))
+            savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
           dexteritySaveDamageCount shouldBe 1
           updatedMonster.health shouldBe monster.creature.health - 4
@@ -47,7 +47,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
 
           val savingThrowSpell = dexteritySavingThrowSpell(damageOnSave = true)
 
-          val fireSpellCleric = cleric
+          val trackedCleric = cleric
             .withSpellKnown(savingThrowSpell)
             .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
@@ -60,7 +60,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            savingThrowSpell.effect(fireSpellCleric, List(monster))
+            savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
           dexteritySaveDamageCount shouldBe 1
           updatedMonster.health shouldBe monster.creature.health - 2
@@ -75,7 +75,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
 
           val savingThrowSpell = dexteritySavingThrowSpell(damageOnSave = false)
 
-          val fireSpellCleric = cleric
+          val trackedCleric = cleric
             .withSpellKnown(savingThrowSpell)
             .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
@@ -88,7 +88,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            savingThrowSpell.effect(fireSpellCleric, List(monster))
+            savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
           dexteritySaveDamageCount shouldBe 0
           updatedMonster.health shouldBe monster.creature.health
@@ -112,7 +112,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
       val spellLevel: SpellLevel   = 1
       val concentration: Boolean   = false
 
-      def damage[_: RS](spellCaster: SpellCaster): Int = {
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         dexteritySaveDamageCount += 1
         4
       }

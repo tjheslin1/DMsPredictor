@@ -1,5 +1,7 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting
 
+import cats.syntax.option._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight
@@ -7,6 +9,8 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
+
+import scala.annotation.tailrec
 
 abstract class Spell {
 
@@ -18,10 +22,26 @@ abstract class Spell {
   val concentration: Boolean
 
   def effect[_: RS](spellCaster: SpellCaster,
+                    spellLevel: SpellLevel,
                     targets: List[Combatant]): (SpellCaster, List[Combatant])
 }
 
 object Spell {
+
+  @tailrec
+  def spellOfTypeBelowLevel(spellsKnown: Map[(SpellLevel, SpellEffect), Spell],
+                            spellEffect: SpellEffect,
+                            spellLevel: SpellLevel): Option[Spell] = {
+    val spellLookup = spellsKnown.get((spellLevel, spellEffect))
+
+    println(s"^^^^^^^^^^^^^^^^ spellLookup: $spellLookup")
+
+    val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
+
+    if (spellLookup.isDefined) spellLookup
+    else if (spellLevel > 0) spellOfTypeBelowLevel(spellsKnown, spellEffect, spellLevelBelow)
+    else none[Spell]
+  }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int = spellCaster match {
     case playerSpellcaster: Player with SpellCaster =>

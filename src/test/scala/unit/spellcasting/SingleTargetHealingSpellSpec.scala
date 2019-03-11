@@ -17,7 +17,7 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
           new TestContext {
             override implicit val roll: RollStrategy = _ => RollResult(10)
 
-            val fireSpellCleric = cleric
+            val healingCleric = cleric
               .withSpellKnown(healingSpell)
               .withAllSpellSlotsAvailableForLevel(cleric.level)
               .withChannelDivinityUsed()
@@ -27,7 +27,7 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
             val damagedFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
 
             val (_, List(Combatant(_, healedFighter: Fighter))) =
-              healingSpell.effect(fireSpellCleric, List(damagedFighter))
+              healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
 
             healingSpellUsedCount shouldBe 1
             healedFighter.health shouldBe damagedFighter.creature.health + 4
@@ -40,7 +40,7 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
           new TestContext {
             override implicit val roll: RollStrategy = _ => RollResult(10)
 
-            val fireSpellCleric = cleric
+            val healingCleric = cleric
               .withSpellKnown(healingSpell)
               .withAllSpellSlotsAvailableForLevel(cleric.level)
               .withChannelDivinityUsed()
@@ -50,7 +50,7 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
             val damagedFighter = fighter.withHealth(98).withMaxHealth(100).withCombatIndex(2)
 
             val (_, List(Combatant(_, healedFighter: Fighter))) =
-              healingSpell.effect(fireSpellCleric, List(damagedFighter))
+              healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
 
             healingSpellUsedCount shouldBe 1
             healedFighter.health shouldBe 100
@@ -71,7 +71,7 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
         val spellLevel: SpellLevel   = 1
         val concentration: Boolean   = false
 
-        def healing[_: RS](spellCaster: SpellCaster): Int = {
+        def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
           healingSpellUsedCount += 1
           4
         }

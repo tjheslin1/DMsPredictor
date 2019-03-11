@@ -234,7 +234,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val spellLevel: SpellLevel   = 2
       val concentration: Boolean   = false
 
-      def healing[_: RS](spellCaster: SpellCaster): Int = {
+      def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         trackedHealingSpellUsed = true
         1
       }

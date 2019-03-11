@@ -24,7 +24,7 @@ abstract class SingleTargetConditionSpell extends Spell with LazyLogging {
       .set(currentConditions ++ List(condition))(target)
   }
 
-  def effect[_: RS](spellCaster: SpellCaster,
+  def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel,
                     targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
     val target = targets.head
 

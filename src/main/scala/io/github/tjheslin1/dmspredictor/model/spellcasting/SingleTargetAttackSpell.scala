@@ -11,9 +11,9 @@ abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
   val damageType: DamageType
   val spellEffect: SpellEffect = DamageSpell
 
-  def damage[_: RS](spellCaster: SpellCaster): Int
+  def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
-  def effect[_: RS](spellCaster: SpellCaster,
+  def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel,
                     targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
     val target       = targets.head
     val attackResult = spellAttack(spellCaster, target.creature)
@@ -21,8 +21,8 @@ abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
     logger.debug(s"casting $name - $attackResult")
 
     val dmg = attackResult match {
-      case CriticalHit  => damage(spellCaster) + damage(spellCaster)
-      case Hit          => damage(spellCaster)
+      case CriticalHit  => damage(spellCaster, spellLevel) + damage(spellCaster, spellLevel)
+      case Hit          => damage(spellCaster, spellLevel)
       case Miss         => 0
       case CriticalMiss => 0
     }

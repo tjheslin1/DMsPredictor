@@ -31,7 +31,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, List(monster))
+            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
           fireAttackDamageCount shouldBe 1
         }
@@ -57,7 +57,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, List(monster))
+            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
           fireAttackDamageCount shouldBe 2
         }
@@ -82,7 +82,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, List(monster))
+            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
           fireAttackDamageCount shouldBe 0
         }
@@ -107,7 +107,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, List(monster))
+            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
           fireAttackDamageCount shouldBe 0
         }
@@ -132,7 +132,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, List(monster))
+            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
           updatedMonster.health shouldBe 8
         }
@@ -158,7 +158,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, List(monster))
+            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
           updatedMonster.health shouldBe 10
         }
@@ -178,7 +178,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
       val spellLevel: SpellLevel   = 1
       val concentration: Boolean   = false
 
-      def damage[_: RS](spellCaster: SpellCaster): Int = {
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         fireAttackDamageCount += 1
         4
       }

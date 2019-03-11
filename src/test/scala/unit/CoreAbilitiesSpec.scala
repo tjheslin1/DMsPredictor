@@ -137,6 +137,31 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "cast a spell (saving throw) using the highest available spell slot which has a damaging spell" in {
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedCleric = cleric
+            .withSpellKnown(trackedSavingThrowSpell(2))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withProficiencyBonus(6)
+            .withLevel(LevelFive)
+            .withWisdom(10)
+            .withCombatIndex(1)
+
+          val monster = testMonster.withWisdom(10).withCombatIndex(2)
+
+          val (Combatant(_, updatedCleric: Cleric), _) =
+            castSingleTargetOffensiveSpell(Priority)(trackedCleric)
+              .useAbility(List(monster), LowestFirst)
+
+          savingThrowSpellUsedCount shouldBe 1
+        }
+      }
+    }
+
     "spend the highest available spell slot" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -157,6 +182,31 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
+        }
+      }
+    }
+
+    "not spend a spell slot if cantrip was found and used" in {
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedCleric = cleric
+              .withCantrip(trackedSavingThrowSpell(0))
+            .withSpellKnown(trackedHealingSpell(3))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Cleric]
+
+          val clericCombatant = trackedCleric.withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(10).withCombatIndex(2)
+
+          val updatedCleric: Cleric =
+            castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }
       }
     }
@@ -236,7 +286,31 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val healingCleric = cleric
-            .withSpellKnown(trackedHealingSpell)
+            .withSpellKnown(trackedHealingSpell(3))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withWisdom(12)
+            .withLevel(LevelFive)
+            .withCombatIndex(1)
+
+          val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
+
+          val (_, List(Combatant(_, healedFighter: Fighter))) =
+            castSingleTargetHealingSpell(Priority)(healingCleric)
+              .useAbility(List(damagedFighter), LowestFirst)
+
+          trackedHealingSpellUsed shouldBe true
+          healedFighter.creature.health shouldBe 11
+        }
+      }
+    }
+
+    "cast a spell (healing) using the highest available spell slot which has a healing spell" in {
+      forAll { (cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val healingCleric = cleric
+            .withSpellKnown(trackedHealingSpell(2))
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withWisdom(12)
             .withLevel(LevelFive)
@@ -270,6 +344,28 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.secondLevel.count shouldBe (healingCleric.spellSlots.secondLevel.count - 1)
+        }
+      }
+    }
+
+    "not spend a spell slot if cantrip was found and used" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val healingCleric = cleric
+              .withCantrip(trackedHealingSpell(0))
+              .withSpellKnown(trackedMeleeSpellAttack(1))
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withLevel(LevelThree)
+            .withWisdom(12)
+            .asInstanceOf[Cleric]
+
+          val updatedCleric =
+            castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1)).update
+              .asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
         }
       }
     }
@@ -371,13 +467,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     var meleeSpellUsedCount = 0
     def trackedMeleeSpellAttack(spellLvl: SpellLevel): Spell = new SingleTargetAttackSpell() {
       val damageType: DamageType   = Fire
-      val name: String             = "tracked-fire-spell"
+      val name: String             = s"tracked-melee-spell-${spellLvl.value}"
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = spellLvl
       val concentration: Boolean   = false
 
-      def damage[_: RS](spellCaster: SpellCaster): Int = {
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         meleeSpellUsedCount += 1
         4
       }
@@ -395,21 +491,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val spellLevel: SpellLevel    = spellLvl
         val concentration: Boolean    = false
 
-        def damage[_: RS](spellCaster: SpellCaster): Int = {
+        def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
           savingThrowSpellUsedCount += 1
           4
         }
       }
 
     var trackedHealingSpellUsed = false
-    val trackedHealingSpell: Spell = new SingleTargetHealingSpell {
+    def trackedHealingSpell(spellLvl: SpellLevel): Spell = new SingleTargetHealingSpell {
       val name: String             = "tracked-healing-spell"
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
-      val spellLevel: SpellLevel   = 3
+      val spellLevel: SpellLevel   = spellLvl
       val concentration: Boolean   = false
 
-      def healing[_: RS](spellCaster: SpellCaster): Int = {
+      def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         trackedHealingSpellUsed = true
         1
       }

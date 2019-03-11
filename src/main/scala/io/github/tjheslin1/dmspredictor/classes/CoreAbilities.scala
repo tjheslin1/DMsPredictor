@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.Actions.{attackAndDamage, attackAndDamageTimes}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfTypeBelowLevel
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
@@ -101,12 +102,15 @@ object CoreAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
 
-        val optSpell =
-          (spellCaster.cantripKnown, highestSpellSlotAvailable(spellCaster.spellSlots)) match {
-            case (cantrip, None) => cantrip
+        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
+
+        val (optSpell, spellLevelToUse) = (spellCaster.cantripKnown, highestSpellSlot) match {
+            case (cantrip, None) => (cantrip, 0)
             case (_, Some(spellSlot)) =>
-              spellCaster.spellsKnown((spellSlot.spellLevel, DamageSpell)).some
+              (spellOfTypeBelowLevel(spellCaster.spellsKnown, DamageSpell, spellSlot.spellLevel), )
           }
+
+        println(s">>>>>>>>> found spell ${optSpell.get.name}")
 
         val enemies = monsters(others)
         val target  = nextToFocus(enemies, focus)
@@ -115,7 +119,7 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => (combatant, others)
           case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
-            val (_, List(updatedTarget)) = spell.effect(spellCaster, List(spellTarget))
+            val (_, List(updatedTarget)) = spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
 
             (combatant, others.replace(updatedTarget))
         }
@@ -158,7 +162,13 @@ object CoreAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
 
-        val optSpell = healingSpellInHighestSlot(spellCaster)
+        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
+
+        val optSpell = highestSpellSlot match {
+          case None => None
+          case Some(spellSlot) =>
+            spellOfTypeBelowLevel(spellCaster.spellsKnown, HealingSpell, spellSlot.spellLevel)
+        }
 
         val allies = players(others)
         val target = nextToFocus(allies, focus)
@@ -168,7 +178,7 @@ object CoreAbilities extends LazyLogging {
           case (None, _) => None
           case (Some(spellTarget), Some(spell)) =>
             val (_, List(updatedTarget: Combatant)) =
-              spell.effect(spellCaster, List(spellTarget))
+              spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
 
             val updatedHealth =
               Math.min(updatedTarget.creature.maxHealth,
@@ -220,11 +230,4 @@ object CoreAbilities extends LazyLogging {
             case _            => false
           }
       }
-
-  def healingSpellInHighestSlot(spellCaster: SpellCaster): Option[Spell] =
-    highestSpellSlotAvailable(spellCaster.spellSlots) match {
-      case None => None
-      case Some(spellSlot) =>
-        spellCaster.spellsKnown((spellSlot.spellLevel, HealingSpell)).some
-    }
 }

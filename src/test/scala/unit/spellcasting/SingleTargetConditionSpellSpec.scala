@@ -31,7 +31,7 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: Goblin))) =
-            dexterityConditionSpell.effect(fireSpellCleric, List(monster))
+            dexterityConditionSpell.effect(fireSpellCleric, dexterityConditionSpell.spellLevel, List(monster))
 
           dexteritySaveConditionCount shouldBe 1
           updatedMonster.conditions shouldBe monster.creature.conditions ++ List(dexterityConditionSpell.conditionFrom(fireSpellCleric))
@@ -57,7 +57,7 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: Goblin))) =
-            dexterityConditionSpell.effect(fireSpellCleric, List(monster))
+            dexterityConditionSpell.effect(fireSpellCleric, dexterityConditionSpell.spellLevel, List(monster))
 
           dexteritySaveConditionCount shouldBe 0
           updatedMonster.conditions shouldBe monster.creature.conditions

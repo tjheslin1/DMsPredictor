@@ -19,18 +19,23 @@ object WizardSpells {
     val spellLevel: SpellLevel             = 1
     val concentration: Boolean             = false
 
-    def damage[_: RS](spellCaster: SpellCaster): Int = (3 * D4) + 3
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+      val numberOfDarts = 2 + spellLevel
+
+      (numberOfDarts * D4) + numberOfDarts
+    }
 
     /*
     Magic Missile always Hits
      */
     override def effect[_: RS](spellCaster: SpellCaster,
+                               spellLevel: SpellLevel,
                                targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
       val target = targets.head
       logger.debug(s"casting $name")
 
       val damagedTarget =
-        target.copy(creature = target.creature.updateHealth(damage(spellCaster), damageType, Hit))
+        target.copy(creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit))
 
       (spellCaster, targets.replace(damagedTarget))
     }

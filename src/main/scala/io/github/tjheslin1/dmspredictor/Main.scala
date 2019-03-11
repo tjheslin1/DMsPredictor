@@ -32,7 +32,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     SacredFlame.some,
     Cleric.clericSpellSlots(LevelFive),
     Cleric.standardClericSpellList,
-    channelDivinityUsed = false,
+    channelDivinityUsed = true,
     ChainShirt,
     None,
     Cleric.standardClericAbilities,
