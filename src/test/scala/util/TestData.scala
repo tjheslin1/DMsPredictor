@@ -19,7 +19,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlot, Spell}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlots, SecondLevelSpellSlots, Spell, ThirdLevelSpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
@@ -142,24 +142,6 @@ object TestData {
     def withAllAbilitiesUsed()               = _abilityUsages.set(BaseFighterAbilities(true, true))(battleMaster)
   }
 
-  implicit class EldritchKnightOps(val eldritchKnight: EldritchKnight) extends AnyVal {
-    import EldritchKnight._
-
-    def withFightingStyle(fightingStyle: FighterFightingStyle) =
-      _fightingStyles.set(List(fightingStyle))(eldritchKnight)
-    def withAllAbilitiesUnused() =
-      _abilityUsages.set(BaseFighterAbilities(false, false))(eldritchKnight)
-    def withAllBaseFighterAbilitiesUsed() =
-      _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
-
-    def withSpellKnown(spell: Spell): EldritchKnight = ???
-//      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(eldritchKnight)
-    def withAllSpellSlotsAvailable() =
-      _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
-    def withNoSpellSlotsAvailable() =
-      _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(eldritchKnight)
-  }
-
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
@@ -172,9 +154,13 @@ object TestData {
     def withSpellsKnown(spells: Spell*) =
       _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
         cleric)
-    def withAllSpellSlotsAvailable() = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(cleric)
-    def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
-    def withChannelDivinityUsed()    = _channelDivinityUsed.set(true)(cleric)
+    def withAllSpellSlotsAvailableForLevel(level: Level) =
+      _spellSlots.set(clericSpellSlots(level))(cleric)
+    def withNoSpellSlotsAvailable() =
+      _spellSlots.set(
+        SpellSlots(FirstLevelSpellSlots(0), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0)))(
+        cleric)
+    def withChannelDivinityUsed() = _channelDivinityUsed.set(true)(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {
@@ -208,16 +194,30 @@ trait TestData extends RandomDataGenerator {
         }
     }
 
-  implicit val arbFirstLevelSpellSlot: Arbitrary[FirstLevelSpellSlot] = Arbitrary {
+  implicit val arbFirstLevelSpellSlot: Arbitrary[FirstLevelSpellSlots] = Arbitrary {
     for {
       count <- Gen.choose(1, 3)
-    } yield FirstLevelSpellSlot(count)
+    } yield FirstLevelSpellSlots(count)
+  }
+
+  implicit val arbSecondLevelSpellSlot: Arbitrary[SecondLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.choose(1, 3)
+    } yield SecondLevelSpellSlots(count)
+  }
+
+  implicit val arbThirdLevelSpellSlot: Arbitrary[ThirdLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.choose(1, 3)
+    } yield ThirdLevelSpellSlots(count)
   }
 
   implicit val arbSpellSlots: Arbitrary[SpellSlots] = Arbitrary {
     for {
       firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
-    } yield SpellSlots(firstLevelSpellSlots)
+      secondLevelSpellSlots <- arbSecondLevelSpellSlot.arbitrary
+      thirdLevelSpellSlots <- arbThirdLevelSpellSlot.arbitrary
+    } yield SpellSlots(firstLevelSpellSlots, secondLevelSpellSlots, thirdLevelSpellSlots)
   }
 
   implicit val arbStat: Arbitrary[Stat] =
@@ -662,7 +662,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         SacredFlame.some,
-        SpellSlots(firstLevelSpellSlots),
+        Cleric.clericSpellSlots(level),
         Cleric.standardClericSpellList,
         channelDivinityUsed = false,
         player.armour,

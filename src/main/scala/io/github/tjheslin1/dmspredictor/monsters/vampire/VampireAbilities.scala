@@ -58,7 +58,8 @@ object VampireAbilities extends LazyLogging {
             updatedVampire.restoreHealth(necroticDamage))(updatedVampireCombatant)
 
           val updatedHealthTarget = Combatant.creatureLens
-            .set(updatedTarget.creature.updateHealth(necroticDamage, Necrotic, attackResult))(updatedTarget)
+            .set(updatedTarget.creature.updateHealth(necroticDamage, Necrotic, attackResult))(
+              updatedTarget)
 
           val updatedMaxHealth = updatedHealthTarget.creature.maxHealth - necroticDamage
           val updatedMaxHealthTarget =

@@ -15,11 +15,11 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "apply damage to target if Hit" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withChannelDivinityUsed()
             .withLevel(LevelThree)
             .asInstanceOf[Cleric]
@@ -41,11 +41,11 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "apply damage twice to target if CriticalHit" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withChannelDivinityUsed()
             .withLevel(LevelThree)
             .asInstanceOf[Cleric]
@@ -66,11 +66,11 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "not apply damage to target if Miss" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(2)
+          override implicit val roll: RollStrategy = _ => RollResult(2)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withChannelDivinityUsed()
             .withLevel(LevelThree)
             .withWisdom(10)
@@ -91,11 +91,11 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "not apply damage to target if CriticalMiss" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(1)
+          override implicit val roll: RollStrategy = _ => RollResult(1)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withChannelDivinityUsed()
             .withLevel(LevelThree)
             .asInstanceOf[Cleric]
@@ -116,11 +116,11 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "deal half damage to a creature resistant to the damage type" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withChannelDivinityUsed()
             .withLevel(LevelThree)
             .asInstanceOf[Cleric]
@@ -142,11 +142,11 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "deal zero damage to a creature immune to the damage type" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withChannelDivinityUsed()
             .withLevel(LevelThree)
             .asInstanceOf[Cleric]

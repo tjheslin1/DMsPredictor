@@ -26,7 +26,7 @@ object LifeClericAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean = ??? // healingSpellConditionMet(lifeCleric)
+      def conditionMet: Boolean = healingSpellConditionMet(lifeCleric)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${lifeCleric.name} used $name")

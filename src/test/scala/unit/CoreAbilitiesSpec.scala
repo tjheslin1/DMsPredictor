@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
-import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -17,8 +17,6 @@ import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
 import util.TestData._
 import util.TestMonster
 
-import scala.collection.immutable.Queue
-
 class CoreAbilitiesSpec extends UnitSpecBase {
 
   val Priority = 1
@@ -28,7 +26,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "make two weapon attacks" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val swordedFighter = fighter
             .withBaseWeapon(trackedSword)
@@ -49,7 +47,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "delegate to an ability lower in the order which can be used during an Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val trackedAbilityFighter = fighter
             .withAbilities(
@@ -71,7 +69,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "delegate to an ability lower in order then default to an attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val trackedAbilityFighter = fighter
             .withAbilities(
@@ -93,20 +91,20 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   "castSingleTargetOffensiveSpell" should {
 
     "cast a spell (spell attack)" in {
-      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
-          val eldritchKnightCombatant = eldritchKnight
-            .withSpellKnown(trackedMeleeSpellAttack)
-            .withAllBaseFighterAbilitiesUsed()
-            .withAllSpellSlotsAvailable()
+          val trackedCleric = cleric
+            .withSpellKnown(trackedMeleeSpellAttack(2))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant)
+          castSingleTargetOffensiveSpell(Priority)(trackedCleric)
             .useAbility(List(monster), LowestFirst)
 
           meleeSpellUsedCount shouldBe 1
@@ -115,25 +113,24 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "cast a spell (saving throw) using the highest available spell slot" in {
-      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val spellCastingEK = eldritchKnight
-            .withSpellKnown(trackedSavingThrowSpell)
-            .withAllBaseFighterAbilitiesUsed()
-            .withAllSpellSlotsAvailable()
-
-          val eldritchKnightCombatant = spellCastingEK
+          val trackedCleric = cleric
+            .withSpellKnown(trackedSavingThrowSpell(2))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withProficiencyBonus(6)
             .withLevel(LevelThree)
-            .withIntelligence(10)
+            .withWisdom(10)
             .withCombatIndex(1)
 
           val monster = testMonster.withWisdom(10).withCombatIndex(2)
 
-          val Queue(_, Combatant(_, updatedEK: EldritchKnight)) =
-            Move.takeMove(Queue(eldritchKnightCombatant, monster), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) =
+            castSingleTargetOffensiveSpell(Priority)(trackedCleric)
+              .useAbility(List(monster), LowestFirst)
 
           savingThrowSpellUsedCount shouldBe 1
         }
@@ -141,24 +138,25 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "spend the highest available spell slot" in {
-      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
-          val spellCastingEK = eldritchKnight
-            .withSpellKnown(trackedMeleeSpellAttack)
-            .withAllBaseFighterAbilitiesUsed()
-            .withAllSpellSlotsAvailable()
+          val trackedCleric = cleric
+            .withSpellKnown(trackedMeleeSpellAttack(3))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Cleric]
 
-          val eldritchKnightCombatant = spellCastingEK.withLevel(LevelThree).withCombatIndex(1)
+          val clericCombatant = trackedCleric.withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          val updatedEldritchKnight: EldritchKnight =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant).update
-              .asInstanceOf[EldritchKnight]
+          val updatedCleric: Cleric =
+            castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
-          updatedEldritchKnight.spellSlots.firstLevel.count shouldBe (spellCastingEK.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
         }
       }
     }
@@ -166,11 +164,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "cast cantrip if defined and no spell slots are available" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val noSpellSlotsCleric = cleric
-            .withCantrip(trackedMeleeSpellAttack)
-            .withSpellKnown(trackedSavingThrowSpell)
+            .withCantrip(trackedMeleeSpellAttack(0))
+            .withSpellKnown(trackedSavingThrowSpell(1))
             .withNoSpellSlotsAvailable()
             .withWisdom(24)
             .withCombatIndex(1)
@@ -187,7 +185,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has only a healing spell to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withSpellKnown(CureWounds).withCombatIndex(1)
 
@@ -195,7 +193,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
         .withNoCantrip()
@@ -203,14 +201,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
-    }
-
-    "must meet the level requirement to use spellcasting" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
-
-      val levelTwoEldritchKnight = random[EldritchKnight].withLevel(LevelTwo).withCombatIndex(1)
-
-      castSingleTargetOffensiveSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
   }
 
@@ -245,14 +235,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val healingCleric  = cleric.withWisdom(12).withCombatIndex(1)
+          val healingCleric = cleric
+            .withSpellKnown(trackedHealingSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withWisdom(12)
+            .withLevel(LevelFive)
+            .withCombatIndex(1)
+
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
           val (_, List(Combatant(_, healedFighter: Fighter))) =
             castSingleTargetHealingSpell(Priority)(healingCleric)
               .useAbility(List(damagedFighter), LowestFirst)
 
-          healedFighter.creature.health shouldBe 21
+          trackedHealingSpellUsed shouldBe true
+          healedFighter.creature.health shouldBe 11
         }
       }
     }
@@ -262,19 +259,23 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val healingCleric = cleric.withWisdom(12).asInstanceOf[Cleric]
+          val healingCleric = cleric
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withLevel(LevelThree)
+            .withWisdom(12)
+            .asInstanceOf[Cleric]
 
           val updatedCleric =
             castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1)).update
               .asInstanceOf[Cleric]
 
-          updatedCleric.spellSlots.firstLevel.count shouldBe (healingCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe (healingCleric.spellSlots.secondLevel.count - 1)
         }
       }
     }
 
     "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
 
@@ -282,19 +283,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
 
       castSingleTargetHealingSpell(Priority)(cleric).conditionMet shouldBe false
-    }
-
-    "must meet the level requirement to use spellcasting" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
-
-      val levelTwoEldritchKnight = random[EldritchKnight].withLevel(LevelTwo).withCombatIndex(1)
-
-      castSingleTargetHealingSpell(Priority)(levelTwoEldritchKnight).conditionMet shouldBe false
     }
   }
 
@@ -376,12 +369,12 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
 
     var meleeSpellUsedCount = 0
-    val trackedMeleeSpellAttack = new SingleTargetAttackSpell() {
+    def trackedMeleeSpellAttack(spellLvl: SpellLevel): Spell = new SingleTargetAttackSpell() {
       val damageType: DamageType   = Fire
       val name: String             = "tracked-fire-spell"
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
-      val spellLevel: SpellLevel   = 1
+      val spellLevel: SpellLevel   = spellLvl
       val concentration: Boolean   = false
 
       def damage[_: RS](spellCaster: SpellCaster): Int = {
@@ -391,19 +384,34 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     var savingThrowSpellUsedCount = 0
-    val trackedSavingThrowSpell: Spell = new SingleTargetSavingThrowSpell() {
-      val attribute: Attribute      = Wisdom
-      val halfDamageOnSave: Boolean = false
-      val damageType: DamageType    = Fire
-      val name: String              = "tracked-saving-throw-spell-test"
-      val school: SchoolOfMagic     = Evocation
-      val castingTime: CastingTime  = OneAction
-      val spellLevel: SpellLevel    = 1
-      val concentration: Boolean    = false
+    def trackedSavingThrowSpell(spellLvl: SpellLevel): Spell =
+      new SingleTargetSavingThrowSpell() {
+        val attribute: Attribute      = Wisdom
+        val halfDamageOnSave: Boolean = false
+        val damageType: DamageType    = Fire
+        val name: String              = "tracked-saving-throw-spell-test"
+        val school: SchoolOfMagic     = Evocation
+        val castingTime: CastingTime  = OneAction
+        val spellLevel: SpellLevel    = spellLvl
+        val concentration: Boolean    = false
 
-      def damage[_: RS](spellCaster: SpellCaster): Int = {
-        savingThrowSpellUsedCount += 1
-        4
+        def damage[_: RS](spellCaster: SpellCaster): Int = {
+          savingThrowSpellUsedCount += 1
+          4
+        }
+      }
+
+    var trackedHealingSpellUsed = false
+    val trackedHealingSpell: Spell = new SingleTargetHealingSpell {
+      val name: String             = "tracked-healing-spell"
+      val school: SchoolOfMagic    = Evocation
+      val castingTime: CastingTime = OneAction
+      val spellLevel: SpellLevel   = 3
+      val concentration: Boolean   = false
+
+      def healing[_: RS](spellCaster: SpellCaster): Int = {
+        trackedHealingSpellUsed = true
+        1
       }
     }
   }

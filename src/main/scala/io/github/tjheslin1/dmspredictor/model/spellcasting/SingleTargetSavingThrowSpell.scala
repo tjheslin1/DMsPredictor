@@ -12,7 +12,7 @@ abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
   val halfDamageOnSave: Boolean
 
   val damageType: DamageType
-  val spellEffect: SpellEffect = SingleTargetDamageSpell(damageType)
+  val spellEffect: SpellEffect = DamageSpell
 
   def damage[_: RS](spellCaster: SpellCaster): Int
 

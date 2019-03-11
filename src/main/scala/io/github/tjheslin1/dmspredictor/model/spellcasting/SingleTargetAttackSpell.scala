@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
 
   val damageType: DamageType
-  val spellEffect: SpellEffect = SingleTargetDamageSpell(damageType)
+  val spellEffect: SpellEffect = DamageSpell
 
   def damage[_: RS](spellCaster: SpellCaster): Int
 

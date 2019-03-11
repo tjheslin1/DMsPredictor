@@ -15,13 +15,13 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
     "deal full damage if saving throw failed" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val savingThrowSpell = dexteritySavingThrowSpell(damageOnSave = false)
 
           val fireSpellCleric = cleric
             .withSpellKnown(savingThrowSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
             .withWisdom(15)
             .asInstanceOf[Cleric]
@@ -43,13 +43,13 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
     "deal half damage (rounded down) if saving throw passed and half damage on save is true" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val savingThrowSpell = dexteritySavingThrowSpell(damageOnSave = true)
 
           val fireSpellCleric = cleric
             .withSpellKnown(savingThrowSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
             .withWisdom(2)
             .asInstanceOf[Cleric]
@@ -71,13 +71,13 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
     "deal no damage if saving throw passed and half damage on save is false" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val savingThrowSpell = dexteritySavingThrowSpell(damageOnSave = false)
 
           val fireSpellCleric = cleric
             .withSpellKnown(savingThrowSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
             .withWisdom(2)
             .asInstanceOf[Cleric]

@@ -25,8 +25,10 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val lifeCleric = cleric
-            .withSpellKnown(trackedHealingSpell())
+              .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withSpellKnown(trackedHealingSpell)
             .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
+            .withLevel(LevelThree)
             .withCombatIndex(1)
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
@@ -44,8 +46,10 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val lifeCleric = cleric
-            .withSpellKnown(trackedHealingSpell())
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withSpellKnown(trackedHealingSpell)
             .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
+            .withLevel(LevelThree)
             .withCombatIndex(1)
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
@@ -55,7 +59,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
           val trackedSpellHealing = 1
           val expectedHealth = weakFighter.creature.health + trackedSpellHealing +
-            discipleOfLifeBonusHealing(trackedHealingSpell().spellLevel)
+            discipleOfLifeBonusHealing(trackedHealingSpell.spellLevel)
 
           updatedFighter.health shouldBe expectedHealth
         }
@@ -66,7 +70,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
       val lifeCleric = random[Cleric]
-        .withSpellKnown(trackedHealingSpell())
+        .withSpellKnown(trackedHealingSpell)
         .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
         .withCombatIndex(1)
 
@@ -79,7 +83,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
       val lifeCleric = random[Cleric]
-        .withSpellKnown(trackedHealingSpell())
+        .withSpellKnown(trackedHealingSpell)
         .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
         .withCombatIndex(1)
 
@@ -223,20 +227,17 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     var trackedHealingSpellUsed = false
-    def trackedHealingSpell(): Spell = ??? // new Spell {
-//      val name                               = "tracked-healing-spell"
-//      val school: SchoolOfMagic              = Evocation
-//      val castingTime: CastingTime           = OneAction
-//      val spellEffect: SpellEffect           = HealingSpell
-//      val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
-//      val damageType: DamageType             = Radiant
-//      val spellLevel: SpellLevel             = 1
-//      val concentration: Boolean  = false
-//
-//      def effect[_: RS](spellCaster: SpellCaster): Int = {
-//        trackedHealingSpellUsed = true
-//        1
-//      }
-//    }
+    val trackedHealingSpell: Spell = new SingleTargetHealingSpell {
+      val name: String             = "tracked-healing-spell"
+      val school: SchoolOfMagic    = Evocation
+      val castingTime: CastingTime = OneAction
+      val spellLevel: SpellLevel   = 2
+      val concentration: Boolean   = false
+
+      def healing[_: RS](spellCaster: SpellCaster): Int = {
+        trackedHealingSpellUsed = true
+        1
+      }
+    }
   }
 }

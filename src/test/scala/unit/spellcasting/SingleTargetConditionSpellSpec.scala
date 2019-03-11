@@ -16,11 +16,11 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
     "apply condition if saving throw failed" in {
       forAll { (cleric: Cleric, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val fireSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
             .withWisdom(15)
             .asInstanceOf[Cleric]
@@ -34,7 +34,7 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
             dexterityConditionSpell.effect(fireSpellCleric, List(monster))
 
           dexteritySaveConditionCount shouldBe 1
-          updatedMonster.conditions shouldBe monster.creature.conditions ++ List(dexterityConditionSpell.condition)
+          updatedMonster.conditions shouldBe monster.creature.conditions ++ List(dexterityConditionSpell.conditionFrom(fireSpellCleric))
         }
       }
     }
@@ -42,11 +42,11 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
     "not apply condition if saving throw passed" in {
       forAll { (cleric: Cleric, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val fireSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
-            .withAllSpellSlotsAvailable()
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
             .withWisdom(2)
             .asInstanceOf[Cleric]
@@ -71,7 +71,6 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
 
     var dexteritySaveConditionCount = 0
     val dexterityConditionSpell = new SingleTargetConditionSpell() {
-      val condition: Condition = Turned(10, 10)
       val attribute: Attribute = Dexterity
 
       val name: String             = "tracked-dexterity-save-spell"
@@ -79,6 +78,8 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = 1
       val concentration: Boolean   = false
+
+      def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
 
       override def applyCondition[_: RS](spellCaster: SpellCaster, target: Combatant): Combatant = {
         dexteritySaveConditionCount += 1

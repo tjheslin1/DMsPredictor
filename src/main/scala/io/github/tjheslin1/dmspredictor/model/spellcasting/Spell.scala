@@ -17,7 +17,8 @@ abstract class Spell {
   val spellLevel: SpellLevel
   val concentration: Boolean
 
-  def effect[_: RS](spellCaster: SpellCaster, targets: List[Combatant]): (SpellCaster, List[Combatant])
+  def effect[_: RS](spellCaster: SpellCaster,
+                    targets: List[Combatant]): (SpellCaster, List[Combatant])
 }
 
 object Spell {
@@ -47,6 +48,5 @@ object Spell {
                                     attribute: Attribute,
                                     target: Creature): Boolean =
     savingThrowPassed(spellSaveDc(caster), attribute, target)
-
 
 }

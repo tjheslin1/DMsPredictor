@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlot
+import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
@@ -30,7 +30,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     BaseStats(10, 10, 10, 14, 14, 14),
     Shortsword,
     SacredFlame.some,
-    SpellSlots(FirstLevelSpellSlot(2)),
+    Cleric.clericSpellSlots(LevelFive),
     Cleric.standardClericSpellList,
     channelDivinityUsed = false,
     ChainShirt,

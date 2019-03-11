@@ -15,11 +15,11 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
       "heal the target" in {
         forAll { (cleric: Cleric, fighter: Fighter) =>
           new TestContext {
-            implicit override val roll: RollStrategy = _ => RollResult(10)
+            override implicit val roll: RollStrategy = _ => RollResult(10)
 
             val fireSpellCleric = cleric
               .withSpellKnown(healingSpell)
-              .withAllSpellSlotsAvailable()
+              .withAllSpellSlotsAvailableForLevel(cleric.level)
               .withChannelDivinityUsed()
               .withWisdom(15)
               .asInstanceOf[Cleric]
@@ -38,11 +38,11 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
       "heal the target up to their max health" in {
         forAll { (cleric: Cleric, fighter: Fighter) =>
           new TestContext {
-            implicit override val roll: RollStrategy = _ => RollResult(10)
+            override implicit val roll: RollStrategy = _ => RollResult(10)
 
             val fireSpellCleric = cleric
               .withSpellKnown(healingSpell)
-              .withAllSpellSlotsAvailable()
+              .withAllSpellSlotsAvailableForLevel(cleric.level)
               .withChannelDivinityUsed()
               .withWisdom(15)
               .asInstanceOf[Cleric]

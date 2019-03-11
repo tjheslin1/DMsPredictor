@@ -16,7 +16,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{CureWounds, GuidingBolt, SacredFlame}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -49,8 +49,10 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature = {
-    val damageTaken = adjustedDamage(dmg, damageType, this)
+  def updateHealth[_: RS](dmg: Int,
+                          damageType: DamageType,
+                          attackResult: AttackResult): Creature = {
+    val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedCleric = copy(health = Math.max(0, health - damageTaken))
 
     if (updatedCleric.isConscious && concentrating) handleConcentration(updatedCleric, damageTaken)
@@ -64,10 +66,26 @@ object Cleric {
 
   import BaseClericAbilities._
 
+  def clericSpellSlots(level: Level): SpellSlots = level match {
+    case LevelOne =>
+      SpellSlots(FirstLevelSpellSlots(2), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0))
+    case LevelTwo =>
+      SpellSlots(FirstLevelSpellSlots(3), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0))
+    case LevelThree =>
+      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(2), ThirdLevelSpellSlots(0))
+    case LevelFour =>
+      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(0))
+    case LevelFive =>
+      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(2))
+    case LevelTwenty =>
+      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(3))
+  }
+
   val standardClericSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
     (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
-    (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds
+    (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds,
+    (HoldPerson.spellLevel, HoldPerson.spellEffect)   -> HoldPerson
   )
 
   val standardClericAbilities: List[CombatantAbility] = List(

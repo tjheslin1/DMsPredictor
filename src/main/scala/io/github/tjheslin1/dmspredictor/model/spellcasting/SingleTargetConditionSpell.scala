@@ -9,11 +9,14 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetConditionSpell extends Spell with LazyLogging {
 
-  val condition: Condition
   val attribute: Attribute
-  val spellEffect: SpellEffect = SingleTargetConditionSpell
+  val spellEffect: SpellEffect = ConditionSpell
+
+  def conditionFrom(spellCaster: SpellCaster): Condition
 
   def applyCondition[_: RS](spellCaster: SpellCaster, target: Combatant): Combatant = {
+    val condition = conditionFrom(spellCaster)
+
     logger.debug(s"${target.creature.name} is now ${condition.name}")
 
     val currentConditions = target.creature.conditions
