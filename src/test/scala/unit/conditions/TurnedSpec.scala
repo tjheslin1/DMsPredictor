@@ -13,7 +13,7 @@ class TurnedSpec extends UnitSpecBase {
     "decrement turnsLeft" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          implicit override val roll = D20.naturalTwenty
+          override implicit val roll = D20.naturalTwenty
 
           val turned = Turned(20, 10)
 
@@ -27,7 +27,7 @@ class TurnedSpec extends UnitSpecBase {
     "remove Turned condition if damage taken" in new TestContext {
       forAll { goblin: Goblin =>
         new TestContext {
-          implicit override val roll = D20.naturalTwenty
+          override implicit val roll = D20.naturalTwenty
 
           val turned          = Turned(1, 10)
           val poisoned        = Poisoned(10, 10)

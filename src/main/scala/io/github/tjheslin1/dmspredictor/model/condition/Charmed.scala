@@ -18,11 +18,11 @@ import monocle.macros.Lenses
       val charmed           = creature.conditions.find(_.name == name).get
       val updatedConditions = creature.conditions diff List(charmed)
 
-      logger.debug(s"${creature.name} is no longer Charmed")
+      logger.debug(s"${creature.name} is no longer $name")
 
       Creature.creatureConditionsLens.set(updatedConditions)(creature)
     } else {
-      logger.debug(s"${creature.name} is still Charmed")
+      logger.debug(s"${creature.name} is still $name")
       creature
     }
 

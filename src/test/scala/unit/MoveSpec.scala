@@ -152,7 +152,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "handle conditions" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll = _ => RollResult(10)
+          override implicit val roll = _ => RollResult(10)
 
           val trackedGoblin =
             goblin.withConditions(trackedCondition(100), trackedCondition(50)).withCombatIndex(1)
@@ -168,7 +168,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "miss the combatants turn if a condition saving throw is failed" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll = D20.naturalTwenty
+          override implicit val roll = D20.naturalTwenty
 
           val trackedGoblin =
             goblin

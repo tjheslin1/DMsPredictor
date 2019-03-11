@@ -54,7 +54,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
     "apply the Turned condition on the Undead targets" in {
       forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(15)
+          override implicit val roll: RollStrategy = _ => RollResult(15)
 
           val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
 
@@ -80,7 +80,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
       forAll {
         (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, vampire: Vampire, goblin: Goblin) =>
           new TestContext {
-            implicit override val roll: RollStrategy = _ => RollResult(10)
+            override implicit val roll: RollStrategy = _ => RollResult(10)
 
             val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(10).withCombatIndex(1)
 

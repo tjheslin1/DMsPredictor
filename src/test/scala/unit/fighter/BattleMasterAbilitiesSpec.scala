@@ -37,7 +37,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     "disarm opponent permanently using Disarming Attack" in {
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val battleMasterCombatant = battleMaster
             .withSuperiorityDiceCount(1)
@@ -59,7 +59,7 @@ class BattleMasterAbilitiesSpec extends UnitSpecBase {
     "use all available superiority dice during turn" in {
       forAll { (battleMaster: BattleMaster, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val battleMasterCombatant = _abilityUsages
             .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(battleMaster)

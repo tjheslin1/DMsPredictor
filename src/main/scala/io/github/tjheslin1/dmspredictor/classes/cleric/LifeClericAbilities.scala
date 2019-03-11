@@ -10,8 +10,6 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
-import scala.annotation.tailrec
-
 object LifeClericAbilities extends LazyLogging {
 
   def discipleOfLifeBonusHealing(spellLevel: SpellLevel): Int = 2 + spellLevel
@@ -28,7 +26,7 @@ object LifeClericAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean = healingSpellConditionMet(lifeCleric)
+      def conditionMet: Boolean = ??? // healingSpellConditionMet(lifeCleric)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${lifeCleric.name} used $name")

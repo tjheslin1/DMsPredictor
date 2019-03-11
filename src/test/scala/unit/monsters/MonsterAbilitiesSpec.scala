@@ -20,7 +20,7 @@ class MonsterAbilitiesSpec extends UnitSpecBase {
 
       forAll { (testMonster: TestMonster, fighter: Fighter) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val monsterCombatant =
             testMonster.withStrength(20).withBaseWeapon(trackedSword).withCombatIndex(1)
@@ -40,7 +40,7 @@ class MonsterAbilitiesSpec extends UnitSpecBase {
 
       forAll { (testMonster: TestMonster, fighter: Fighter) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val monsterCombatant =
             testMonster.withStrength(20).withBaseWeapon(trackedSword).withCombatIndex(1)
@@ -59,7 +59,7 @@ class MonsterAbilitiesSpec extends UnitSpecBase {
 
       forAll { (testMonster: TestMonster, fighter: Fighter) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val monsterCombatant = testMonster
             .withStrength(20)

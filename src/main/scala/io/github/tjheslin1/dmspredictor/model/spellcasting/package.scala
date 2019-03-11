@@ -27,7 +27,7 @@ package object spellcasting {
 
   sealed trait SpellEffect extends Product with Serializable
 
-  case class DamageSpell(damageType: DamageType)  extends SpellEffect
-  case object HealingSpell extends SpellEffect
-  case object ConditionSpell extends SpellEffect
+  case class SingleTargetDamageSpell(damageType: DamageType)  extends SpellEffect
+  case object SingleTargetHealingSpell extends SpellEffect
+  case object SingleTargetConditionSpell extends SpellEffect
 }

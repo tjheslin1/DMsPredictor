@@ -14,12 +14,9 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{
-  CureWounds,
-  GuidingBolt,
-  SacredFlame
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{CureWounds, GuidingBolt, SacredFlame}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -43,7 +40,7 @@ import monocle.macros.{GenLens, Lenses}
                                immunities: List[DamageType] = List.empty,
                                bonusActionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
-                               defenseStatus: model.AttackStatus = Regular,
+                               defenseStatus: AttackStatus = Regular,
                                concentrating: Boolean = false,
                                name: String = NameGenerator.randomName)
     extends BaseCleric {
@@ -56,7 +53,7 @@ import monocle.macros.{GenLens, Lenses}
     val damageTaken = adjustedDamage(dmg, damageType, this)
     val updatedCleric = copy(health = Math.max(0, health - damageTaken))
 
-    if (updatedCleric.isConscious && concentrating) Concentration.handleConcentration(updatedCleric, damageTaken)
+    if (updatedCleric.isConscious && concentrating) handleConcentration(updatedCleric, damageTaken)
     else updatedCleric
   }
 

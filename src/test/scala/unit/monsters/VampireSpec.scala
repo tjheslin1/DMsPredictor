@@ -18,7 +18,7 @@ class VampireSpec extends UnitSpecBase {
     "set radiantDamageTaken to true if Radiant damage taken" in
       forAll { vampire: Vampire =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val healthyVampire = vampire.withHealth(50).withMaxHealth(100)
 
@@ -31,7 +31,7 @@ class VampireSpec extends UnitSpecBase {
     "set radiantDamageTaken to false if Radiant damage taken but the adjustedDamage was 0" in
       forAll { vampire: Vampire =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val healthyVampire = vampire.withHealth(50).withMaxHealth(100)
 
@@ -102,7 +102,7 @@ class VampireSpec extends UnitSpecBase {
     "make one regular attack and one Bite attack when using MultiAttack" in {
       forAll { (vampire: Vampire, fighter: Fighter) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
@@ -123,7 +123,7 @@ class VampireSpec extends UnitSpecBase {
         new TestContext {
           val (firstAttack, secondAttack, secondAttackDamage) = (1, 5, 2)
           val rolls                                           = Iterator(firstAttack, secondAttack, secondAttackDamage)
-          implicit override val roll: RollStrategy            = _ => RollResult(rolls.next())
+          override implicit val roll: RollStrategy            = _ => RollResult(rolls.next())
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)

@@ -12,7 +12,7 @@ class ZombieSpec extends UnitSpecBase {
     "trigger Zombie's Undead Fortitude ability" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
@@ -40,7 +40,7 @@ class ZombieSpec extends UnitSpecBase {
     "keep Zombie unconscious if it fails it's Constitution saving throw" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          implicit override val roll: RollStrategy = Dice.naturalOne
+          override implicit val roll: RollStrategy = Dice.naturalOne
 
           val lowHpZombie = zombie.withHealth(5).withConstitution(1).asInstanceOf[Zombie]
 
@@ -54,7 +54,7 @@ class ZombieSpec extends UnitSpecBase {
     "not trigger Undead Fortitude on a Critical Hit" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
@@ -68,7 +68,7 @@ class ZombieSpec extends UnitSpecBase {
     "not trigger Undead Fortitude for Radiant damage" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
           val lowHpZombie                          = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
           val updatedZombie = lowHpZombie.updateHealth(10, Radiant, Hit)

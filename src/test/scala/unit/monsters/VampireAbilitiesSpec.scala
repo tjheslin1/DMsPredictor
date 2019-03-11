@@ -17,7 +17,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "target a creature who is grappled" in {
       forAll { (vampire: Vampire, fighter: Fighter, cleric: Cleric) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withStrength(1).withDexterity(1).withCombatIndex(2)
@@ -42,7 +42,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "restore the Vampires health equal to the necrotic damage dealt" in {
       forAll { (vampire: Vampire, cleric: Cleric) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(5)
+          override implicit val roll: RollStrategy = _ => RollResult(5)
 
           val vampireCombatant =
             vampire.withHealth(50).withMaxHealth(100).withStrength(20).withCombatIndex(1)
@@ -67,7 +67,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "reduce the creatures maxHealth (and health accordingly) equal to the necrotic damage taken" in {
       forAll { (vampire: Vampire, cleric: Cleric) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(5)
+          override implicit val roll: RollStrategy = _ => RollResult(5)
 
           val vampireCombatant =
             vampire.withHealth(50).withMaxHealth(100).withStrength(20).withCombatIndex(1)
@@ -108,7 +108,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "update the Vampires firstAttack to false" in {
       forAll { vampire: Vampire =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val vampireCombatant = vampire.withCombatIndex(1)
 
@@ -122,7 +122,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "attempt to grapple a target instead of dealing damage on its first attack" in {
       forAll { (vampire: Vampire, cleric: Cleric) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(5)
+          override implicit val roll: RollStrategy = _ => RollResult(5)
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
 
@@ -140,7 +140,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "not attempt to grapple a target if an enemy is already grappled" in {
       forAll { (vampire: Vampire, cleric: Cleric) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(5)
+          override implicit val roll: RollStrategy = _ => RollResult(5)
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
 
@@ -158,7 +158,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "perform a regular damaging attack on the Vampires second attack" in {
       forAll { (vampire: Vampire, cleric: Cleric) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(5)
+          override implicit val roll: RollStrategy = _ => RollResult(5)
 
           val vampireCombatant =
             vampire.copy(firstAttack = false).withStrength(20).withCombatIndex(1)

@@ -152,8 +152,8 @@ object TestData {
     def withAllBaseFighterAbilitiesUsed() =
       _abilityUsages.set(BaseFighterAbilities(true, true))(eldritchKnight)
 
-    def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(eldritchKnight)
+    def withSpellKnown(spell: Spell): EldritchKnight = ???
+//      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(eldritchKnight)
     def withAllSpellSlotsAvailable() =
       _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(eldritchKnight)
     def withNoSpellSlotsAvailable() =
@@ -172,8 +172,9 @@ object TestData {
     def withSpellsKnown(spells: Spell*) =
       _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
         cleric)
-    def withNoSpellSlotsAvailable() = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
-    def withChannelDivinityUsed()   = _channelDivinityUsed.set(true)(cleric)
+    def withAllSpellSlotsAvailable() = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(2)))(cleric)
+    def withNoSpellSlotsAvailable()  = _spellSlots.set(SpellSlots(FirstLevelSpellSlot(0)))(cleric)
+    def withChannelDivinityUsed()    = _channelDivinityUsed.set(true)(cleric)
   }
 
   implicit class BarbarianOps(val barbarian: Barbarian) extends AnyVal {

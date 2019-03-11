@@ -15,12 +15,12 @@ class SpellSpec extends UnitSpecBase {
     "return true if the targets roll equals the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val caster  = cleric.withProficiencyBonus(2).withWisdom(10)
+          val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
 
-          spellSavingThrowPassed(caster, SacredFlame, Dexterity, monster) shouldBe true
+          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe true
         }
       }
     }
@@ -28,12 +28,12 @@ class SpellSpec extends UnitSpecBase {
     "return true if the targets roll exceeds the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val caster  = cleric.withProficiencyBonus(2).withWisdom(10)
+          val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(14)
 
-          spellSavingThrowPassed(caster, SacredFlame, Dexterity, monster) shouldBe true
+          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe true
         }
       }
     }
@@ -41,12 +41,12 @@ class SpellSpec extends UnitSpecBase {
     "return false if the targets roll is less than the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val caster  = cleric.withProficiencyBonus(2).withWisdom(14)
+          val caster  = cleric.withProficiencyBonus(2).withWisdom(14).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
 
-          spellSavingThrowPassed(caster, SacredFlame, Dexterity, monster) shouldBe false
+          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe false
         }
       }
     }

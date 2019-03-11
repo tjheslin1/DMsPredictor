@@ -3,6 +3,7 @@ package unit
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{EldritchKnight, Fighter}
@@ -158,60 +159,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .asInstanceOf[EldritchKnight]
 
           updatedEldritchKnight.spellSlots.firstLevel.count shouldBe (spellCastingEK.spellSlots.firstLevel.count - 1)
-        }
-      }
-    }
-
-    "deal half damage to a creature resistant to the damage type" in {
-      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val eldritchKnightCombatant = eldritchKnight
-            .withSpellKnown(trackedMeleeSpellAttack)
-            .withAllBaseFighterAbilitiesUsed()
-            .withAllSpellSlotsAvailable()
-            .withLevel(LevelThree)
-            .withCombatIndex(1)
-
-          val monster = testMonster
-            .withHealth(10)
-            .withResistance(Fire)
-            .withArmourClass(10)
-            .withCombatIndex(2)
-
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant)
-              .useAbility(List(monster), LowestFirst)
-
-          updatedMonster.health shouldBe 8
-        }
-      }
-    }
-
-    "deal zero damage to a creature immune to the damage type" in {
-      forAll { (eldritchKnight: EldritchKnight, testMonster: TestMonster) =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val eldritchKnightCombatant = eldritchKnight
-            .withSpellKnown(trackedMeleeSpellAttack)
-            .withAllBaseFighterAbilitiesUsed()
-            .withAllSpellSlotsAvailable()
-            .withLevel(LevelThree)
-            .withCombatIndex(1)
-
-          val monster = testMonster
-            .withHealth(10)
-            .withImmunity(Fire)
-            .withArmourClass(10)
-            .withCombatIndex(2)
-
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            castSingleTargetOffensiveSpell(Priority)(eldritchKnightCombatant)
-              .useAbility(List(monster), LowestFirst)
-
-          updatedMonster.health shouldBe 10
         }
       }
     }
@@ -429,28 +376,35 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
 
     var meleeSpellUsedCount = 0
-    val trackedMeleeSpellAttack =
-      Spell("tracked-melee-spell-test",
-            1,
-            Evocation,
-            OneAction,
-            DamageSpell,
-            MeleeSpellAttack,
-            Fire, {
-              meleeSpellUsedCount += 1
-              4
-            })
+    val trackedMeleeSpellAttack = new SingleTargetAttackSpell() {
+      val damageType: DamageType   = Fire
+      val name: String             = "tracked-fire-spell"
+      val school: SchoolOfMagic    = Evocation
+      val castingTime: CastingTime = OneAction
+      val spellLevel: SpellLevel   = 1
+      val concentration: Boolean   = false
+
+      def damage[_: RS](spellCaster: SpellCaster): Int = {
+        meleeSpellUsedCount += 1
+        4
+      }
+    }
 
     var savingThrowSpellUsedCount = 0
-    val trackedSavingThrowSpell = Spell("tracked-saving-throw-spell-test",
-                                        1,
-                                        Evocation,
-                                        OneAction,
-                                        DamageSpell,
-                                        SpellSavingThrow(Wisdom),
-                                        Fire, {
-                                          savingThrowSpellUsedCount += 1
-                                          4
-                                        })
+    val trackedSavingThrowSpell: Spell = new SingleTargetSavingThrowSpell() {
+      val attribute: Attribute      = Wisdom
+      val halfDamageOnSave: Boolean = false
+      val damageType: DamageType    = Fire
+      val name: String              = "tracked-saving-throw-spell-test"
+      val school: SchoolOfMagic     = Evocation
+      val castingTime: CastingTime  = OneAction
+      val spellLevel: SpellLevel    = 1
+      val concentration: Boolean    = false
+
+      def damage[_: RS](spellCaster: SpellCaster): Int = {
+        savingThrowSpellUsedCount += 1
+        4
+      }
+    }
   }
 }

@@ -86,7 +86,7 @@ class ActionsSpec extends UnitSpecBase {
     "hit if the attack roll was a natural 20" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2)) shouldBe CriticalHit
         }
@@ -96,7 +96,7 @@ class ActionsSpec extends UnitSpecBase {
     "use Strength, hitBonus and proficiencyBonus to determine an attack result for a player" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val plusTwoWeapon = weaponWithHitBonus(2)
 
@@ -119,7 +119,7 @@ class ActionsSpec extends UnitSpecBase {
     "use only hitBonus to determine an attack result for a monster" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val plusTwoWeapon = weaponWithHitBonus(2)
 
@@ -140,7 +140,7 @@ class ActionsSpec extends UnitSpecBase {
     "hit a monster if the attack overcomes the monster's armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val ac10Monster = monster.withArmourClass(10)
 
@@ -152,7 +152,7 @@ class ActionsSpec extends UnitSpecBase {
     "miss a monster if the attack doesn't overcomes the monster's armour class" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(2)
+          override implicit val roll: RollStrategy = _ => RollResult(2)
           val ac20Monster                          = monster.withArmourClass(30)
 
           attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2)) shouldBe Miss
@@ -163,7 +163,7 @@ class ActionsSpec extends UnitSpecBase {
     "miss if the attack roll was a natural 1" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(1)
+          override implicit val roll: RollStrategy = _ => RollResult(1)
 
           attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2)) shouldBe CriticalMiss
         }
@@ -173,7 +173,7 @@ class ActionsSpec extends UnitSpecBase {
     "score a CriticalHit against a target using a specific DetermineCritical strategy" in {
       forAll { (champion: Champion, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val levelThreeChampion = champion.withLevel(LevelThree)
 
@@ -189,7 +189,7 @@ class ActionsSpec extends UnitSpecBase {
     "handle conditions which trigger on damage" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val turnedFighter = fighter.withCondition(Turned(10, 10)).withCombatIndex(2)
 
@@ -206,7 +206,7 @@ class ActionsSpec extends UnitSpecBase {
     "kill a monster if the damage is more than the monster's health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val oneHundredDamageWeapon =
             fixedDamageWeapon("one hundred damage weapon",
@@ -229,7 +229,7 @@ class ActionsSpec extends UnitSpecBase {
     "fail to kill a monster if the damage is less than the monster's health" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val oneDamageWeapon =
             fixedDamageWeapon("one damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
@@ -247,7 +247,7 @@ class ActionsSpec extends UnitSpecBase {
     "deal at least one damage to a creature resistance to the damage type" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
+          override implicit val roll: RollStrategy = _ => RollResult(19)
 
           val tenDamageWeapon =
             fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 1)

@@ -18,7 +18,7 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "delegate to the next Action ability" in {
       forAll { (berserker: Berserker, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val trackedBerserker = berserker
             .withAbilities(List(frenzy(1), trackedBonusAction(2), trackedAbility(3)))
@@ -87,7 +87,7 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "use a single attack on Bonus Action whilst frenzying" in {
       forAll { (berserker: Berserker, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val frenzyingBerserker = berserker
             .withInFrenzy()
@@ -107,7 +107,7 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "delegate to a SingleAttack action ability" in {
       forAll { (berserker: Berserker, testMonster: TestMonster) =>
         new TestContext {
-          implicit override val roll: RollStrategy = D20.naturalTwenty
+          override implicit val roll: RollStrategy = D20.naturalTwenty
 
           val frenzyingBerserker = berserker
             .withInFrenzy()
