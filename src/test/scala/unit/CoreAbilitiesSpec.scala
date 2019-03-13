@@ -203,8 +203,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
-          val updatedCleric: Cleric =
-            castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
+          val updatedCleric = castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }

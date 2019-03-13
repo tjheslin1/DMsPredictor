@@ -29,17 +29,15 @@ abstract class Spell {
 object Spell {
 
   @tailrec
-  def spellOfTypeBelowLevel(spellsKnown: Map[(SpellLevel, SpellEffect), Spell],
+  def spellOfLevelOrBelow(spellsKnown: Map[(SpellLevel, SpellEffect), Spell],
                             spellEffect: SpellEffect,
                             spellLevel: SpellLevel): Option[Spell] = {
     val spellLookup = spellsKnown.get((spellLevel, spellEffect))
 
-    println(s"^^^^^^^^^^^^^^^^ spellLookup: $spellLookup")
-
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
     if (spellLookup.isDefined) spellLookup
-    else if (spellLevel > 0) spellOfTypeBelowLevel(spellsKnown, spellEffect, spellLevelBelow)
+    else if (spellLevel > 0) spellOfLevelOrBelow(spellsKnown, spellEffect, spellLevelBelow)
     else none[Spell]
   }
 

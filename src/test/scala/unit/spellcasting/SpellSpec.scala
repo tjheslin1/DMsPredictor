@@ -22,7 +22,7 @@ class SpellSpec extends UnitSpecBase {
         (HoldPerson.spellLevel, HoldPerson.spellEffect)   -> HoldPerson
       )
 
-      spellOfTypeBelowLevel(spellsKnown, DamageSpell, 1) shouldBe GuidingBolt.some
+      spellOfLevelOrBelow(spellsKnown, DamageSpell, 1) shouldBe GuidingBolt.some
     }
 
     "return a spell of a specific SpellEffect below the level given" in {
@@ -33,7 +33,7 @@ class SpellSpec extends UnitSpecBase {
         (HoldPerson.spellLevel, HoldPerson.spellEffect)   -> HoldPerson
       )
 
-      spellOfTypeBelowLevel(spellsKnown, DamageSpell, 3) shouldBe GuidingBolt.some
+      spellOfLevelOrBelow(spellsKnown, DamageSpell, 3) shouldBe GuidingBolt.some
     }
 
     "return none if no spell of SpellEffect is found" in {
@@ -43,7 +43,7 @@ class SpellSpec extends UnitSpecBase {
         (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds
       )
 
-      spellOfTypeBelowLevel(spellsKnown, ConditionSpell, 2) shouldBe None
+      spellOfLevelOrBelow(spellsKnown, ConditionSpell, 2) shouldBe None
     }
   }
 
