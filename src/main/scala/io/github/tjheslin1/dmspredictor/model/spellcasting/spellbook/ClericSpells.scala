@@ -62,6 +62,7 @@ object ClericSpells {
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
-
   }
+
+//  case object SpiritGuardians
 }

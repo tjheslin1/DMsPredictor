@@ -26,7 +26,6 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
             .asInstanceOf[Cleric]
 
           val monster = goblin
-            .withHealth(10)
             .withDexterity(2)
             .withCombatIndex(2)
 
@@ -52,7 +51,6 @@ class SingleTargetConditionSpellSpec extends UnitSpecBase {
             .asInstanceOf[Cleric]
 
           val monster = goblin
-            .withHealth(10)
             .withDexterity(20)
             .withCombatIndex(2)
 
