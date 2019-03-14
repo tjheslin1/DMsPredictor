@@ -13,7 +13,8 @@ abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
 
   def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
-  def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel,
+  def effect[_: RS](spellCaster: SpellCaster,
+                    spellLevel: SpellLevel,
                     targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
     val target       = targets.head
     val attackResult = spellAttack(spellCaster, target.creature)

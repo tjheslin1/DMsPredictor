@@ -4,6 +4,7 @@ import cats.data.NonEmptyList
 import cats.data.NonEmptyList.one
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
@@ -105,14 +106,14 @@ object CoreAbilities extends LazyLogging {
 
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
-        val (optSpell, spellLevelToUse: SpellLevel) =
+        val (optSpell, spellLevelToUse) =
           (spellCaster.cantripKnown, highestSpellSlot) match {
             case (cantrip, None) =>
               (cantrip, 0)
             case (cantrip, Some(spellSlot)) =>
               val optSpell =
                 spellOfLevelOrBelow(spellCaster.spellsKnown, DamageSpell, spellSlot.spellLevel)
-              optSpell.fold[(Option[Spell], SpellLevel)]((cantrip, 0)) { foundSpell =>
+              optSpell.fold((cantrip, 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
           }
@@ -125,27 +126,13 @@ object CoreAbilities extends LazyLogging {
           case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
             val (_, List(updatedTarget)) =
-              spell.effect(spellCaster, spellLevelToUse, List(spellTarget))
+              spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), List(spellTarget))
 
             (combatant, others.replace(updatedTarget))
         }
       }
 
-      def update: Creature =
-        highestSpellSlotAvailable(spellCaster.spellSlots) match {
-          case None => spellCaster
-          case Some(spellSlotUsed) =>
-            val updatedSpellSlotCount = spellSlotUsed.count - 1
-
-            val spellSlotLens = spellSlotUsed match {
-              case FirstLevelSpellSlots(_)  => firstLevelLens
-              case SecondLevelSpellSlots(_) => secondLevelLens
-              case ThirdLevelSpellSlots(_)  => thirdLevelLens
-            }
-
-            (SpellCaster.spellSlotsLens composeLens spellSlotLens)
-              .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
-        }
+      def update: Creature = updateSpellSlot(spellCaster, DamageSpell)
 
     }
 
@@ -206,21 +193,7 @@ object CoreAbilities extends LazyLogging {
           (combatant, others.replace(updatedTarget)))
       }
 
-      def update: Creature =
-        highestSpellSlotAvailable(spellCaster.spellSlots) match {
-          case None => spellCaster
-          case Some(spellSlotUsed) =>
-            val updatedSpellSlotCount = spellSlotUsed.count - 1
-
-            val spellSlotLens = spellSlotUsed match {
-              case FirstLevelSpellSlots(_)  => firstLevelLens
-              case SecondLevelSpellSlots(_) => secondLevelLens
-              case ThirdLevelSpellSlots(_)  => thirdLevelLens
-            }
-
-            (SpellCaster.spellSlotsLens composeLens spellSlotLens)
-              .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
-        }
+      def update: Creature = updateSpellSlot(spellCaster, HealingSpell)
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
@@ -236,4 +209,30 @@ object CoreAbilities extends LazyLogging {
             case _            => false
           }
       }
+
+  private def updateSpellSlot(spellCaster: SpellCaster, spellEffect: SpellEffect): Creature =
+    highestSpellSlotAvailable(spellCaster.spellSlots) match {
+      case None => spellCaster
+      case Some(spellSlotUsed) =>
+        val optSpell =
+          spellOfLevelOrBelow(spellCaster.spellsKnown, spellEffect, spellSlotUsed.spellLevel)
+
+        optSpell.fold(spellCaster) { foundSpell =>
+          if (foundSpell.spellLevel.value == 0) {
+            spellCaster
+          } else {
+            val updatedSpellSlotCount = spellSlotUsed.count - 1
+
+            val spellSlotLens = spellSlotUsed match {
+              case FirstLevelSpellSlots(_)  => firstLevelLens
+              case SecondLevelSpellSlots(_) => secondLevelLens
+              case ThirdLevelSpellSlots(_)  => thirdLevelLens
+            }
+
+            (SpellCaster.spellSlotsLens composeLens spellSlotLens)
+              .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
+              .asInstanceOf[Player with SpellCaster]
+          }
+        }
+    }
 }

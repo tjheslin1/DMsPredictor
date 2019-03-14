@@ -193,7 +193,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val trackedCleric = cleric
               .withCantrip(trackedSavingThrowSpell(0))
-            .withSpellKnown(trackedHealingSpell(3))
+            .withSpellsKnown(trackedSavingThrowSpell(0), trackedHealingSpell(3))
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
@@ -224,8 +224,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(2).withCombatIndex(2)
 
-          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric).useAbility(List(monster),
-                                                                                  LowestFirst)
+          castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric)
+            .useAbility(List(monster), LowestFirst)
 
           savingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
@@ -354,7 +354,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val healingCleric = cleric
               .withCantrip(trackedHealingSpell(0))
-              .withSpellKnown(trackedMeleeSpellAttack(1))
+              .withSpellsKnown(trackedHealingSpell(0), trackedMeleeSpellAttack(1))
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
             .withWisdom(12)

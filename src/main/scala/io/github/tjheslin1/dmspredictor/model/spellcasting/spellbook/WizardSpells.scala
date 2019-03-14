@@ -35,7 +35,8 @@ object WizardSpells {
       logger.debug(s"casting $name")
 
       val damagedTarget =
-        target.copy(creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit))
+        target.copy(
+          creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit))
 
       (spellCaster, targets.replace(damagedTarget))
     }

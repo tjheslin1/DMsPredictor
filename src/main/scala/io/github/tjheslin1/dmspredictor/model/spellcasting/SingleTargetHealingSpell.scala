@@ -11,7 +11,8 @@ abstract class SingleTargetHealingSpell extends Spell with LazyLogging {
 
   def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
-  def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel,
+  def effect[_: RS](spellCaster: SpellCaster,
+                    spellLevel: SpellLevel,
                     targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
     val target = targets.head
 

@@ -30,14 +30,14 @@ object Spell {
 
   @tailrec
   def spellOfLevelOrBelow(spellsKnown: Map[(SpellLevel, SpellEffect), Spell],
-                            spellEffect: SpellEffect,
-                            spellLevel: SpellLevel): Option[Spell] = {
+                          spellEffect: SpellEffect,
+                          spellLevel: SpellLevel): Option[Spell] = {
     val spellLookup = spellsKnown.get((spellLevel, spellEffect))
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
     if (spellLookup.isDefined) spellLookup
-    else if (spellLevel > 0) spellOfLevelOrBelow(spellsKnown, spellEffect, spellLevelBelow)
+    else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellsKnown, spellEffect, spellLevelBelow)
     else none[Spell]
   }
 
