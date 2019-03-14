@@ -162,6 +162,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "not cast a concentration spell if already concentrating" in {
+      fail("todo")
+    }
+
     "spend the highest available spell slot" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -325,6 +329,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           healedFighter.creature.health shouldBe 11
         }
       }
+    }
+
+    "not cast a concentration spell if already concentrating" in {
+      fail("todo")
     }
 
     "spend the highest available spell slot" in {
