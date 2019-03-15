@@ -110,7 +110,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = 1
-      val concentration: Boolean   = false
+      val requiresConcentration: Boolean   = false
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         dexteritySaveDamageCount += 1

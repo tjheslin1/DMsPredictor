@@ -30,7 +30,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val updatedCleric = handleConcentration(lowConstitutionCleric, damageTaken = 20)
 
-          updatedCleric.concentrating shouldBe false
+          updatedCleric.isConcentrating shouldBe false
         }
       }
     }
@@ -44,7 +44,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val updatedCleric = handleConcentration(highConstitutionCleric, damageTaken = 10)
 
-          updatedCleric.concentrating shouldBe true
+          updatedCleric.isConcentrating shouldBe true
         }
       }
     }

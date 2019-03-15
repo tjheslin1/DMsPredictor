@@ -97,7 +97,7 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = 1
-      val concentration: Boolean   = false
+      val requiresConcentration: Boolean   = false
 
       def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
 

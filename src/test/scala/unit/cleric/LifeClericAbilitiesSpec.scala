@@ -25,8 +25,8 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val lifeCleric = cleric
-              .withAllSpellSlotsAvailableForLevel(LevelThree)
-            .withSpellKnown(trackedHealingSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withSpellKnown(trackedHealingSpell(2))
             .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withLevel(LevelThree)
             .withCombatIndex(1)
@@ -45,9 +45,11 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
+          val trackedLevelTwoHealingSpell = trackedHealingSpell(2)
+
           val lifeCleric = cleric
             .withAllSpellSlotsAvailableForLevel(LevelThree)
-            .withSpellKnown(trackedHealingSpell)
+            .withSpellKnown(trackedLevelTwoHealingSpell)
             .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withLevel(LevelThree)
             .withCombatIndex(1)
@@ -59,9 +61,29 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
           val trackedSpellHealing = 1
           val expectedHealth = weakFighter.creature.health + trackedSpellHealing +
-            discipleOfLifeBonusHealing(trackedHealingSpell.spellLevel)
+            discipleOfLifeBonusHealing(trackedLevelTwoHealingSpell.spellLevel)
 
           updatedFighter.health shouldBe expectedHealth
+        }
+      }
+    }
+
+    "spend the spend slot used by healing spell delegated to" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val lifeCleric = cleric
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withSpellKnown(trackedHealingSpell(2))
+            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
+            .withLevel(LevelThree)
+            .asInstanceOf[Cleric]
+
+          val updatedCleric =
+            discipleOfLife(Priority)(lifeCleric.withCombatIndex(1)).update.asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.secondLevel.count shouldBe (lifeCleric.spellSlots.secondLevel.count - 1)
         }
       }
     }
@@ -70,7 +92,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
       val lifeCleric = random[Cleric]
-        .withSpellKnown(trackedHealingSpell)
+        .withSpellKnown(trackedHealingSpell(2))
         .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
         .withCombatIndex(1)
 
@@ -83,7 +105,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
       val lifeCleric = random[Cleric]
-        .withSpellKnown(trackedHealingSpell)
+        .withSpellKnown(trackedHealingSpell(2))
         .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
         .withCombatIndex(1)
 
@@ -93,7 +115,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
 
@@ -101,7 +123,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
 
@@ -118,7 +140,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "restore up to 50% of an allies health using all points" in {
       forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val weakFighter   = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian = barbarian.withHealth(10).withMaxHealth(100).withCombatIndex(3)
@@ -138,7 +160,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "restore up to 50% of an allies health using as many points as allowed" in {
       forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian, champion: Champion) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val healthyFighter = fighter.withHealth(100).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian  = barbarian.withHealth(10).withMaxHealth(25).withCombatIndex(3)
@@ -227,12 +249,12 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     var trackedHealingSpellUsed = false
-    val trackedHealingSpell: Spell = new SingleTargetHealingSpell {
-      val name: String             = "tracked-healing-spell"
-      val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneAction
-      val spellLevel: SpellLevel   = 2
-      val concentration: Boolean   = false
+    def trackedHealingSpell(spellLvl: SpellLevel): Spell = new SingleTargetHealingSpell {
+      val name: String                   = "tracked-healing-spell"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneAction
+      val spellLevel: SpellLevel         = spellLvl
+      val requiresConcentration: Boolean = false
 
       def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         trackedHealingSpellUsed = true

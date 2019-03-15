@@ -19,7 +19,7 @@ abstract class Spell {
   val castingTime: CastingTime
   val spellEffect: SpellEffect
   val spellLevel: SpellLevel
-  val concentration: Boolean
+  val requiresConcentration: Boolean
 
   def effect[_: RS](spellCaster: SpellCaster,
                     spellLevel: SpellLevel,
@@ -29,15 +29,18 @@ abstract class Spell {
 object Spell {
 
   @tailrec
-  def spellOfLevelOrBelow(spellsKnown: Map[(SpellLevel, SpellEffect), Spell],
+  def spellOfLevelOrBelow(spellCaster: SpellCaster,
                           spellEffect: SpellEffect,
                           spellLevel: SpellLevel): Option[Spell] = {
-    val spellLookup = spellsKnown.get((spellLevel, spellEffect))
+    val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
-    if (spellLookup.isDefined) spellLookup
-    else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellsKnown, spellEffect, spellLevelBelow)
+    if (spellLookup.isDefined &&
+        spellCaster.isConcentrating &&
+        spellLookup.get.requiresConcentration)
+      spellLookup
+    else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
     else none[Spell]
   }
 

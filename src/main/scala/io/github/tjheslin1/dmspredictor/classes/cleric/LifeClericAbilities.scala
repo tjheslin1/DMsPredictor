@@ -40,7 +40,7 @@ object LifeClericAbilities extends LazyLogging {
           val optSpell = highestSpellSlotAvailable(lifeCleric.spellSlots) match {
             case None => None
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(lifeCleric.spellsKnown, HealingSpell, spellSlot.spellLevel)
+              spellOfLevelOrBelow(lifeCleric, HealingSpell, spellSlot.spellLevel)
           }
 
           optSpell.fold((combatant, others)) { healingSpell =>

@@ -162,10 +162,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "not cast a concentration spell if already concentrating" in {
-      fail("todo")
-    }
-
     "spend the highest available spell slot" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -331,10 +327,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "not cast a concentration spell if already concentrating" in {
-      fail("todo")
-    }
-
     "spend the highest available spell slot" in {
       forAll { cleric: Cleric =>
         new TestContext {
@@ -478,7 +470,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = spellLvl
-      val concentration: Boolean   = false
+      val requiresConcentration: Boolean   = false
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         meleeSpellUsedCount += 1
@@ -496,7 +488,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         val school: SchoolOfMagic     = Evocation
         val castingTime: CastingTime  = OneAction
         val spellLevel: SpellLevel    = spellLvl
-        val concentration: Boolean    = false
+        val requiresConcentration: Boolean    = false
 
         def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
           savingThrowSpellUsedCount += 1
@@ -510,7 +502,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = spellLvl
-      val concentration: Boolean   = false
+      val requiresConcentration: Boolean   = false
 
       def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         trackedHealingSpellUsed = true

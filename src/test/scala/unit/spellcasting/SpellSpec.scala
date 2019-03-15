@@ -15,35 +15,28 @@ class SpellSpec extends UnitSpecBase {
 
   "spellOfTypeBelowLevel" should {
     "return a spell of a specific SpellEffect equal to the level given" in {
-      val spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Map(
-        (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
-        (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
-        (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds,
-        (HoldPerson.spellLevel, HoldPerson.spellEffect)   -> HoldPerson
-      )
+      val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(spellsKnown, DamageSpell, 1) shouldBe GuidingBolt.some
+      spellOfLevelOrBelow(cleric, DamageSpell, 1) shouldBe GuidingBolt.some
     }
 
     "return a spell of a specific SpellEffect below the level given" in {
-      val spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Map(
-        (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
-        (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
-        (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds,
-        (HoldPerson.spellLevel, HoldPerson.spellEffect)   -> HoldPerson
-      )
+      val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(spellsKnown, DamageSpell, 3) shouldBe GuidingBolt.some
+      spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
+    }
+
+    "not return a concentration spell if already concentrating" in {
+      val concentratingCleric = random[Cleric].withConcentrating(true)
+        .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+
+      spellOfLevelOrBelow(concentratingCleric, ConditionSpell, 3) shouldBe None
     }
 
     "return none if no spell of SpellEffect is found" in {
-      val spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Map(
-        (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
-        (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
-        (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds
-      )
+      val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds)
 
-      spellOfLevelOrBelow(spellsKnown, ConditionSpell, 2) shouldBe None
+      spellOfLevelOrBelow(cleric, ConditionSpell, 2) shouldBe None
     }
   }
 

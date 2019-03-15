@@ -17,7 +17,7 @@ object WizardSpells {
     val castingTime: CastingTime           = OneAction
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val spellLevel: SpellLevel             = 1
-    val concentration: Boolean             = false
+    val requiresConcentration: Boolean             = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
       val numberOfDarts = 2 + spellLevel

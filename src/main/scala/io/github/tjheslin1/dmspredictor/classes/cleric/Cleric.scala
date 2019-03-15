@@ -41,7 +41,7 @@ import monocle.macros.{GenLens, Lenses}
                                bonusActionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
-                               concentrating: Boolean = false,
+                               isConcentrating: Boolean = false,
                                name: String = NameGenerator.randomName)
     extends BaseCleric {
 
@@ -55,7 +55,7 @@ import monocle.macros.{GenLens, Lenses}
     val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedCleric = copy(health = Math.max(0, health - damageTaken))
 
-    if (updatedCleric.isConscious && concentrating) handleConcentration(updatedCleric, damageTaken)
+    if (updatedCleric.isConscious && isConcentrating) handleConcentration(updatedCleric, damageTaken)
     else updatedCleric
   }
 

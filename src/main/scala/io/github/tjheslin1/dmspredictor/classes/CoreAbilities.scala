@@ -112,7 +112,7 @@ object CoreAbilities extends LazyLogging {
               (cantrip, 0)
             case (cantrip, Some(spellSlot)) =>
               val optSpell =
-                spellOfLevelOrBelow(spellCaster.spellsKnown, DamageSpell, spellSlot.spellLevel)
+                spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)
               optSpell.fold((cantrip, 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
@@ -160,7 +160,7 @@ object CoreAbilities extends LazyLogging {
         val optSpell = highestSpellSlot match {
           case None => None
           case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster.spellsKnown, HealingSpell, spellSlot.spellLevel)
+            spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)
         }
 
         val allies = players(others)
@@ -215,7 +215,7 @@ object CoreAbilities extends LazyLogging {
       case None => spellCaster
       case Some(spellSlotUsed) =>
         val optSpell =
-          spellOfLevelOrBelow(spellCaster.spellsKnown, spellEffect, spellSlotUsed.spellLevel)
+          spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotUsed.spellLevel)
 
         optSpell.fold(spellCaster) { foundSpell =>
           if (foundSpell.spellLevel.value == 0) {
