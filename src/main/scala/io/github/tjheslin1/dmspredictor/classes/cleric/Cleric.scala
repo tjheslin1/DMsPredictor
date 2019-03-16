@@ -55,7 +55,8 @@ import monocle.macros.{GenLens, Lenses}
     val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedCleric = copy(health = Math.max(0, health - damageTaken))
 
-    if (updatedCleric.isConscious && isConcentrating) handleConcentration(updatedCleric, damageTaken)
+    if (updatedCleric.isConscious && isConcentrating)
+      handleConcentration(updatedCleric, damageTaken)
     else updatedCleric
   }
 
@@ -65,21 +66,6 @@ import monocle.macros.{GenLens, Lenses}
 object Cleric {
 
   import BaseClericAbilities._
-
-  def clericSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne =>
-      SpellSlots(FirstLevelSpellSlots(2), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0))
-    case LevelTwo =>
-      SpellSlots(FirstLevelSpellSlots(3), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0))
-    case LevelThree =>
-      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(2), ThirdLevelSpellSlots(0))
-    case LevelFour =>
-      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(0))
-    case LevelFive =>
-      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(2))
-    case LevelTwenty =>
-      SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(3))
-  }
 
   val standardClericSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
@@ -94,7 +80,8 @@ object Cleric {
     castSingleTargetHealingSpell(3),
     destroyUndead(4),
     turnUndead(5),
-    castSingleTargetOffensiveSpell(6)
+    castSingleTargetConditionSpell(6),
+    castSingleTargetOffensiveSpell(7)
   )
 
   val strengthLens: Lens[Cleric, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
@@ -103,4 +90,15 @@ object Cleric {
   val wisdomLens: Lens[Cleric, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Cleric, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Cleric, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+
+  // format: off
+  def clericSpellSlots(level: Level): SpellSlots = level match {
+    case LevelOne => SpellSlots(FirstLevelSpellSlots(2), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0))
+    case LevelTwo => SpellSlots(FirstLevelSpellSlots(3), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0))
+    case LevelThree => SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(2), ThirdLevelSpellSlots(0))
+    case LevelFour => SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(0))
+    case LevelFive => SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(2))
+    case LevelTwenty => SpellSlots(FirstLevelSpellSlots(4), SecondLevelSpellSlots(3), ThirdLevelSpellSlots(3))
+  }
+  // format: on
 }

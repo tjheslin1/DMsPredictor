@@ -28,7 +28,7 @@ object LifeClericAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean = healingSpellConditionMet(lifeCleric)
+      def conditionMet: Boolean = spellConditionMet(lifeCleric, HealingSpell)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${lifeCleric.name} used $name")
@@ -44,13 +44,24 @@ object LifeClericAbilities extends LazyLogging {
           }
 
           optSpell.fold((combatant, others)) { healingSpell =>
-            castSingleTargetHealingSpell(
-              order,
-              bonusHealing = discipleOfLifeBonusHealing(healingSpell.spellLevel))(combatant)
-              .useAbility(others, focus)
+            val healingSpellAbility =
+              castSingleTargetHealingSpell(order,
+                                           bonusHealing =
+                                             discipleOfLifeBonusHealing(healingSpell.spellLevel))(_)
+
+            val (updatedLifeCleric, updatedTargets) =
+              healingSpellAbility(combatant).useAbility(others, focus)
+
+            val updatedSpellSlotLifeCleric = healingSpellAbility(updatedLifeCleric).update
+
+            val updatedAttackingCombatant =
+              Combatant.creatureLens.set(updatedSpellSlotLifeCleric)(updatedLifeCleric)
+
+            (updatedAttackingCombatant, others.replace(updatedTargets))
           }
-        } else
+        } else {
           (combatant, others)
+        }
       }
 
       def update: Creature = lifeCleric

@@ -14,12 +14,12 @@ object ClericSpells {
     val attribute: Attribute      = Dexterity
     val halfDamageOnSave: Boolean = false
 
-    val damageType: DamageType   = Radiant
-    val name                     = "Sacred Flame"
-    val school: SchoolOfMagic    = Evocation
-    val castingTime: CastingTime = OneAction
-    val spellLevel: SpellLevel   = 0
-    val requiresConcentration: Boolean   = false
+    val damageType: DamageType         = Radiant
+    val name                           = "Sacred Flame"
+    val school: SchoolOfMagic          = Evocation
+    val castingTime: CastingTime       = OneAction
+    val spellLevel: SpellLevel         = 0
+    val requiresConcentration: Boolean = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D8
@@ -34,7 +34,7 @@ object ClericSpells {
     val castingTime: CastingTime           = OneAction
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val spellLevel: SpellLevel             = 1
-    val requiresConcentration: Boolean             = false
+    val requiresConcentration: Boolean     = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
   }
@@ -45,7 +45,7 @@ object ClericSpells {
     val castingTime: CastingTime           = OneAction
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
     val spellLevel: SpellLevel             = 1
-    val requiresConcentration: Boolean             = false
+    val requiresConcentration: Boolean     = false
 
     def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
@@ -55,10 +55,10 @@ object ClericSpells {
     val name: String         = "Hold Person"
     val attribute: Attribute = Wisdom
 
-    val school: SchoolOfMagic    = Enchantment
-    val castingTime: CastingTime = OneAction
-    val spellLevel: SpellLevel   = 2
-    val requiresConcentration: Boolean   = true
+    val school: SchoolOfMagic          = Enchantment
+    val castingTime: CastingTime       = OneAction
+    val spellLevel: SpellLevel         = 2
+    val requiresConcentration: Boolean = true
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)

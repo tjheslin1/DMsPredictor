@@ -36,11 +36,12 @@ object Spell {
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
-    if (spellLookup.isDefined &&
-        spellCaster.isConcentrating &&
-        spellLookup.get.requiresConcentration)
-      spellLookup
-    else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
+    if (spellLookup.isDefined) {
+      if (spellCaster.isConcentrating && spellLookup.get.requiresConcentration)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
+      else
+        spellLookup
+    } else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
     else none[Spell]
   }
 

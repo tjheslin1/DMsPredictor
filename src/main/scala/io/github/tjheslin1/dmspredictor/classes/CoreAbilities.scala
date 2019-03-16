@@ -150,7 +150,7 @@ object CoreAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean = healingSpellConditionMet(spellCaster)
+      def conditionMet: Boolean = spellConditionMet(spellCaster, HealingSpell)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -196,17 +196,57 @@ object CoreAbilities extends LazyLogging {
       def update: Creature = updateSpellSlot(spellCaster, HealingSpell)
     }
 
+  def castSingleTargetConditionSpell(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
+
+      val name             = "Cast Spell (Condition)"
+      val order            = currentOrder
+      val levelRequirement = LevelFive
+      val abilityAction    = SingleAttack
+
+      def triggerMet(others: List[Combatant]) = true
+      def conditionMet: Boolean               = spellConditionMet(spellCaster, ConditionSpell)
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
+
+        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
+
+        val optSpell = highestSpellSlot match {
+          case None => None
+          case Some(spellSlot) =>
+            spellOfLevelOrBelow(spellCaster, ConditionSpell, spellSlot.spellLevel)
+        }
+
+        val enemies = monsters(others)
+        val target  = nextToFocus(enemies, focus)
+
+        (target, optSpell) match {
+          case (_, None) => (combatant, others)
+          case (None, _) => (combatant, others)
+          case (Some(spellTarget), Some(spell)) =>
+            val (_, List(updatedTarget: Combatant)) =
+              spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
+
+            (combatant, others.replace(updatedTarget))
+        }
+      }
+
+      def update: Creature = updateSpellSlot(spellCaster, ConditionSpell)
+    }
+
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 
-  def healingSpellConditionMet(spellCaster: Player with SpellCaster): Boolean =
+  def spellConditionMet(spellCaster: Player with SpellCaster, effect: SpellEffect): Boolean =
     spellCaster.level >= spellCaster.levelSpellcastingLearned &&
       highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
       spellCaster.spellsKnown.exists {
         case ((_, spellEffect: SpellEffect), _) =>
           spellEffect match {
-            case HealingSpell => true
-            case _            => false
+            case `effect` => true
+            case _        => false
           }
       }
 

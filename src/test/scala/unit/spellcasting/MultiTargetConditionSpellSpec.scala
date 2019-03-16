@@ -16,7 +16,7 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
     "apply condition to all enemies if saving throw failed" in {
       forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin, goblinThree: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val fireSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -49,7 +49,7 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
     "not apply condition to enemies if saving throw passed" in {
       forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin, goblinThree: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val fireSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)

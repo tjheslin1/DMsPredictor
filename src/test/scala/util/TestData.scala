@@ -653,7 +653,6 @@ trait TestData extends RandomDataGenerator {
     for {
       player               <- arbPlayer.arbitrary
       level                <- arbLevel.arbitrary
-      firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
     } yield
       Cleric(
         level,

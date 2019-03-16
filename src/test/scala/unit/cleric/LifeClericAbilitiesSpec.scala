@@ -69,7 +69,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "spend the spend slot used by healing spell delegated to" in {
-      forAll { cleric: Cleric =>
+      forAll { (cleric: Cleric, fighter: Fighter) =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -80,8 +80,10 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelThree)
             .asInstanceOf[Cleric]
 
-          val updatedCleric =
-            discipleOfLife(Priority)(lifeCleric.withCombatIndex(1)).update.asInstanceOf[Cleric]
+          val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
+
+          val (Combatant(_, updatedCleric: Cleric), _) =
+            discipleOfLife(1)(lifeCleric.withCombatIndex(1)).useAbility(List(weakFighter), LowestFirst)
 
           updatedCleric.spellSlots.secondLevel.count shouldBe (lifeCleric.spellSlots.secondLevel.count - 1)
         }
@@ -115,7 +117,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
 
@@ -123,7 +125,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
 
@@ -140,7 +142,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "restore up to 50% of an allies health using all points" in {
       forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val weakFighter   = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian = barbarian.withHealth(10).withMaxHealth(100).withCombatIndex(3)
@@ -160,7 +162,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "restore up to 50% of an allies health using as many points as allowed" in {
       forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian, champion: Champion) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val healthyFighter = fighter.withHealth(100).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian  = barbarian.withHealth(10).withMaxHealth(25).withCombatIndex(3)

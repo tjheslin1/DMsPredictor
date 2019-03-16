@@ -18,15 +18,15 @@ trait SpellCaster extends Creature {
 
 object SpellCaster {
 
-  val concentratingLens: Lens[SpellCaster, Boolean] = Lens[SpellCaster, Boolean](_.isConcentrating) {
-    concentrating =>
+  val concentratingLens: Lens[SpellCaster, Boolean] =
+    Lens[SpellCaster, Boolean](_.isConcentrating) { concentrating =>
       {
         case c: EldritchKnight => EldritchKnight._isConcentrating.set(concentrating)(c)
         case c: Cleric         => Cleric._isConcentrating.set(concentrating)(c)
 
         case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }
-  }
+    }
 
   val spellSlotsLens: Lens[SpellCaster, SpellSlots] = Lens[SpellCaster, SpellSlots](_.spellSlots) {
     spellSlots =>
