@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 
 sealed trait AttackResult {
@@ -86,6 +86,17 @@ object Actions extends LazyLogging {
 
     val damagedTarget =
       target.copy(creature = target.creature.updateHealth(dmg, weapon.damageType, attackResult))
+
+    // TODO
+//    (target.creature, damagedTarget.creature) match {
+//      case (playerCaster: Player with SpellCaster, damagedPlayerCaster: Player with SpellCaster)
+//        if playerCaster.isConcentrating && damagedPlayerCaster.isConcentrating == false =>
+//        ???
+//      case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
+//        if spellCaster.isConcentrating && damagedSpellCaster.isConcentrating == false =>
+//        ???
+//      case _ => damagedTarget.creature
+//    }
 
     val conditionHandledCreature =
       damagedTarget.creature.conditions.filter(_.handleOnDamage).foldLeft(damagedTarget.creature) {

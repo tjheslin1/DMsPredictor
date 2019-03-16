@@ -64,5 +64,24 @@ object ClericSpells {
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
   }
 
-//  case object SpiritGuardians
+  case object SpiritGuardians extends MultiTargetConditionSpell {
+    val name = "Spirit Guardians"
+
+    val attribute: Attribute = Wisdom
+    val school: SchoolOfMagic = Conjuration
+    val castingTime: CastingTime = OneAction
+    val spellLevel: SpellLevel = 3
+    val requiresConcentration: Boolean = true
+
+    def conditionFrom(spellCaster:  SpellCaster): Condition =
+      SpiritGuardiansCondition(spellSaveDc(spellCaster), 100, Wisdom)
+  }
+
+  case class SpiritGuardiansCondition(saveDc: Int, turnsLeft: Int, attribute: Attribute, name: String = "Spirit Guardians (attack)") extends Condition {
+    val missesTurn: Boolean = false
+    val handleOnDamage: Boolean = false
+
+    def handle[_ : RS](creature:  Creature): Creature = ???
+    def handleOnDamage[_ : RS](creature:  Creature): Creature = creature
+}
 }

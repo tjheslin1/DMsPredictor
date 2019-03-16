@@ -532,38 +532,6 @@ trait TestData extends RandomDataGenerator {
       )
   }
 
-  implicit val arbEldritchKnight: Arbitrary[EldritchKnight] = Arbitrary {
-    for {
-      player         <- arbPlayer.arbitrary
-      fightingStyles <- arbFighterFightingStyle.arbitrary
-      level          <- arbLevel.arbitrary
-      spellSlots     <- arbSpellSlots.arbitrary
-    } yield
-      EldritchKnight(
-        level,
-        player.health,
-        player.health,
-        player.stats,
-        player.baseWeapon,
-        player.armour,
-        player.offHand,
-        fightingStyles.toList,
-        BaseFighterAbilities.allUnused(),
-        player.proficiencyBonus,
-        Map((MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile), // TODO randomise spells
-        spellSlots,
-        player.resistances,
-        player.immunities,
-        player.bonusActionUsed,
-        EldritchKnight.standardEldritchKnightAbilities,
-        player.conditions,
-        player.attackStatus,
-        player.defenseStatus,
-        isConcentrating = false,
-        player.name
-      )
-  }
-
   implicit val arbBarbarian: Arbitrary[Barbarian] = Arbitrary {
     for {
       player <- arbPlayer.arbitrary
