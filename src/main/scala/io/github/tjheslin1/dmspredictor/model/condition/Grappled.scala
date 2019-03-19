@@ -5,6 +5,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.macros.Lenses
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 @Lenses("_") case class Grappled(saveDc: Int, name: String = Grappled.name)
     extends Condition
@@ -19,7 +20,7 @@ import monocle.macros.Lenses
 
     if (savingThrowPassed(saveDc, attribute, creature)) {
       val grappled          = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions diff List(grappled)
+      val updatedConditions = creature.conditions.except(grappled)
 
       logger.debug(s"${creature.name} is no longer $name")
 

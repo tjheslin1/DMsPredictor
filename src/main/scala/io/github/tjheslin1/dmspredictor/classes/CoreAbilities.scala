@@ -7,7 +7,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
-import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.Actions.{attackAndDamage, attackAndDamageTimes}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -40,38 +40,35 @@ object CoreAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      val enemies = monsters(others)
-
-      nextToFocus(enemies, focus) match {
+      nextToFocus(monsters(others), focus) match {
         case None => (combatant, others)
         case Some(target) =>
-          nextAbilityToUseInConjunction(combatant, enemies, order, NonEmptyList.of(SingleAttack))
+          nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
             .fold {
-              val (updatedAttacker, updatedTarget) =
-                attackAndDamageTimes(2, combatant, target)
-              (updatedAttacker, others.replace(updatedTarget))
-            } { nextAbility =>
-              val (updatedCombatant, updatedTargets) =
-                useAdditionalAbility(nextAbility, combatant, enemies, focus)
+              val (updatedAttacker, updatedTarget, updatedOthers) =
+                attackAndDamageTimes(2, combatant, target, others)
 
-              val updatedEnemies = enemies.replace(updatedTargets)
+              (updatedAttacker, updatedOthers.replace(updatedTarget))
+            } { nextAbility =>
+              val (updatedCombatant, updatedOthers) =
+                useAdditionalAbility(nextAbility, combatant, others, focus)
 
               nextAbilityToUseInConjunction(updatedCombatant,
-                                            updatedEnemies,
+                                            updatedOthers,
                                             order,
                                             one(SingleAttack))
                 .fold {
-                  nextToFocus(updatedEnemies, focus).fold(updatedCombatant, updatedEnemies) {
+                  nextToFocus(monsters(updatedOthers), focus).fold{
+                    (updatedCombatant, updatedOthers)
+                  } {
                     focusTarget =>
-                      val (updatedAttacker, updatedAttackedTarget) =
-                        attackAndDamage(updatedCombatant, focusTarget)
-                      (updatedAttacker,
-                       others.replace(updatedEnemies).replace(updatedAttackedTarget))
+                      val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
+                        attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
+
+                      (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
                   }
                 } { nextAbility2 =>
-                  val (updatedAttacker, updatedEnemies2) =
-                    useAdditionalAbility(nextAbility2, updatedCombatant, updatedEnemies, focus)
-                  (updatedAttacker, others.replace(updatedEnemies2))
+                    useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
                 }
             }
       }
@@ -118,8 +115,7 @@ object CoreAbilities extends LazyLogging {
               }
           }
 
-        val enemies = monsters(others)
-        val target  = nextToFocus(enemies, focus)
+        val target  = nextToFocus(monsters(others), focus)
 
         (target, optSpell) match {
           case (_, None) => (combatant, others)
@@ -163,8 +159,7 @@ object CoreAbilities extends LazyLogging {
             spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)
         }
 
-        val allies = players(others)
-        val target = nextToFocus(allies, focus)
+        val target = nextToFocus(players(others), focus)
 
         val optHealedAlly = (target, optSpell) match {
           case (_, None) => None
@@ -219,8 +214,7 @@ object CoreAbilities extends LazyLogging {
             spellOfLevelOrBelow(spellCaster, ConditionSpell, spellSlot.spellLevel)
         }
 
-        val enemies = monsters(others)
-        val target  = nextToFocus(enemies, focus)
+        val target  = nextToFocus(monsters(others), focus)
 
         (target, optSpell) match {
           case (_, None) => (combatant, others)

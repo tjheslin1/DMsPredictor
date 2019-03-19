@@ -21,14 +21,11 @@ object Player {
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>
       {
-        case c: BattleMaster   => BattleMaster._bonusActionUsed.set(bonusUsed)(c)
-        case c: EldritchKnight => EldritchKnight._bonusActionUsed.set(bonusUsed)(c)
         case c: Champion       => Champion._bonusActionUsed.set(bonusUsed)(c)
         case c: Fighter        => Fighter._bonusActionUsed.set(bonusUsed)(c)
 
         case c: Barbarian    => Barbarian._bonusActionUsed.set(bonusUsed)(c)
         case c: Berserker    => Berserker._bonusActionUsed.set(bonusUsed)(c)
-        case c: TotemWarrior => TotemWarrior._bonusActionUsed.set(bonusUsed)(c)
 
         case c: Cleric => Cleric._bonusActionUsed.set(bonusUsed)(c)
 
@@ -41,14 +38,11 @@ object Player {
   val playerProficiencyBonusLens: Lens[Player, ProficiencyBonus] =
     Lens[Player, ProficiencyBonus](_.proficiencyBonus) { profBonus =>
       {
-        case c: BattleMaster   => BattleMaster._proficiencyBonus.set(profBonus)(c)
-        case c: EldritchKnight => EldritchKnight._proficiencyBonus.set(profBonus)(c)
         case c: Champion       => Champion._proficiencyBonus.set(profBonus)(c)
         case c: Fighter        => Fighter._proficiencyBonus.set(profBonus)(c)
 
         case c: Barbarian    => Barbarian._proficiencyBonus.set(profBonus)(c)
         case c: Berserker    => Berserker._proficiencyBonus.set(profBonus)(c)
-        case c: TotemWarrior => TotemWarrior._proficiencyBonus.set(profBonus)(c)
 
         case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
 

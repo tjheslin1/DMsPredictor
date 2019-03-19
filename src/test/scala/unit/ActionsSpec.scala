@@ -193,11 +193,19 @@ class ActionsSpec extends UnitSpecBase {
 
           val turnedFighter = fighter.withCondition(Turned(10, 10)).withCombatIndex(2)
 
-          val (_, Combatant(_, updatedFighter: Fighter)) =
-            resolveDamage(monster.withCombatIndex(1), turnedFighter, monster.baseWeapon, Hit)
+          val (_, Combatant(_, updatedFighter: Fighter), _) =
+            resolveDamage(monster.withCombatIndex(1), turnedFighter, List(), monster.baseWeapon, Hit)
 
           updatedFighter.conditions shouldBe List()
         }
+      }
+
+      "return other combatants" in {
+       fail("todo")
+      }
+
+      "handle loss of concentration spell" in {
+       fail("todo")
       }
     }
   }
@@ -220,7 +228,7 @@ class ActionsSpec extends UnitSpecBase {
           val playerCombatant  = player.withCombatIndex(1)
           val monsterCombatant = monster.withHealth(50).withCombatIndex(2)
 
-          resolveDamageMainHand(playerCombatant, monsterCombatant, Hit) shouldBe (playerCombatant, monsterCombatant
+          resolveDamageMainHand(playerCombatant, monsterCombatant, List(), Hit) shouldBe (playerCombatant, monsterCombatant
             .withCreature(monster.withHealth(0)))
         }
       }
@@ -238,7 +246,7 @@ class ActionsSpec extends UnitSpecBase {
             fighter.withStrength(10).withBaseWeapon(oneDamageWeapon).withCombatIndex(1)
           val monsterCombatant = monster.withHealth(10).withCombatIndex(2)
 
-          resolveDamageMainHand(playerCombatant, monsterCombatant, CriticalHit)(D20.naturalTwenty) shouldBe
+          resolveDamageMainHand(playerCombatant, monsterCombatant, List(), CriticalHit)(D20.naturalTwenty) shouldBe
             (playerCombatant, monsterCombatant.withCreature(monster.withHealth(8)))
         }
       }
@@ -259,7 +267,7 @@ class ActionsSpec extends UnitSpecBase {
           val monsterCombatant = modifiedMonster
             .withCombatIndex(2)
 
-          resolveDamageMainHand(playerCombatant, monsterCombatant, Hit)(_ => 19) shouldBe
+          resolveDamageMainHand(playerCombatant, monsterCombatant, List(), Hit)(_ => 19) shouldBe
             (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(99)))
         }
       }
@@ -271,12 +279,12 @@ class ActionsSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         var count = 0
 
-        val f: (Combatant, Combatant) => (Combatant, Combatant) = (c1, c2) => {
+        val f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant]) = (c1, c2, cs) => {
           count += 1
-          (c1, c2)
+          (c1, c2, cs)
         }
 
-        runCombatantTimes(5, fighter.withCombatIndex(1), monster.withCombatIndex(1), f)
+        runCombatantTimes(5, fighter.withCombatIndex(1), monster.withCombatIndex(1), List(), f)
 
         count shouldBe 5
       }

@@ -67,7 +67,6 @@ object BaseBarbarian {
     {
       case b: Barbarian    => Barbarian._inRage.set(rage)(b)
       case b: Berserker    => Berserker._inRage.set(rage)(b)
-      case b: TotemWarrior => TotemWarrior._inRage.set(rage)(b)
     }
   }
 
@@ -75,7 +74,6 @@ object BaseBarbarian {
     {
       case b: Barbarian    => Barbarian._rageUsages.set(rageNum)(b)
       case b: Berserker    => Berserker._rageUsages.set(rageNum)(b)
-      case b: TotemWarrior => TotemWarrior._rageUsages.set(rageNum)(b)
     }
   }
 
@@ -84,7 +82,6 @@ object BaseBarbarian {
       {
         case b: Barbarian    => Barbarian._rageTurnsLeft.set(turnsLeft)(b)
         case b: Berserker    => Berserker._rageTurnsLeft.set(turnsLeft)(b)
-        case b: TotemWarrior => TotemWarrior._rageTurnsLeft.set(turnsLeft)(b)
       }
   }
 }

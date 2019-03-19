@@ -85,35 +85,32 @@ object BaseFighterAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
-      val enemies = monsters(others)
-      val target  = nextToFocus(enemies, focus)
-
-      target match {
+      nextToFocus(monsters(others), focus) match {
         case None => (combatant, others)
         case Some(attackTarget) =>
           val mainHandAttack = attack(combatant, combatant.creature.weapon, attackTarget)
 
-          val (updatedAttacker, attackTarget1) =
+          val (updatedAttacker, attackTarget1, updatedOthers) =
             if (mainHandAttack.result > 0)
-              resolveDamageMainHand(combatant, attackTarget, mainHandAttack)
+              resolveDamageMainHand(combatant, attackTarget, others, mainHandAttack)
             else
-              (combatant, attackTarget)
+              (combatant, attackTarget, others)
 
-          val updatedEnemies = enemies.replace(attackTarget1)
+          val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
 
           nextToFocus(updatedEnemies, focus) match {
-            case None => (combatant, others.replace(updatedEnemies))
+            case None => (combatant, updatedOthers)
             case Some(nextTarget) =>
               val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
               val offHandAttack = attack(updatedAttacker, offHandWeapon, nextTarget)
 
-              val (attacker2, attackTarget2) =
+              val (attacker2, attackTarget2, updatedOthers2) =
                 if (offHandAttack.result > 0)
-                  resolveDamage(updatedAttacker, nextTarget, offHandWeapon, offHandAttack)
+                  resolveDamage(updatedAttacker, nextTarget, updatedOthers, offHandWeapon, offHandAttack)
                 else
-                  (updatedAttacker, nextTarget)
+                  (updatedAttacker, nextTarget, updatedOthers)
 
-              (attacker2, others.replace(updatedEnemies).replace(attackTarget2))
+              (attacker2, updatedOthers2.replace(attackTarget2))
           }
       }
     }
@@ -136,34 +133,30 @@ object BaseFighterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-        val enemies = monsters(others)
-        val target  = nextToFocus(enemies, focus)
+        val target  = nextToFocus(monsters(others), focus)
 
         target match {
           case None => (combatant, others)
           case Some(_) =>
-            nextAbilityToUseInConjunction(combatant, enemies, order, AbilityAction.Any)
-              .fold(useAttackActionTwice(combatant, enemies, focus)) { nextAbility =>
-                val (updatedAttacker, updatedTargets) =
-                  useAdditionalAbility(nextAbility, combatant, enemies, focus)
-
-                val updatedEnemies = enemies.replace(updatedTargets)
+            nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
+              .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
+                val (updatedAttacker, updatedOthers) =
+                  useAdditionalAbility(nextAbility, combatant, others, focus)
 
                 nextAbilityToUseInConjunction(updatedAttacker,
-                                              updatedEnemies,
+                                              updatedOthers,
                                               order,
                                               AbilityAction.Any)
                   .fold {
-                    nextToFocus(updatedEnemies, focus).fold((updatedAttacker, updatedEnemies)) {
+                    nextToFocus(updatedOthers, focus).fold((updatedAttacker, updatedOthers)) {
                       nextTarget =>
-                        val (updatedAttacker2, updatedTarget2) =
-                          attackAndDamage(updatedAttacker, nextTarget)
-                        (updatedAttacker2, others.replace(updatedEnemies).replace(updatedTarget2))
+                        val (updatedAttacker2, updatedTarget2, updatedOthers2) =
+                          attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+
+                        (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
                     }
                   } { nextAbility2 =>
-                    val (updatedAttacker2, updatedEnemies2) =
-                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedEnemies, focus)
-                    (updatedAttacker2, others.replace(updatedEnemies2))
+                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
                   }
               }
         }

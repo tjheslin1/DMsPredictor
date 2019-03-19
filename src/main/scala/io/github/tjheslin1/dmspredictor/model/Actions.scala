@@ -63,15 +63,17 @@ object Actions extends LazyLogging {
 
   def resolveDamageMainHand[_: RS](attacker: Combatant,
                                    target: Combatant,
+                                   others: List[Combatant],
                                    attackResult: AttackResult,
-                                   damageBonus: Int = 0): (Combatant, Combatant) =
-    resolveDamage(attacker, target, attacker.creature.weapon, attackResult, damageBonus)
+                                   damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) =
+    resolveDamage(attacker, target, others, attacker.creature.weapon, attackResult, damageBonus)
 
   def resolveDamage[_: RS](attacker: Combatant,
                            target: Combatant,
+                           others: List[Combatant],
                            weapon: Weapon,
                            attackResult: AttackResult,
-                           damageBonus: Int = 0): (Combatant, Combatant) = {
+                           damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) = {
 
     val dmg = Math.max(
       0,
@@ -87,6 +89,7 @@ object Actions extends LazyLogging {
     val damagedTarget =
       target.copy(creature = target.creature.updateHealth(dmg, weapon.damageType, attackResult))
 
+    val updatedOthers = ???
     // TODO
 //    (target.creature, damagedTarget.creature) match {
 //      case (playerCaster: Player with SpellCaster, damagedPlayerCaster: Player with SpellCaster)
@@ -105,32 +108,34 @@ object Actions extends LazyLogging {
 
     val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(damagedTarget)
 
-    (attacker, conditionHandledTarget)
+    (attacker, conditionHandledTarget, updatedOthers)
   }
 
-  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant): (Combatant, Combatant) = {
+  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant, others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {
     val attackResult = attack(attacker, attacker.creature.weapon, target)
 
     if (attackResult.result > 0)
-      resolveDamage(attacker, target, attacker.creature.weapon, attackResult)
+      resolveDamage(attacker, target, others, attacker.creature.weapon, attackResult)
     else {
       logger.debug(s"${attacker.creature.name} misses regular attack")
-      (attacker, target)
+      (attacker, target, others)
     }
   }
 
   def attackAndDamageTimes[_: RS](times: Int,
                                   attacker: Combatant,
-                                  target: Combatant): (Combatant, Combatant) =
-    runCombatantTimes(times, attacker, target, attackAndDamage)
+                                  target: Combatant,
+                                  others: List[Combatant]): (Combatant, Combatant, List[Combatant]) =
+    runCombatantTimes(times, attacker, target, others, attackAndDamage)
 
   def runCombatantTimes(
       times: Int,
       c1: Combatant,
       c2: Combatant,
-      f: (Combatant, Combatant) => (Combatant, Combatant)): (Combatant, Combatant) =
-    (1 to times).foldLeft[(Combatant, Combatant)]((c1, c2)) { (combatants, _) =>
-      val (a, t) = combatants
-      f(a, t)
+      c3: List[Combatant],
+      f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant])): (Combatant, Combatant, List[Combatant]) =
+    (1 to times).foldLeft[(Combatant, Combatant, List[Combatant])]((c1, c2, c3)) { (combatants, _) =>
+      val (a, t, o) = combatants
+      f(a, t, o)
     }
 }

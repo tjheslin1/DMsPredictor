@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.macros.Lenses
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 @Lenses("_") case class Charmed(saveDc: Int, name: String = Charmed.name)
     extends Condition
@@ -16,7 +17,7 @@ import monocle.macros.Lenses
   def handle[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, Wisdom, creature)) {
       val charmed           = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions diff List(charmed)
+      val updatedConditions = creature.conditions.except(charmed)
 
       logger.debug(s"${creature.name} is no longer $name")
 

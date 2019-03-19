@@ -1,9 +1,8 @@
 package unit.spellcasting
 
 import base.UnitSpecBase
-import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
-import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots._
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellSlots, _}
 import org.scalatest.OptionValues
 
 class SpellSlotsSpec extends UnitSpecBase with OptionValues {

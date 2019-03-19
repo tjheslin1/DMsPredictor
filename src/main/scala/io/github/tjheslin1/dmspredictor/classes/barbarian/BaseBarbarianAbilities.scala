@@ -44,9 +44,11 @@ object BaseBarbarianAbilities extends LazyLogging {
                                         enemies,
                                         order,
                                         AbilityAction.Action).fold {
-            val (updatedAttacker, updatedTarget) =
-              attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
-            (updatedAttacker, others.replace(updatedTarget))
+
+            val (updatedAttacker, updatedTarget, updatedOthers) =
+              attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
+
+            (updatedAttacker, updatedOthers.replace(updatedTarget))
           } { nextAbility =>
             val (updatedAttacker, updatedEnemies) =
               useAdditionalAbility(nextAbility, ragingBarbarianCombatant, enemies, focus)
@@ -96,10 +98,10 @@ object BaseBarbarianAbilities extends LazyLogging {
       target match {
         case None => (recklessBarbarianCombatant, others)
         case Some(targetOfAttack) =>
-          val (updatedAttacker, updatedTarget) =
-            attackAndDamage(recklessBarbarianCombatant, targetOfAttack)
+          val (updatedAttacker, updatedTarget, updatedOthers) =
+            attackAndDamage(recklessBarbarianCombatant, targetOfAttack, others)
 
-          (updatedAttacker, others.replace(updatedTarget))
+          (updatedAttacker, updatedOthers.replace(updatedTarget))
       }
     }
 

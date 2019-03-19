@@ -15,5 +15,7 @@ object ListOps {
       ts.foldLeft(list) {
         case (tss, t) => tss.replace(t)
       }
+
+    def except(t: T): List[T] = list diff List(t)
   }
 }

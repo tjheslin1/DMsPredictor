@@ -5,12 +5,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{
-  Ability,
-  AbilityAction,
-  SingleAttack,
-  WholeAction
-}
+import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
@@ -35,24 +30,21 @@ object MonsterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${monster.name} used $name")
 
-        val enemies = players(others)
-
-        (1 to numberOfAttacks).foldLeft((combatant, enemies)) {
-          case ((attacker, enemyTargets), _) =>
+        (1 to numberOfAttacks).foldLeft((combatant, others)) {
+          case ((attacker, otherTargets), _) =>
             nextAbilityToUseInConjunction(attacker,
-                                          enemyTargets,
+                                          otherTargets,
                                           order,
                                           NonEmptyList.of(SingleAttack)).fold {
-              nextToFocus(enemyTargets, focus).fold((attacker, enemyTargets)) { target =>
-                val (_, updatedEnemy) = attackAndDamage(attacker, target)
+              nextToFocus(players(otherTargets), focus).fold((attacker, otherTargets)) { target =>
 
-                (combatant, others.replace(enemyTargets).replace(updatedEnemy))
+                val (updatedMonster, updatedEnemy, updatedOthers) =
+                  attackAndDamage(attacker, target, otherTargets.except(target))
+
+                (updatedMonster, updatedOthers.replace(updatedEnemy))
               }
             } { ability =>
-              val (updatedAttacker, updatedEnemies) =
-                useAdditionalAbility(ability, attacker, enemyTargets, focus)
-
-              (updatedAttacker, others.replace(updatedEnemies))
+              useAdditionalAbility(ability, attacker, otherTargets, focus)
             }
         }
       }

@@ -7,7 +7,6 @@ import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.barbarian.TotemWarrior.Bear
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
@@ -19,7 +18,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlots, SecondLevelSpellSlots, Spell, ThirdLevelSpellSlots}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
@@ -133,13 +132,6 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
-  }
-
-  implicit class BattleMasterOps(val battleMaster: BattleMaster) extends AnyVal {
-    import BattleMaster._
-
-    def withSuperiorityDiceCount(count: Int) = _superiorityDiceCount.set(count)(battleMaster)
-    def withAllAbilitiesUsed()               = _abilityUsages.set(BaseFighterAbilities(true, true))(battleMaster)
   }
 
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
@@ -501,37 +493,6 @@ trait TestData extends RandomDataGenerator {
       )
   }
 
-  implicit val arbBattleMaster: Arbitrary[BattleMaster] = Arbitrary {
-    for {
-      player         <- arbPlayer.arbitrary
-      armour         <- arbArmour.arbitrary
-      shield         <- arbShield.arbitrary
-      fightingStyles <- arbFighterFightingStyle.arbitrary
-      level          <- arbLevel.arbitrary
-    } yield
-      BattleMaster(
-        level,
-        player.health,
-        player.health,
-        player.stats,
-        player.baseWeapon,
-        armour,
-        shield,
-        fightingStyles.toList,
-        BaseFighterAbilities.allUnused(),
-        superiorityDiceCount = 4,
-        player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
-        player.bonusActionUsed,
-        BattleMaster.standardBattleMasterAbilities,
-        player.conditions,
-        player.attackStatus,
-        player.defenseStatus,
-        player.name
-      )
-  }
-
   implicit val arbBarbarian: Arbitrary[Barbarian] = Arbitrary {
     for {
       player <- arbPlayer.arbitrary
@@ -580,35 +541,6 @@ trait TestData extends RandomDataGenerator {
         player.bonusActionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
-        inRage = false,
-        rageTurnsLeft = 10,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
-      )
-  }
-
-  implicit val arbTotemWarrior: Arbitrary[TotemWarrior] = Arbitrary {
-    for {
-      player <- arbPlayer.arbitrary
-      level  <- arbLevel.arbitrary
-    } yield
-      TotemWarrior(
-        level,
-        player.health,
-        player.health,
-        player.stats,
-        player.baseWeapon,
-        BaseBarbarian.rageUsagesPerLevel(level),
-        Bear,
-        TotemWarrior.standardTotemWarriorAbilities(Bear),
-        player.conditions,
-        player.armour,
-        player.offHand,
-        player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
-        player.bonusActionUsed,
         inRage = false,
         rageTurnsLeft = 10,
         attackStatus = player.attackStatus,

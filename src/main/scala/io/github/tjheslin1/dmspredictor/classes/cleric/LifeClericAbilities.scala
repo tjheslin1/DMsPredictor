@@ -3,11 +3,11 @@ package io.github.tjheslin1.dmspredictor.classes.cleric
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
-import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots.highestSpellSlotAvailable
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpell, SpellLevel}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.highestSpellSlotAvailable
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpell, SpellLevel, SpellSlots}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._

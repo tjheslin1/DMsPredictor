@@ -5,11 +5,10 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
-import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlots, SpellSlots}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}

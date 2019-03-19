@@ -45,13 +45,15 @@ object BerserkerAbilities extends LazyLogging {
                                         order,
                                         AbilityAction.Action)
             .fold {
-              val (updatedAttacker, updatedTarget) =
-                attackAndDamage(ragingBarbarianCombatant, targetOfAttack)
-              (updatedAttacker, others.replace(updatedTarget))
+              val (updatedAttacker, updatedTarget, updatedOthers) =
+                attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
+
+              (updatedAttacker, updatedOthers.replace(updatedTarget))
             } { nextAbility =>
-              val (updatedAttacker, updatedEnemies) =
-                useAdditionalAbility(nextAbility, ragingBarbarianCombatant, enemies, focus)
-              (updatedAttacker, others.replace(updatedEnemies))
+              val (updatedAttacker, updatedOthers) =
+                useAdditionalAbility(nextAbility, ragingBarbarianCombatant, others, focus)
+
+              (updatedAttacker, updatedOthers)
             }
       }
     }
@@ -91,23 +93,19 @@ object BerserkerAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      val enemies = monsters(others)
-      val target  = nextToFocus(enemies, focus)
+      val target = nextToFocus(monsters(others), focus)
 
       target match {
         case None => (combatant, others)
         case Some(targetOfAttack) =>
-          nextAbilityToUseInConjunction(combatant, enemies, order, NonEmptyList.of(SingleAttack))
+          nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
             .fold {
-              val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetOfAttack)
-              (updatedAttacker, others.replace(updatedTarget))
+              val (updatedAttacker, updatedTarget, updatedOthers) =
+                attackAndDamage(combatant, targetOfAttack, others)
+
+              (updatedAttacker, updatedOthers.replace(updatedTarget))
             } { singleAttackAbility =>
-              val (updatedCombatant, updatedTargets) =
-                useAdditionalAbility(singleAttackAbility, combatant, enemies, focus)
-
-              val updatedEnemies = enemies.replace(updatedTargets)
-
-              (updatedCombatant, updatedEnemies)
+              useAdditionalAbility(singleAttackAbility, combatant, others, focus)
             }
       }
     }

@@ -28,14 +28,20 @@ object ClassAbilities {
                                   enemies: List[Combatant],
                                   focus: Focus): (Combatant, List[Combatant]) =
     nextToFocus(enemies, focus).fold((attacker, List.empty[Combatant])) { target =>
-      val (updatedAttacker, updatedTarget) = attackAndDamage(attacker, target)
+      val otherEnemies = enemies.except(target)
 
-      val updatedEnemies = enemies.replace(updatedTarget)
+      val (updatedAttacker, updatedTarget, updatedOtherEnemies) =
+        attackAndDamage(attacker, target, otherEnemies)
+
+      val updatedEnemies = updatedOtherEnemies.replace(updatedTarget)
 
       nextToFocus(updatedEnemies, focus).fold((updatedAttacker, updatedEnemies)) { nextTarget =>
-        val (updatedAttacker2, updatedEnemy2) = attackAndDamage(updatedAttacker, nextTarget)
+        val nextOtherEnemies = updatedEnemies.except(nextTarget)
 
-        val updatedEnemies2 = updatedEnemies.replace(updatedEnemy2)
+        val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
+          attackAndDamage(updatedAttacker, nextTarget, nextOtherEnemies)
+
+        val updatedEnemies2 = updatedOtherEnemies2.replace(updatedEnemy2)
 
         (updatedAttacker2, updatedEnemies2)
       }

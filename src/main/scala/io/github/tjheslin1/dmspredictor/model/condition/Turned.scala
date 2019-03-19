@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.condition
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.macros.Lenses
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 @Lenses("_") case class Turned(saveDc: Int, turnsLeft: Int, name: String = "Turned")
     extends Condition
@@ -28,7 +29,7 @@ import monocle.macros.Lenses
 
   def handleOnDamage[_: RS](creature: Creature): Creature = {
     val turned            = creature.conditions.find(_.name == name).get
-    val updatedConditions = creature.conditions diff List(turned)
+    val updatedConditions = creature.conditions.except(turned)
 
     logger.debug(s"${creature.name} is no longer Turned")
 

@@ -97,8 +97,9 @@ object Move extends LazyLogging {
                                          focus: Focus): (Combatant, List[Combatant]) =
     optAbility.fold {
       target.fold((combatant, others)) { targetToAttack =>
-        val (updatedAttacker, updatedTarget) = attackAndDamage(combatant, targetToAttack)
-        (updatedAttacker, others.replace(updatedTarget))
+        val (updatedAttacker, updatedTarget, updatedOthers) = attackAndDamage(combatant, targetToAttack, others)
+
+        (updatedAttacker, updatedOthers.replace(updatedTarget))
       }
     } { ability =>
       val (actedCombatant, targetsOfAbility) = ability(combatant).useAbility(others, focus)

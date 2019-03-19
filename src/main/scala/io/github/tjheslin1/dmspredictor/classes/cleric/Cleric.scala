@@ -5,7 +5,6 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
-import io.github.tjheslin1.dmspredictor.classes.fighter.SpellSlots
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model
