@@ -17,7 +17,6 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Zombie}
@@ -132,6 +131,13 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
+  }
+
+  implicit class ChampionOps(val champion: Champion) extends AnyVal {
+    import Champion._
+
+    def withAbilitiesUsed(secondWindUsed: Boolean, actionSurgeUsed: Boolean) =
+      _abilityUsages.set(BaseFighterAbilities(secondWindUsed, actionSurgeUsed))(champion)
   }
 
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {

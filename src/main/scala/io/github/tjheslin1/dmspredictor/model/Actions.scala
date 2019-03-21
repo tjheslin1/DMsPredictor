@@ -89,7 +89,7 @@ object Actions extends LazyLogging {
     val damagedTarget =
       target.copy(creature = target.creature.updateHealth(dmg, weapon.damageType, attackResult))
 
-    val updatedOthers = ???
+//    val updatedOthers = ???
     // TODO
 //    (target.creature, damagedTarget.creature) match {
 //      case (playerCaster: Player with SpellCaster, damagedPlayerCaster: Player with SpellCaster)
@@ -108,7 +108,7 @@ object Actions extends LazyLogging {
 
     val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(damagedTarget)
 
-    (attacker, conditionHandledTarget, updatedOthers)
+    (attacker, conditionHandledTarget, others)
   }
 
   def attackAndDamage[_: RS](attacker: Combatant, target: Combatant, others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {

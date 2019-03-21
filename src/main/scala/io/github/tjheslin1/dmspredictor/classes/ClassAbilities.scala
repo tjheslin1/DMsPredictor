@@ -4,8 +4,9 @@ import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.AbilityAction
-import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, Target}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object ClassAbilities {
@@ -25,27 +26,23 @@ object ClassAbilities {
       }
 
   def useAttackActionTwice[_: RS](attacker: Combatant,
-                                  enemies: List[Combatant],
-                                  focus: Focus): (Combatant, List[Combatant]) =
-    nextToFocus(enemies, focus).fold((attacker, List.empty[Combatant])) { target =>
-      val otherEnemies = enemies.except(target)
+                                  others: List[Combatant],
+                                  focus: Focus): (Combatant, List[Combatant]) = {
+    nextToFocus(monsters(others), focus).fold((attacker, List.empty[Combatant])) { target =>
 
-      val (updatedAttacker, updatedTarget, updatedOtherEnemies) =
-        attackAndDamage(attacker, target, otherEnemies)
+    val (updatedAttacker, updatedTarget, updatedOthers) =
+      attackAndDamage(attacker, target, others.except(target))
 
-      val updatedEnemies = updatedOtherEnemies.replace(updatedTarget)
+      val allUpdatedOthers = updatedOthers.replace(updatedTarget)
 
-      nextToFocus(updatedEnemies, focus).fold((updatedAttacker, updatedEnemies)) { nextTarget =>
-        val nextOtherEnemies = updatedEnemies.except(nextTarget)
+    nextToFocus(monsters(allUpdatedOthers), focus).fold((updatedAttacker, allUpdatedOthers)) { nextTarget =>
+      val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
+        attackAndDamage(updatedAttacker, nextTarget, allUpdatedOthers)
 
-        val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
-          attackAndDamage(updatedAttacker, nextTarget, nextOtherEnemies)
-
-        val updatedEnemies2 = updatedOtherEnemies2.replace(updatedEnemy2)
-
-        (updatedAttacker2, updatedEnemies2)
-      }
+      (updatedAttacker2, updatedOtherEnemies2.replace(updatedEnemy2))
     }
+  }
+                                  }
 
   def useAdditionalAbility[_: RS](ability: CombatantAbility,
                                   attacker: Combatant,

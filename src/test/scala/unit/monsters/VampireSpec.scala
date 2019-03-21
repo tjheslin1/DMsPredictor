@@ -99,7 +99,7 @@ class VampireSpec extends UnitSpecBase {
   }
 
   "Vampire" should {
-    "make one regular attack and one Bite attack when using MultiAttack" in {
+    "make one unarmed strike to grapple and one Bite attack when using MultiAttack" in {
       forAll { (vampire: Vampire, fighter: Fighter) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
@@ -108,7 +108,7 @@ class VampireSpec extends UnitSpecBase {
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
 
           val (Combatant(_, updatedVampire: Vampire), List(Combatant(_, updatedFighter: Fighter))) =
-            multiAttack(1, 2)(vampireCombatant).useAbility(List(fighterCombatant), LowestFirst)
+            multiAttack(1, numberOfAttacks = 2)(vampireCombatant).useAbility(List(fighterCombatant), LowestFirst)
 
           updatedVampire.biteUsed shouldBe true
           updatedVampire.firstAttack shouldBe false

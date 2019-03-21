@@ -66,7 +66,7 @@ class BaseFighterFighterSpec extends UnitSpecBase {
 
         val twoHanderFighter = fighter.withFightingStyle(GreatWeaponFighting).withBaseWeapon(twoHandedWeapon)
 
-        Actions.resolveDamageMainHand(twoHanderFighter.withCombatIndex(1), testMonster.withCombatIndex(2), Hit)
+        Actions.resolveDamageMainHand(twoHanderFighter.withCombatIndex(1), testMonster.withCombatIndex(2), List(), Hit)
 
         count shouldBe 2
       }
