@@ -109,7 +109,7 @@ object VampireAbilities extends LazyLogging {
                   (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
                     .set(updatedConditions)(target)
 
-                (combatant, others.replace(updatedTarget))
+                      (combatant, others.replace(updatedTarget))
               } else {
                 val (updatedVampire, updatedAttackTarget, updatedOthers) =
                   resolveDamage(combatant, target, others, UnarmedStrike, attackResult)

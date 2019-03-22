@@ -48,10 +48,11 @@ object ClassAbilities {
                                   attacker: Combatant,
                                   others: List[Combatant],
                                   focus: Focus): (Combatant, List[Combatant]) = {
-    val (updatedAttacker, updatedTargetOfAbility) = ability(attacker).useAbility(others, focus)
+    val (updatedAttacker, updatedOthers) = ability(attacker).useAbility(others, focus)
     val updatedAttackingCreature                  = ability(updatedAttacker).update
 
     val updatedAttackingCombatant = Combatant.creatureLens.set(updatedAttackingCreature)(attacker)
-    (updatedAttackingCombatant, others.replace(updatedTargetOfAbility))
+
+    (updatedAttackingCombatant, updatedOthers)
   }
 }
