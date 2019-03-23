@@ -40,7 +40,7 @@ import monocle.macros.{GenLens, Lenses}
                                bonusActionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
-                               isConcentrating: Boolean = false,
+                               concentratingSpell: Option[spellcasting.Spell] = None,
                                name: String = NameGenerator.randomName)
     extends BaseCleric {
 

@@ -1,11 +1,14 @@
 package unit.spellcasting
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration._
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import util.TestData._
 
 class ConcentrationSpec extends UnitSpecBase {
@@ -26,7 +29,10 @@ class ConcentrationSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(8)
 
-          val lowConstitutionCleric = cleric.withConcentrating(true).withConstitution(5).asInstanceOf[SpellCaster]
+          val lowConstitutionCleric = cleric
+            .withConcentrating(concentrationSpell.some)
+            .withConstitution(5)
+            .asInstanceOf[SpellCaster]
 
           val updatedCleric = handleConcentration(lowConstitutionCleric, damageTaken = 20)
 
@@ -40,7 +46,10 @@ class ConcentrationSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(8)
 
-          val highConstitutionCleric = cleric.withConcentrating(true).withConstitution(18).asInstanceOf[SpellCaster]
+          val highConstitutionCleric = cleric
+            .withConcentrating(concentrationSpell.some)
+            .withConstitution(18)
+            .asInstanceOf[SpellCaster]
 
           val updatedCleric = handleConcentration(highConstitutionCleric, damageTaken = 10)
 
@@ -52,5 +61,16 @@ class ConcentrationSpec extends UnitSpecBase {
 
   abstract private class TestContext {
     implicit val roll: RollStrategy
+
+    val concentrationSpell: Spell = new MultiTargetConditionSpell() {
+      val attribute: Attribute           = Wisdom
+      val name: String                   = "test-concentration-spell"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneAction
+      val spellLevel: SpellLevel         = 1
+      val requiresConcentration: Boolean = true
+
+      def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
+    }
   }
 }

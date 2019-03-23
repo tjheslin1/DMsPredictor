@@ -106,7 +106,11 @@ object BaseFighterAbilities extends LazyLogging {
 
               val (attacker2, attackTarget2, updatedOthers2) =
                 if (offHandAttack.result > 0)
-                  resolveDamage(updatedAttacker, nextTarget, updatedOthers, offHandWeapon, offHandAttack)
+                  resolveDamage(updatedAttacker,
+                                nextTarget,
+                                updatedOthers,
+                                offHandWeapon,
+                                offHandAttack)
                 else
                   (updatedAttacker, nextTarget, updatedOthers)
 
@@ -133,27 +137,24 @@ object BaseFighterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-            nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
-              .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
-                val (updatedAttacker, updatedOthers) =
-                  useAdditionalAbility(nextAbility, combatant, others, focus)
+        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
+          .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
+            val (updatedAttacker, updatedOthers) =
+              useAdditionalAbility(nextAbility, combatant, others, focus)
 
-                nextAbilityToUseInConjunction(updatedAttacker,
-                                              updatedOthers,
-                                              order,
-                                              AbilityAction.Any)
-                  .fold {
-                    nextToFocus(updatedOthers, focus).fold((updatedAttacker, updatedOthers)) {
-                      nextTarget =>
-                        val (updatedAttacker2, updatedTarget2, updatedOthers2) =
-                          attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+            nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
+              .fold {
+                nextToFocus(updatedOthers, focus).fold((updatedAttacker, updatedOthers)) {
+                  nextTarget =>
+                    val (updatedAttacker2, updatedTarget2, updatedOthers2) =
+                      attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
 
-                        (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
-                    }
-                  } { nextAbility2 =>
-                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
-                  }
-        }
+                    (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
+                }
+              } { nextAbility2 =>
+                useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
+              }
+          }
       }
 
       def update: Creature =

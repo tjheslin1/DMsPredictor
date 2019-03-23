@@ -37,7 +37,6 @@ object MonsterAbilities extends LazyLogging {
                                           order,
                                           NonEmptyList.of(SingleAttack)).fold {
               nextToFocus(players(otherTargets), focus).fold((attacker, otherTargets)) { target =>
-
                 val (updatedMonster, updatedEnemy, updatedOthers) =
                   attackAndDamage(attacker, target, otherTargets.except(target))
 

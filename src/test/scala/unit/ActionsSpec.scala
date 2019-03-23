@@ -1,14 +1,17 @@
 package unit
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Turned
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardiansCondition
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import util.TestData._
@@ -227,7 +230,7 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val concentratingCleric = cleric.withConcentrating(true).withCombatIndex(1)
+          val concentratingCleric = cleric.withConcentrating(concentrationSpell.some).withCombatIndex(1)
 
           val spiritGuardiansCondition = SpiritGuardiansCondition(10, 10, Wisdom)
 
@@ -247,7 +250,7 @@ class ActionsSpec extends UnitSpecBase {
           updatedGoblin.conditions shouldBe List()
           updatedZombie.conditions shouldBe List()
 
-          updatedCleric.isConcentrating shouldBe false
+          updatedCleric.concentratingSpell shouldBe false
         }
       }
     }
@@ -339,6 +342,17 @@ class ActionsSpec extends UnitSpecBase {
   abstract private class TestContext {
     implicit val roll: RollStrategy
 
-    def weaponWithHitBonus(bonus: Int) = Weapon("", Melee, Slashing, true, 1, wpnHitBonus = bonus)
+    def weaponWithHitBonus(bonus: Int) = Weapon("", Melee, Slashing, twoHands = true, 1, wpnHitBonus = bonus)
+
+    val concentrationSpell: Spell = new MultiTargetConditionSpell() {
+      val attribute: Attribute           = Wisdom
+      val name: String                   = "test-concentration-spell"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneAction
+      val spellLevel: SpellLevel         = 1
+      val requiresConcentration: Boolean = true
+
+      def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
+    }
   }
 }

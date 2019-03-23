@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting
 
+import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
@@ -38,6 +39,15 @@ abstract class MultiTargetConditionSpell extends Spell with LazyLogging {
       else applyCondition(spellCaster, target)
     }
 
-    (spellCaster, updatedTargets)
+    val anyTargetAffectedByCondition =
+      updatedTargets.exists(_.creature.conditions.contains(conditionFrom(spellCaster)))
+
+    if (anyTargetAffectedByCondition) {
+      val updatedConcentratingSpellCaster =
+        SpellCaster.concentratingLens.set(this.some)(spellCaster)
+
+      (updatedConcentratingSpellCaster, updatedTargets)
+    } else
+      (spellCaster, updatedTargets)
   }
 }

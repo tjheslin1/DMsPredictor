@@ -27,29 +27,28 @@ object ClassAbilities {
 
   def useAttackActionTwice[_: RS](attacker: Combatant,
                                   others: List[Combatant],
-                                  focus: Focus): (Combatant, List[Combatant]) = {
+                                  focus: Focus): (Combatant, List[Combatant]) =
     nextToFocus(monsters(others), focus).fold((attacker, others)) { target =>
-
-    val (updatedAttacker, updatedTarget, updatedOthers) =
-      attackAndDamage(attacker, target, others.except(target))
+      val (updatedAttacker, updatedTarget, updatedOthers) =
+        attackAndDamage(attacker, target, others.except(target))
 
       val allUpdatedOthers = updatedOthers.replace(updatedTarget)
 
-    nextToFocus(monsters(allUpdatedOthers), focus).fold((updatedAttacker, allUpdatedOthers)) { nextTarget =>
-      val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
-        attackAndDamage(updatedAttacker, nextTarget, allUpdatedOthers)
+      nextToFocus(monsters(allUpdatedOthers), focus).fold((updatedAttacker, allUpdatedOthers)) {
+        nextTarget =>
+          val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
+            attackAndDamage(updatedAttacker, nextTarget, allUpdatedOthers)
 
-      (updatedAttacker2, updatedOtherEnemies2.replace(updatedEnemy2))
+          (updatedAttacker2, updatedOtherEnemies2.replace(updatedEnemy2))
+      }
     }
-  }
-                                  }
 
   def useAdditionalAbility[_: RS](ability: CombatantAbility,
                                   attacker: Combatant,
                                   others: List[Combatant],
                                   focus: Focus): (Combatant, List[Combatant]) = {
     val (updatedAttacker, updatedOthers) = ability(attacker).useAbility(others, focus)
-    val updatedAttackingCreature                  = ability(updatedAttacker).update
+    val updatedAttackingCreature         = ability(updatedAttacker).update
 
     val updatedAttackingCombatant = Combatant.creatureLens.set(updatedAttackingCreature)(attacker)
 

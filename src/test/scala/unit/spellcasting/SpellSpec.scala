@@ -3,11 +3,13 @@ package unit.spellcasting
 import base.UnitSpecBase
 import cats.syntax.option._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import util.TestData._
 import util.TestMonster
 
@@ -26,12 +28,15 @@ class SpellSpec extends UnitSpecBase {
       spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
     }
 
-    "not return a concentration spell if already concentrating" in {
-      val concentratingCleric = random[Cleric].withConcentrating(true)
-        .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+    "not return a concentration spell if already concentrating" in new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-      spellOfLevelOrBelow(concentratingCleric, ConditionSpell, 3) shouldBe None
-    }
+        val concentratingCleric = random[Cleric]
+    .withConcentrating(concentrationSpell.some)
+    .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+
+        spellOfLevelOrBelow(concentratingCleric, ConditionSpell, 3) shouldBe None
+}
 
     "return none if no spell of SpellEffect is found" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds)
@@ -81,7 +86,18 @@ class SpellSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  private abstract class TestContext {
+    implicit val roll: RollStrategy
+
+    val concentrationSpell: Spell = new MultiTargetConditionSpell() {
+      val attribute: Attribute           = Wisdom
+      val name: String                   = "test-concentration-spell"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneAction
+      val spellLevel: SpellLevel         = 1
+      val requiresConcentration: Boolean = true
+
+      def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
+    }
   }
 }

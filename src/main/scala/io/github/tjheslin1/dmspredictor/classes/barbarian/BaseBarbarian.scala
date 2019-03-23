@@ -65,23 +65,23 @@ object BaseBarbarian {
 
   val inRageLens: Lens[BaseBarbarian, Boolean] = Lens[BaseBarbarian, Boolean](_.inRage) { rage =>
     {
-      case b: Barbarian    => Barbarian._inRage.set(rage)(b)
-      case b: Berserker    => Berserker._inRage.set(rage)(b)
+      case b: Barbarian => Barbarian._inRage.set(rage)(b)
+      case b: Berserker => Berserker._inRage.set(rage)(b)
     }
   }
 
   val rageUsagesLens: Lens[BaseBarbarian, Int] = Lens[BaseBarbarian, Int](_.rageUsages) { rageNum =>
     {
-      case b: Barbarian    => Barbarian._rageUsages.set(rageNum)(b)
-      case b: Berserker    => Berserker._rageUsages.set(rageNum)(b)
+      case b: Barbarian => Barbarian._rageUsages.set(rageNum)(b)
+      case b: Berserker => Berserker._rageUsages.set(rageNum)(b)
     }
   }
 
   val rageTurnsLeftLens: Lens[BaseBarbarian, Int] = Lens[BaseBarbarian, Int](_.rageTurnsLeft) {
     turnsLeft =>
       {
-        case b: Barbarian    => Barbarian._rageTurnsLeft.set(turnsLeft)(b)
-        case b: Berserker    => Berserker._rageTurnsLeft.set(turnsLeft)(b)
+        case b: Barbarian => Barbarian._rageTurnsLeft.set(turnsLeft)(b)
+        case b: Berserker => Berserker._rageTurnsLeft.set(turnsLeft)(b)
       }
   }
 }

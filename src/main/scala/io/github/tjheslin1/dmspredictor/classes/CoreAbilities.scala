@@ -58,17 +58,16 @@ object CoreAbilities extends LazyLogging {
                                             order,
                                             one(SingleAttack))
                 .fold {
-                  nextToFocus(monsters(updatedOthers), focus).fold{
+                  nextToFocus(monsters(updatedOthers), focus).fold {
                     (updatedCombatant, updatedOthers)
-                  } {
-                    focusTarget =>
-                      val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
-                        attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
+                  } { focusTarget =>
+                    val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
+                      attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
 
-                      (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
+                    (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
                   }
                 } { nextAbility2 =>
-                    useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
+                  useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
                 }
             }
       }
@@ -115,7 +114,7 @@ object CoreAbilities extends LazyLogging {
               }
           }
 
-        val target  = nextToFocus(monsters(others), focus)
+        val target = nextToFocus(monsters(others), focus)
 
         (target, optSpell) match {
           case (_, None) => (combatant, others)
@@ -214,7 +213,7 @@ object CoreAbilities extends LazyLogging {
             spellOfLevelOrBelow(spellCaster, ConditionSpell, spellSlot.spellLevel)
         }
 
-        val target  = nextToFocus(monsters(others), focus)
+        val target = nextToFocus(monsters(others), focus)
 
         (target, optSpell) match {
           case (_, None) => (combatant, others)

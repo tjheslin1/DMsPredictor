@@ -57,8 +57,8 @@ object Spell {
   }
 
   def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
-    case _: Cleric         => Wisdom
-    case _: BaseCleric     => Wisdom
+    case _: Cleric     => Wisdom
+    case _: BaseCleric => Wisdom
   }
 
   def attributeModifierForSchool(spellcaster: SpellCaster): Int =

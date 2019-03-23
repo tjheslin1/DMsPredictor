@@ -111,7 +111,9 @@ object Actions extends LazyLogging {
     (attacker, conditionHandledTarget, others)
   }
 
-  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant, others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {
+  def attackAndDamage[_: RS](attacker: Combatant,
+                             target: Combatant,
+                             others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {
     val attackResult = attack(attacker, attacker.creature.weapon, target)
 
     if (attackResult.result > 0)
@@ -122,10 +124,11 @@ object Actions extends LazyLogging {
     }
   }
 
-  def attackAndDamageTimes[_: RS](times: Int,
-                                  attacker: Combatant,
-                                  target: Combatant,
-                                  others: List[Combatant]): (Combatant, Combatant, List[Combatant]) =
+  def attackAndDamageTimes[_: RS](
+      times: Int,
+      attacker: Combatant,
+      target: Combatant,
+      others: List[Combatant]): (Combatant, Combatant, List[Combatant]) =
     runCombatantTimes(times, attacker, target, others, attackAndDamage)
 
   def runCombatantTimes(
@@ -133,9 +136,11 @@ object Actions extends LazyLogging {
       c1: Combatant,
       c2: Combatant,
       c3: List[Combatant],
-      f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant])): (Combatant, Combatant, List[Combatant]) =
-    (1 to times).foldLeft[(Combatant, Combatant, List[Combatant])]((c1, c2, c3)) { (combatants, _) =>
-      val (a, t, o) = combatants
-      f(a, t, o)
+      f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant]))
+    : (Combatant, Combatant, List[Combatant]) =
+    (1 to times).foldLeft[(Combatant, Combatant, List[Combatant])]((c1, c2, c3)) {
+      (combatants, _) =>
+        val (a, t, o) = combatants
+        f(a, t, o)
     }
 }

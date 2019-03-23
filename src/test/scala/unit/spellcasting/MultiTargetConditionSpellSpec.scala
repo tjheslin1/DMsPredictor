@@ -1,6 +1,7 @@
 package unit.spellcasting
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
@@ -16,7 +17,7 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
     "apply condition to all enemies if saving throw failed" in {
       forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin, goblinThree: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val dexterityConditionSpell = dexterityConditionSaveSpell(false)
 
@@ -51,7 +52,7 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
     "not apply condition to enemies if saving throw passed" in {
       forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin, goblinThree: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val dexterityConditionSpell = dexterityConditionSaveSpell(false)
 
@@ -83,14 +84,29 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
       }
     }
 
-    "not apply condition to enemies if saving throw passed" in {
-      forAll { (cleric: Cleric, goblinOne: Goblin) =>
+    "set cleric to concentrating on spell at least one enemy failed the saving throw" in {
+      forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val dexterityConditionSpell = dexterityConditionSaveSpell(false)
 
+          val conditionSpellCleric = cleric
+            .withSpellKnown(dexterityConditionSpell)
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
+            .withChannelDivinityUsed()
+            .withWisdom(15)
+            .asInstanceOf[Cleric]
 
+          val slowGoblin = lowDexGoblin(goblinOne, 2)
+          val quickGoblin = highDexGoblin(goblinTwo, 2)
+
+          val (updatedCleric: Cleric, _) =
+            dexterityConditionSpell.effect(conditionSpellCleric,
+                                           dexterityConditionSpell.spellLevel,
+                                           List(slowGoblin, quickGoblin))
+
+          updatedCleric.concentratingSpell shouldBe dexterityConditionSpell.some
         }
       }
     }
@@ -109,11 +125,11 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
     def dexterityConditionSaveSpell(concentration: Boolean) = new MultiTargetConditionSpell() {
       val attribute: Attribute = Dexterity
 
-      val name: String             = "tracked-multi-dexterity-save-spell"
-      val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneAction
-      val spellLevel: SpellLevel   = 1
-      val requiresConcentration: Boolean   = concentration
+      val name: String                   = "tracked-multi-dexterity-save-spell"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneAction
+      val spellLevel: SpellLevel         = 1
+      val requiresConcentration: Boolean = concentration
 
       def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
 

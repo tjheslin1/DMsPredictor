@@ -23,7 +23,6 @@ case class ThirdLevelSpellSlots(count: Int) extends SpellSlot {
   val spellLevel: SpellLevel = 3
 }
 
-
 case class SpellSlots(firstLevel: FirstLevelSpellSlots,
                       secondLevel: SecondLevelSpellSlots,
                       thirdLevel: ThirdLevelSpellSlots)

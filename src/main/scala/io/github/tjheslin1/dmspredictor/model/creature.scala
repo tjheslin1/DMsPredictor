@@ -61,11 +61,11 @@ object Creature extends LazyLogging {
 
   val creatureHealthLens: Lens[Creature, Int] = Lens[Creature, Int](_.health) { hp =>
     {
-      case c: Champion       => Champion._health.set(hp)(c)
-      case c: Fighter        => Fighter._health.set(hp)(c)
+      case c: Champion => Champion._health.set(hp)(c)
+      case c: Fighter  => Fighter._health.set(hp)(c)
 
-      case c: Barbarian    => Barbarian._health.set(hp)(c)
-      case c: Berserker    => Berserker._health.set(hp)(c)
+      case c: Barbarian => Barbarian._health.set(hp)(c)
+      case c: Berserker => Berserker._health.set(hp)(c)
 
       case c: Cleric => Cleric._health.set(hp)(c)
 
@@ -80,11 +80,11 @@ object Creature extends LazyLogging {
 
   val creatureMaxHealthLens: Lens[Creature, Int] = Lens[Creature, Int](_.maxHealth) { hp =>
     {
-      case c: Champion       => Champion._maxHealth.set(hp)(c)
-      case c: Fighter        => Fighter._maxHealth.set(hp)(c)
+      case c: Champion => Champion._maxHealth.set(hp)(c)
+      case c: Fighter  => Fighter._maxHealth.set(hp)(c)
 
-      case c: Barbarian    => Barbarian._maxHealth.set(hp)(c)
-      case c: Berserker    => Berserker._maxHealth.set(hp)(c)
+      case c: Barbarian => Barbarian._maxHealth.set(hp)(c)
+      case c: Berserker => Berserker._maxHealth.set(hp)(c)
 
       case c: Cleric => Cleric._maxHealth.set(hp)(c)
 
@@ -99,11 +99,11 @@ object Creature extends LazyLogging {
 
   val creatureStatsLens: Lens[Creature, BaseStats] = Lens[Creature, BaseStats](_.stats) { stats =>
     {
-      case c: Champion       => Champion._stats.set(stats)(c)
-      case c: Fighter        => Fighter._stats.set(stats)(c)
+      case c: Champion => Champion._stats.set(stats)(c)
+      case c: Fighter  => Fighter._stats.set(stats)(c)
 
-      case c: Barbarian    => Barbarian._stats.set(stats)(c)
-      case c: Berserker    => Berserker._stats.set(stats)(c)
+      case c: Barbarian => Barbarian._stats.set(stats)(c)
+      case c: Berserker => Berserker._stats.set(stats)(c)
 
       case c: Cleric => Cleric._stats.set(stats)(c)
 
@@ -119,11 +119,11 @@ object Creature extends LazyLogging {
   val creatureStrengthLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.strength) {
     strScore =>
       {
-        case c: Champion       => Champion.strengthLens.set(strScore)(c)
-        case c: Fighter        => Fighter.strengthLens.set(strScore)(c)
+        case c: Champion => Champion.strengthLens.set(strScore)(c)
+        case c: Fighter  => Fighter.strengthLens.set(strScore)(c)
 
-        case c: Barbarian    => Barbarian.strengthLens.set(strScore)(c)
-        case c: Berserker    => Berserker.strengthLens.set(strScore)(c)
+        case c: Barbarian => Barbarian.strengthLens.set(strScore)(c)
+        case c: Berserker => Berserker.strengthLens.set(strScore)(c)
 
         case c: Cleric => Cleric.strengthLens.set(strScore)(c)
 
@@ -139,11 +139,11 @@ object Creature extends LazyLogging {
   val creatureDexterityLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.dexterity) {
     dexScore =>
       {
-        case c: Champion       => Champion.dexterityLens.set(dexScore)(c)
-        case c: Fighter        => Fighter.dexterityLens.set(dexScore)(c)
+        case c: Champion => Champion.dexterityLens.set(dexScore)(c)
+        case c: Fighter  => Fighter.dexterityLens.set(dexScore)(c)
 
-        case c: Barbarian    => Barbarian.dexterityLens.set(dexScore)(c)
-        case c: Berserker    => Berserker.dexterityLens.set(dexScore)(c)
+        case c: Barbarian => Barbarian.dexterityLens.set(dexScore)(c)
+        case c: Berserker => Berserker.dexterityLens.set(dexScore)(c)
 
         case c: Cleric => Cleric.dexterityLens.set(dexScore)(c)
 
@@ -159,11 +159,11 @@ object Creature extends LazyLogging {
   val creatureConstitutionLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.constitution) {
     conScore =>
       {
-        case c: Champion       => Champion.constitutionLens.set(conScore)(c)
-        case c: Fighter        => Fighter.constitutionLens.set(conScore)(c)
+        case c: Champion => Champion.constitutionLens.set(conScore)(c)
+        case c: Fighter  => Fighter.constitutionLens.set(conScore)(c)
 
-        case c: Barbarian    => Barbarian.constitutionLens.set(conScore)(c)
-        case c: Berserker    => Berserker.constitutionLens.set(conScore)(c)
+        case c: Barbarian => Barbarian.constitutionLens.set(conScore)(c)
+        case c: Berserker => Berserker.constitutionLens.set(conScore)(c)
 
         case c: Cleric => Cleric.constitutionLens.set(conScore)(c)
 
@@ -178,11 +178,11 @@ object Creature extends LazyLogging {
 
   val creatureWisdomLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.wisdom) { wisScore =>
     {
-      case c: Champion       => Champion.wisdomLens.set(wisScore)(c)
-      case c: Fighter        => Fighter.wisdomLens.set(wisScore)(c)
+      case c: Champion => Champion.wisdomLens.set(wisScore)(c)
+      case c: Fighter  => Fighter.wisdomLens.set(wisScore)(c)
 
-      case c: Barbarian    => Barbarian.wisdomLens.set(wisScore)(c)
-      case c: Berserker    => Berserker.wisdomLens.set(wisScore)(c)
+      case c: Barbarian => Barbarian.wisdomLens.set(wisScore)(c)
+      case c: Berserker => Berserker.wisdomLens.set(wisScore)(c)
 
       case c: Cleric => Cleric.wisdomLens.set(wisScore)(c)
 
@@ -198,11 +198,11 @@ object Creature extends LazyLogging {
   val creatureIntelligenceLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.intelligence) {
     intScore =>
       {
-        case c: Champion       => Champion.intelligenceLens.set(intScore)(c)
-        case c: Fighter        => Fighter.intelligenceLens.set(intScore)(c)
+        case c: Champion => Champion.intelligenceLens.set(intScore)(c)
+        case c: Fighter  => Fighter.intelligenceLens.set(intScore)(c)
 
-        case c: Barbarian    => Barbarian.intelligenceLens.set(intScore)(c)
-        case c: Berserker    => Berserker.intelligenceLens.set(intScore)(c)
+        case c: Barbarian => Barbarian.intelligenceLens.set(intScore)(c)
+        case c: Berserker => Berserker.intelligenceLens.set(intScore)(c)
 
         case c: Cleric => Cleric.intelligenceLens.set(intScore)(c)
 
@@ -218,11 +218,11 @@ object Creature extends LazyLogging {
   val creatureCharismaLens: Lens[Creature, Stat] = Lens[Creature, Stat](_.stats.charisma) {
     chaScore =>
       {
-        case c: Champion       => Champion.charismaLens.set(chaScore)(c)
-        case c: Fighter        => Fighter.charismaLens.set(chaScore)(c)
+        case c: Champion => Champion.charismaLens.set(chaScore)(c)
+        case c: Fighter  => Fighter.charismaLens.set(chaScore)(c)
 
-        case c: Barbarian    => Barbarian.charismaLens.set(chaScore)(c)
-        case c: Berserker    => Berserker.charismaLens.set(chaScore)(c)
+        case c: Barbarian => Barbarian.charismaLens.set(chaScore)(c)
+        case c: Berserker => Berserker.charismaLens.set(chaScore)(c)
 
         case c: Cleric => Cleric.charismaLens.set(chaScore)(c)
 
@@ -237,11 +237,11 @@ object Creature extends LazyLogging {
 
   val creatureBaseWeaponLens: Lens[Creature, Weapon] = Lens[Creature, Weapon](_.baseWeapon) { wpn =>
     {
-      case c: Champion       => Champion._baseWeapon.set(wpn)(c)
-      case c: Fighter        => Fighter._baseWeapon.set(wpn)(c)
+      case c: Champion => Champion._baseWeapon.set(wpn)(c)
+      case c: Fighter  => Fighter._baseWeapon.set(wpn)(c)
 
-      case c: Barbarian    => Barbarian._baseWeapon.set(wpn)(c)
-      case c: Berserker    => Berserker._baseWeapon.set(wpn)(c)
+      case c: Barbarian => Barbarian._baseWeapon.set(wpn)(c)
+      case c: Berserker => Berserker._baseWeapon.set(wpn)(c)
 
       case c: Cleric => Cleric._baseWeapon.set(wpn)(c)
 
@@ -256,11 +256,11 @@ object Creature extends LazyLogging {
 
   val creatureArmourLens: Lens[Creature, Armour] = Lens[Creature, Armour](_.armour) { armr =>
     {
-      case c: Champion       => Champion._armour.set(armr)(c)
-      case c: Fighter        => Fighter._armour.set(armr)(c)
+      case c: Champion => Champion._armour.set(armr)(c)
+      case c: Fighter  => Fighter._armour.set(armr)(c)
 
-      case c: Barbarian    => Barbarian._armour.set(armr)(c)
-      case c: Berserker    => Berserker._armour.set(armr)(c)
+      case c: Barbarian => Barbarian._armour.set(armr)(c)
+      case c: Berserker => Berserker._armour.set(armr)(c)
 
       case c: Cleric => Cleric._armour.set(armr)(c)
 
@@ -276,11 +276,11 @@ object Creature extends LazyLogging {
   val creatureOffHandLens: Lens[Creature, Option[Equipment]] =
     Lens[Creature, Option[Equipment]](_.offHand) { offH =>
       {
-        case c: Champion       => Champion._offHand.set(offH)(c)
-        case c: Fighter        => Fighter._offHand.set(offH)(c)
+        case c: Champion => Champion._offHand.set(offH)(c)
+        case c: Fighter  => Fighter._offHand.set(offH)(c)
 
-        case c: Barbarian    => Barbarian._offHand.set(offH)(c)
-        case c: Berserker    => Berserker._offHand.set(offH)(c)
+        case c: Barbarian => Barbarian._offHand.set(offH)(c)
+        case c: Berserker => Berserker._offHand.set(offH)(c)
 
         case c: Cleric => Cleric._offHand.set(offH)(c)
 
@@ -296,11 +296,11 @@ object Creature extends LazyLogging {
   val creatureResistancesLens: Lens[Creature, List[DamageType]] =
     Lens[Creature, List[DamageType]](_.resistances) { res =>
       {
-        case c: Champion       => Champion._resistances.set(res)(c)
-        case c: Fighter        => Fighter._resistances.set(res)(c)
+        case c: Champion => Champion._resistances.set(res)(c)
+        case c: Fighter  => Fighter._resistances.set(res)(c)
 
-        case c: Barbarian    => Barbarian._resistances.set(res)(c)
-        case c: Berserker    => Berserker._resistances.set(res)(c)
+        case c: Barbarian => Barbarian._resistances.set(res)(c)
+        case c: Berserker => Berserker._resistances.set(res)(c)
 
         case c: Cleric => Cleric._resistances.set(res)(c)
 
@@ -316,11 +316,11 @@ object Creature extends LazyLogging {
   val creatureImmunitiesLens: Lens[Creature, List[DamageType]] =
     Lens[Creature, List[DamageType]](_.immunities) { res =>
       {
-        case c: Champion       => Champion._immunities.set(res)(c)
-        case c: Fighter        => Fighter._immunities.set(res)(c)
+        case c: Champion => Champion._immunities.set(res)(c)
+        case c: Fighter  => Fighter._immunities.set(res)(c)
 
-        case c: Barbarian    => Barbarian._immunities.set(res)(c)
-        case c: Berserker    => Berserker._immunities.set(res)(c)
+        case c: Barbarian => Barbarian._immunities.set(res)(c)
+        case c: Berserker => Berserker._immunities.set(res)(c)
 
         case c: Cleric => Cleric._immunities.set(res)(c)
 
@@ -336,11 +336,11 @@ object Creature extends LazyLogging {
   val creatureAbilitiesLens: Lens[Creature, List[CombatantAbility]] =
     Lens[Creature, List[CombatantAbility]](_.abilities) { res =>
       {
-        case c: Champion       => Champion._abilities.set(res)(c)
-        case c: Fighter        => Fighter._abilities.set(res)(c)
+        case c: Champion => Champion._abilities.set(res)(c)
+        case c: Fighter  => Fighter._abilities.set(res)(c)
 
-        case c: Barbarian    => Barbarian._abilities.set(res)(c)
-        case c: Berserker    => Berserker._abilities.set(res)(c)
+        case c: Barbarian => Barbarian._abilities.set(res)(c)
+        case c: Berserker => Berserker._abilities.set(res)(c)
 
         case c: Cleric => Cleric._abilities.set(res)(c)
 
@@ -351,11 +351,11 @@ object Creature extends LazyLogging {
   val creatureConditionsLens: Lens[Creature, List[Condition]] =
     Lens[Creature, List[Condition]](_.conditions) { conditions =>
       {
-        case c: Champion       => Champion._conditions.set(conditions)(c)
-        case c: Fighter        => Fighter._conditions.set(conditions)(c)
+        case c: Champion => Champion._conditions.set(conditions)(c)
+        case c: Fighter  => Fighter._conditions.set(conditions)(c)
 
-        case c: Barbarian    => Barbarian._conditions.set(conditions)(c)
-        case c: Berserker    => Berserker._conditions.set(conditions)(c)
+        case c: Barbarian => Barbarian._conditions.set(conditions)(c)
+        case c: Berserker => Berserker._conditions.set(conditions)(c)
 
         case c: Cleric => Cleric._conditions.set(conditions)(c)
 
@@ -371,11 +371,11 @@ object Creature extends LazyLogging {
   val creatureAttackStatusLens: Lens[Creature, AttackStatus] =
     Lens[Creature, AttackStatus](_.attackStatus) { status =>
       {
-        case c: Champion       => Champion._attackStatus.set(status)(c)
-        case c: Fighter        => Fighter._attackStatus.set(status)(c)
+        case c: Champion => Champion._attackStatus.set(status)(c)
+        case c: Fighter  => Fighter._attackStatus.set(status)(c)
 
-        case c: Barbarian    => Barbarian._attackStatus.set(status)(c)
-        case c: Berserker    => Berserker._attackStatus.set(status)(c)
+        case c: Barbarian => Barbarian._attackStatus.set(status)(c)
+        case c: Berserker => Berserker._attackStatus.set(status)(c)
 
         case c: Cleric => Cleric._attackStatus.set(status)(c)
 
@@ -391,11 +391,11 @@ object Creature extends LazyLogging {
   val creatureDefenseStatusLens: Lens[Creature, AttackStatus] =
     Lens[Creature, AttackStatus](_.defenseStatus) { status =>
       {
-        case c: Champion       => Champion._defenseStatus.set(status)(c)
-        case c: Fighter        => Fighter._defenseStatus.set(status)(c)
+        case c: Champion => Champion._defenseStatus.set(status)(c)
+        case c: Fighter  => Fighter._defenseStatus.set(status)(c)
 
-        case c: Barbarian    => Barbarian._defenseStatus.set(status)(c)
-        case c: Berserker    => Berserker._defenseStatus.set(status)(c)
+        case c: Barbarian => Barbarian._defenseStatus.set(status)(c)
+        case c: Berserker => Berserker._defenseStatus.set(status)(c)
 
         case c: Cleric => Cleric._defenseStatus.set(status)(c)
 
@@ -409,22 +409,22 @@ object Creature extends LazyLogging {
     }
 
   val creatureLevelOptional: Optional[Creature, Level] = Optional[Creature, Level] {
-    case c: Champion       => val lvl: Level = c.level; lvl.some
-    case c: Fighter        => val lvl: Level = c.level; lvl.some
+    case c: Champion => val lvl: Level = c.level; lvl.some
+    case c: Fighter  => val lvl: Level = c.level; lvl.some
 
-    case c: Barbarian    => val lvl: Level = c.level; lvl.some
-    case c: Berserker    => val lvl: Level = c.level; lvl.some
+    case c: Barbarian => val lvl: Level = c.level; lvl.some
+    case c: Berserker => val lvl: Level = c.level; lvl.some
 
     case c: Cleric => val lvl: Level = c.level; lvl.some
 
     case _ => none[Level]
   } { lvl =>
     {
-      case c: Champion       => Champion._level.set(lvl)(c)
-      case c: Fighter        => Fighter._level.set(lvl)(c)
+      case c: Champion => Champion._level.set(lvl)(c)
+      case c: Fighter  => Fighter._level.set(lvl)(c)
 
-      case c: Barbarian    => Barbarian._level.set(lvl)(c)
-      case c: Berserker    => Berserker._level.set(lvl)(c)
+      case c: Barbarian => Barbarian._level.set(lvl)(c)
+      case c: Berserker => Berserker._level.set(lvl)(c)
 
       case c: Cleric => Cleric._level.set(lvl)(c)
 
