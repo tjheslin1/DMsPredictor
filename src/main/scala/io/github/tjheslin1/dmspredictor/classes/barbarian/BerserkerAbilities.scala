@@ -38,7 +38,7 @@ object BerserkerAbilities extends LazyLogging {
       val target  = nextToFocus(enemies, focus)
 
       target match {
-        case None => (ragingBarbarianCombatant, List.empty[Combatant])
+        case None => (ragingBarbarianCombatant, others)
         case Some(targetOfAttack) =>
           nextAbilityToUseInConjunction(ragingBarbarianCombatant,
                                         enemies,

@@ -58,9 +58,9 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
           val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
 
-          val enemies = List(zombieOne.withCombatIndex(1),
-                             zombieTwo.withCombatIndex(2),
-                             goblin.withCombatIndex(2))
+          val enemies = List(zombieOne.withCombatIndex(2),
+                             zombieTwo.withCombatIndex(3),
+                             goblin.withCombatIndex(4))
 
           val (_,
                List(Combatant(_, updatedZombieOne: Zombie),

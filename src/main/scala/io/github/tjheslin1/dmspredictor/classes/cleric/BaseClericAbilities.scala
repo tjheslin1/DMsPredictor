@@ -32,7 +32,7 @@ object BaseClericAbilities extends LazyLogging {
       logger.debug(s"${baseCleric.name} used $name")
 
       monsters(others).filter(_.creature.creatureType == Undead) match {
-        case List() => (combatant, List.empty[Combatant])
+        case List() => (combatant, others)
         case undeadTargets: List[Combatant] =>
           val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
 

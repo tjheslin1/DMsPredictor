@@ -9,7 +9,8 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardiansCondition
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import util.TestData._
 import util.TestMonster
 
@@ -206,11 +207,49 @@ class ActionsSpec extends UnitSpecBase {
     }
 
     "return other combatants" in {
-      fail("todo")
+      new TestContext {
+        implicit override val roll: RollStrategy = _ => RollResult(19)
+
+        val fighter = random[Fighter].withCombatIndex(1)
+        val cleric  = random[Cleric].withCombatIndex(2)
+        val goblin  = random[Goblin].withCombatIndex(3)
+        val zombie  = random[Zombie].withCombatIndex(4)
+
+        val (Combatant(_, updatedFighter: Fighter),
+             Combatant(_, updatedGoblin: Goblin),
+             List(Combatant(_, updatedCleric: Cleric), Combatant(_, updatedZombie: Zombie))) =
+          resolveDamage(fighter, goblin, List(cleric, zombie), fighter.creature.weapon, Miss)
+      }
     }
 
     "handle loss of concentration spell" in {
-      fail("todo")
+      forAll { (cleric: Cleric, goblin: Goblin, zombie: Zombie) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val concentratingCleric = cleric.withConcentrating(true).withCombatIndex(1)
+
+          val spiritGuardiansCondition = SpiritGuardiansCondition(10, 10, Wisdom)
+
+          val goblinCombatant = goblin.withCondition(spiritGuardiansCondition).withCombatIndex(2)
+          val zombieCombatant = zombie.withCondition(spiritGuardiansCondition).withCombatIndex(3)
+
+          val (Combatant(_, updatedGoblin: Goblin),
+               Combatant(_, updatedCleric: Cleric),
+               List(Combatant(_, updatedZombie: Zombie))) =
+            resolveDamage(goblinCombatant,
+                          concentratingCleric,
+                          List(zombieCombatant),
+                          goblin.weapon,
+                          Hit,
+                          damageBonus = 100)
+
+          updatedGoblin.conditions shouldBe List()
+          updatedZombie.conditions shouldBe List()
+
+          updatedCleric.isConcentrating shouldBe false
+        }
+      }
     }
   }
 
@@ -233,7 +272,7 @@ class ActionsSpec extends UnitSpecBase {
           val monsterCombatant = monster.withHealth(50).withCombatIndex(2)
 
           resolveDamageMainHand(playerCombatant, monsterCombatant, List(), Hit) shouldBe (playerCombatant, monsterCombatant
-            .withCreature(monster.withHealth(0)))
+            .withCreature(monster.withHealth(0)), List())
         }
       }
     }
@@ -252,7 +291,7 @@ class ActionsSpec extends UnitSpecBase {
 
           resolveDamageMainHand(playerCombatant, monsterCombatant, List(), CriticalHit)(
             D20.naturalTwenty) shouldBe
-            (playerCombatant, monsterCombatant.withCreature(monster.withHealth(8)))
+            (playerCombatant, monsterCombatant.withCreature(monster.withHealth(8)), List())
         }
       }
     }
@@ -272,8 +311,8 @@ class ActionsSpec extends UnitSpecBase {
           val monsterCombatant = modifiedMonster
             .withCombatIndex(2)
 
-          resolveDamageMainHand(playerCombatant, monsterCombatant, List(), Hit)(_ => 19) shouldBe
-            (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(99)))
+          resolveDamageMainHand(playerCombatant, monsterCombatant, List(), Hit) shouldBe
+            (playerCombatant, monsterCombatant.withCreature(modifiedMonster.withHealth(99)), List())
         }
       }
     }

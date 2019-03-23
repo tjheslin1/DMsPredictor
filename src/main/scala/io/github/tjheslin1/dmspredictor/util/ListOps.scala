@@ -18,7 +18,7 @@ object ListOps {
 
     def replace(ts: List[T])(implicit eq: Eq[T]): List[T] =
       ts.foldLeft(list) {
-        case (tss, t) => if (tss.contains(t)) tss.replace(t) else tss :+ t
+        case (tss, t) => tss.replace(t)
       }
 
     def except(t: T): List[T] = list diff List(t)

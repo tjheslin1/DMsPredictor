@@ -36,16 +36,16 @@ DEBUG i.g.t.dmspredictor.model.Actions$ - D20.roll() of 3
 DEBUG i.g.t.d.model.AdjustedDamage$ - Cleric took 0 (adjusted) Piercing damage
 DEBUG i.g.t.d.model.condition.Charmed - Cleric is no longer Charmed
 DEBUG i.g.t.d.m.vampire.VampireAbilities$ - Bite (Vampire) deals 0 necrotic damage
-DEBUG i.g.t.d.classes.CoreAbilities$ - Totem Warrior used Extra Attack
-DEBUG i.g.t.d.c.b.BaseBarbarianAbilities$ - Totem Warrior is recklessly attacking
+DEBUG i.g.t.d.classes.CoreAbilities$ - Barbarian used Extra Attack
+DEBUG i.g.t.d.c.b.BaseBarbarianAbilities$ - Barbarian is recklessly attacking
 DEBUG i.g.t.dmspredictor.model.Actions$ - D20.roll() of 19
 DEBUG i.g.t.d.model.AdjustedDamage$ - Vampire took 5 (adjusted) Slashing damage
-DEBUG i.g.t.d.c.b.BaseBarbarianAbilities$ - Totem Warrior is recklessly attacking
+DEBUG i.g.t.d.c.b.BaseBarbarianAbilities$ - Barbarian is recklessly attacking
 DEBUG i.g.t.dmspredictor.model.Actions$ - D20.roll() of 17
 DEBUG i.g.t.d.model.AdjustedDamage$ - Vampire took 5 (adjusted) Slashing damage
 DEBUG i.g.t.d.model.condition.Grappled - Cleric is still Grappled
 DEBUG i.g.t.d.c.c.BaseClericAbilities$ - Cleric used Destroy Undead
-DEBUG i.g.t.d.simulation.BasicSimulation - pc: Totem Warrior - hp=40
+DEBUG i.g.t.d.simulation.BasicSimulation - pc: Barbarian - hp=40
 DEBUG i.g.t.d.simulation.BasicSimulation - pc: Cleric - hp=28
 DEBUG i.g.t.d.simulation.BasicSimulation - mob: Vampire - hp=134
 ```

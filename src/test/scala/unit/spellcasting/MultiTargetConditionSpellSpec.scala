@@ -18,7 +18,9 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val fireSpellCleric = cleric
+          val dexterityConditionSpell = dexterityConditionSaveSpell(false)
+
+          val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
             .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
@@ -29,13 +31,13 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
                List(Combatant(_, updatedGoblinOne: Goblin),
                     Combatant(_, updatedGoblinTwo: Goblin),
                     Combatant(_, updatedGoblinThree: Goblin))) =
-            dexterityConditionSpell.effect(fireSpellCleric,
+            dexterityConditionSpell.effect(conditionSpellCleric,
                                            dexterityConditionSpell.spellLevel,
                                            List(lowDexGoblin(goblinOne, 2),
                                                 lowDexGoblin(goblinTwo, 3),
                                                 lowDexGoblin(goblinThree, 4)))
 
-          val expectedCondition = List(dexterityConditionSpell.conditionFrom(fireSpellCleric))
+          val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
           dexteritySaveConditionCount shouldBe 3
 
@@ -51,7 +53,9 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val fireSpellCleric = cleric
+          val dexterityConditionSpell = dexterityConditionSaveSpell(false)
+
+          val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
             .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
@@ -62,19 +66,31 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
                List(Combatant(_, updatedGoblinOne: Goblin),
                     Combatant(_, updatedGoblinTwo: Goblin),
                     Combatant(_, updatedGoblinThree: Goblin))) =
-            dexterityConditionSpell.effect(fireSpellCleric,
+            dexterityConditionSpell.effect(conditionSpellCleric,
                                            dexterityConditionSpell.spellLevel,
                                            List(lowDexGoblin(goblinOne, 2),
                                                 lowDexGoblin(goblinTwo, 3),
                                                 highDexGoblin(goblinThree, 4)))
 
-          val expectedCondition = List(dexterityConditionSpell.conditionFrom(fireSpellCleric))
+          val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
           dexteritySaveConditionCount shouldBe 2
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions ++ expectedCondition
           updatedGoblinThree.conditions shouldBe goblinThree.creature.conditions
+        }
+      }
+    }
+
+    "not apply condition to enemies if saving throw passed" in {
+      forAll { (cleric: Cleric, goblinOne: Goblin) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val dexterityConditionSpell = dexterityConditionSaveSpell(false)
+
+
         }
       }
     }
@@ -90,14 +106,14 @@ class MultiTargetConditionSpellSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     var dexteritySaveConditionCount = 0
-    val dexterityConditionSpell = new MultiTargetConditionSpell() {
+    def dexterityConditionSaveSpell(concentration: Boolean) = new MultiTargetConditionSpell() {
       val attribute: Attribute = Dexterity
 
       val name: String             = "tracked-multi-dexterity-save-spell"
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = 1
-      val requiresConcentration: Boolean   = false
+      val requiresConcentration: Boolean   = concentration
 
       def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
 

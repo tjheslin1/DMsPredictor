@@ -28,7 +28,7 @@ object ClassAbilities {
   def useAttackActionTwice[_: RS](attacker: Combatant,
                                   others: List[Combatant],
                                   focus: Focus): (Combatant, List[Combatant]) = {
-    nextToFocus(monsters(others), focus).fold((attacker, List.empty[Combatant])) { target =>
+    nextToFocus(monsters(others), focus).fold((attacker, others)) { target =>
 
     val (updatedAttacker, updatedTarget, updatedOthers) =
       attackAndDamage(attacker, target, others.except(target))
