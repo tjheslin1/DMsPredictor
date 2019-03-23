@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.model.condition
 
+import cats.Eq
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
@@ -15,6 +16,8 @@ trait Condition {
 }
 
 object Condition {
+
+  implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) => x.name == y.name && x.saveDc == y.saveDc
 
   val conditionTurnsLeftLens: Lens[Condition, Int] = Lens[Condition, Int](_.turnsLeft) {
     updatedTurnsLeft =>

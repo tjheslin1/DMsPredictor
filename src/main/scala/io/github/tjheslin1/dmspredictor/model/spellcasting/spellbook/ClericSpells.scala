@@ -51,8 +51,10 @@ object ClericSpells {
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
   }
 
-  case object HoldPerson extends SingleTargetConditionSpell {
+  case object HoldPerson extends ApplyConditionSpell {
     val name: String         = "Hold Person"
+
+    val singleTarget: Boolean = true
     val attribute: Attribute = Wisdom
 
     val school: SchoolOfMagic          = Enchantment
@@ -64,10 +66,12 @@ object ClericSpells {
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
   }
 
-  case object SpiritGuardians extends MultiTargetConditionSpell {
+  case object SpiritGuardians extends ApplyConditionSpell {
     val name = "Spirit Guardians"
 
+    val singleTarget: Boolean = false
     val attribute: Attribute           = Wisdom
+
     val school: SchoolOfMagic          = Conjuration
     val castingTime: CastingTime       = OneAction
     val spellLevel: SpellLevel         = 3

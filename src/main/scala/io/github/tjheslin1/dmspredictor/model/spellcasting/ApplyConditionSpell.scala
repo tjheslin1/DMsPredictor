@@ -7,8 +7,9 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
 
-abstract class MultiTargetConditionSpell extends Spell with LazyLogging {
+abstract class ApplyConditionSpell extends Spell with LazyLogging {
 
+  val singleTarget: Boolean
   val attribute: Attribute
   val spellEffect: SpellEffect = ConditionSpell
 
@@ -26,7 +27,10 @@ abstract class MultiTargetConditionSpell extends Spell with LazyLogging {
 
   def effect[_: RS](spellCaster: SpellCaster,
                     spellLevel: SpellLevel,
-                    targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+                    allTargets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+
+    val targets = if (singleTarget) List(allTargets.head) else allTargets
+
     logger.debug(s"casting $name")
 
     val updatedTargets = targets.map { target =>
@@ -39,10 +43,10 @@ abstract class MultiTargetConditionSpell extends Spell with LazyLogging {
       else applyCondition(spellCaster, target)
     }
 
-    val anyTargetAffectedByCondition =
+    def anyTargetIsAffectedByCondition(): Boolean =
       updatedTargets.exists(_.creature.conditions.contains(conditionFrom(spellCaster)))
 
-    if (anyTargetAffectedByCondition) {
+    if (requiresConcentration && anyTargetIsAffectedByCondition()) {
       val updatedConcentratingSpellCaster =
         SpellCaster.concentratingLens.set(this.some)(spellCaster)
 

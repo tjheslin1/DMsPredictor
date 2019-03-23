@@ -225,7 +225,7 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "handle loss of concentration spell" in {
+    "handle loss of concentration on spell" in {
       forAll { (cleric: Cleric, goblin: Goblin, zombie: Zombie) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -344,7 +344,7 @@ class ActionsSpec extends UnitSpecBase {
 
     def weaponWithHitBonus(bonus: Int) = Weapon("", Melee, Slashing, twoHands = true, 1, wpnHitBonus = bonus)
 
-    val concentrationSpell: Spell = new MultiTargetConditionSpell() {
+    val concentrationSpell: Spell = new ApplyConditionSpell() {
       val attribute: Attribute           = Wisdom
       val name: String                   = "test-concentration-spell"
       val school: SchoolOfMagic          = Evocation
