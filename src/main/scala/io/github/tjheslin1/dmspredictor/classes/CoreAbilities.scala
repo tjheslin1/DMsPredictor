@@ -120,10 +120,12 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => (combatant, others)
           case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
-            val (_, List(updatedTarget)) =
+            val (updatedSpellCaster, List(updatedTarget)) =
               spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), List(spellTarget))
 
-            (combatant, others.replace(updatedTarget))
+            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+
+            (updatedCombatant, others.replace(updatedTarget))
         }
       }
 
@@ -160,12 +162,14 @@ object CoreAbilities extends LazyLogging {
 
         val target = nextToFocus(players(others), focus)
 
-        val optHealedAlly = (target, optSpell) match {
-          case (_, None) => None
-          case (None, _) => None
+        val (updatedCombatant, optHealedAlly) = (target, optSpell) match {
+          case (_, None) => (combatant, None)
+          case (None, _) => (combatant, None)
           case (Some(spellTarget), Some(spell)) =>
-            val (_, List(updatedTarget: Combatant)) =
+            val (updatedSpellCaster, List(updatedTarget: Combatant)) =
               spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
+
+            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
             val updatedHealth =
               Math.min(updatedTarget.creature.maxHealth,
@@ -180,17 +184,17 @@ object CoreAbilities extends LazyLogging {
                 s"${updatedBonusHealingTarget.creature.name} healed for $bonusHealing bonus healing")
             }
 
-            updatedBonusHealingTarget.some
+            (updatedCombatant, updatedBonusHealingTarget.some)
         }
 
-        optHealedAlly.fold((combatant, others))(updatedTarget =>
-          (combatant, others.replace(updatedTarget)))
+        optHealedAlly.fold((updatedCombatant, others))(updatedTarget =>
+          (updatedCombatant, others.replace(updatedTarget)))
       }
 
       def update: Creature = updateSpellSlot(spellCaster, HealingSpell)
     }
 
-  def castSingleTargetConditionSpell(currentOrder: Int)(combatant: Combatant): Ability =
+  def castConditionSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
@@ -213,16 +217,15 @@ object CoreAbilities extends LazyLogging {
             spellOfLevelOrBelow(spellCaster, ConditionSpell, spellSlot.spellLevel)
         }
 
-        val target = nextToFocus(monsters(others), focus)
+        optSpell match {
+          case None => (combatant, others)
+          case Some(spell) =>
+            val (updatedSpellCaster, updatedTargets) =
+              spell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others))
 
-        (target, optSpell) match {
-          case (_, None) => (combatant, others)
-          case (None, _) => (combatant, others)
-          case (Some(spellTarget), Some(spell)) =>
-            val (_, List(updatedTarget: Combatant)) =
-              spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
+            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
-            (combatant, others.replace(updatedTarget))
+            (updatedCombatant, others.replace(updatedTargets))
         }
       }
 
@@ -251,6 +254,7 @@ object CoreAbilities extends LazyLogging {
           spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotUsed.spellLevel)
 
         optSpell.fold(spellCaster) { foundSpell =>
+
           if (foundSpell.spellLevel.value == 0) {
             spellCaster
           } else {

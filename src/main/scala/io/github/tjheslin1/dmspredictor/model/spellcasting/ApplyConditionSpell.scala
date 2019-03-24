@@ -19,7 +19,7 @@ abstract class ApplyConditionSpell extends Spell with LazyLogging {
   def applyCondition[_: RS](spellCaster: SpellCaster, target: Combatant): Combatant = {
     val condition = conditionFrom(spellCaster)
 
-    logger.debug(s"${target.creature.name} is now ${condition.name}")
+    logger.debug(s"${target.creature.name} is now affected by ${condition.name}")
 
     val currentConditions = target.creature.conditions
     (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
@@ -38,7 +38,7 @@ abstract class ApplyConditionSpell extends Spell with LazyLogging {
       val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
 
       logger.debug(
-        s"${target.creature.name} rolls saving throw ${if (savingThrowPassed) "Passed" else "Failed"}")
+        s"${target.creature.name} rolls saving throw - ${if (savingThrowPassed) "Passed" else "Failed"}")
 
       if (savingThrowPassed) target
       else applyCondition(spellCaster, target)

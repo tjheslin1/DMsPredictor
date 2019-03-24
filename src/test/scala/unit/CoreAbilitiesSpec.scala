@@ -1,6 +1,7 @@
 package unit
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
@@ -387,7 +388,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  "castSingleTargetConditionSpell" should {
+  "castConditionSpell" should {
 
     "cast a spell (condition)" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
@@ -403,7 +404,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withCombatIndex(2)
 
-          castSingleTargetConditionSpell(Priority)(trackedCleric)
+          castConditionSpell(Priority)(trackedCleric)
             .useAbility(List(monster), LowestFirst)
 
           conditionSpellUsedCount shouldBe 1
@@ -416,8 +417,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
+          val trackedConditionSpell: Spell = trackedConditionSpell(2)
+
           val trackedCleric = cleric
-            .withSpellKnown(trackedConditionSpell(2))
+            .withSpellKnown(trackedConditionSpell)
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
@@ -425,8 +428,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withCombatIndex(2)
 
-          castSingleTargetConditionSpell(Priority)(trackedCleric)
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(trackedCleric)
               .useAbility(List(monster), LowestFirst)
+
+          updatedCleric.concentratingSpell shouldBe trackedConditionSpell.some
 
           conditionSpellUsedCount shouldBe 1
         }
@@ -450,7 +455,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
           val updatedCleric: Cleric =
-            castSingleTargetConditionSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
+            castConditionSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
         }
@@ -463,7 +468,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
       val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
 
-      castSingleTargetConditionSpell(Priority)(cleric).conditionMet shouldBe false
+      castConditionSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
@@ -474,7 +479,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withNoSpellSlotsAvailable()
         .withCombatIndex(1)
 
-      castSingleTargetConditionSpell(Priority)(cleric).conditionMet shouldBe false
+      castConditionSpell(Priority)(cleric).conditionMet shouldBe false
     }
   }
 

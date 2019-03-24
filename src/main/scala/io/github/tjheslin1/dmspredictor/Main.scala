@@ -3,23 +3,18 @@ package io.github.tjheslin1.dmspredictor
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
-import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
+import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlots, SpellSlots}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
-import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
 
 object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
-
-//  val creatures: List[Creature] =
-//    List(Fighter.levelOneFighter(), Goblin.levelOneGoblin(), Goblin.levelOneGoblin())
 
   val clericHp = BaseCleric.calculateHealth(LevelFive, 10)
   val cleric = Cleric(
@@ -39,19 +34,11 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     name = "Cleric"
   )
 
-  val barbarianHp = BaseBarbarian.calculateHealth(LevelFive, 10)
-  val barbarian = Berserker(
-    LevelFive,
-    barbarianHp,
-    barbarianHp,
-    BaseStats(14, 14, 14, 10, 10, 10),
-    Greatsword,
-    4,
-    proficiencyBonus = 2,
-    name = "Berserker"
-  )
-
-  val creatures = List(cleric, barbarian, Vampire(144, 144, name = "Vampire"))
+  val creatures = List(cleric,
+                       Goblin.levelOneGoblin(goblinName = "goblin-1"),
+                       Goblin.levelOneGoblin(goblinName = "goblin-2"),
+                       Goblin.levelOneGoblin(goblinName = "goblin-3"),
+                       Goblin.levelOneGoblin(goblinName = "goblin-4"))
 
   val simulation = "Cleric and Barbarian vs Vampire"
   val (losses, wins) =

@@ -8,8 +8,8 @@ import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model
-import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
@@ -40,7 +40,7 @@ import monocle.macros.{GenLens, Lenses}
                                bonusActionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
-                               concentratingSpell: Option[spellcasting.Spell] = None,
+                               concentratingSpell: Option[Spell] = None,
                                name: String = NameGenerator.randomName)
     extends BaseCleric {
 
@@ -67,10 +67,11 @@ object Cleric {
   import BaseClericAbilities._
 
   val standardClericSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (SacredFlame.spellLevel, SacredFlame.spellEffect) -> SacredFlame,
-    (GuidingBolt.spellLevel, GuidingBolt.spellEffect) -> GuidingBolt,
-    (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds,
-    (HoldPerson.spellLevel, HoldPerson.spellEffect)   -> HoldPerson
+    (SacredFlame.spellLevel, SacredFlame.spellEffect)         -> SacredFlame,
+    (GuidingBolt.spellLevel, GuidingBolt.spellEffect)         -> GuidingBolt,
+    (CureWounds.spellLevel, CureWounds.spellEffect)           -> CureWounds,
+    (HoldPerson.spellLevel, HoldPerson.spellEffect)           -> HoldPerson,
+    (SpiritGuardians.spellLevel, SpiritGuardians.spellEffect) -> SpiritGuardians
   )
 
   val standardClericAbilities: List[CombatantAbility] = List(
@@ -79,7 +80,7 @@ object Cleric {
     castSingleTargetHealingSpell(3),
     destroyUndead(4),
     turnUndead(5),
-    castSingleTargetConditionSpell(6),
+    castConditionSpell(6),
     castSingleTargetOffensiveSpell(7)
   )
 

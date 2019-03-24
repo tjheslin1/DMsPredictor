@@ -1,14 +1,16 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
+import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
-object ClericSpells {
+object ClericSpells extends LazyLogging {
 
   case object SacredFlame extends SingleTargetSavingThrowSpell {
     val attribute: Attribute      = Dexterity
@@ -89,7 +91,17 @@ object ClericSpells {
     val missesTurn: Boolean     = false
     val handleOnDamage: Boolean = false
 
-    def handle[_: RS](creature: Creature): Creature         = ???
+    def handle[_: RS](creature: Creature): Creature = {
+      val damage = 3 * D8
+
+      logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
+
+      if (savingThrowPassed(saveDc, Wisdom, creature))
+        creature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)
+      else
+        creature.updateHealth(damage, Radiant, Hit)
+    }
+
     def handleOnDamage[_: RS](creature: Creature): Creature = creature
   }
 }

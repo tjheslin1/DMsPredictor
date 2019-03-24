@@ -50,9 +50,9 @@ object Goblin {
 
   def calculateHealth[_: RS]: Int = 2 * D6
 
-  def levelOneGoblin[_: RS](): Goblin = {
+  def levelOneGoblin[_: RS](goblinName: String = NameGenerator.randomName): Goblin = {
     val hp = calculateHealth
-    Goblin(hp, hp)
+    Goblin(hp, hp, name = goblinName)
   }
 
   implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>
