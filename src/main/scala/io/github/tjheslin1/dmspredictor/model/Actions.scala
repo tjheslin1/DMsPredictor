@@ -89,37 +89,33 @@ object Actions extends LazyLogging {
       }
     )
 
-    val updated = Combatant.creatureLens.set(
+    val updatedTarget = Combatant.creatureLens.set(
       target.creature.updateHealth(dmg, weapon.damageType, attackResult))(target)
 
-    val updatedOthers = (target.creature, updated.creature) match {
+    val (updatedAttacker, updatedOthers) = (target.creature, updatedTarget.creature) match {
       case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
-          if spellCaster.isConcentrating && damagedSpellCaster.isConcentrating == false =>
-        spellCaster.concentratingSpell.fold(others) {
+          if lossOfConcentration(spellCaster, damagedSpellCaster) == false =>
+        spellCaster.concentratingSpell.fold((attacker, others)) {
           case conditionSpell: ApplyConditionSpell =>
             val concentratedCondition: Condition = conditionSpell.conditionFrom(spellCaster)
 
-            others.map { other =>
-              if (other.creature.conditions.exists(_ === concentratedCondition)) {
-                val remainingConditions = other.creature.conditions diff List(concentratedCondition)
+            val conditionRemovedAttacker = removeCondition(attacker, concentratedCondition)
 
-                (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set(remainingConditions)(other)
-              } else
-                other
-            }
-          case _ => others
+            (conditionRemovedAttacker, others.map(removeCondition(_, concentratedCondition)))
+          case _ => (attacker, others)
         }
-      case _ => others
+      case _ =>
+        (attacker, others)
     }
 
     val conditionHandledCreature =
-      updated.creature.conditions.filter(_.handleOnDamage).foldLeft(updated.creature) {
+      updatedTarget.creature.conditions.filter(_.handleOnDamage).foldLeft(updatedTarget.creature) {
         case (creature, condition) => condition.handleOnDamage(creature)
       }
 
-    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(updated)
+    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(updatedTarget)
 
-    (attacker, conditionHandledTarget, updatedOthers)
+    (updatedAttacker, conditionHandledTarget, updatedOthers)
   }
 
   def attackAndDamage[_: RS](attacker: Combatant,
@@ -154,4 +150,17 @@ object Actions extends LazyLogging {
         val (a, t, o) = combatants
         f(a, t, o)
     }
+
+  private def lossOfConcentration(spellCaster: SpellCaster,
+                                  updatedSpellCaster: SpellCaster): Boolean =
+    spellCaster.isConcentrating && updatedSpellCaster.isConcentrating
+
+  private def removeCondition(combatant: Combatant, condition: Condition): Combatant =
+    if (combatant.creature.conditions.exists(_ === condition)) {
+      val remainingConditions = combatant.creature.conditions diff List(condition)
+
+      (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+        .set(remainingConditions)(combatant)
+    } else
+      combatant
 }

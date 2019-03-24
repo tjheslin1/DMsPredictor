@@ -17,7 +17,8 @@ trait Condition {
 
 object Condition {
 
-  implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) => x.name == y.name && x.saveDc == y.saveDc
+  implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>
+    x.name == y.name && x.saveDc == y.saveDc
 
   val conditionTurnsLeftLens: Lens[Condition, Int] = Lens[Condition, Int](_.turnsLeft) {
     updatedTurnsLeft =>

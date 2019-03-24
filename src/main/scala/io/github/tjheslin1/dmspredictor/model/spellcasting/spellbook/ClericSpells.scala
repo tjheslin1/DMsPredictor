@@ -52,10 +52,10 @@ object ClericSpells {
   }
 
   case object HoldPerson extends ApplyConditionSpell {
-    val name: String         = "Hold Person"
+    val name: String = "Hold Person"
 
     val singleTarget: Boolean = true
-    val attribute: Attribute = Wisdom
+    val attribute: Attribute  = Wisdom
 
     val school: SchoolOfMagic          = Enchantment
     val castingTime: CastingTime       = OneAction
@@ -70,7 +70,7 @@ object ClericSpells {
     val name = "Spirit Guardians"
 
     val singleTarget: Boolean = false
-    val attribute: Attribute           = Wisdom
+    val attribute: Attribute  = Wisdom
 
     val school: SchoolOfMagic          = Conjuration
     val castingTime: CastingTime       = OneAction

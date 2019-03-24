@@ -90,8 +90,11 @@ class SpellSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     val concentrationSpell: Spell = new ApplyConditionSpell() {
-      val attribute: Attribute           = Wisdom
       val name: String                   = "test-concentration-spell"
+
+      val attribute: Attribute           = Wisdom
+      val singleTarget: Boolean = true
+
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneAction
       val spellLevel: SpellLevel         = 1

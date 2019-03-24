@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class ApplyConditionSpell extends Spell with LazyLogging {
 
@@ -50,8 +51,8 @@ abstract class ApplyConditionSpell extends Spell with LazyLogging {
       val updatedConcentratingSpellCaster =
         SpellCaster.concentratingLens.set(this.some)(spellCaster)
 
-      (updatedConcentratingSpellCaster, updatedTargets)
+      (updatedConcentratingSpellCaster, allTargets.replace(updatedTargets))
     } else
-      (spellCaster, updatedTargets)
+      (spellCaster, allTargets.replace(updatedTargets))
   }
 }

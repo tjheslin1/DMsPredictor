@@ -571,10 +571,12 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     var conditionSpellUsedCount = 0
-    def trackedConditionSpell(spellLvl: SpellLevel): Spell = new SingleTargetConditionSpell() {
-      val attribute: Attribute = Constitution
-
+    def trackedConditionSpell(spellLvl: SpellLevel): Spell = new ApplyConditionSpell() {
       val name: String             = s"tracked-melee-spell-${spellLvl.value}"
+
+      val attribute: Attribute = Constitution
+      val singleTarget: Boolean = true
+
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = spellLvl
