@@ -12,7 +12,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{CureWounds, HoldPerson}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.{CureWounds, HoldPerson, SpiritGuardians}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
@@ -110,6 +110,30 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .useAbility(List(monster), LowestFirst)
 
           meleeSpellUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val concentrationSpell = trackedMeleeSpellAttack(2, concentration = true)
+
+          val trackedCleric = cleric
+            .withSpellKnown(concentrationSpell)
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withLevel(LevelThree)
+            .withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(10).withCombatIndex(2)
+
+          val (Combatant(_, updatedCleric: Cleric), _) = castSingleTargetOffensiveSpell(Priority)(trackedCleric)
+            .useAbility(List(monster), LowestFirst)
+
+          updatedCleric.concentratingSpell shouldBe concentrationSpell.some
         }
       }
     }
@@ -304,6 +328,31 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { (cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val concentrationSpell = trackedHealingSpell(3, concentration = true)
+
+          val healingCleric = cleric
+            .withSpellKnown(concentrationSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withWisdom(12)
+            .withLevel(LevelFive)
+            .withCombatIndex(1)
+
+          val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
+
+          val (Combatant(_, updatedCleric: Cleric), _) =
+            castSingleTargetHealingSpell(Priority)(healingCleric)
+              .useAbility(List(damagedFighter), LowestFirst)
+
+          updatedCleric.concentratingSpell shouldBe concentrationSpell.some
+        }
+      }
+    }
+
     "cast a spell (healing) using the highest available spell slot which has a healing spell" in {
       forAll { (cleric: Cleric, fighter: Fighter) =>
         new TestContext {
@@ -412,15 +461,37 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { (cleric: Cleric, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedCleric = cleric
+            .withSpellKnown(SpiritGuardians)
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withProficiencyBonus(6)
+            .withLevel(LevelFive)
+            .withWisdom(20)
+            .withCombatIndex(1)
+
+          val monster = goblin.withWisdom(2).withCombatIndex(2)
+
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(trackedCleric)
+            .useAbility(List(monster), LowestFirst)
+
+          updatedCleric.concentratingSpell shouldBe SpiritGuardians.some
+        }
+      }
+    }
+
     "cast a spell (condition) using the highest available spell slot" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedConditionSpell: Spell = trackedConditionSpell(2)
-
           val trackedCleric = cleric
-            .withSpellKnown(trackedConditionSpell)
+            .withSpellKnown(trackedConditionSpell(2))
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
@@ -428,10 +499,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(trackedCleric)
+          castConditionSpell(Priority)(trackedCleric)
               .useAbility(List(monster), LowestFirst)
-
-          updatedCleric.concentratingSpell shouldBe trackedConditionSpell.some
 
           conditionSpellUsedCount shouldBe 1
         }
@@ -561,13 +630,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
 
     var meleeSpellUsedCount = 0
-    def trackedMeleeSpellAttack(spellLvl: SpellLevel): Spell = new SingleTargetAttackSpell() {
+    def trackedMeleeSpellAttack(spellLvl: SpellLevel, concentration: Boolean = false): Spell = new SingleTargetAttackSpell() {
       val damageType: DamageType   = Fire
       val name: String             = s"tracked-melee-spell-${spellLvl.value}"
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = spellLvl
-      val requiresConcentration: Boolean   = false
+      val requiresConcentration: Boolean   = concentration
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         meleeSpellUsedCount += 1
@@ -617,12 +686,12 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
 
     var trackedHealingSpellUsed = false
-    def trackedHealingSpell(spellLvl: SpellLevel): Spell = new SingleTargetHealingSpell {
+    def trackedHealingSpell(spellLvl: SpellLevel, concentration: Boolean = false): Spell = new SingleTargetHealingSpell {
       val name: String             = "tracked-healing-spell"
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneAction
       val spellLevel: SpellLevel   = spellLvl
-      val requiresConcentration: Boolean   = false
+      val requiresConcentration: Boolean   = concentration
 
       def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         trackedHealingSpellUsed = true
