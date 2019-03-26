@@ -114,30 +114,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "set the spellCasters concentration to the cast spell if a concentration spell" in {
-      forAll { (cleric: Cleric, testMonster: TestMonster) =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
-
-          val concentrationSpell = trackedMeleeSpellAttack(2, concentration = true)
-
-          val trackedCleric = cleric
-            .withSpellKnown(concentrationSpell)
-            .withChannelDivinityUsed()
-            .withAllSpellSlotsAvailableForLevel(LevelThree)
-            .withLevel(LevelThree)
-            .withCombatIndex(1)
-
-          val monster = testMonster.withArmourClass(10).withCombatIndex(2)
-
-          val (Combatant(_, updatedCleric: Cleric), _) = castSingleTargetOffensiveSpell(Priority)(trackedCleric)
-            .useAbility(List(monster), LowestFirst)
-
-          updatedCleric.concentratingSpell shouldBe concentrationSpell.some
-        }
-      }
-    }
-
     "cast a spell (saving throw) using the highest available spell slot" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -324,31 +300,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           trackedHealingSpellUsed shouldBe true
           healedFighter.creature.health shouldBe 11
-        }
-      }
-    }
-
-    "set the spellCasters concentration to the cast spell if a concentration spell" in {
-      forAll { (cleric: Cleric, fighter: Fighter) =>
-        new TestContext {
-          implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val concentrationSpell = trackedHealingSpell(3, concentration = true)
-
-          val healingCleric = cleric
-            .withSpellKnown(concentrationSpell)
-            .withAllSpellSlotsAvailableForLevel(LevelFive)
-            .withWisdom(12)
-            .withLevel(LevelFive)
-            .withCombatIndex(1)
-
-          val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
-
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castSingleTargetHealingSpell(Priority)(healingCleric)
-              .useAbility(List(damagedFighter), LowestFirst)
-
-          updatedCleric.concentratingSpell shouldBe concentrationSpell.some
         }
       }
     }

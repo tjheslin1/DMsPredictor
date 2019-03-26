@@ -37,8 +37,8 @@ abstract class ApplyConditionSpell extends Spell with LazyLogging {
     val updatedTargets = targets.map { target =>
       val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
 
-      logger.debug(
-        s"${target.creature.name} rolls saving throw - ${if (savingThrowPassed) "Passed" else "Failed"}")
+      logger.debug(s"${target.creature.name} rolls saving throw - ${if (savingThrowPassed) "Passed"
+      else "Failed"}")
 
       if (savingThrowPassed) target
       else applyCondition(spellCaster, target)

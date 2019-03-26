@@ -34,11 +34,13 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     name = "Cleric"
   )
 
-  val creatures = List(cleric,
-                       Goblin.levelOneGoblin(goblinName = "goblin-1"),
-                       Goblin.levelOneGoblin(goblinName = "goblin-2"),
-                       Goblin.levelOneGoblin(goblinName = "goblin-3"),
-                       Goblin.levelOneGoblin(goblinName = "goblin-4"))
+  val creatures = List(
+    cleric,
+    Goblin.levelOneGoblin(goblinName = "goblin-1"),
+    Goblin.levelOneGoblin(goblinName = "goblin-2"),
+    Goblin.levelOneGoblin(goblinName = "goblin-3"),
+    Goblin.levelOneGoblin(goblinName = "goblin-4")
+  )
 
   val simulation = "Cleric and Barbarian vs Vampire"
   val (losses, wins) =

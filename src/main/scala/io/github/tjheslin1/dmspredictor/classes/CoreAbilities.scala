@@ -220,6 +220,8 @@ object CoreAbilities extends LazyLogging {
         optSpell match {
           case None => (combatant, others)
           case Some(spell) =>
+            println(s"*********** ${spell.name}")
+
             val (updatedSpellCaster, updatedTargets) =
               spell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others))
 
@@ -254,7 +256,6 @@ object CoreAbilities extends LazyLogging {
           spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotUsed.spellLevel)
 
         optSpell.fold(spellCaster) { foundSpell =>
-
           if (foundSpell.spellLevel.value == 0) {
             spellCaster
           } else {

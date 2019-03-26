@@ -11,7 +11,11 @@ object Concentration extends LazyLogging {
     val dc = concentrationDifficultyClass(damageTaken)
 
     if (savingThrowPassed(dc, Constitution, spellCaster)) spellCaster
-    else SpellCaster.concentratingLens.set(None)(spellCaster)
+    else {
+      logger.debug(s"${spellCaster.name} loses concentration")
+
+      SpellCaster.concentratingLens.set(None)(spellCaster)
+    }
   }
 
   def concentrationDifficultyClass(damageTaken: Int): Int = {
