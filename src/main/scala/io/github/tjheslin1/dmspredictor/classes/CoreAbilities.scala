@@ -7,11 +7,11 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.Actions.{attackAndDamage, attackAndDamageTimes}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
@@ -194,7 +194,7 @@ object CoreAbilities extends LazyLogging {
       def update: Creature = updateSpellSlot(spellCaster, HealingSpell)
     }
 
-  def castConditionSpell(currentOrder: Int)(combatant: Combatant): Ability =
+  def castConcentrationSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
@@ -204,7 +204,7 @@ object CoreAbilities extends LazyLogging {
       val abilityAction    = SingleAttack
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean               = spellConditionMet(spellCaster, ConditionSpell)
+      def conditionMet: Boolean               = spellConditionMet(spellCaster, ConcentrationSpell)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -214,14 +214,12 @@ object CoreAbilities extends LazyLogging {
         val optSpell = highestSpellSlot match {
           case None => None
           case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, ConditionSpell, spellSlot.spellLevel)
+            spellOfLevelOrBelow(spellCaster, ConcentrationSpell, spellSlot.spellLevel)
         }
 
         optSpell match {
           case None => (combatant, others)
           case Some(spell) =>
-            println(s"*********** ${spell.name}")
-
             val (updatedSpellCaster, updatedTargets) =
               spell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others))
 
@@ -231,7 +229,8 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, ConditionSpell)
+      def update: Creature =
+        updateSpellSlot(spellCaster, ConcentrationSpell, newlyConcentrating = true)
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
@@ -241,21 +240,34 @@ object CoreAbilities extends LazyLogging {
     spellCaster.level >= spellCaster.levelSpellcastingLearned &&
       highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
       spellCaster.spellsKnown.exists {
-        case ((_, spellEffect: SpellEffect), _) =>
+        case ((_, spellEffect: SpellEffect), spell) =>
           spellEffect match {
-            case `effect` => true
-            case _        => false
+            case `effect` if canCastConcentrationSpell(spellCaster, spell) => true
+            case _                                                         => false
           }
       }
 
-  private def updateSpellSlot(spellCaster: SpellCaster, spellEffect: SpellEffect): Creature =
+  private def canCastConcentrationSpell(spellCaster: SpellCaster, spell: Spell): Boolean =
+    if (spell.requiresConcentration)
+      spellCaster.isConcentrating == false
+    else
+      true
+
+  private def updateSpellSlot(spellCaster: SpellCaster,
+                              spellEffect: SpellEffect,
+                              newlyConcentrating: Boolean = false): Creature =
     highestSpellSlotAvailable(spellCaster.spellSlots) match {
       case None => spellCaster
       case Some(spellSlotUsed) =>
         val optSpell =
-          spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotUsed.spellLevel)
+          spellOfLevelOrBelow(spellCaster,
+                              spellEffect,
+                              spellSlotUsed.spellLevel,
+                              newlyConcentrating == false)
 
-        optSpell.fold(spellCaster) { foundSpell =>
+        optSpell.fold {
+          spellCaster
+        } { foundSpell =>
           if (foundSpell.spellLevel.value == 0) {
             spellCaster
           } else {

@@ -30,13 +30,14 @@ object Spell {
   @tailrec
   def spellOfLevelOrBelow(spellCaster: SpellCaster,
                           spellEffect: SpellEffect,
-                          spellLevel: SpellLevel): Option[Spell] = {
+                          spellLevel: SpellLevel,
+                          checkConcentration: Boolean = true): Option[Spell] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
     if (spellLookup.isDefined) {
-      if (spellCaster.isConcentrating && spellLookup.get.requiresConcentration)
+      if (checkConcentration && spellCaster.isConcentrating && spellLookup.get.requiresConcentration)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
       else
         spellLookup

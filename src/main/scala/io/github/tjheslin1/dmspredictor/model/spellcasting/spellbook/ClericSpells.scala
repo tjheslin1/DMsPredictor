@@ -53,31 +53,29 @@ object ClericSpells extends LazyLogging {
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
   }
 
-  case object HoldPerson extends ApplyConditionSpell {
+  case object HoldPerson extends ConcentrationConditionSpell {
     val name: String = "Hold Person"
 
     val singleTarget: Boolean = true
     val attribute: Attribute  = Wisdom
 
-    val school: SchoolOfMagic          = Enchantment
-    val castingTime: CastingTime       = OneAction
-    val spellLevel: SpellLevel         = 2
-    val requiresConcentration: Boolean = true
+    val school: SchoolOfMagic    = Enchantment
+    val castingTime: CastingTime = OneAction
+    val spellLevel: SpellLevel   = 2
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
   }
 
-  case object SpiritGuardians extends ApplyConditionSpell {
+  case object SpiritGuardians extends ConcentrationConditionSpell {
     val name = "Spirit Guardians"
 
     val singleTarget: Boolean = false
     val attribute: Attribute  = Wisdom
 
-    val school: SchoolOfMagic          = Conjuration
-    val castingTime: CastingTime       = OneAction
-    val spellLevel: SpellLevel         = 3
-    val requiresConcentration: Boolean = true
+    val school: SchoolOfMagic    = Conjuration
+    val castingTime: CastingTime = OneAction
+    val spellLevel: SpellLevel   = 3
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       SpiritGuardiansCondition(spellSaveDc(spellCaster), 100, Wisdom)

@@ -6,7 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.ApplyConditionSpell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.ConcentrationConditionSpell
 
 sealed trait AttackResult {
   def result: Int
@@ -96,7 +96,7 @@ object Actions extends LazyLogging {
       case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
           if lossOfConcentration(spellCaster, damagedSpellCaster) == false =>
         spellCaster.concentratingSpell.fold((attacker, others)) {
-          case conditionSpell: ApplyConditionSpell =>
+          case conditionSpell: ConcentrationConditionSpell =>
             val concentratedCondition: Condition = conditionSpell.conditionFrom(spellCaster)
 
             val conditionRemovedAttacker = removeCondition(attacker, concentratedCondition)

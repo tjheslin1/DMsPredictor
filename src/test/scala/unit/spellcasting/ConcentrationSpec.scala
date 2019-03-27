@@ -62,7 +62,7 @@ class ConcentrationSpec extends UnitSpecBase {
   abstract private class TestContext {
     implicit val roll: RollStrategy
 
-    val concentrationSpell: Spell = new ApplyConditionSpell() {
+    val concentrationSpell: Spell = new ConcentrationConditionSpell() {
       val name: String                   = "test-concentration-spell"
 
       val attribute: Attribute           = Wisdom
@@ -71,7 +71,6 @@ class ConcentrationSpec extends UnitSpecBase {
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneAction
       val spellLevel: SpellLevel         = 1
-      val requiresConcentration: Boolean = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
     }

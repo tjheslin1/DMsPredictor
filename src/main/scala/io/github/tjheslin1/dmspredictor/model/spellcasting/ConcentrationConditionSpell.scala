@@ -8,11 +8,12 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
-abstract class ApplyConditionSpell extends Spell with LazyLogging {
+abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
 
   val singleTarget: Boolean
   val attribute: Attribute
-  val spellEffect: SpellEffect = ConditionSpell
+  val spellEffect: SpellEffect       = ConcentrationSpell
+  val requiresConcentration: Boolean = true
 
   def conditionFrom(spellCaster: SpellCaster): Condition
 

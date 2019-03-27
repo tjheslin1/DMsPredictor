@@ -28,20 +28,30 @@ class SpellSpec extends UnitSpecBase {
       spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
     }
 
-    "not return a concentration spell if already concentrating" in new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+    "return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-        val concentratingCleric = random[Cleric]
-    .withConcentrating(concentrationSpell.some)
-    .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+      val concentratingCleric = random[Cleric]
+        .withConcentrating(concentrationSpell.some)
+        .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-        spellOfLevelOrBelow(concentratingCleric, ConditionSpell, 3) shouldBe None
-}
+      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3, checkConcentration = false) shouldBe None
+    }
+
+    "not return a concentration spell if already concentrating when checkConcentration is set to true" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
+      val concentratingCleric = random[Cleric]
+        .withConcentrating(concentrationSpell.some)
+        .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+
+      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3) shouldBe None
+    }
 
     "return none if no spell of SpellEffect is found" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds)
 
-      spellOfLevelOrBelow(cleric, ConditionSpell, 2) shouldBe None
+      spellOfLevelOrBelow(cleric, ConcentrationSpell, 2) shouldBe None
     }
   }
 
@@ -49,7 +59,7 @@ class SpellSpec extends UnitSpecBase {
     "return true if the targets roll equals the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
@@ -62,7 +72,7 @@ class SpellSpec extends UnitSpecBase {
     "return true if the targets roll exceeds the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(14)
@@ -75,7 +85,7 @@ class SpellSpec extends UnitSpecBase {
     "return false if the targets roll is less than the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val caster  = cleric.withProficiencyBonus(2).withWisdom(14).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
@@ -86,19 +96,18 @@ class SpellSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
 
-    val concentrationSpell: Spell = new ApplyConditionSpell() {
-      val name: String                   = "test-concentration-spell"
+    val concentrationSpell: Spell = new ConcentrationConditionSpell() {
+      val name: String = "test-concentration-spell"
 
-      val attribute: Attribute           = Wisdom
+      val attribute: Attribute  = Wisdom
       val singleTarget: Boolean = true
 
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneAction
       val spellLevel: SpellLevel         = 1
-      val requiresConcentration: Boolean = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
     }

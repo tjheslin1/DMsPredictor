@@ -17,14 +17,6 @@ object Move extends LazyLogging {
     val (unactedCombatant, others) = queue.dequeue
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
-    // TODO remove
-    unactedCombatant.creature match {
-    case caster: SpellCaster =>
-      println(s">>>>>>>> ${unactedCombatant.creature.name} concentrating ${caster.isConcentrating}")
-      println(s">>>>>>>> ${unactedCombatant.creature.name} conditions ${caster.conditions.map(_.name)}")
-    case _ => ()
-  }
-
     val resetUnactedCombatant =
       Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
 
@@ -57,13 +49,6 @@ object Move extends LazyLogging {
       }
 
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
-
-      // TODO remove
-      actedCombatant.creature match {
-        case caster: SpellCaster =>
-          println(s">>>>>>>> ${actedCombatant.creature.name} concentrating ${caster.isConcentrating}")
-        case _ => ()
-      }
 
       availableBonusAction(actedCombatant, updatedOthersTargets).fold(
         Queue(updatedOthersTargets: _*).append(actedCombatant)) { bonusActionAbility =>

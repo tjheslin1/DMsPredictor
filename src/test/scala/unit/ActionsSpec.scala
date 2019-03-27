@@ -350,7 +350,7 @@ class ActionsSpec extends UnitSpecBase {
     def weaponWithHitBonus(bonus: Int) =
       Weapon("", Melee, Slashing, twoHands = true, 1, wpnHitBonus = bonus)
 
-    val concentrationSpell: Spell = new ApplyConditionSpell() {
+    val concentrationSpell: Spell = new ConcentrationConditionSpell() {
       val name: String = "test-concentration-spell"
 
       val attribute: Attribute  = Wisdom
@@ -359,7 +359,6 @@ class ActionsSpec extends UnitSpecBase {
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneAction
       val spellLevel: SpellLevel         = 1
-      val requiresConcentration: Boolean = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition = SpiritGuardiansCondition(10, 10, Wisdom)
     }
