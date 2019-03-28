@@ -13,7 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, PlayerHealing}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -160,7 +160,7 @@ object CoreAbilities extends LazyLogging {
             spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)
         }
 
-        val target = nextToFocus(players(others), focus)
+        val target = nextToFocus(players(others), PlayerHealing)
 
         val (updatedCombatant, optHealedAlly) = (target, optSpell) match {
           case (_, None) => (combatant, None)

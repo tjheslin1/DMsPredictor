@@ -37,7 +37,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   val fighter = Champion(
     LevelFive,
-    10,
+    0,
     50,
     BaseStats(14, 14, 14, 10, 10, 10),
     Greatsword,
@@ -47,14 +47,14 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   val creatures = List(
     cleric,
-    fighter,
+//    fighter,
     Goblin.levelOneGoblin(goblinName = "goblin-1"),
     Goblin.levelOneGoblin(goblinName = "goblin-2"),
     Goblin.levelOneGoblin(goblinName = "goblin-3"),
     Goblin.levelOneGoblin(goblinName = "goblin-4")
   )
 
-  val simulation = "Cleric and Champions vs Goblins"
+  val simulation = "Cleric and Champion vs Goblins"
   val (losses, wins) =
     SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
 

@@ -269,6 +269,18 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .triggerMet(List(damagedFighter, healthyBarbarian, goblin)) shouldBe true
     }
 
+    "trigger when a players health is 0" in new TestContext {
+      implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val healingCleric    = random[Cleric].withWisdom(12).withCombatIndex(1)
+      val damagedFighter   = random[Fighter].withHealth(80).withMaxHealth(100).withCombatIndex(2)
+      val unconsciousBarbarian = random[Barbarian].withHealth(0).withMaxHealth(100).withCombatIndex(3)
+      val goblin           = random[Goblin].withCombatIndex(4)
+
+      castSingleTargetHealingSpell(Priority)(healingCleric)
+        .triggerMet(List(damagedFighter, unconsciousBarbarian, goblin)) shouldBe true
+    }
+
     "not trigger when no players health are below 50%" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
