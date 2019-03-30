@@ -46,7 +46,9 @@ object Player {
 
         case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
 
-        case c: Creature => c
+        case _ =>
+          throw new NotImplementedError(
+            "Missing playerProficiencyBonusLens lens for your new implementation of Player!")
       }
     }
 }

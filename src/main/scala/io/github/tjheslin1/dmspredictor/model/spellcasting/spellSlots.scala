@@ -29,6 +29,9 @@ case class SpellSlots(firstLevel: FirstLevelSpellSlots,
 
 object SpellSlots {
 
+  def apply(firstLevelSlots: Int, secondLevelSlots: Int, thirdLevelSlots: Int) =
+    SpellSlots(FirstLevelSpellSlots(firstLevelSlots), SecondLevelSpellSlots(secondLevelSlots), ThirdLevelSpellSlots(thirdLevelSlots))
+
   def highestSpellSlotAvailable(spellSlots: SpellSlots): Option[SpellSlot] = spellSlots match {
     case SpellSlots(_, _, thirdLevel @ ThirdLevelSpellSlots(count)) if count > 0 => thirdLevel.some
     case SpellSlots(_, secondLevel @ SecondLevelSpellSlots(count), _) if count > 0 =>

@@ -43,7 +43,7 @@ object BaseBarbarianAbilities extends LazyLogging {
           nextAbilityToUseInConjunction(ragingBarbarianCombatant,
                                         enemies,
                                         order,
-                                        AbilityAction.Action).fold {
+                                        AbilityAction.MainAction).fold {
 
             val (updatedAttacker, updatedTarget, updatedOthers) =
               attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)

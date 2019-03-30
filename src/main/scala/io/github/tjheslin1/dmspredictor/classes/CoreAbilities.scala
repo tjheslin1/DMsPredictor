@@ -166,7 +166,7 @@ object CoreAbilities extends LazyLogging {
           case (_, None) => (combatant, None)
           case (None, _) => (combatant, None)
           case (Some(spellTarget), Some(spell)) =>
-            val (updatedSpellCaster, List(updatedTarget: Combatant)) =
+            val (updatedSpellCaster, List(updatedTarget)) =
               spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
