@@ -7,8 +7,8 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Champion._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
@@ -36,8 +36,6 @@ import monocle.macros.{GenLens, Lenses}
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName)
     extends BaseFighter {
-
-  import Fighter._
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 

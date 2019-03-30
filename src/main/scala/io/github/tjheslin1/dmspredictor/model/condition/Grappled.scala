@@ -4,8 +4,8 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import monocle.macros.Lenses
 import io.github.tjheslin1.dmspredictor.util.ListOps._
+import monocle.macros.Lenses
 
 @Lenses("_") case class Grappled(saveDc: Int, name: String = Grappled.name)
     extends Condition

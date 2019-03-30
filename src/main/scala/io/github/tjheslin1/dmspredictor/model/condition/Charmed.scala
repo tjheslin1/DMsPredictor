@@ -3,8 +3,8 @@ package io.github.tjheslin1.dmspredictor.model.condition
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import monocle.macros.Lenses
 import io.github.tjheslin1.dmspredictor.util.ListOps._
+import monocle.macros.Lenses
 
 @Lenses("_") case class Charmed(saveDc: Int, name: String = Charmed.name)
     extends Condition

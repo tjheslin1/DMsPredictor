@@ -75,7 +75,8 @@ object Move extends LazyLogging {
                                      others: List[Combatant]): Option[CombatantAbility] =
     attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
       val ability = combatantAbility(attacker)
-      AbilityAction.MainAction.toList.contains(ability.abilityAction) && ability.conditionMet && ability
+      AbilityAction.MainAction.toList
+        .contains(ability.abilityAction) && ability.conditionMet && ability
         .triggerMet(others)
     }
 

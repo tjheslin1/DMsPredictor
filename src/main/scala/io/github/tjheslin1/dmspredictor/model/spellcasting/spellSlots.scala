@@ -1,10 +1,9 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting
 
 import cats.syntax.option._
+import eu.timepit.refined.auto._
 import monocle.Lens
 import monocle.macros.GenLens
-
-import eu.timepit.refined.auto._
 
 sealed trait SpellSlot extends Product with Serializable {
   val spellLevel: SpellLevel
@@ -29,8 +28,10 @@ case class SpellSlots(firstLevel: FirstLevelSpellSlots,
 
 object SpellSlots {
 
-  def apply(firstLevelSlots: Int, secondLevelSlots: Int, thirdLevelSlots: Int) =
-    SpellSlots(FirstLevelSpellSlots(firstLevelSlots), SecondLevelSpellSlots(secondLevelSlots), ThirdLevelSpellSlots(thirdLevelSlots))
+  def apply(firstLevelSlots: Int, secondLevelSlots: Int, thirdLevelSlots: Int): SpellSlots =
+    SpellSlots(FirstLevelSpellSlots(firstLevelSlots),
+               SecondLevelSpellSlots(secondLevelSlots),
+               ThirdLevelSpellSlots(thirdLevelSlots))
 
   def highestSpellSlotAvailable(spellSlots: SpellSlots): Option[SpellSlot] = spellSlots match {
     case SpellSlots(_, _, thirdLevel @ ThirdLevelSpellSlots(count)) if count > 0 => thirdLevel.some

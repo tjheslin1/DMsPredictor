@@ -6,8 +6,8 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import util.TestMonster
 import util.TestData._
+import util.TestMonster
 
 class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
 

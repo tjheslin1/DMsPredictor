@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.AbilityAction
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, Target}
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 import io.github.tjheslin1.dmspredictor.util.ListOps._
