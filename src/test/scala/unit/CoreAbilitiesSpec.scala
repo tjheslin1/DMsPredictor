@@ -1,21 +1,18 @@
 package unit
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
-import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
 
@@ -53,17 +50,18 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val trackedAbilityFighter = fighter
             .withAbilities(
-              List(extraAttack(Priority), trackedActionAbility(2), trackedAttackAbility(3)))
+              List(extraAttack(Priority),
+                   trackedAbility(2, action = WholeAction),
+                   otherTrackedAbility(3, action = SingleAttack, updatedTracking = ())))
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
-          extraAttack(Priority)(trackedAbilityFighter)
-            .useAbility(List(monster), LowestFirst)
+          extraAttack(Priority)(trackedAbilityFighter).useAbility(List(monster), LowestFirst)
 
-          trackedAttackUsedCount shouldBe 2
-          trackedActionAbilityUsedCount shouldBe 0
+          otherTrackedAbilityUsedCount shouldBe 2
+          trackedAbilityUsedCount shouldBe 0
         }
       }
     }
@@ -75,16 +73,18 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val trackedAbilityFighter = fighter
             .withAbilities(
-              List(extraAttack(Priority), trackedActionAbility(2), singleUseAttackAbility(3)))
+              List(extraAttack(Priority),
+                   trackedAbility(2, action = WholeAction),
+                otherTrackedAbility(3, action = SingleAttack)))
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
-          val monster: Combatant = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
           extraAttack(Priority)(trackedAbilityFighter).useAbility(List(monster), LowestFirst)
 
-          trackedAttackUsedCount shouldBe 1
-          trackedActionAbilityUsedCount shouldBe 0
+          otherTrackedAbilityUsedCount shouldBe 1
+          trackedAbilityUsedCount shouldBe 0
         }
       }
     }
@@ -272,10 +272,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "trigger when a players health is 0" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
-      val healingCleric    = random[Cleric].withWisdom(12).withCombatIndex(1)
-      val damagedFighter   = random[Fighter].withHealth(80).withMaxHealth(100).withCombatIndex(2)
-      val unconsciousBarbarian = random[Barbarian].withHealth(0).withMaxHealth(100).withCombatIndex(3)
-      val goblin           = random[Goblin].withCombatIndex(4)
+      val healingCleric  = random[Cleric].withWisdom(12).withCombatIndex(1)
+      val damagedFighter = random[Fighter].withHealth(80).withMaxHealth(100).withCombatIndex(2)
+      val unconsciousBarbarian =
+        random[Barbarian].withHealth(0).withMaxHealth(100).withCombatIndex(3)
+      val goblin = random[Goblin].withCombatIndex(4)
 
       castSingleTargetHealingSpell(Priority)(healingCleric)
         .triggerMet(List(damagedFighter, unconsciousBarbarian, goblin)) shouldBe true
@@ -441,8 +442,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val monster = goblin.withWisdom(2).withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) = castConcentrationSpell(Priority)(trackedCleric)
-            .useAbility(List(monster), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) =
+            castConcentrationSpell(Priority)(trackedCleric)
+              .useAbility(List(monster), LowestFirst)
 
           updatedCleric.concentratingSpell shouldBe SpiritGuardians.some
         }
@@ -529,154 +531,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  abstract private class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
-
-    var swordUsedCount = 0
-    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-      swordUsedCount += 1
-      1
-    })
-
-    var trackedAttackUsedCount = 0
-    def trackedAttackAbility(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-single-attack"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = SingleAttack
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean               = true
-
-        def useAbility[_: RS](others: List[Combatant],
-                              focus: Focus): (Combatant, List[Combatant]) = {
-          trackedAttackUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature =
-          combatant.creature
-      }
-
-    var singleUseAttackAbilityUsed = false
-    def singleUseAttackAbility(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-single-use"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = SingleAttack
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean               = singleUseAttackAbilityUsed == false
-
-        def useAbility[_: RS](others: List[Combatant],
-                              focus: Focus): (Combatant, List[Combatant]) = {
-          trackedAttackUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature = {
-          singleUseAttackAbilityUsed = true
-          combatant.creature
-        }
-      }
-
-    var trackedActionAbilityUsedCount = 0
-    var trackedActionAbilityUsed      = false
-    def trackedActionAbility(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-action"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = WholeAction
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean               = trackedActionAbilityUsed == false
-
-        def useAbility[_: RS](others: List[Combatant],
-                              focus: Focus): (Combatant, List[Combatant]) = {
-          trackedActionAbilityUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature = {
-          trackedActionAbilityUsed = true
-          combatant.creature
-        }
-      }
-
-    var meleeSpellUsedCount = 0
-    def trackedMeleeSpellAttack(spellLvl: SpellLevel, concentration: Boolean = false): Spell =
-      new SingleTargetAttackSpell() {
-        val damageType: DamageType         = Fire
-        val name: String                   = s"tracked-melee-spell-${spellLvl.value}"
-        val school: SchoolOfMagic          = Evocation
-        val castingTime: CastingTime       = OneAction
-        val spellLevel: SpellLevel         = spellLvl
-        val requiresConcentration: Boolean = concentration
-
-        def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-          meleeSpellUsedCount += 1
-          4
-        }
-      }
-
-    var conditionSpellUsedCount = 0
-    def trackedConditionSpell(spellLvl: SpellLevel): Spell =
-      new ConcentrationConditionSpell() {
-        val name: String = s"tracked-melee-spell-${spellLvl.value}"
-
-        val attribute: Attribute  = Constitution
-        val singleTarget: Boolean = true
-
-        val school: SchoolOfMagic          = Evocation
-        val castingTime: CastingTime       = OneAction
-        val spellLevel: SpellLevel         = spellLvl
-
-        def conditionFrom(spellCaster: SpellCaster): Condition =
-          Paralyzed(10, 10, attribute, "tracked-condition-spell")
-
-        override def effect[_: RS](spellCaster: SpellCaster,
-                                   spellLevel: SpellLevel,
-                                   targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
-          conditionSpellUsedCount += 1
-
-          (spellCaster, targets)
-        }
-      }
-
-    var savingThrowSpellUsedCount = 0
-    def trackedSavingThrowSpell(spellLvl: SpellLevel): Spell =
-      new SingleTargetSavingThrowSpell() {
-        val attribute: Attribute           = Wisdom
-        val halfDamageOnSave: Boolean      = false
-        val damageType: DamageType         = Fire
-        val name: String                   = "tracked-saving-throw-spell-test"
-        val school: SchoolOfMagic          = Evocation
-        val castingTime: CastingTime       = OneAction
-        val spellLevel: SpellLevel         = spellLvl
-        val requiresConcentration: Boolean = false
-
-        def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-          savingThrowSpellUsedCount += 1
-          4
-        }
-      }
-
-    var trackedHealingSpellUsed = false
-    def trackedHealingSpell(spellLvl: SpellLevel, concentration: Boolean = false): Spell =
-      new SingleTargetHealingSpell {
-        val name: String                   = "tracked-healing-spell"
-        val school: SchoolOfMagic          = Evocation
-        val castingTime: CastingTime       = OneAction
-        val spellLevel: SpellLevel         = spellLvl
-        val requiresConcentration: Boolean = concentration
-
-        def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-          trackedHealingSpellUsed = true
-          1
-        }
-      }
   }
 }

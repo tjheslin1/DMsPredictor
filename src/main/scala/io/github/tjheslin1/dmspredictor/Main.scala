@@ -4,7 +4,7 @@ import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
-import io.github.tjheslin1.dmspredictor.classes.fighter.Champion
+import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighter, Champion}
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
@@ -35,10 +35,11 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     name = "Cleric"
   )
 
-  val fighter = Champion(
+  val championHp = BaseFighter.calculateHealth(LevelFive, 14)
+  val champion = Champion(
     LevelFive,
-    0,
-    50,
+    championHp,
+    championHp,
     BaseStats(14, 14, 14, 10, 10, 10),
     Greatsword,
     ChainShirt,
@@ -47,7 +48,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   val creatures = List(
     cleric,
-//    fighter,
+    champion,
     Goblin.levelOneGoblin(goblinName = "goblin-1"),
     Goblin.levelOneGoblin(goblinName = "goblin-2"),
     Goblin.levelOneGoblin(goblinName = "goblin-3"),
@@ -56,7 +57,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   val simulation = "Cleric and Champion vs Goblins"
   val (losses, wins) =
-    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
+    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1000)
 
   logger.debug(s"$simulation simulation started")
   println(s"$wins Wins and $losses Losses")

@@ -10,7 +10,7 @@ import util.TestData._
 class ParalyzedSpec extends UnitSpecBase {
 
   "handle" should {
-    "remove Charmed condition if passed" in new TestContext {
+    "remove Charmed condition if passed" in {
       forAll { goblin: Goblin =>
         new TestContext {
           override implicit val roll = D20.naturalTwenty

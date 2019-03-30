@@ -13,7 +13,7 @@ import util.TestMonster
 
 import scala.util.Random
 
-class BaseFighterFighterSpec extends UnitSpecBase {
+class BaseFighterSpec extends UnitSpecBase {
 
   "calculateHealth" should {
     "calculate starting health for level one fighter with default constitution score" in new TestContext {

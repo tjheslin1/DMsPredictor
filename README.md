@@ -34,7 +34,6 @@ DEBUG i.g.t.d.m.vampire.VampireAbilities$ - Vampire grapples Cleric
 DEBUG i.g.t.d.m.vampire.VampireAbilities$ - Vampire used Bite (Vampire)
 DEBUG i.g.t.dmspredictor.model.Actions$ - D20.roll() of 3
 DEBUG i.g.t.d.model.AdjustedDamage$ - Cleric took 0 (adjusted) Piercing damage
-DEBUG i.g.t.d.model.condition.Charmed - Cleric is no longer Charmed
 DEBUG i.g.t.d.m.vampire.VampireAbilities$ - Bite (Vampire) deals 0 necrotic damage
 DEBUG i.g.t.d.classes.CoreAbilities$ - Barbarian used Extra Attack
 DEBUG i.g.t.d.c.b.BaseBarbarianAbilities$ - Barbarian is recklessly attacking

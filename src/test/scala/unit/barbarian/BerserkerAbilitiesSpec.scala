@@ -1,11 +1,11 @@
 package unit.barbarian
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Berserker
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BerserkerAbilities._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
 
@@ -18,10 +18,11 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "delegate to the next Action ability" in {
       forAll { (berserker: Berserker, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
 
           val trackedBerserker = berserker
-            .withAbilities(List(frenzy(1), trackedBonusAction(2), trackedAbility(3)))
+            .withAbilities(
+              List(frenzy(1), trackedAbility(2, action = BonusAction), trackedAbility(3)))
             .withCombatIndex(1)
 
           val monster = testMonster.withCombatIndex(2)
@@ -34,6 +35,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     }
 
     "update the barbarian's number of rages left" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
       val berserker = random[Berserker].withRageUsagesLeft(2).withCombatIndex(1)
 
       val (Combatant(_, frenzyingBerserker: Berserker), _) =
@@ -43,6 +46,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     }
 
     "update the barbarian's inFrenzy to true" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
       val frenziesBerserker = random[Berserker].withRageUsagesLeft(2).withCombatIndex(1)
 
       val (Combatant(_, frenzyingBerserker: Berserker), _) =
@@ -52,6 +57,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     }
 
     "set the rage turns count to 10" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
       val berserker = random[Berserker]
         .withRageUsagesLeft(2)
         .withRageTurnsLeft(5)
@@ -64,6 +71,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     }
 
     "add resistance to Bludgeoning, Piercing and Slashing damage" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
       val berserker = random[Berserker].withResistance(Fire).withCombatIndex(1)
 
       val (Combatant(_, frenzyingBerserker: Berserker), _) =
@@ -73,6 +82,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     }
 
     "use the Barbarian's bonus action" in new TestContext {
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
       val berserker = random[Berserker].withCombatIndex(1)
 
       val (Combatant(_, frenzyingBerserker: Berserker), _) =
@@ -87,7 +98,7 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "use a single attack on Bonus Action whilst frenzying" in {
       forAll { (berserker: Berserker, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
 
           val frenzyingBerserker = berserker
             .withInFrenzy()
@@ -107,12 +118,17 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "delegate to a SingleAttack action ability" in {
       forAll { (berserker: Berserker, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
+
+          val trackedSingleAttack: CombatantAbility =
+            trackedAbility(2,
+                           action = SingleAttack,
+                           updatedTracking = trackedSingleAttackUsed = true)
 
           val frenzyingBerserker = berserker
             .withInFrenzy()
             .withBaseWeapon(trackedSword)
-            .withAbilities(List(bonusFrenzyAttack(1), trackedSingleAttack(2)))
+            .withAbilities(List(bonusFrenzyAttack(1), trackedSingleAttack))
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(1).withCombatIndex(2)
@@ -125,81 +141,9 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
-
-    var swordUsedCount = 0
-    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-      swordUsedCount += 1
-      1
-    })
-
-    var trackedAbilityUsedCount = 0
-    var trackedAbilityUsed      = false
-    def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-one"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = WholeAction
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean               = trackedAbilityUsed == false
-
-        def useAbility[_: RS](others: List[Combatant],
-                              focus: Focus): (Combatant, List[Combatant]) = {
-          trackedAbilityUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature = {
-          trackedAbilityUsed = true
-          combatant.creature
-        }
-      }
-
-    var trackedBonusActionUsedCount = 0
-    var trackedBonusActionUsed      = false
-    def trackedBonusAction(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-one"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = BonusAction
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean               = trackedBonusActionUsed == false
-
-        def useAbility[_: RS](others: List[Combatant],
-                              focus: Focus): (Combatant, List[Combatant]) = {
-          trackedBonusActionUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature = {
-          trackedBonusActionUsed = true
-          combatant.creature
-        }
-      }
+  abstract private class TestContext extends Tracking {
+    implicit val roll: RollStrategy
 
     var trackedSingleAttackUsed = false
-    def trackedSingleAttack(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-single-attack"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = SingleAttack
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean               = trackedSingleAttackUsed == false
-
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-          (combatant, others)
-
-        def update: Creature = {
-          trackedSingleAttackUsed = true
-          combatant.creature
-        }
-      }
   }
 }

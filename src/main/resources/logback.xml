@@ -12,8 +12,8 @@
 
     <logger name="io.github.tjheslin1" level="DEBUG"
             additivity="false">
-        <appender-ref ref="STDOUT" />
-        <!--<appender-ref ref="NULL" />-->
+        <!--<appender-ref ref="STDOUT" />-->
+        <appender-ref ref="NULL" />
     </logger>
 
     <root level="error">

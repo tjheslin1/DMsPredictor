@@ -1,12 +1,11 @@
 package unit.fighter
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
 
@@ -21,11 +20,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "be used if Player is equipped with two weapons" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val dualWieldingFighter = fighter
             .withFightingStyle(TwoWeaponFighting)
-            .withBaseWeapon(trackedMainSword)
+            .withBaseWeapon(trackedSword)
             .withOffHand(trackedOffHandSword)
             .withStrength(20)
             .withCombatIndex(1)
@@ -34,32 +33,32 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
 
-          mainSwordUsedCount shouldBe 1
+          swordUsedCount shouldBe 1
           offHAndSwordUsedCount shouldBe 1
         }
       }
     }
 
     "set the player's bonus action to be used" in new TestContext {
-        override implicit val roll: RollStrategy = _ => RollResult(19)
+      implicit override val roll: RollStrategy = _ => RollResult(19)
 
-        val updatedFighter =
-          twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update
-            .asInstanceOf[Fighter]
+      val updatedFighter =
+        twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update
+          .asInstanceOf[Fighter]
 
-        updatedFighter.bonusActionUsed shouldBe true
-      }
+      updatedFighter.bonusActionUsed shouldBe true
+    }
 
     "be used with Extra Attack" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val dualWieldingFighter = fighter
             .withAllAbilitiesUsed()
             .withFightingStyle(TwoWeaponFighting)
             .withLevel(LevelFive)
-            .withBaseWeapon(trackedMainSword)
+            .withBaseWeapon(trackedSword)
             .withOffHand(trackedOffHandSword)
             .withStrength(20)
             .withCombatIndex(1)
@@ -68,31 +67,31 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           Move.takeMove(Queue(dualWieldingFighter, monster), LowestFirst)
 
-          mainSwordUsedCount shouldBe 2
+          swordUsedCount shouldBe 2
           offHAndSwordUsedCount shouldBe 1
         }
       }
     }
 
     "meet the condition if the Player wields two weapons" in new TestContext {
-      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val dualWieldingFighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
-        .withBaseWeapon(trackedMainSword)
+        .withBaseWeapon(trackedSword)
         .withOffHand(trackedOffHandSword)
         .withLevel(LevelFour)
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe true
-}
+    }
 
     "not meet the condition if the Player does not wield two weapons" in new TestContext {
-      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val fighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
-        .withBaseWeapon(trackedMainSword)
+        .withBaseWeapon(trackedSword)
         .withNoOffHand()
         .withLevel(LevelFive)
         .withCombatIndex(1)
@@ -101,11 +100,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Player does not have the Two Weapon Fighting fighting style" in new TestContext {
-      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val fighter = random[Fighter]
         .withFightingStyle(GreatWeaponFighting)
-        .withBaseWeapon(trackedMainSword)
+        .withBaseWeapon(trackedSword)
         .withNoOffHand()
         .withLevel(LevelFive)
         .withCombatIndex(1)
@@ -114,12 +113,12 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Player has already used their bonus action this turn" in new TestContext {
-      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val dualWieldingFighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
         .withBonusActionUsed()
-        .withBaseWeapon(trackedMainSword)
+        .withBaseWeapon(trackedSword)
         .withOffHand(trackedOffHandSword)
         .withLevel(LevelFour)
         .withCombatIndex(1)
@@ -131,93 +130,94 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
   "Second Wind" should {
 
     "be used when the below health condition has been met" in {
-    forAll { fighter: Fighter =>
-      new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-        val lowHealthFighter =
-          fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
+          val lowHealthFighter =
+            fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
-        secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
+          secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
+        }
       }
     }
-  }
 
     "update usage when used" in {
-    forAll { fighter: Fighter =>
-      new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-        val lowHealthFighter =
-          fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
+          val lowHealthFighter =
+            fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
-        val updatedFighter = secondWind(Priority)(lowHealthFighter).update.asInstanceOf[Fighter]
+          val updatedFighter = secondWind(Priority)(lowHealthFighter).update.asInstanceOf[Fighter]
 
-        updatedFighter.abilityUsages.secondWindUsed shouldBe true
+          updatedFighter.abilityUsages.secondWindUsed shouldBe true
+        }
       }
     }
-  }
 
     "not be used when the below health condition has not been met" in {
-    forAll { fighter: Fighter =>
-      new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-        val lowHealthFighter =
-          fighter
-            .withHealth(4)
-            .withMaxHealth(5)
-            .withLevel(LevelTwo)
-            .withCombatIndex(1)
+          val lowHealthFighter =
+            fighter
+              .withHealth(4)
+              .withMaxHealth(5)
+              .withLevel(LevelTwo)
+              .withCombatIndex(1)
 
-        secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe false
+          secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe false
+        }
+      }
+    }
+
+    "updated bonus action used to true" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
+          val updatedBaseFighter =
+            secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
+
+          updatedBaseFighter.bonusActionUsed shouldBe true
+        }
       }
     }
   }
 
-    "updated bonus action used to true" in {
+  "updated second wind to used" in {
     forAll { fighter: Fighter =>
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val updatedBaseFighter =
           secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
 
-        updatedBaseFighter.bonusActionUsed shouldBe true
+        updatedBaseFighter.abilityUsages.secondWindUsed shouldBe true
       }
     }
   }
-  }
-
-    "updated second wind to used" in {
-      forAll { fighter: Fighter =>
-    new TestContext {
-      override implicit val roll: RollStrategy = Dice.defaultRandomiser
-
-      val updatedBaseFighter = secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
-
-      updatedBaseFighter.abilityUsages.secondWindUsed shouldBe true
-    }
-  }
-    }
 
   "Action Surge" should {
 
     "make two Attack actions" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val swordFighter = fighter
             .withLevel(LevelTwo)
-            .withBaseWeapon(trackedMainSword)
+            .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withHealth(1000).withCombatIndex(2)
 
           actionSurge(Priority)(swordFighter).useAbility(List(monster), LowestFirst)
 
-          mainSwordUsedCount shouldBe 2
+          swordUsedCount shouldBe 2
         }
       }
     }
@@ -225,19 +225,19 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "make 4 attacks using two Extra Attack actions" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val swordFighter = Fighter._abilityUsages
             .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
             .withLevel(LevelFive)
-            .withBaseWeapon(trackedMainSword)
+            .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withHealth(1000).withCombatIndex(2)
 
           actionSurge(Priority)(swordFighter).useAbility(List(monster), LowestFirst)
 
-          mainSwordUsedCount shouldBe 4
+          swordUsedCount shouldBe 4
         }
       }
     }
@@ -249,81 +249,24 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val trackedAbilityFighter = fighter
             .withLevel(LevelTwo)
-            .withAbilities(List(actionSurge(1), trackedAbilityOne(2), trackedAbilityTwo(3)))
+            .withAbilities(
+              List(actionSurge(1),
+                   trackedAbility(2),
+                otherTrackedAbility(3)))
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
 
           actionSurge(Priority)(trackedAbilityFighter).useAbility(List(monster), LowestFirst)
 
-          trackedAbilityOneUsedCount shouldBe 1
-          trackedAbilityTwoUsedCount shouldBe 1
+          trackedAbilityUsedCount shouldBe 1
+          otherTrackedAbilityUsedCount shouldBe 1
         }
       }
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
-
-    var mainSwordUsedCount = 0
-    val trackedMainSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-      mainSwordUsedCount += 1
-      1
-    })
-
-    var offHAndSwordUsedCount = 0
-    val trackedOffHandSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-      offHAndSwordUsedCount += 1
-      1
-    })
-
-    var trackedAbilityOneUsedCount = 0
-    var trackedAbilityOneUsed      = false
-
-    def trackedAbilityOne(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-one"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = WholeAction
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean                 = trackedAbilityOneUsed == false
-
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-          trackedAbilityOneUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature = {
-          trackedAbilityOneUsed = true
-          combatant.creature
-        }
-      }
-
-    var trackedAbilityTwoUsedCount = 0
-    var trackedAbilityTwoUsed      = false
-
-    def trackedAbilityTwo(currentOrder: Int)(combatant: Combatant): Ability =
-      new Ability(combatant) {
-        val name: String     = "test-tracked-ability-two"
-        val order            = currentOrder
-        val levelRequirement = LevelOne
-        val abilityAction    = WholeAction
-
-        def triggerMet(others: List[Combatant]) = true
-        def conditionMet: Boolean                 = trackedAbilityTwoUsed == false
-
-        def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-          trackedAbilityTwoUsedCount += 1
-          (combatant, others)
-        }
-
-        def update: Creature = {
-          trackedAbilityTwoUsed = true
-          combatant.creature
-        }
-      }
   }
-    }
+}

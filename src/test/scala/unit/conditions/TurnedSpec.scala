@@ -24,7 +24,7 @@ class TurnedSpec extends UnitSpecBase {
       }
     }
 
-    "remove Turned condition if damage taken" in new TestContext {
+    "remove Turned condition if damage taken" in {
       forAll { goblin: Goblin =>
         new TestContext {
           override implicit val roll = D20.naturalTwenty
@@ -41,7 +41,7 @@ class TurnedSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  private abstract class TestContext {
+    implicit val roll: RollStrategy
   }
 }

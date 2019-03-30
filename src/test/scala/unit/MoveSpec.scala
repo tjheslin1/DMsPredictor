@@ -1,16 +1,12 @@
 package unit
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities.secondWind
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, BonusAction, WholeAction}
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst}
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
 import util.TestData._
 import util.TestMonster
@@ -25,6 +21,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "replace creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
           takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
@@ -36,6 +34,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "replace unconscious creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           val queue = Queue(fighter.withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
 
           takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
@@ -47,6 +47,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "use a players bonus action ability if unused after main action" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           val bonusActionFighter = fighter.withAbilities(List(trackedBonusAction(1))).withCombatIndex(1)
 
           val queue = Queue(bonusActionFighter,
@@ -63,6 +65,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "reset player's bonus action to unused" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           val queue =
             Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
                   monster.withCombatIndex(2))
@@ -77,6 +81,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "call a creature's resetTurn at the beginning of their move" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           var turnReset = false
           val monster   = testMonster.withResetTurn(_ => turnReset = true)
 
@@ -93,6 +99,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "reset unconscious creatures bonus action to unused" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
                             monster.withCombatIndex(2))
 
@@ -106,6 +114,8 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "update head enemy after attack" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
           val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
           val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
@@ -118,6 +128,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
           val player = fighter.withAllAbilitiesUsed().withStrength(20).withCombatIndex(1)
 
@@ -137,6 +148,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     "call Ability" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
           val trackedFighter =
             fighter.withAbilities(List(trackedAbility(Priority))).withCombatIndex(1)
@@ -186,72 +198,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
-
-    var swordUsedCount = 0
-    val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
-      swordUsedCount += 1
-      1
-    })
-
-    var trackedAbilityUsedCount = 0
-    var trackedAbilityUsed      = false
-    def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String     = "test-tracked-ability-one"
-      val order            = currentOrder
-      val levelRequirement = LevelOne
-      val abilityAction    = WholeAction
-
-      def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean               = trackedAbilityUsed == false
-
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-        trackedAbilityUsedCount += 1
-        (combatant, others)
-      }
-
-      def update: Creature = {
-        trackedAbilityUsed = true
-        combatant.creature
-      }
-    }
-
-    var trackedBonusActionUsed      = false
-    def trackedBonusAction(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String     = "test-tracked--bonus-ability"
-      val order            = currentOrder
-      val levelRequirement = LevelOne
-      val abilityAction    = BonusAction
-
-      def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean               = true
-
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-        (combatant, others)
-      }
-
-      def update: Creature = {
-        trackedBonusActionUsed = true
-        Player.playerBonusActionUsedLens.set(true)(combatant.creature.asInstanceOf[Player])
-      }
-    }
-
-    var trackedConditionHandledCount = 0
-    def trackedCondition(dc: Int, turnMissed: Boolean = false): Condition = new Condition {
-      val name                    = "tracked-condition"
-      val missesTurn              = turnMissed
-      val handleOnDamage: Boolean = false
-
-      val saveDc: Int    = dc
-      val turnsLeft: Int = 10
-
-      def handle[_: RS](creature: Creature): Creature = {
-        trackedConditionHandledCount += 1
-        creature
-      }
-
-      def handleOnDamage[_: RS](creature: Creature): Creature = creature
-    }
+  private abstract class TestContext extends Tracking {
+    implicit val roll: RollStrategy
   }
 }

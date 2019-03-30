@@ -1,6 +1,6 @@
 package unit.cleric
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.castSingleTargetHealingSpell
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
@@ -247,21 +247,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-  abstract private class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
-
-    var trackedHealingSpellUsed = false
-    def trackedHealingSpell(spellLvl: SpellLevel): Spell = new SingleTargetHealingSpell {
-      val name: String                   = "tracked-healing-spell"
-      val school: SchoolOfMagic          = Evocation
-      val castingTime: CastingTime       = OneAction
-      val spellLevel: SpellLevel         = spellLvl
-      val requiresConcentration: Boolean = false
-
-      def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        trackedHealingSpellUsed = true
-        1
-      }
-    }
   }
 }

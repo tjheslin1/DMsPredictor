@@ -10,7 +10,7 @@ import util.TestData._
 class GrappledSpec extends UnitSpecBase {
 
   "handle" should {
-    "remove Grappled condition if passed" in new TestContext {
+    "remove Grappled condition if passed" in {
       forAll { goblin: Goblin =>
         new TestContext {
           override implicit val roll = D20.naturalTwenty
@@ -27,7 +27,7 @@ class GrappledSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  private abstract class TestContext {
+    implicit val roll: RollStrategy
   }
 }
