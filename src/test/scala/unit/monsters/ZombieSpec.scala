@@ -12,7 +12,7 @@ class ZombieSpec extends UnitSpecBase {
     "trigger Zombie's Undead Fortitude ability" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
 
           val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
@@ -26,6 +26,8 @@ class ZombieSpec extends UnitSpecBase {
     "trigger Zombie's Undead Fortitude ability with a DC of 5 plus damage taken" in {
       forAll { zombie: Zombie =>
         new TestContext {
+          implicit override val roll: RollStrategy = Dice.defaultRandomiser
+
           val lowHpZombie = zombie.withHealth(5).withConstitution(10).asInstanceOf[Zombie]
 
           val failedSaveZombie = lowHpZombie.updateHealth(10, Slashing, Hit)(_ => RollResult(14))
@@ -40,7 +42,7 @@ class ZombieSpec extends UnitSpecBase {
     "keep Zombie unconscious if it fails it's Constitution saving throw" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          override implicit val roll: RollStrategy = Dice.naturalOne
+          implicit override val roll: RollStrategy = Dice.naturalOne
 
           val lowHpZombie = zombie.withHealth(5).withConstitution(1).asInstanceOf[Zombie]
 
@@ -54,7 +56,7 @@ class ZombieSpec extends UnitSpecBase {
     "not trigger Undead Fortitude on a Critical Hit" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
 
           val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
@@ -68,7 +70,7 @@ class ZombieSpec extends UnitSpecBase {
     "not trigger Undead Fortitude for Radiant damage" in {
       forAll { zombie: Zombie =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
           val lowHpZombie                          = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
           val updatedZombie = lowHpZombie.updateHealth(10, Radiant, Hit)
@@ -79,7 +81,7 @@ class ZombieSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  abstract private class TestContext {
+    implicit val roll: RollStrategy
   }
 }

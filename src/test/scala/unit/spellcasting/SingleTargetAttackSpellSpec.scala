@@ -1,6 +1,6 @@
 package unit.spellcasting
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
@@ -17,6 +17,8 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
 
+          val fireAttackSpell = trackedMeleeSpellAttack(1)
+
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
@@ -33,7 +35,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
-          fireAttackDamageCount shouldBe 1
+          meleeSpellUsedCount shouldBe 1
         }
       }
     }
@@ -43,6 +45,8 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = D20.naturalTwenty
 
+          val fireAttackSpell = trackedMeleeSpellAttack(1)
+
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
@@ -59,7 +63,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
-          fireAttackDamageCount shouldBe 2
+          meleeSpellUsedCount shouldBe 2
         }
       }}
 
@@ -67,6 +71,8 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(2)
+
+          val fireAttackSpell = trackedMeleeSpellAttack(1)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
@@ -84,7 +90,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
-          fireAttackDamageCount shouldBe 0
+          meleeSpellUsedCount shouldBe 0
         }
       }}
 
@@ -92,6 +98,8 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(1)
+
+          val fireAttackSpell = trackedMeleeSpellAttack(1)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
@@ -109,7 +117,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
 
-          fireAttackDamageCount shouldBe 0
+          meleeSpellUsedCount shouldBe 0
         }
       }}
 
@@ -117,6 +125,8 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val fireAttackSpell = trackedMeleeSpellAttack(1)
 
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
@@ -144,6 +154,8 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(19)
 
+          val fireAttackSpell = trackedMeleeSpellAttack(1)
+
           val fireSpellCleric = cleric
             .withSpellKnown(fireAttackSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
@@ -166,22 +178,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     }
   }
 
-  abstract private class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
-
-    var fireAttackDamageCount = 0
-    val fireAttackSpell = new SingleTargetAttackSpell() {
-      val damageType: DamageType   = Fire
-      val name: String             = "tracked-fire-spell"
-      val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneAction
-      val spellLevel: SpellLevel   = 1
-      val requiresConcentration: Boolean   = false
-
-      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        fireAttackDamageCount += 1
-        4
-      }
-    }
   }
 }

@@ -1,80 +1,67 @@
 package unit.spellcasting
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import util.TestData._
 
 class SingleTargetHealingSpellSpec extends UnitSpecBase {
 
-    "effect" should {
-      "heal the target" in {
-        forAll { (cleric: Cleric, fighter: Fighter) =>
-          new TestContext {
-            override implicit val roll: RollStrategy = _ => RollResult(10)
+  "effect" should {
+    "heal the target" in {
+      forAll { (cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
-            val healingCleric = cleric
-              .withSpellKnown(healingSpell)
-              .withAllSpellSlotsAvailableForLevel(cleric.level)
-              .withChannelDivinityUsed()
-              .withWisdom(15)
-              .asInstanceOf[Cleric]
+          val healingSpell = trackedHealingSpell(1, healingDone = 4)
 
-            val damagedFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
+          val healingCleric = cleric
+            .withSpellKnown(healingSpell)
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
+            .withChannelDivinityUsed()
+            .withWisdom(15)
+            .asInstanceOf[Cleric]
 
-            val (_, List(Combatant(_, healedFighter: Fighter))) =
-              healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
+          val damagedFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
 
-            healingSpellUsedCount shouldBe 1
-            healedFighter.health shouldBe damagedFighter.creature.health + 4
-          }
-        }
-      }
+          val (_, List(Combatant(_, healedFighter: Fighter))) =
+            healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
 
-      "heal the target up to their max health" in {
-        forAll { (cleric: Cleric, fighter: Fighter) =>
-          new TestContext {
-            override implicit val roll: RollStrategy = _ => RollResult(10)
-
-            val healingCleric = cleric
-              .withSpellKnown(healingSpell)
-              .withAllSpellSlotsAvailableForLevel(cleric.level)
-              .withChannelDivinityUsed()
-              .withWisdom(15)
-              .asInstanceOf[Cleric]
-
-            val damagedFighter = fighter.withHealth(98).withMaxHealth(100).withCombatIndex(2)
-
-            val (_, List(Combatant(_, healedFighter: Fighter))) =
-              healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
-
-            healingSpellUsedCount shouldBe 1
-            healedFighter.health shouldBe 100
-          }
+          trackedHealingSpellUsedCount shouldBe 1
+          healedFighter.health shouldBe damagedFighter.creature.health + 4
         }
       }
     }
 
-    abstract private class TestContext {
-      implicit val roll: RollStrategy
+    "heal the target up to their max health" in {
+      forAll { (cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      var healingSpellUsedCount = 0
-      val healingSpell = new SingleTargetHealingSpell() {
+          val healingSpell = trackedHealingSpell(1, healingDone = 4)
 
-        val name: String             = "tracked-healing-spell"
-        val school: SchoolOfMagic    = Evocation
-        val castingTime: CastingTime = OneAction
-        val spellLevel: SpellLevel   = 1
-        val requiresConcentration: Boolean   = false
+          val healingCleric = cleric
+            .withSpellKnown(healingSpell)
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
+            .withChannelDivinityUsed()
+            .withWisdom(15)
+            .asInstanceOf[Cleric]
 
-        def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-          healingSpellUsedCount += 1
-          4
+          val damagedFighter = fighter.withHealth(98).withMaxHealth(100).withCombatIndex(2)
+
+          val (_, List(Combatant(_, healedFighter: Fighter))) =
+            healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
+
+          trackedHealingSpellUsedCount shouldBe 1
+          healedFighter.health shouldBe 100
         }
       }
     }
   }
+
+  abstract private class TestContext extends Tracking {
+    implicit val roll: RollStrategy
+  }
+}

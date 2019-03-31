@@ -157,7 +157,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     var dexteritySaveConditionCount = 0
-    def dexterityConditionSaveSpell(singleTargetSpell: Boolean) = new ConcentrationConditionSpell() {
+    def dexterityConditionSaveSpell(singleTargetSpell: Boolean): ConcentrationConditionSpell = new ConcentrationConditionSpell() {
       val name: String                   = "tracked-multi-dexterity-save-spell"
 
       val attribute: Attribute = Dexterity

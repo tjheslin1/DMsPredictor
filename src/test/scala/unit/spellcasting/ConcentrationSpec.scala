@@ -1,14 +1,12 @@
 package unit.spellcasting
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration._
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import util.TestData._
 
 class ConcentrationSpec extends UnitSpecBase {
@@ -30,7 +28,7 @@ class ConcentrationSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(8)
 
           val lowConstitutionCleric = cleric
-            .withConcentrating(concentrationSpell.some)
+            .withConcentrating(trackedConditionSpell(1).some)
             .withConstitution(5)
             .asInstanceOf[SpellCaster]
 
@@ -47,7 +45,7 @@ class ConcentrationSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(8)
 
           val highConstitutionCleric = cleric
-            .withConcentrating(concentrationSpell.some)
+            .withConcentrating(trackedConditionSpell(1).some)
             .withConstitution(18)
             .asInstanceOf[SpellCaster]
 
@@ -59,20 +57,7 @@ class ConcentrationSpec extends UnitSpecBase {
     }
   }
 
-  abstract private class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
-
-    val concentrationSpell: Spell = new ConcentrationConditionSpell() {
-      val name: String                   = "test-concentration-spell"
-
-      val attribute: Attribute           = Wisdom
-      val singleTarget: Boolean = true
-
-      val school: SchoolOfMagic          = Evocation
-      val castingTime: CastingTime       = OneAction
-      val spellLevel: SpellLevel         = 1
-
-      def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
-    }
   }
 }
