@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.model
 
 import cats.Eq
 import cats.syntax.option._
-import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import monocle.macros.GenLens
 import monocle.{Lens, Optional}
 
@@ -21,6 +21,16 @@ object Combatant {
     {
       case combatant @ Combatant(_, _: Player) => creatureLens.set(player)(combatant)
       case c: Combatant                        => c
+    }
+  }
+
+  val spellCasterOptional: Optional[Combatant, SpellCaster] = Optional[Combatant, SpellCaster] {
+    case Combatant(_, sc: SpellCaster) => sc.some
+    case _                             => none[SpellCaster]
+  } { spellCaster =>
+    {
+      case combatant @ Combatant(_, _: SpellCaster) => creatureLens.set(spellCaster)(combatant)
+      case c: Combatant                             => c
     }
   }
 }

@@ -1,7 +1,9 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
+import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
@@ -9,6 +11,7 @@ trait Player extends Creature {
 
   val level: Level
   val bonusActionUsed: Boolean
+  val proficiencyBonus: ProficiencyBonus
 
   val creatureType: CreatureType = PlayerCharacter
 }
@@ -18,14 +21,34 @@ object Player {
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>
       {
-        case c: BattleMaster   => BattleMaster._bonusActionUsed.set(bonusUsed)(c)
-        case c: EldritchKnight => EldritchKnight._bonusActionUsed.set(bonusUsed)(c)
-        case c: Champion       => Champion._bonusActionUsed.set(bonusUsed)(c)
-        case c: Fighter        => Fighter._bonusActionUsed.set(bonusUsed)(c)
+        case c: Champion => Champion._bonusActionUsed.set(bonusUsed)(c)
+        case c: Fighter  => Fighter._bonusActionUsed.set(bonusUsed)(c)
 
-        case c: Barbarian    => Barbarian._bonusActionUsed.set(bonusUsed)(c)
-        case c: Berserker    => Berserker._bonusActionUsed.set(bonusUsed)(c)
-        case c: TotemWarrior => TotemWarrior._bonusActionUsed.set(bonusUsed)(c)
+        case c: Barbarian => Barbarian._bonusActionUsed.set(bonusUsed)(c)
+        case c: Berserker => Berserker._bonusActionUsed.set(bonusUsed)(c)
+
+        case c: Cleric => Cleric._bonusActionUsed.set(bonusUsed)(c)
+
+        case _ =>
+          throw new NotImplementedError(
+            "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
       }
   }
+
+  val playerProficiencyBonusLens: Lens[Player, ProficiencyBonus] =
+    Lens[Player, ProficiencyBonus](_.proficiencyBonus) { profBonus =>
+      {
+        case c: Champion => Champion._proficiencyBonus.set(profBonus)(c)
+        case c: Fighter  => Fighter._proficiencyBonus.set(profBonus)(c)
+
+        case c: Barbarian => Barbarian._proficiencyBonus.set(profBonus)(c)
+        case c: Berserker => Berserker._proficiencyBonus.set(profBonus)(c)
+
+        case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
+
+        case _ =>
+          throw new NotImplementedError(
+            "Missing playerProficiencyBonusLens lens for your new implementation of Player!")
+      }
+    }
 }

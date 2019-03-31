@@ -1,12 +1,13 @@
 package util
 
 import cats.syntax.option._
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
+import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -18,25 +19,26 @@ import monocle.macros.{GenLens, Lenses}
                                     baseWeapon: Weapon,
                                     armour: Armour = NoArmour,
                                     offHand: Option[Equipment] = none[Equipment],
-                                    proficiencyBonus: ProficiencyBonus = 0,
                                     resistances: List[DamageType] = List.empty,
                                     immunities: List[DamageType] = List.empty,
                                     abilities: List[CombatantAbility] = List.empty,
+                                    conditions: List[Condition] = List.empty,
                                     attackStatus: AttackStatus = Regular,
                                     defenseStatus: AttackStatus = Regular,
                                     turnResetTracker: Unit => Unit = () => _,
+                                    creatureType: CreatureType = Humanoid,
+                                    challengeRating: Double = 1,
                                     name: String = NameGenerator.randomName)
-    extends Creature {
-
-  val creatureType: CreatureType = Monster
+    extends Monster {
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  def updateHealth(modification: Int): Creature = copy(health = Math.max(health + modification, 0))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
+    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def turnReset(): Creature = {
+  def resetStartOfTurn(): Creature = {
     turnResetTracker()
     this
   }

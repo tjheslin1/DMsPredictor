@@ -9,9 +9,11 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
+import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -29,6 +31,7 @@ import monocle.macros.{GenLens, Lenses}
                                   immunities: List[DamageType] = List.empty,
                                   bonusActionUsed: Boolean = false,
                                   abilities: List[CombatantAbility] = standardBarbarianAbilities,
+                                  conditions: List[Condition] = List.empty,
                                   attackStatus: AttackStatus = Regular,
                                   defenseStatus: AttackStatus = Regular,
                                   inRage: Boolean = false,
@@ -40,7 +43,8 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
-  def updateHealth(modification: Int): Creature = copy(health = Math.max(0, health + modification))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
+    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 }

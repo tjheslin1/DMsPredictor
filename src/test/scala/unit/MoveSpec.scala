@@ -1,161 +1,204 @@
 package unit
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighterAbilities, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import org.scalatest.OptionValues
 import util.TestData._
 import util.TestMonster
 
 import scala.collection.immutable.Queue
 
-class MoveSpec extends UnitSpecBase {
+class MoveSpec extends UnitSpecBase with OptionValues {
 
   val Priority = 1
 
   "takeMove" should {
-    "replace creature to back of queue after attacking" in new TestContext {
+    "replace creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name, fighter.name)
+          val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
+
+          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
+                                                                           fighter.name)
+        }
       }
     }
 
-    "reset player's bonus action to unused" in new TestContext {
+    "replace unconscious creature to back of queue after attacking" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue =
-          Queue(fighter.withBonusActionUsed().withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+          val queue = Queue(fighter.withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
 
-        updatedFighter.bonusActionUsed shouldBe false
+          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
+                                                                           fighter.name)
+        }
       }
     }
 
-    "call a creature's resetTurn at the beginning of their move" in new TestContext {
+    "use a players bonus action ability if unused after main action" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+          val bonusActionFighter = fighter.withAbilities(List(trackedBonusAction(1))).withCombatIndex(1)
+
+          val queue = Queue(bonusActionFighter,
+                  monster.withCombatIndex(2))
+
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+          updatedFighter.bonusActionUsed shouldBe true
+          trackedBonusActionUsed shouldBe true
+        }
+      }
+    }
+
+    "reset player's bonus action to unused" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+          val queue =
+            Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
+                  monster.withCombatIndex(2))
+
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+          updatedFighter.bonusActionUsed shouldBe false
+        }
+      }
+    }
+
+    "call a creature's resetTurn at the beginning of their move" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        var turnReset = false
-        val monster   = testMonster.withResetTurn(_ => turnReset = true)
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        val queue =
-          Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
+          var turnReset = false
+          val monster   = testMonster.withResetTurn(_ => turnReset = true)
 
-        takeMove(queue, LowestFirst)
+          val queue =
+            Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
 
-        turnReset shouldBe true
+          takeMove(queue, LowestFirst)
+
+          turnReset shouldBe true
+        }
       }
     }
 
-    "reset unconscious creatures bonus action to unused" in new TestContext {
+    "reset unconscious creatures bonus action to unused" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
-                          monster.withCombatIndex(2))
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+          val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
+                            monster.withCombatIndex(2))
 
-        updatedFighter.bonusActionUsed shouldBe false
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+          updatedFighter.bonusActionUsed shouldBe false
+        }
       }
     }
 
-    "update head enemy after attack" in new TestContext {
+    "update head enemy after attack" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
+          val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
-        updatedEnemy.health should (be <= monster.health)
+          val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
+
+          updatedEnemy.health should (be <= monster.health)
+        }
       }
     }
 
-    "ignore unconscious mobs" in new TestContext {
+    "ignore unconscious mobs" in {
       forAll { (fighter: Fighter, monsterOne: TestMonster, monsterTwo: TestMonster) =>
-        val player = Fighter._abilityUsages
-          .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
-          .withStrength(10)
-          .withCombatIndex(1)
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
-        val enemyTwo = monsterTwo.withHealth(1).withCombatIndex(3)
+          val player = fighter.withAllAbilitiesUsed().withStrength(20).withCombatIndex(1)
 
-        val queue = Queue(player, enemyOne, enemyTwo)
+          val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
+          val enemyTwo = monsterTwo.withArmourClass(1).withHealth(1).withCombatIndex(3)
 
-        val Queue(_, Combatant(_, updatedEnemyTwo), _) =
-          takeMove(queue, LowestFirst)(D20.naturalTwenty)
+          val queue = Queue(player, enemyOne, enemyTwo)
 
-        updatedEnemyTwo.health shouldBe 0
-      }
-    }
-
-    "focus mob with lowest health first" in new TestContext {
-      forAll {
-        (fighter: Fighter,
-         monsterOne: TestMonster,
-         monsterTwo: TestMonster,
-         monsterThree: TestMonster) =>
-          val player = Fighter._abilityUsages
-            .set(BaseFighterAbilities(secondWindUsed = true, actionSurgeUsed = false))(fighter)
-            .withStrength(10)
-            .withCombatIndex(1)
-
-          val enemyOne   = monsterOne.withHealth(50).withCombatIndex(2)
-          val enemyTwo   = monsterTwo.withHealth(1).withCombatIndex(3)
-          val enemyThree = monsterThree.withHealth(50).withCombatIndex(4)
-
-          val queue = Queue(player, enemyOne, enemyTwo, enemyThree)
-
-          val Queue(Combatant(_, updatedEnemyOne),
-                    Combatant(_, updatedEnemyTwo),
-                    Combatant(_, updatedEnemyThree),
-                    _) =
+          val Queue(_, Combatant(_, updatedEnemyTwo), _) =
             takeMove(queue, LowestFirst)(D20.naturalTwenty)
 
-          updatedEnemyOne.health shouldBe 50
           updatedEnemyTwo.health shouldBe 0
-          updatedEnemyThree.health shouldBe 50
+        }
       }
     }
 
-    "call Ability" in new TestContext {
+    "call Ability" in {
       forAll { (fighter: Fighter, monster: TestMonster) =>
-        val trackedFighter =
-          fighter.withAbilities(List(trackedAbility(Priority))).withCombatIndex(1)
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        takeMove(Queue(trackedFighter, monster.withCombatIndex(2)), LowestFirst)
+          val trackedFighter =
+            fighter.withAbilities(List(trackedAbility(Priority))).withCombatIndex(1)
 
-        trackedAbilityUsedCount shouldBe 1
-        trackedAbilityUsed shouldBe true
+          takeMove(Queue(trackedFighter, monster.withCombatIndex(2)), LowestFirst)
+
+          trackedAbilityUsedCount shouldBe 1
+          trackedAbilityUsed shouldBe true
+        }
+      }
+    }
+
+    "handle conditions" in {
+      forAll { (fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll = _ => RollResult(10)
+
+          val trackedGoblin =
+            goblin.withConditions(trackedCondition(100), trackedCondition(50)).withCombatIndex(1)
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
+
+          trackedConditionHandledCount shouldBe 2
+        }
+      }
+    }
+
+    "miss the combatants turn if a condition saving throw is failed" in {
+      forAll { (fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll = D20.naturalTwenty
+
+          val trackedGoblin =
+            goblin
+              .withBaseWeapon(trackedSword)
+              .withConditions(trackedCondition(100, turnMissed = true))
+              .withCombatIndex(1)
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
+
+          trackedConditionHandledCount shouldBe 1
+          swordUsedCount shouldBe 0
+        }
       }
     }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
-
-    var trackedAbilityUsedCount = 0
-    var trackedAbilityUsed      = false
-
-    def trackedAbility(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-      val name: String     = "test-tracked-ability-one"
-      val order            = currentOrder
-      val levelRequirement = LevelOne
-      val abilityAction    = WholeAction
-
-      val triggerMet: Boolean   = true
-      def conditionMet: Boolean = trackedAbilityUsed == false
-
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
-        trackedAbilityUsedCount += 1
-        (combatant, target)
-      }
-
-      def update: Creature = {
-        trackedAbilityUsed = true
-        combatant.creature
-      }
-    }
+  private abstract class TestContext extends Tracking {
+    implicit val roll: RollStrategy
   }
 }

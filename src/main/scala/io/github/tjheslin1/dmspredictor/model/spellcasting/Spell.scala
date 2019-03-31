@@ -1,60 +1,73 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting
 
+import cats.syntax.option._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.EldritchKnight
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
+import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
+
+import scala.annotation.tailrec
 
 abstract class Spell {
 
+  val name: String
   val school: SchoolOfMagic
   val castingTime: CastingTime
-  val spellOffenseStyle: SpellOffenseStyle
-  val damageType: DamageType
+  val spellEffect: SpellEffect
   val spellLevel: SpellLevel
+  val requiresConcentration: Boolean
 
-  def spellAttackBonus(creature: Creature): Int =
-    creature.proficiencyBonus + attributeModifierForSchool(creature)
-
-  def spellSaveDc(creature: Creature): Int =
-    8 + creature.proficiencyBonus + attributeModifierForSchool(creature)
-
-  def damage(implicit rollStrategy: RollStrategy): Int
+  def effect[_: RS](spellCaster: SpellCaster,
+                    spellLevel: SpellLevel,
+                    targets: List[Combatant]): (SpellCaster, List[Combatant])
 }
 
 object Spell {
 
-  def apply(level: SpellLevel,
-            schoolOfMagic: SchoolOfMagic,
-            castTime: CastingTime,
-            offenseStyle: SpellOffenseStyle,
-            `type`: DamageType,
-            dmg: => Int): Spell = new Spell {
+  @tailrec
+  def spellOfLevelOrBelow(spellCaster: SpellCaster,
+                          spellEffect: SpellEffect,
+                          spellLevel: SpellLevel,
+                          checkConcentration: Boolean = true): Option[Spell] = {
+    val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
-    val school: spellcasting.SchoolOfMagic                = schoolOfMagic
-    val castingTime: spellcasting.CastingTime             = castTime
-    val spellOffenseStyle: spellcasting.SpellOffenseStyle = offenseStyle
-    val damageType: DamageType                            = `type`
-    val spellLevel: SpellLevel                            = level
+    val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
-    def damage(implicit rollStrategy: RollStrategy): Int = dmg
+    if (spellLookup.isDefined) {
+      if (checkConcentration && spellCaster.isConcentrating && spellLookup.get.requiresConcentration)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
+      else
+        spellLookup
+    } else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
+    else none[Spell]
   }
 
-  def schoolAttribute(creature: Creature): Attribute = creature match {
-    case _: EldritchKnight => Intelligence
-    case _                 => ???
+  def spellAttackBonus(spellCaster: SpellCaster): Int = spellCaster match {
+    case playerSpellcaster: Player with SpellCaster =>
+      playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
+    case spellcaster => attributeModifierForSchool(spellcaster)
   }
 
-  def attributeModifierForSchool(creature: Creature): Int =
-    attributeModifier(creature, schoolAttribute(creature))
-
-  def attributeModifier(creature: Creature, attribute: Attribute): Int = attribute match {
-    case Strength     => mod(creature.stats.strength)
-    case Dexterity    => mod(creature.stats.dexterity)
-    case Constitution => mod(creature.stats.constitution)
-    case Wisdom       => mod(creature.stats.wisdom)
-    case Intelligence => mod(creature.stats.intelligence)
-    case Charisma     => mod(creature.stats.charisma)
+  def spellSaveDc(spellCaster: SpellCaster): Int = spellCaster match {
+    case playerSpellcaster: Player with SpellCaster =>
+      8 + playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
+    case spellcaster => 8 + attributeModifierForSchool(spellcaster)
   }
+
+  def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
+    case _: Cleric     => Wisdom
+    case _: BaseCleric => Wisdom
+  }
+
+  def attributeModifierForSchool(spellcaster: SpellCaster): Int =
+    attributeModifier(spellcaster, schoolAttribute(spellcaster))
+
+  def spellSavingThrowPassed[_: RS](caster: SpellCaster,
+                                    attribute: Attribute,
+                                    target: Creature): Boolean =
+    savingThrowPassed(spellSaveDc(caster), attribute, target)
+
 }

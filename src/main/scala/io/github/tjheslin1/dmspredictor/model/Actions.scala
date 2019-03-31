@@ -1,8 +1,12 @@
 package io.github.tjheslin1.dmspredictor.model
 
+import cats.syntax.eq._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.ConcentrationConditionSpell
 
 sealed trait AttackResult {
   def result: Int
@@ -46,10 +50,15 @@ object Actions extends LazyLogging {
     if (attacker.creature.scoresCritical(roll)) CriticalHit
     else if (roll == 1) CriticalMiss
     else {
-      val totalAttackRoll = roll +
-        mod(attacker.creature.stats.strength) +
-        attackerWeapon.hitBonus +
-        attacker.creature.proficiencyBonus
+      val totalAttackRoll = attacker.creature match {
+        case player: Player =>
+          roll +
+            mod(player.stats.strength) +
+            attackerWeapon.hitBonus +
+            player.proficiencyBonus
+        case _ =>
+          roll + attackerWeapon.hitBonus
+      }
 
       if (totalAttackRoll >= target.creature.armourClass) Hit else Miss
     }
@@ -57,15 +66,17 @@ object Actions extends LazyLogging {
 
   def resolveDamageMainHand[_: RS](attacker: Combatant,
                                    target: Combatant,
+                                   others: List[Combatant],
                                    attackResult: AttackResult,
-                                   damageBonus: Int = 0): (Combatant, Combatant) =
-    resolveDamage(attacker, target, attacker.creature.weapon, attackResult, damageBonus)
+                                   damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) =
+    resolveDamage(attacker, target, others, attacker.creature.weapon, attackResult, damageBonus)
 
   def resolveDamage[_: RS](attacker: Combatant,
                            target: Combatant,
+                           others: List[Combatant],
                            weapon: Weapon,
                            attackResult: AttackResult,
-                           damageBonus: Int = 0): (Combatant, Combatant) = {
+                           damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) = {
 
     val dmg = Math.max(
       0,
@@ -78,45 +89,78 @@ object Actions extends LazyLogging {
       }
     )
 
-    val adjustedDamage = weapon.damageType match {
-      case damageType if target.creature.resistances.contains(damageType) =>
-        math.max(1, math.floor(dmg / 2).toInt)
-      case damageType if target.creature.immunities.contains(damageType) => 0
-      case _                                                             => dmg
+    val updatedTarget = Combatant.creatureLens.set(
+      target.creature.updateHealth(dmg, weapon.damageType, attackResult))(target)
+
+    val (updatedAttacker, updatedOthers) = (target.creature, updatedTarget.creature) match {
+      case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
+          if lossOfConcentration(spellCaster, damagedSpellCaster) == false =>
+        spellCaster.concentratingSpell.fold((attacker, others)) {
+          case conditionSpell: ConcentrationConditionSpell =>
+            val concentratedCondition: Condition = conditionSpell.conditionFrom(spellCaster)
+
+            val conditionRemovedAttacker = removeCondition(attacker, concentratedCondition)
+
+            (conditionRemovedAttacker, others.map(removeCondition(_, concentratedCondition)))
+          case _ => (attacker, others)
+        }
+      case _ =>
+        (attacker, others)
     }
 
-    logger.debug(
-      s"${attacker.creature.name} attacks ${target.creature.name} for $dmg ($adjustedDamage adjusted)")
+    val conditionHandledCreature =
+      updatedTarget.creature.conditions.filter(_.handleOnDamage).foldLeft(updatedTarget.creature) {
+        case (creature, condition) => condition.handleOnDamage(creature)
+      }
 
-    val damagedTarget =
-      target.copy(creature = target.creature.updateHealth(Math.negateExact(adjustedDamage)))
+    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(updatedTarget)
 
-    (attacker, damagedTarget)
+    (updatedAttacker, conditionHandledTarget, updatedOthers)
   }
 
-  def attackAndDamage[_: RS](attacker: Combatant, target: Combatant): (Combatant, Combatant) = {
+  def attackAndDamage[_: RS](attacker: Combatant,
+                             target: Combatant,
+                             others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {
     val attackResult = attack(attacker, attacker.creature.weapon, target)
 
     if (attackResult.result > 0)
-      resolveDamage(attacker, target, attacker.creature.weapon, attackResult)
+      resolveDamage(attacker, target, others, attacker.creature.weapon, attackResult)
     else {
       logger.debug(s"${attacker.creature.name} misses regular attack")
-      (attacker, target)
+      (attacker, target, others)
     }
   }
 
-  def attackAndDamageTimes[_: RS](times: Int,
-                                  attacker: Combatant,
-                                  target: Combatant): (Combatant, Combatant) =
-    runCombatantTimes(times, attacker, target, attackAndDamage)
+  def attackAndDamageTimes[_: RS](
+      times: Int,
+      attacker: Combatant,
+      target: Combatant,
+      others: List[Combatant]): (Combatant, Combatant, List[Combatant]) =
+    runCombatantTimes(times, attacker, target, others, attackAndDamage)
 
   def runCombatantTimes(
       times: Int,
       c1: Combatant,
       c2: Combatant,
-      f: (Combatant, Combatant) => (Combatant, Combatant)): (Combatant, Combatant) =
-    (1 to times).foldLeft[(Combatant, Combatant)]((c1, c2)) { (combatants, _) =>
-      val (a, t) = combatants
-      f(a, t)
+      c3: List[Combatant],
+      f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant]))
+    : (Combatant, Combatant, List[Combatant]) =
+    (1 to times).foldLeft[(Combatant, Combatant, List[Combatant])]((c1, c2, c3)) {
+      (combatants, _) =>
+        val (a, t, o) = combatants
+        f(a, t, o)
     }
+
+  private def lossOfConcentration(spellCaster: SpellCaster,
+                                  updatedSpellCaster: SpellCaster): Boolean =
+    spellCaster.isConcentrating && updatedSpellCaster.isConcentrating
+
+  private def removeCondition(combatant: Combatant, condition: Condition): Combatant =
+    if (combatant.creature.conditions.exists(_ === condition)) {
+      val remainingConditions = combatant.creature.conditions diff List(condition)
+
+      (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+        .set(remainingConditions)(combatant)
+    } else
+      combatant
 }

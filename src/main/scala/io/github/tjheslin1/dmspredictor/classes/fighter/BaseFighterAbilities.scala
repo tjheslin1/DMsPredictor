@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player
@@ -8,7 +7,11 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.Lens
 import monocle.macros.GenLens
 
@@ -32,13 +35,15 @@ object BaseFighterAbilities extends LazyLogging {
     val name             = "Second Wind"
     val order            = currentOrder
     val levelRequirement = LevelTwo
-    val abilityAction    = WholeAction
+    val abilityAction    = BonusAction
 
-    def triggerMet = combatant.creature.health <= combatant.creature.maxHealth / 2
+    def triggerMet(others: List[Combatant]) =
+      combatant.creature.health <= combatant.creature.maxHealth / 2
+
     def conditionMet =
       baseFighter.level.value >= levelRequirement && baseFighter.abilityUsages.secondWindUsed == false
 
-    def useAbility[_: RS](targetIgnored: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used Second wind")
 
       val updatedHealth =
@@ -47,12 +52,15 @@ object BaseFighterAbilities extends LazyLogging {
       val updatedCombatant =
         (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
-      (updatedCombatant, None)
+      (updatedCombatant, others)
     }
 
-    def update: Creature =
-      (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
+    def update: Creature = {
+      val secondWindUsedFighter = (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
         .set(true)(baseFighter)
+
+      Player.playerBonusActionUsedLens.set(true)(secondWindUsedFighter)
+    }
   }
 
   def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
@@ -61,9 +69,9 @@ object BaseFighterAbilities extends LazyLogging {
     val name             = "Two Weapon Fighting"
     val order            = currentOrder
     val levelRequirement = LevelOne
-    val abilityAction    = BonusAction
+    val abilityAction    = SingleAttack
 
-    val triggerMet: Boolean = true
+    def triggerMet(others: List[Combatant]) = true
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
@@ -74,29 +82,40 @@ object BaseFighterAbilities extends LazyLogging {
       case _ => false
     }
 
-    def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
-      target match {
-        case None => (combatant, none[Combatant])
-        case Some(target: Combatant) =>
-          val mainHandAttack = attack(combatant, combatant.creature.weapon, target)
+      nextToFocus(monsters(others), focus) match {
+        case None => (combatant, others)
+        case Some(attackTarget) =>
+          val mainHandAttack = attack(combatant, combatant.creature.weapon, attackTarget)
 
-          val (attacker1, attackTarget1) =
-            if (mainHandAttack.result > 0) resolveDamageMainHand(combatant, target, mainHandAttack)
+          val (updatedAttacker, attackTarget1, updatedOthers) =
+            if (mainHandAttack.result > 0)
+              resolveDamageMainHand(combatant, attackTarget, others, mainHandAttack)
             else
-              (combatant, target)
+              (combatant, attackTarget, others)
 
-          val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
-          val offHandAttack = attack(attacker1, offHandWeapon, attackTarget1)
+          val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
 
-          val (attacker2, attackTarget2) =
-            if (offHandAttack.result > 0)
-              resolveDamage(attacker1, attackTarget1, offHandWeapon, offHandAttack)
-            else
-              (attacker1, attackTarget1)
+          nextToFocus(updatedEnemies, focus) match {
+            case None => (combatant, updatedOthers)
+            case Some(nextTarget) =>
+              val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
+              val offHandAttack = attack(updatedAttacker, offHandWeapon, nextTarget)
 
-          (attacker2, attackTarget2.some)
+              val (attacker2, attackTarget2, updatedOthers2) =
+                if (offHandAttack.result > 0)
+                  resolveDamage(updatedAttacker,
+                                nextTarget,
+                                updatedOthers,
+                                offHandWeapon,
+                                offHandAttack)
+                else
+                  (updatedAttacker, nextTarget, updatedOthers)
+
+              (attacker2, updatedOthers2.replace(attackTarget2))
+          }
       }
     }
 
@@ -112,28 +131,30 @@ object BaseFighterAbilities extends LazyLogging {
       val levelRequirement = LevelTwo
       val abilityAction    = WholeAction
 
-      val triggerMet: Boolean   = true
-      def conditionMet: Boolean = baseFighter.abilityUsages.actionSurgeUsed == false
+      def triggerMet(others: List[Combatant]) = true
+      def conditionMet: Boolean               = baseFighter.abilityUsages.actionSurgeUsed == false
 
-      def useAbility[_: RS](target: Option[Combatant]): (Combatant, Option[Combatant]) = {
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-        target match {
-          case None => (combatant, none[Combatant])
-          case Some(target: Combatant) =>
-            nextAbilityToUseInConjunction(combatant, order, AbilityAction.Any)
-              .fold(useAttackActionTwice(combatant, target)) { nextAbility =>
-                val (updatedAttacker, optUpdatedTarget) =
-                  useAdditionalAbility(nextAbility, combatant, target)
+        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
+          .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
+            val (updatedAttacker, updatedOthers) =
+              useAdditionalAbility(nextAbility, combatant, others, focus)
 
-                optUpdatedTarget.fold((updatedAttacker, none[Combatant])) { updatedTarget =>
-                  nextAbilityToUseInConjunction(updatedAttacker, order, AbilityAction.Any)
-                    .fold(useAttackActionTwice(updatedAttacker, updatedTarget)) { nextAbility2 =>
-                      useAdditionalAbility(nextAbility2, updatedAttacker, updatedTarget)
-                    }
+            nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
+              .fold {
+                nextToFocus(updatedOthers, focus).fold((updatedAttacker, updatedOthers)) {
+                  nextTarget =>
+                    val (updatedAttacker2, updatedTarget2, updatedOthers2) =
+                      attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+
+                    (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
                 }
+              } { nextAbility2 =>
+                useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
               }
-        }
+          }
       }
 
       def update: Creature =
