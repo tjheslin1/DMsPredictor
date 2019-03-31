@@ -78,12 +78,11 @@ import monocle.macros.{GenLens, Lenses}
 
 object Vampire {
 
-  val TotalAttacks = 2
-  val CharmDC      = 17
+  val CharmDC = 17
 
   val vampireAbilities: List[CombatantAbility] = List(
     charm(1),
-    multiAttack(2, TotalAttacks),
+    multiAttack(2, numberOfAttacks = 2),
     bite(3),
     unarmedStrike(4)
   )

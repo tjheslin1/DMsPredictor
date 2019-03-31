@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.MonsterAbilities.multiAttack
 import io.github.tjheslin1.dmspredictor.monsters.Werewolf._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -58,7 +59,7 @@ object Werewolf {
   }
 
   val standardWerewolfAbilities: List[CombatantAbility] = List(
-//    extraAttack(1)
+    multiAttack(1, numberOfAttacks = 2)
   )
 
   implicit def werewolfShow[_: RS]: Show[Werewolf] = Show.show { werewolf =>
