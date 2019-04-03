@@ -202,10 +202,10 @@ class VampireAbilitiesSpec extends UnitSpecBase {
     "apply the Charmed condition" in {
       forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
         new TestContext {
-          implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit val roll: RollStrategy = _ => RollResult(15)
 
           val vampireCombatant = vampire.withCombatIndex(1)
-          val clericCombatant = cleric.withWisdom(1).withHealth(50).withCombatIndex(2)
+          val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(1).withHealth(50).withCombatIndex(2)
           val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
           val (_, List(Combatant(_, updatedCleric: Cleric), _)) =

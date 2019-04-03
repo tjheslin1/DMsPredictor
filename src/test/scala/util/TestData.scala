@@ -1,5 +1,6 @@
 package util
 
+import cats.data.NonEmptyList
 import cats.syntax.option._
 import com.danielasfregola.randomdatagenerator.magnolia.RandomDataGenerator
 import eu.timepit.refined
@@ -143,7 +144,8 @@ object TestData {
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
-    def withConcentrating(concentratingSpell: Option[Spell]) = _concentratingSpell.set(concentratingSpell)(cleric)
+    def withConcentrating(concentratingSpell: Option[Spell]) =
+      _concentratingSpell.set(concentratingSpell)(cleric)
 
     def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(cleric)
     def withNoCantrip()             = _cantripKnown.set(none[Spell])(cleric)
@@ -212,9 +214,9 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbSpellSlots: Arbitrary[SpellSlots] = Arbitrary {
     for {
-      firstLevelSpellSlots <- arbFirstLevelSpellSlot.arbitrary
+      firstLevelSpellSlots  <- arbFirstLevelSpellSlot.arbitrary
       secondLevelSpellSlots <- arbSecondLevelSpellSlot.arbitrary
-      thirdLevelSpellSlots <- arbThirdLevelSpellSlot.arbitrary
+      thirdLevelSpellSlots  <- arbThirdLevelSpellSlot.arbitrary
     } yield SpellSlots(firstLevelSpellSlots, secondLevelSpellSlots, thirdLevelSpellSlots)
   }
 
@@ -289,45 +291,9 @@ trait TestData extends RandomDataGenerator {
     Gen.oneOf(Undead, Humanoid)
   }
 
-  implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
-    for {
-      lvl       <- arbLevel.arbitrary
-      creature  <- arbCreature.arbitrary
-      profBonus <- arbProficiencyBonus.arbitrary
-    } yield
-      new Player {
-        val level: Level             = lvl
-        val bonusActionUsed: Boolean = false
-
-        val health: Int        = creature.health
-        val maxHealth: Int     = creature.maxHealth
-        val stats: BaseStats   = creature.stats
-        val baseWeapon: Weapon = creature.baseWeapon
-
-        def weapon[_: RS]: Weapon = creature.weapon
-
-        val armour: Armour                     = creature.armour
-        val offHand: Option[Equipment]         = creature.offHand
-        val armourClass: Int                   = creature.armourClass
-        val proficiencyBonus: ProficiencyBonus = profBonus
-        val resistances: List[DamageType]      = creature.resistances
-        val immunities: List[DamageType]       = creature.immunities
-        val name: String                       = creature.name
-        val abilities: List[CombatantAbility]  = creature.abilities
-        val conditions: List[Condition]        = creature.conditions
-        val attackStatus: AttackStatus         = creature.attackStatus
-        val defenseStatus: AttackStatus        = creature.defenseStatus
-
-        def updateHealth[_: RS](dmg: Int,
-                                damageType: DamageType,
-                                attackResult: AttackResult): Creature =
-          throw new NotImplementedError(
-            "Random generation should delegate to specific updateHealth()")
-
-        def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
-
-        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
-      }
+  implicit val arbSavingThrowProficiencies: Arbitrary[List[Attribute]] = Arbitrary {
+    val attributes = List(Strength, Dexterity, Constitution, Wisdom, Intelligence, Charisma)
+    Gen.pick(2, attributes).map(_.toList)
   }
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
@@ -374,6 +340,50 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
+      }
+  }
+
+  implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
+    for {
+      lvl              <- arbLevel.arbitrary
+      creature         <- arbCreature.arbitrary
+      profBonus        <- arbProficiencyBonus.arbitrary
+      savingThrowProfs <- arbSavingThrowProficiencies.arbitrary
+    } yield
+      new Player {
+        val level: Level             = lvl
+        val bonusActionUsed: Boolean = false
+
+        val health: Int        = creature.health
+        val maxHealth: Int     = creature.maxHealth
+        val stats: BaseStats   = creature.stats
+        val baseWeapon: Weapon = creature.baseWeapon
+
+        val savingThrowProficiencies: NonEmptyList[Attribute] = NonEmptyList.fromListUnsafe(savingThrowProfs)
+
+        def weapon[_: RS]: Weapon = creature.weapon
+
+        val armour: Armour                     = creature.armour
+        val offHand: Option[Equipment]         = creature.offHand
+        val armourClass: Int                   = creature.armourClass
+        val proficiencyBonus: ProficiencyBonus = profBonus
+        val resistances: List[DamageType]      = creature.resistances
+        val immunities: List[DamageType]       = creature.immunities
+        val name: String                       = creature.name
+        val abilities: List[CombatantAbility]  = creature.abilities
+        val conditions: List[Condition]        = creature.conditions
+        val attackStatus: AttackStatus         = creature.attackStatus
+        val defenseStatus: AttackStatus        = creature.defenseStatus
+
+        def updateHealth[_: RS](dmg: Int,
+                                damageType: DamageType,
+                                attackResult: AttackResult): Creature =
+          throw new NotImplementedError(
+            "Random generation should delegate to specific updateHealth()")
+
+        def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
+
+        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
       }
   }
 
@@ -557,8 +567,8 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCleric: Arbitrary[Cleric] = Arbitrary {
     for {
-      player               <- arbPlayer.arbitrary
-      level                <- arbLevel.arbitrary
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
     } yield
       Cleric(
         level,

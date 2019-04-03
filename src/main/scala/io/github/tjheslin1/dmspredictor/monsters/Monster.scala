@@ -17,7 +17,9 @@ object Monster {
       case c: Werewolf => Werewolf._armourClass.set(ac)(c)
       case c: Vampire  => Vampire._armourClass.set(ac)(c)
 
-      case _ => throw new NotImplementedError("missing implementation in monsterArmourClassLens for new Monster")
+      case _ =>
+        throw new NotImplementedError(
+          "missing implementation in monsterArmourClassLens for new Monster")
     }
   }
 }

@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes
 
+import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
@@ -12,6 +13,7 @@ trait Player extends Creature {
   val level: Level
   val bonusActionUsed: Boolean
   val proficiencyBonus: ProficiencyBonus
+  val savingThrowProficiencies: NonEmptyList[Attribute]
 
   val creatureType: CreatureType = PlayerCharacter
 }

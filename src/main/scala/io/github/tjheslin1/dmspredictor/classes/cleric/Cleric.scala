@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
+import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
@@ -43,6 +44,8 @@ import monocle.macros.{GenLens, Lenses}
                                concentratingSpell: Option[Spell] = None,
                                name: String = NameGenerator.randomName)
     extends BaseCleric {
+
+  val savingThrowProficiencies = NonEmptyList.of(Wisdom, Charisma)
 
   def weapon[_: RS]: Weapon = baseWeapon
 

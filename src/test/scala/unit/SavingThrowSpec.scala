@@ -2,6 +2,8 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
@@ -13,7 +15,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return true if the targets roll equals the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val monster = testMonster.withDexterity(10)
 
@@ -25,7 +27,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return true if the targets roll exceeds the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val monster = testMonster.withDexterity(14)
 
@@ -37,7 +39,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return false if the targets roll is less than the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val monster = testMonster.withDexterity(10)
 
@@ -45,9 +47,22 @@ class SavingThrowSpec extends UnitSpecBase {
         }
       }
     }
+
+    "use Player's matching saving throw proficiency" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val proficientFighter = fighter.withStrength(10).asInstanceOf[Player]
+
+          val dc = 10 + proficientFighter.proficiencyBonus
+          savingThrowPassed(dc, Strength, proficientFighter) shouldBe true
+        }
+      }
+    }
   }
 
-  private class TestContext {
-    implicit val roll: RollStrategy = Dice.defaultRandomiser
+  abstract private class TestContext {
+    implicit val roll: RollStrategy
   }
 }
