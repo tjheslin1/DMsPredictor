@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian.resetStatus
-import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric.HitDice
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -17,6 +16,9 @@ trait BaseBarbarian extends Player with Product with Serializable {
   val rageTurnsLeft: Int
 
   def resetStartOfTurn(): Creature = resetStatus(this)
+
+  def scoresCritical(roll: Int): Boolean = roll == 20
+
 }
 
 object BaseBarbarian {

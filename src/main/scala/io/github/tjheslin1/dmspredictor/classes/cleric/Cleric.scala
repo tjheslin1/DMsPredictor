@@ -61,8 +61,6 @@ import monocle.macros.{GenLens, Lenses}
       handleConcentration(updatedCleric, damageTaken)
     else updatedCleric
   }
-
-  def scoresCritical(roll: Int): Boolean = roll == 20
 }
 
 object Cleric {

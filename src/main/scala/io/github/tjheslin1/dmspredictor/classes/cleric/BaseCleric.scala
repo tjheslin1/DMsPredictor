@@ -13,6 +13,8 @@ abstract class BaseCleric extends Player with SpellCaster {
   val channelDivinityUsed: Boolean
 
   def resetStartOfTurn(): Creature = this
+
+  def scoresCritical(roll: Int): Boolean = roll == 20
 }
 
 object BaseCleric {
