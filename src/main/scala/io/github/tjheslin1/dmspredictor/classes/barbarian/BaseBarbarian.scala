@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian.resetStatus
+import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric.HitDice
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -31,8 +32,7 @@ object BaseBarbarian {
   )
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
-    (D12.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(HitDice) + mod(
-      constitutionScore)))
+    Player.calculateHealth(HitDice, level, constitutionScore)
 
   def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {
     lazy val inRageDamage = if (inRage) weapon.damage + 2 else weapon.damage

@@ -57,8 +57,6 @@ object Fighter {
 
   import BaseFighterAbilities._
 
-  val HitDice = D10
-
   def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
     val health = calculateHealth(LevelOne, 14)
     Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)

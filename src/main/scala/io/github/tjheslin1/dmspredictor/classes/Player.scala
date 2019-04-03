@@ -4,6 +4,8 @@ import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
@@ -19,6 +21,10 @@ trait Player extends Creature {
 }
 
 object Player {
+
+  def calculateHealth[_: RS](hitDice: Dice, level: Level, constitutionScore: Stat): Int =
+    (hitDice.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(hitDice) + mod(
+      constitutionScore)))
 
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>

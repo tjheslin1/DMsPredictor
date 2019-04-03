@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter.HitDice
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Creature.creatureHealthLens
 import io.github.tjheslin1.dmspredictor.model._
@@ -18,8 +19,6 @@ import monocle.macros.GenLens
 case class BaseFighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolean)
 
 object BaseFighterAbilities extends LazyLogging {
-
-  import Fighter._
 
   val secondWindUsedLens: Lens[BaseFighterAbilities, Boolean] =
     GenLens[BaseFighterAbilities](_.secondWindUsed)

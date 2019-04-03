@@ -1,11 +1,9 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.HitDice
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
@@ -20,9 +18,10 @@ trait BaseFighter extends Player with Product with Serializable {
 
 object BaseFighter {
 
+  val HitDice = D10
+
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
-    (HitDice.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(HitDice) + mod(
-      constitutionScore)))
+    Player.calculateHealth(HitDice, level, constitutionScore)
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon,
                                      fightingStyles: List[FighterFightingStyle]): Weapon =
