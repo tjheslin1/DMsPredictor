@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.Show
+import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
@@ -38,6 +39,9 @@ import monocle.macros.{GenLens, Lenses}
                                   rageTurnsLeft: Int = 10,
                                   name: String = NameGenerator.randomName)
     extends BaseBarbarian {
+
+  val savingThrowProficiencies = NonEmptyList.of(Strength, Constitution)
+
   def weapon[_: RS]: Weapon = weaponWithRageDamage(baseWeapon, inRage || inFrenzy)
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)

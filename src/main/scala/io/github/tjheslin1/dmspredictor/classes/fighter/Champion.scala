@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
+import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
@@ -36,6 +37,8 @@ import monocle.macros.{GenLens, Lenses}
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName)
     extends BaseFighter {
+
+  val savingThrowProficiencies = NonEmptyList.of(Strength, Constitution)
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
