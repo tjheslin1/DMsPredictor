@@ -1,5 +1,7 @@
 # DMsPredictor [![Build Status](https://travis-ci.com/tjheslin1/DMsPredictor.svg?branch=master)](https://travis-ci.com/tjheslin1/DMsPredictor)
-Combat encounter results predictor for DMs for Dungeons &amp; Dragons 5th Edition
+Combat results predictor for DMs for Dungeons & Dragons 5th Edition.
+
+https://www.dmspredictor.com
 
 ## Requests:
 
