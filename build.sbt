@@ -12,7 +12,7 @@ lazy val dmspredictor = (project in file("."))
       "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
-      "org.scalatest"               %% "scalatest"                        % "3.0.6"         % Test,
+      "org.scalatest"               %% "scalatest"                        % "3.0.7"         % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.14.0"        % Test
       // format: on
     ),
