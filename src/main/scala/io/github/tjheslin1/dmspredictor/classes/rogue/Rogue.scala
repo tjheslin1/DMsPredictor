@@ -12,32 +12,31 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.macros.Lenses
 
-@Lenses("_") case class Rogue(
-                               level: Level,
-                               health: Int,
-                               maxHealth: Int,
-                               stats: BaseStats,
-                               baseWeapon: Weapon,
-                               armour: Armour = NoArmour,
-                               offHand: Option[Equipment] = None,
-                               proficiencyBonus: ProficiencyBonus = 0,
-                               resistances: List[DamageType] = List.empty,
-                               immunities: List[DamageType] = List.empty,
-                               bonusActionUsed: Boolean = false,
-                               abilities: List[CombatantAbility] = ???,
-                               conditions: List[Condition] = List.empty,
-                               attackStatus: AttackStatus = Regular,
-                               defenseStatus: AttackStatus = Regular,
-                               name: String = NameGenerator.randomName) extends BaseRogue {
+@Lenses("_") case class Rogue(level: Level,
+                              health: Int,
+                              maxHealth: Int,
+                              stats: BaseStats,
+                              baseWeapon: Weapon,
+                              armour: Armour = NoArmour,
+                              offHand: Option[Equipment] = None,
+                              proficiencyBonus: ProficiencyBonus = 0,
+                              resistances: List[DamageType] = List.empty,
+                              immunities: List[DamageType] = List.empty,
+                              bonusActionUsed: Boolean = false,
+                              abilities: List[CombatantAbility] = ???,
+                              conditions: List[Condition] = List.empty,
+                              attackStatus: AttackStatus = Regular,
+                              defenseStatus: AttackStatus = Regular,
+                              name: String = NameGenerator.randomName)
+    extends BaseRogue {
 
   val savingThrowProficiencies: NonEmptyList[Attribute] = NonEmptyList.of(Dexterity, Intelligence)
 
-  def weapon[_ : RS]: Weapon = baseWeapon
+  def weapon[_: RS]: Weapon = baseWeapon
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
-
   // TODO: Uncanny dodge
-  def updateHealth[_ : RS](dmg:  Int, damageType:  DamageType, attackResult:  AttackResult): Creature =
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 }

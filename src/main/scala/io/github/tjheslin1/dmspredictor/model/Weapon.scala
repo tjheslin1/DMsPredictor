@@ -15,6 +15,7 @@ abstract class Weapon extends Equipment {
   val damageType: DamageType
   val hitBonus: Int = 0
   val twoHanded: Boolean
+  val finesse: Boolean
 
   def damage(implicit rollStrategy: RollStrategy): Int
 }
@@ -24,7 +25,8 @@ object Weapon {
   def apply(wpName: String,
             `type`: WeaponType,
             dmgType: DamageType,
-            twoHands: Boolean,
+            isTwoHanded: Boolean,
+            isFinesse: Boolean,
             dmg: => Int,
             wpnHitBonus: Int = 0): Weapon =
     new Weapon {
@@ -32,7 +34,8 @@ object Weapon {
       val weaponType: WeaponType = `type`
       val damageType: DamageType = dmgType
       override val hitBonus: Int = wpnHitBonus
-      val twoHanded              = twoHands
+      val twoHanded              = isTwoHanded
+      val finesse                = isFinesse
 
       def damage(implicit rollStrategy: RollStrategy): Int = dmg
     }
@@ -42,6 +45,7 @@ object Weapon {
            weapon.weaponType,
            weapon.damageType,
            weapon.twoHanded,
+           weapon.finesse,
            weapon.damage,
            weapon.hitBonus + bonus)
 
@@ -49,20 +53,22 @@ object Weapon {
                                wpnType: WeaponType = Melee,
                                weaponDamageType: DamageType,
                                twoHands: Boolean,
+                               finesse: Boolean,
                                dmg: Int): Weapon =
-    Weapon(weaponName, wpnType, weaponDamageType, twoHands, dmg)
+    Weapon(weaponName, wpnType, weaponDamageType, twoHands, finesse, dmg)
 
   case class UnarmedStrike(creature: Creature) extends Weapon {
     override val name: String           = "Unarmed strike"
     override val weaponType: WeaponType = Melee
     override val damageType: DamageType = Bludgeoning
     override val twoHanded: Boolean     = false
+    override val finesse: Boolean       = false
 
     override def damage(implicit rollStrategy: RollStrategy): Int =
       1 + Modifier.mod(creature.stats.strength)
   }
 
   implicit val weaponShow: Show[Weapon] = Show.show { weapon =>
-    s"Weapon: ${weapon.name} (${weapon.damageType}})"
+    s"Weapon: ${weapon.name} (${weapon.damageType})"
   }
 }

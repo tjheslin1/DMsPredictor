@@ -18,7 +18,6 @@ trait BaseBarbarian extends Player with Product with Serializable {
   def resetStartOfTurn(): Creature = resetStatus(this)
 
   def scoresCritical(roll: Int): Boolean = roll == 20
-
 }
 
 object BaseBarbarian {
@@ -43,6 +42,7 @@ object BaseBarbarian {
            weapon.weaponType,
            weapon.damageType,
            weapon.twoHanded,
+           weapon.finesse,
            inRageDamage,
            weapon.hitBonus)
   }

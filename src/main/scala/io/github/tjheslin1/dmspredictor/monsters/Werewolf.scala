@@ -75,10 +75,11 @@ object Werewolf {
     val weaponType = Melee
     val damageType = Slashing
     val twoHanded  = true
+    val finesse    = false
 
     override val hitBonus: Int = 4
 
-    def damage(implicit rollStrategy: RollStrategy): Int = (2 * D4) // +3 from Strength
+    def damage(implicit rollStrategy: RollStrategy): Int = 2 * D4 // +3 from Strength
   }
 
   val strengthLens: Lens[Werewolf, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

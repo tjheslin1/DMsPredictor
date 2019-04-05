@@ -33,7 +33,7 @@ class BaseBarbarianSpec extends UnitSpecBase {
 
   "weapon" should {
     "apply +2 to damage bonus whilst using Rage ability" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, twoHands = false, 10)
+      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, 10)
 
       weaponWithRageDamage(sword, inRage = true).damage shouldBe 12
     }

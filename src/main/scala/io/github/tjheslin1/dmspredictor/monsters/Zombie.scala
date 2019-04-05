@@ -71,6 +71,7 @@ object Zombie {
     val weaponType: WeaponType = Melee
     val damageType: DamageType = Bludgeoning
     val twoHanded: Boolean     = true
+    val finesse                = false
 
     override val hitBonus: Int = 3
 

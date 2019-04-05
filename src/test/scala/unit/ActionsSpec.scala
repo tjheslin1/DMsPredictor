@@ -107,6 +107,7 @@ class ActionsSpec extends UnitSpecBase {
           val fighterCombatant = fighter
             .withProficiencyBonus(4) // + 4
             .withStrength(14) // + 2
+            .withDexterity(10)
             .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
@@ -115,6 +116,30 @@ class ActionsSpec extends UnitSpecBase {
                  testMonster.withArmourClass(19).withCombatIndex(2)) shouldBe Miss
           attack(fighterCombatant,
                  plusTwoWeapon,
+                 testMonster.withArmourClass(18).withCombatIndex(2)) shouldBe Hit
+        }
+      }
+    }
+
+    "use Dexterity, hitBonus and proficiencyBonus to determine an attack result for a player with a finesse weapon" in {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val plusTwoFinesseWeapon = Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = true, 1, wpnHitBonus = 2)
+
+          val fighterCombatant = fighter
+            .withProficiencyBonus(4) // + 4
+            .withDexterity(14) // + 2
+            .withStrength(10)
+            .withBaseWeapon(plusTwoFinesseWeapon) // + 2
+            .withCombatIndex(1)
+
+          attack(fighterCombatant,
+                 plusTwoFinesseWeapon,
+                 testMonster.withArmourClass(19).withCombatIndex(2)) shouldBe Miss
+          attack(fighterCombatant,
+                 plusTwoFinesseWeapon,
                  testMonster.withArmourClass(18).withCombatIndex(2)) shouldBe Hit
         }
       }
@@ -272,6 +297,7 @@ class ActionsSpec extends UnitSpecBase {
                               Melee,
                               Slashing,
                               twoHands = true,
+                              finesse = false,
                               dmg = 100)
 
           val player = fighter.withStrength(10).withBaseWeapon(oneHundredDamageWeapon)
@@ -291,7 +317,7 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val oneDamageWeapon =
-            fixedDamageWeapon("one damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
+            fixedDamageWeapon("one damage weapon", Melee, Slashing, twoHands = true, finesse = false, dmg = 1)
 
           val playerCombatant =
             fighter.withStrength(10).withBaseWeapon(oneDamageWeapon).withCombatIndex(1)
@@ -310,7 +336,7 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val tenDamageWeapon =
-            fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, dmg = 1)
+            fixedDamageWeapon("ten damage weapon", Melee, Slashing, twoHands = true, finesse = false, dmg = 1)
 
           val playerCombatant =
             fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
@@ -348,7 +374,7 @@ class ActionsSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     def weaponWithHitBonus(bonus: Int) =
-      Weapon("", Melee, Slashing, twoHands = true, 1, wpnHitBonus = bonus)
+      Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)
 
     val concentrationSpell: Spell = new ConcentrationConditionSpell() {
       val name: String = "test-concentration-spell"

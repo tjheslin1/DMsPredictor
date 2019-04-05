@@ -9,6 +9,7 @@ case object Shortsword extends Weapon {
   val weaponType = Melee
   val damageType = Slashing
   val twoHanded  = false
+  val finesse    = true
 
   def damage(implicit rollStrategy: RollStrategy): Int = 1 * D6
 

@@ -164,6 +164,7 @@ object VampireAbilities extends LazyLogging {
     val weaponType: WeaponType = Melee
     val damageType: DamageType = Piercing
     val twoHanded: Boolean     = true
+    val finesse                = false
 
     override val hitBonus: Int = 9
 
