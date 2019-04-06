@@ -6,7 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.{calculateArmourClass, calculateHealth}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour, Shield}
-import io.github.tjheslin1.dmspredictor.model.{BaseStats, Dice, LevelOne, LevelTwenty, LevelTwo, RollStrategy}
+import io.github.tjheslin1.dmspredictor.model._
 
 class BaseRogueSpec extends UnitSpecBase {
 

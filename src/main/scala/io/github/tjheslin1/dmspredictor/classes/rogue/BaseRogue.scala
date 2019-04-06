@@ -6,8 +6,12 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import monocle.Lens
 
 trait BaseRogue extends Player with Product with Serializable {
+
+  val stealthProficiency: Boolean
+  val hiddenFrom: List[Combatant]
 
   def resetStartOfTurn(): Creature       = this
   def scoresCritical(roll: Int): Boolean = roll == 20
@@ -30,4 +34,13 @@ object BaseRogue {
 
   def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int =
     armour.armourClass(stats.dexterity)
+
+  val hiddenFromLens: Lens[BaseRogue, List[Combatant]] =
+    Lens[BaseRogue, List[Combatant]](_.hiddenFrom) { enemiesHiddenFrom =>
+      {
+        case r: Rogue => Rogue._hiddenFrom.set(enemiesHiddenFrom)(r)
+
+        case _ => throw new NotImplementedError("Missing a case in hiddenFromLens")
+      }
+    }
 }

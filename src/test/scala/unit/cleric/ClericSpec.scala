@@ -5,7 +5,7 @@ import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardians
-import io.github.tjheslin1.dmspredictor.model.{Bludgeoning, Hit, RollResult, RollStrategy}
+import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 
 class ClericSpec extends UnitSpecBase {

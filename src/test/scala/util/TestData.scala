@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -178,6 +179,12 @@ object TestData {
     def withInFrenzy()                 = _inFrenzy.set(true)(berserker)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(berserker)
+  }
+
+  implicit class RogueOps(val rogue: Rogue) extends AnyVal {
+    import Rogue._
+
+    def withStealthProficiency(proficient: Boolean) = _stealthProficiency.set(proficient)(rogue)
   }
 }
 
@@ -593,6 +600,32 @@ trait TestData extends RandomDataGenerator {
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
+        name = player.name
+      )
+  }
+
+  implicit val arbRogue: Arbitrary[Rogue] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      Rogue(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        List.empty,
+        stealthProficiency = true,
+        conditions = player.conditions,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
         name = player.name
       )
   }
