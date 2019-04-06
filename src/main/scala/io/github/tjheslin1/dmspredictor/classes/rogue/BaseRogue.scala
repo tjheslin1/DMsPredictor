@@ -20,13 +20,14 @@ trait BaseRogue extends Player with Product with Serializable {
 object BaseRogue {
 
   val HitDice = D8
+  val SneakAttackDice = D6
 
-  def sneakAttackDamage[_: RS] = Map(
-    LevelOne   -> 1 * D6,
-    LevelTwo   -> 1 * D6,
-    LevelThree -> 2 * D6,
-    LevelFour  -> 2 * D6,
-    LevelFive  -> 3 * D6
+  val sneakAttackDamage: Map[Level, Int] = Map(
+    LevelOne   -> 1,
+    LevelTwo   -> 1,
+    LevelThree -> 2,
+    LevelFour  -> 2,
+    LevelFive  -> 3
   )
 
   def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =

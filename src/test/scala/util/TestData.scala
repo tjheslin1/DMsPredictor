@@ -185,6 +185,7 @@ object TestData {
     import Rogue._
 
     def withStealthProficiency(proficient: Boolean) = _stealthProficiency.set(proficient)(rogue)
+    def isHiddenFrom(enemies: List[Combatant]) = _hiddenFrom.set(enemies)(rogue)
   }
 }
 
