@@ -42,6 +42,7 @@ object BaseFighter {
                weapon.weaponType,
                weapon.damageType,
                weapon.twoHanded,
+               weapon.finesse,
                rerollingDamage,
                weapon.hitBonus)
       case _ => weapon

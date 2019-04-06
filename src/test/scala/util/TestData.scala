@@ -250,7 +250,8 @@ trait TestData extends RandomDataGenerator {
       weaponName       <- Gen.alphaStr.filter(_.nonEmpty)
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
-      twoHands         <- Gen.oneOf(true, false)
+      isTwoHanded         <- Gen.oneOf(true, false)
+      isFinesse         <- Gen.oneOf(true, false)
       wpnHitBonus      <- Gen.choose(0, 3)
       sides            <- Gen.choose(1, 12)
     } yield
@@ -258,7 +259,8 @@ trait TestData extends RandomDataGenerator {
         val name: String = weaponName
         val weaponType   = wpnType
         val damageType   = weaponDamageType
-        val twoHanded    = twoHands
+        val twoHanded    = isTwoHanded
+        val finesse      = isFinesse
 
         override val hitBonus: Int = wpnHitBonus
 

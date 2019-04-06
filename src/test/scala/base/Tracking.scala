@@ -9,13 +9,13 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 trait Tracking {
 
   var swordUsedCount = 0
-  val trackedSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+  val trackedSword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, {
     swordUsedCount += 1
     1
   })
 
   var offHAndSwordUsedCount = 0
-  val trackedOffHandSword = Weapon("sword", Melee, Slashing, twoHands = false, {
+  val trackedOffHandSword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, {
     offHAndSwordUsedCount += 1
     1
   })

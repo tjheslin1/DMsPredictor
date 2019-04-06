@@ -39,19 +39,19 @@ class BaseFighterSpec extends UnitSpecBase {
 
   "weapon" should {
     "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, twoHands = false, 10)
+      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, 10)
 
       weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 2
     }
 
     "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in new TestContext {
-      val bow = Weapon("bow", Ranged, Piercing, twoHands = true, 10)
+      val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, 10)
 
       weaponWithFightingStyle(bow, List(Archery)).hitBonus shouldBe 2
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, twoHands = true, 10)
+      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, 10)
 
       weaponWithFightingStyle(sword, List.empty).hitBonus shouldBe 0
     }
@@ -59,7 +59,7 @@ class BaseFighterSpec extends UnitSpecBase {
     "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in new TestContext {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         var count = 0
-        val twoHandedWeapon = Weapon("sword", Melee, Slashing, true, {
+        val twoHandedWeapon = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, {
           count += 1
           D6.roll()(_ => Random.nextInt(2) + 1)
         })

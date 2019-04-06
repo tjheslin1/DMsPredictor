@@ -52,8 +52,9 @@ object Actions extends LazyLogging {
     else {
       val totalAttackRoll = attacker.creature match {
         case player: Player =>
-          roll +
-            mod(player.stats.strength) +
+          val modifier = weaponModifier(attackerWeapon, player)
+
+          roll + modifier +
             attackerWeapon.hitBonus +
             player.proficiencyBonus
         case _ =>
@@ -78,12 +79,14 @@ object Actions extends LazyLogging {
                            attackResult: AttackResult,
                            damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) = {
 
+    val modifier = weaponModifier(weapon, attacker.creature)
+
     val dmg = Math.max(
       0,
       attackResult match {
         case CriticalHit =>
-          (weapon.damage + weapon.damage) + mod(attacker.creature.stats.strength) + damageBonus
-        case Hit          => weapon.damage + mod(attacker.creature.stats.strength) + damageBonus
+          (weapon.damage + weapon.damage) + modifier + damageBonus
+        case Hit          => weapon.damage + modifier + damageBonus
         case Miss         => 0
         case CriticalMiss => 0
       }
@@ -150,6 +153,12 @@ object Actions extends LazyLogging {
         val (a, t, o) = combatants
         f(a, t, o)
     }
+
+  private def weaponModifier(weapon: Weapon, creature: Creature) =
+    if (weapon.finesse) {
+      Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
+    } else
+      mod(creature.stats.strength)
 
   private def lossOfConcentration(spellCaster: SpellCaster,
                                   updatedSpellCaster: SpellCaster): Boolean =
