@@ -186,6 +186,8 @@ object TestData {
 
     def withStealthProficiency(proficient: Boolean) = _stealthProficiency.set(proficient)(rogue)
     def isHiddenFrom(enemies: List[Combatant]) = _hiddenFrom.set(enemies)(rogue)
+
+    def withBonusActionUsed() = _bonusActionUsed.set(true)(rogue)
   }
 }
 

@@ -2,8 +2,8 @@ package io.github.tjheslin1.dmspredictor.classes.rogue
 
 import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.calculateArmourClass
+import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogueAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
@@ -47,6 +47,12 @@ import monocle.macros.{GenLens, Lenses}
 }
 
 object Rogue {
+
+  val standardRogueAbilities: List[CombatantAbility] = List(
+    hide(1),
+    sneakAttack(2),
+    twoWeaponFighting(3)
+  )
 
   val strengthLens: Lens[Rogue, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Rogue, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)

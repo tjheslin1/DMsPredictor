@@ -19,7 +19,7 @@ trait BaseRogue extends Player with Product with Serializable {
 
 object BaseRogue {
 
-  val HitDice = D8
+  val HitDice         = D8
   val SneakAttackDice = D6
 
   val sneakAttackDamage: Map[Level, Int] = Map(

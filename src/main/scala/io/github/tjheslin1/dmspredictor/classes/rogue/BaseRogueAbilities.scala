@@ -35,7 +35,6 @@ object BaseRogueAbilities extends LazyLogging {
       nextToFocus(baseRogue.hiddenFrom, focus) match {
         case None => (combatant, others)
         case Some(target) =>
-
           val sneakAttackingRogue =
             (Combatant.creatureLens composeLens Creature.creatureAttackStatusLens)
               .set(Advantage)(combatant)
@@ -61,7 +60,7 @@ object BaseRogueAbilities extends LazyLogging {
       }
     }
 
-    def update: Creature = ???
+    def update: Creature = BaseRogue.hiddenFromLens.set(List.empty[Combatant])(baseRogue)
   }
 
   /**
@@ -95,6 +94,8 @@ object BaseRogueAbilities extends LazyLogging {
           else {
             val updatedEnemiesHiddenFrom = hidingRogue.hiddenFrom ++ List(enemy)
 
+            logger.debug(s"${baseRogue.name} is hidden from ${enemy.creature.name}")
+
             BaseRogue.hiddenFromLens.set(updatedEnemiesHiddenFrom)(baseRogue)
           }
       }
@@ -106,4 +107,63 @@ object BaseRogueAbilities extends LazyLogging {
 
     def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
   }
+
+  def twoWeaponFighting(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+    val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
+
+    val name             = "Two Weapon Fighting"
+    val order            = currentOrder
+    val levelRequirement = LevelOne
+    val abilityAction    = SingleAttack
+
+    def triggerMet(others: List[Combatant]) = true
+
+    def conditionMet: Boolean = combatant.creature.offHand match {
+      case Some(w: Weapon) =>
+        baseRogue.bonusActionUsed == false &&
+          w.twoHanded == false &&
+          combatant.creature.baseWeapon.twoHanded == false
+      case _ => false
+    }
+
+    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+      logger.debug(s"${combatant.creature.name} used two weapon fighting")
+
+      nextToFocus(monsters(others), focus) match {
+        case None => (combatant, others)
+        case Some(attackTarget) =>
+          val mainHandAttack = attack(combatant, combatant.creature.weapon, attackTarget)
+
+          val (updatedAttacker, attackTarget1, updatedOthers) =
+            if (mainHandAttack.result > 0)
+              resolveDamageMainHand(combatant, attackTarget, others, mainHandAttack)
+            else
+              (combatant, attackTarget, others)
+
+          val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
+
+          nextToFocus(updatedEnemies, focus) match {
+            case None => (combatant, updatedOthers)
+            case Some(nextTarget) =>
+              val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
+              val offHandAttack = attack(updatedAttacker, offHandWeapon, nextTarget)
+
+              val (attacker2, attackTarget2, updatedOthers2) =
+                if (offHandAttack.result > 0)
+                  resolveDamage(updatedAttacker,
+                    nextTarget,
+                    updatedOthers,
+                    offHandWeapon,
+                    offHandAttack)
+                else
+                  (updatedAttacker, nextTarget, updatedOthers)
+
+              (attacker2, updatedOthers2.replace(attackTarget2))
+          }
+      }
+    }
+
+    def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
+  }
+
 }
