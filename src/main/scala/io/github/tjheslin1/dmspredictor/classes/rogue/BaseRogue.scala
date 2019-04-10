@@ -10,7 +10,6 @@ import monocle.Lens
 
 trait BaseRogue extends Player with Product with Serializable {
 
-  val stealthProficiency: Boolean
   val hiddenFrom: List[Combatant]
 
   def resetStartOfTurn(): Creature       = this

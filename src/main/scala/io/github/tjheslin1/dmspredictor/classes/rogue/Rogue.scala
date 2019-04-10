@@ -8,8 +8,8 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
@@ -28,7 +28,6 @@ import monocle.macros.{GenLens, Lenses}
                               immunities: List[DamageType] = List.empty,
                               bonusActionUsed: Boolean = false,
                               abilities: List[CombatantAbility] = Rogue.standardRogueAbilities,
-                              stealthProficiency: Boolean = true,
                               hiddenFrom: List[Combatant] = List.empty,
                               conditions: List[Condition] = List.empty,
                               attackStatus: AttackStatus = Regular,

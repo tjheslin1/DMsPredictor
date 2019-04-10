@@ -2,10 +2,8 @@ package unit.spellcasting
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import util.TestData._
 import util.TestMonster
 

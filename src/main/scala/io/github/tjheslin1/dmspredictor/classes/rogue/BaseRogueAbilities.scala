@@ -12,8 +12,8 @@ import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
-import io.github.tjheslin1.dmspredictor.util.ListOps._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BaseRogueAbilities extends LazyLogging {
 
@@ -82,7 +82,8 @@ object BaseRogueAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      val hideDc = if (baseRogue.stealthProficiency) {
+//      val hideDc = if (baseRogue.stealthProficiency) {
+      val hideDc = if (???) {
         D20.roll() + mod(baseRogue.stats.dexterity) + baseRogue.proficiencyBonus
       } else {
         D20.roll() + mod(baseRogue.stats.dexterity)
