@@ -1,14 +1,11 @@
 package io.github.tjheslin1.dmspredictor
 
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
-import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighter, Champion}
-import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
-import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
+import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
+import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
+import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
@@ -17,47 +14,30 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
-  val clericHp = BaseCleric.calculateHealth(LevelFive, 10)
-  val cleric = Cleric(
-    LevelFive,
-    clericHp,
-    clericHp,
-    BaseStats(10, 10, 10, 14, 14, 14),
-    Shortsword,
-    SacredFlame.some,
-    Cleric.clericSpellSlots(LevelFive),
-    Cleric.standardClericSpellList,
-    channelDivinityUsed = true,
-    ChainShirt,
-    None,
-    Cleric.standardClericAbilities,
-    proficiencyBonus = 2,
-    name = "Cleric"
-  )
+  val rogueHp   = BaseRogue.calculateHealth(LevelTwo, 14)
+  val profBonus = ProficiencyBonus.fromLevel(LevelTwo)
 
-  val championHp = BaseFighter.calculateHealth(LevelFive, 14)
-  val champion = Champion(
-    LevelFive,
-    championHp,
-    championHp,
-    BaseStats(14, 14, 14, 10, 10, 10),
-    Greatsword,
-    ChainShirt,
-    name = "Champion"
+  val rogue = Rogue(
+    LevelTwo,
+    rogueHp,
+    rogueHp,
+    BaseStats(10, 14, 14, 10, 14, 10),
+    Shortsword,
+    Skills(perception = profBonus, stealth = profBonus),
+    NoArmour,
+    proficiencyBonus = profBonus,
+    name = "Rogue"
   )
 
   val creatures = List(
-    cleric,
-    champion,
+    rogue,
     Goblin.levelOneGoblin(goblinName = "goblin-1"),
-    Goblin.levelOneGoblin(goblinName = "goblin-2"),
-    Goblin.levelOneGoblin(goblinName = "goblin-3"),
-    Goblin.levelOneGoblin(goblinName = "goblin-4")
+    Goblin.levelOneGoblin(goblinName = "goblin-2")
   )
 
-  val simulation = "Cleric and Champion vs Goblins"
+  val simulation = "Rogue vs Goblins"
   val (losses, wins) =
-    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1000)
+    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
 
   logger.debug(s"$simulation simulation started")
   println(s"$wins Wins and $losses Losses")

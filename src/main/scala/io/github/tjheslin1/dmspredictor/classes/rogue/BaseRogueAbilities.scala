@@ -151,10 +151,10 @@ object BaseRogueAbilities extends LazyLogging {
               val (attacker2, attackTarget2, updatedOthers2) =
                 if (offHandAttack.result > 0)
                   resolveDamage(updatedAttacker,
-                    nextTarget,
-                    updatedOthers,
-                    offHandWeapon,
-                    offHandAttack)
+                                nextTarget,
+                                updatedOthers,
+                                offHandWeapon,
+                                offHandAttack)
                 else
                   (updatedAttacker, nextTarget, updatedOthers)
 

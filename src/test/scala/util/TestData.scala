@@ -299,6 +299,13 @@ trait TestData extends RandomDataGenerator {
     Gen.oneOf(0.25, 0.5, 1, 2, 3, 5)
   }
 
+  implicit val arbSkills: Arbitrary[Skills] = Arbitrary {
+    for {
+      perception <- Gen.choose(0, 6)
+      stealth <- Gen.choose(0, 6)
+    } yield Skills(perception, stealth)
+  }
+
   implicit val arbMonsterType: Arbitrary[CreatureType] = Arbitrary {
     Gen.oneOf(Undead, Humanoid)
   }
@@ -316,6 +323,7 @@ trait TestData extends RandomDataGenerator {
       wpn       <- arbWeapon.arbitrary
       armr      <- arbArmour.arbitrary
       optShield <- arbShield.arbitrary
+      creatureSkills <- arbSkills.arbitrary
     } yield
       new Creature {
         val creatureType: CreatureType = PlayerCharacter
@@ -341,6 +349,8 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus        = Regular
         val defenseStatus: AttackStatus       = Regular
 
+        val skills: Skills = creatureSkills
+
         def scoresCritical(roll: Int): Boolean = roll == 20
 
         def updateHealth[_: RS](dmg: Int,
@@ -352,6 +362,7 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
+
       }
   }
 
@@ -386,6 +397,8 @@ trait TestData extends RandomDataGenerator {
         val conditions: List[Condition]        = creature.conditions
         val attackStatus: AttackStatus         = creature.attackStatus
         val defenseStatus: AttackStatus        = creature.defenseStatus
+
+        val skills: Skills = creature.skills
 
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
@@ -437,6 +450,8 @@ trait TestData extends RandomDataGenerator {
       creature     <- arbCreature.arbitrary
       creatureType <- arbMonsterType.arbitrary
       cr           <- arbChallengeRating.arbitrary
+    perceptionScore <- Gen.choose(0, 8)
+    stealthScore <- Gen.choose(0, 8)
     } yield
       TestMonster(
         creature.health,
@@ -455,6 +470,8 @@ trait TestData extends RandomDataGenerator {
         turnResetTracker = () => _,
         creatureType,
         cr,
+        perceptionScore,
+        stealthScore,
         creature.name
       )
   }
@@ -475,6 +492,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         player.armour,
         player.offHand,
         fightingStyles.toList,
@@ -505,6 +523,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         armour,
         shield,
         fightingStyles.toList,
@@ -533,6 +552,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         BaseBarbarian.rageUsagesPerLevel(level),
+        player.skills,
         player.armour,
         player.offHand,
         player.proficiencyBonus,
@@ -561,6 +581,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         BaseBarbarian.rageUsagesPerLevel(level),
+        player.skills,
         player.armour,
         player.offHand,
         player.proficiencyBonus,
@@ -588,6 +609,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         SacredFlame.some,
         Cleric.clericSpellSlots(level),
         Cleric.standardClericSpellList,
@@ -618,6 +640,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         player.armour,
         player.offHand,
         player.proficiencyBonus,

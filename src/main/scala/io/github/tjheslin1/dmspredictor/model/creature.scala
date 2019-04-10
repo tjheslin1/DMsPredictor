@@ -37,6 +37,7 @@ trait Creature {
   val immunities: List[DamageType]
   val attackStatus: AttackStatus
   val defenseStatus: AttackStatus
+  val skills: Skills
   val name: String
 
   val abilities: List[CombatantAbility]

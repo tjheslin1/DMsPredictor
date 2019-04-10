@@ -28,8 +28,12 @@ import monocle.macros.{GenLens, Lenses}
                                     turnResetTracker: Unit => Unit = () => _,
                                     creatureType: CreatureType = Humanoid,
                                     challengeRating: Double = 1,
+                                    perceptionScore: Int,
+                                    stealthScore: Int,
                                     name: String = NameGenerator.randomName)
     extends Monster {
+
+  val skills: Skills = Skills(perceptionScore, stealthScore)
 
   def weapon[_: RS]: Weapon = baseWeapon
 

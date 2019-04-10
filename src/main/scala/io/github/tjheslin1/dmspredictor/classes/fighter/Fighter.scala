@@ -25,6 +25,7 @@ import monocle.macros.{GenLens, Lenses}
                                 maxHealth: Int,
                                 stats: BaseStats,
                                 baseWeapon: Weapon,
+                                skills: Skills,
                                 armour: Armour = NoArmour,
                                 offHand: Option[Equipment] = None,
                                 fightingStyles: List[FighterFightingStyle] =
@@ -58,8 +59,16 @@ object Fighter {
   import BaseFighterAbilities._
 
   def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
-    val health = calculateHealth(LevelOne, 14)
-    Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
+    val health    = calculateHealth(LevelOne, 14)
+    val profBonus = ProficiencyBonus.fromLevel(LevelOne)
+
+    Fighter(LevelOne,
+            health,
+            health,
+            BaseStats(15, 13, 14, 12, 8, 10),
+            weapon,
+            Skills(perception = profBonus, stealth = 0),
+            armour)
   }
 
   val standardFighterAbilities: List[CombatantAbility] = List(

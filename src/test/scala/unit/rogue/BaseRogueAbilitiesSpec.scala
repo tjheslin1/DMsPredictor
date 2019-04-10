@@ -19,7 +19,8 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
       forAll { (rogue: Rogue, goblin: Goblin) =>
         new TestContext {
           val diceRolls = Iterator(
-            1, 15, // attack roll with advantage
+            1,
+            15, // attack roll with advantage
             1, // sneak damage roll
             1 // weapon damage roll
           )
@@ -109,7 +110,7 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
             .withDexterity(20)
             .withCombatIndex(1)
 
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withHealth(50).withArmourClass(5).withCombatIndex(2)
 
           twoWeaponFighting(Priority)(dualWieldingRogue).useAbility(List(monster), LowestFirst)
 
@@ -166,7 +167,6 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
       twoWeaponFighting(Priority)(dualWieldingRogue).conditionMet shouldBe false
     }
   }
-
 
   abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
