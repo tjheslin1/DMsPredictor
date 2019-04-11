@@ -8,7 +8,6 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
-import util.TestMonster
 
 class BaseRogueAbilitiesSpec extends UnitSpecBase {
 
@@ -82,7 +81,7 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(15)
 
-          val dexterousRogue  = rogue.withProficiencyBonus(2).withDexterity(12).withCombatIndex(1)
+          val dexterousRogue  = rogue.withStealthScore(2).withDexterity(12).withCombatIndex(1)
           val goblinCombatant = goblinOne.withWisdom(10).withCombatIndex(2)
           val unwiseGoblin    = goblinTwo.withWisdom(2).withCombatIndex(3)
           val wiseZombie      = zombie.withWisdom(20).withCombatIndex(4)
@@ -94,77 +93,14 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
           updatedRogue.hiddenFrom shouldBe List(goblinCombatant, unwiseGoblin)
         }
       }
-    }
-  }
 
-  "Two Weapon Fighting" should {
+      "use the rogues stealth skill" in {
 
-    "be used if Player is equipped with two weapons" in {
-      forAll { (rogue: Rogue, testMonster: TestMonster) =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val dualWieldingRogue = rogue
-            .withBaseWeapon(trackedSword)
-            .withOffHand(trackedOffHandSword)
-            .withDexterity(20)
-            .withCombatIndex(1)
-
-          val monster = testMonster.withHealth(50).withArmourClass(5).withCombatIndex(2)
-
-          twoWeaponFighting(Priority)(dualWieldingRogue).useAbility(List(monster), LowestFirst)
-
-          swordUsedCount shouldBe 1
-          offHAndSwordUsedCount shouldBe 1
-        }
       }
-    }
 
-    "set the player's bonus action to be used" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(19)
+      "use the enemies passive perception score" in {
 
-      val updatedRogue =
-        twoWeaponFighting(Priority)(random[Rogue].withCombatIndex(1)).update
-          .asInstanceOf[Rogue]
-
-      updatedRogue.bonusActionUsed shouldBe true
-    }
-
-    "meet the condition if the Player wields two weapons" in new TestContext {
-      implicit override val roll: RollStrategy = Dice.defaultRandomiser
-
-      val dualWieldingRogue = random[Rogue]
-        .withBaseWeapon(trackedSword)
-        .withOffHand(trackedOffHandSword)
-        .withLevel(LevelFour)
-        .withCombatIndex(1)
-
-      twoWeaponFighting(Priority)(dualWieldingRogue).conditionMet shouldBe true
-    }
-
-    "not meet the condition if the Player does not wield two weapons" in new TestContext {
-      implicit override val roll: RollStrategy = Dice.defaultRandomiser
-
-      val rogue = random[Rogue]
-        .withBaseWeapon(trackedSword)
-        .withNoOffHand()
-        .withLevel(LevelFive)
-        .withCombatIndex(1)
-
-      twoWeaponFighting(Priority)(rogue).conditionMet shouldBe false
-    }
-
-    "not meet the condition if the Player has already used their bonus action this turn" in new TestContext {
-      implicit override val roll: RollStrategy = Dice.defaultRandomiser
-
-      val dualWieldingRogue = random[Rogue]
-        .withBonusActionUsed()
-        .withBaseWeapon(trackedSword)
-        .withOffHand(trackedOffHandSword)
-        .withLevel(LevelFour)
-        .withCombatIndex(1)
-
-      twoWeaponFighting(Priority)(dualWieldingRogue).conditionMet shouldBe false
+      }
     }
   }
 

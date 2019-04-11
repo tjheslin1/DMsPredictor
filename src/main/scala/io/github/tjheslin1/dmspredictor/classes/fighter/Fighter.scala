@@ -67,7 +67,7 @@ object Fighter {
             health,
             BaseStats(15, 13, 14, 12, 8, 10),
             weapon,
-            Skills(perception = profBonus, stealth = 0),
+            Skills(perceptionProficiency = profBonus, stealthProficiency = 0),
             armour)
   }
 

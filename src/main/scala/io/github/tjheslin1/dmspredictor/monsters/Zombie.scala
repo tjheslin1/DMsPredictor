@@ -32,7 +32,7 @@ import monocle.macros.{GenLens, Lenses}
     with LazyLogging {
 
   val challengeRating: Double = 0.25
-  val skills                  = Skills(perception = 0, stealth = 0)
+  val skills                  = Skills(perceptionProficiency = 0, stealthProficiency = 0)
 
   val creatureType: CreatureType = Undead
 

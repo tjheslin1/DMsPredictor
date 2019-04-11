@@ -184,7 +184,8 @@ object TestData {
   implicit class RogueOps(val rogue: Rogue) extends AnyVal {
     import Rogue._
 
-    def withStealthProficiency(proficient: Boolean) = _stealthProficiency.set(proficient)(rogue)
+    def withStealthProficiency(proficientInStealth: Boolean) =
+      _skills.set(Skills(rogue.skills.perceptionProficiency, proficientInStealth))(rogue)
     def isHiddenFrom(enemies: List[Combatant]) = _hiddenFrom.set(enemies)(rogue)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(rogue)
@@ -260,8 +261,8 @@ trait TestData extends RandomDataGenerator {
       weaponName       <- Gen.alphaStr.filter(_.nonEmpty)
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
-      isTwoHanded         <- Gen.oneOf(true, false)
-      isFinesse         <- Gen.oneOf(true, false)
+      isTwoHanded      <- Gen.oneOf(true, false)
+      isFinesse        <- Gen.oneOf(true, false)
       wpnHitBonus      <- Gen.choose(0, 3)
       sides            <- Gen.choose(1, 12)
     } yield
@@ -301,8 +302,8 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbSkills: Arbitrary[Skills] = Arbitrary {
     for {
-      perception <- Gen.choose(0, 6)
-      stealth <- Gen.choose(0, 6)
+      perception <- Gen.oneOf(true, false)
+      stealth    <- Gen.oneOf(true, false)
     } yield Skills(perception, stealth)
   }
 
@@ -317,12 +318,12 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
-      n         <- Gen.alphaStr.filter(_.nonEmpty)
-      hp        <- Gen.choose(10, 80)
-      baseStats <- arbBaseStats.arbitrary
-      wpn       <- arbWeapon.arbitrary
-      armr      <- arbArmour.arbitrary
-      optShield <- arbShield.arbitrary
+      n              <- Gen.alphaStr.filter(_.nonEmpty)
+      hp             <- Gen.choose(10, 80)
+      baseStats      <- arbBaseStats.arbitrary
+      wpn            <- arbWeapon.arbitrary
+      armr           <- arbArmour.arbitrary
+      optShield      <- arbShield.arbitrary
       creatureSkills <- arbSkills.arbitrary
     } yield
       new Creature {
@@ -382,7 +383,8 @@ trait TestData extends RandomDataGenerator {
         val stats: BaseStats   = creature.stats
         val baseWeapon: Weapon = creature.baseWeapon
 
-        val savingThrowProficiencies: NonEmptyList[Attribute] = NonEmptyList.fromListUnsafe(savingThrowProfs)
+        val savingThrowProficiencies: NonEmptyList[Attribute] =
+          NonEmptyList.fromListUnsafe(savingThrowProfs)
 
         def weapon[_: RS]: Weapon = creature.weapon
 
@@ -447,11 +449,11 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
-      creature     <- arbCreature.arbitrary
-      creatureType <- arbMonsterType.arbitrary
-      cr           <- arbChallengeRating.arbitrary
-    perceptionScore <- Gen.choose(0, 8)
-    stealthScore <- Gen.choose(0, 8)
+      creature        <- arbCreature.arbitrary
+      creatureType    <- arbMonsterType.arbitrary
+      cr              <- arbChallengeRating.arbitrary
+      perceptionScore <- Gen.choose(0, 8)
+      stealthScore    <- Gen.choose(0, 8)
     } yield
       TestMonster(
         creature.health,
@@ -647,8 +649,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
-        List.empty,
-        stealthProficiency = true,
+        Rogue.standardRogueAbilities,
         conditions = player.conditions,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,

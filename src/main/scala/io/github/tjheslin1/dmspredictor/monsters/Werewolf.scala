@@ -32,7 +32,7 @@ import monocle.macros.{GenLens, Lenses}
     extends Monster {
 
   val challengeRating: Double = 3.0
-  val skills                  = Skills(perception = 4, stealth = 3)
+  val skills                  = Skills(perceptionProficiency = 4, stealthProficiency = 3)
 
   val creatureType: CreatureType = Humanoid
 

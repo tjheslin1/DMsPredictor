@@ -1,3 +1,3 @@
 package io.github.tjheslin1.dmspredictor.model
 
-case class Skills(perception: Int, stealth: Int)
+case class Skills(perceptionProficiency: Boolean, stealthProficiency: Boolean)

@@ -50,6 +50,8 @@ trait Creature {
   def resetStartOfTurn(): Creature
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature
+
+  val passivePerception = 10 + Modifier.mod(stats.wisdom) + skills.perceptionProficiency
 }
 
 object Creature extends LazyLogging {

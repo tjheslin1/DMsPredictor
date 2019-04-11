@@ -50,8 +50,7 @@ object Rogue {
 
   val standardRogueAbilities: List[CombatantAbility] = List(
     hide(1),
-    sneakAttack(2),
-    twoWeaponFighting(3)
+    sneakAttack(2)
   )
 
   val strengthLens: Lens[Rogue, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

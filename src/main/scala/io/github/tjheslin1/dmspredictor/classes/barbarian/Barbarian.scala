@@ -72,7 +72,7 @@ object Barbarian {
               BaseStats(15, 13, 14, 12, 8, 10),
               weapon,
               rageUsages = 3,
-              Skills(perception = profBonus, stealth = 0),
+              Skills(perceptionProficiency = profBonus, stealthProficiency = 0),
               NoArmour,
               none[Equipment],
               profBonus)

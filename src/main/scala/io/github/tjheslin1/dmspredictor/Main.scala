@@ -23,7 +23,7 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     rogueHp,
     BaseStats(10, 14, 14, 10, 14, 10),
     Shortsword,
-    Skills(perception = profBonus, stealth = profBonus),
+    Skills(perceptionProficiency = profBonus, stealthProficiency = profBonus),
     NoArmour,
     proficiencyBonus = profBonus,
     name = "Rogue"
