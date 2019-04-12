@@ -82,15 +82,11 @@ object BaseRogueAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      val hideDc = if (baseRogue.skills.stealthProficiency) {
-        D20.roll() + mod(baseRogue.stats.dexterity) + baseRogue.proficiencyBonus
-      } else {
-        D20.roll() + mod(baseRogue.stats.dexterity)
-      }
+      val hideDc = D20.roll() + baseRogue.skills.stealth
 
       val updatedRogue = monsters(others).foldLeft(baseRogue) {
         case (hidingRogue, enemy) =>
-          if (savingThrowPassed(hideDc, Wisdom, enemy.creature)) hidingRogue
+          if (enemy.creature.passivePerception >= hideDc) hidingRogue
           else {
             val updatedEnemiesHiddenFrom = hidingRogue.hiddenFrom ++ List(enemy)
 

@@ -1,7 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import cats.data.NonEmptyList
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._

@@ -2,6 +2,7 @@ package unit.rogue
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogueAbilities._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.model._
@@ -67,6 +68,9 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
     "use the rogues bonus action" in {
       new TestContext {
         implicit override val roll: RollStrategy = _ => RollResult(19)
+
+        random[Creature]
+        random[Player]
 
         val rogue = random[Rogue].withLevel(LevelTwo).withCombatIndex(1)
 

@@ -184,8 +184,8 @@ object TestData {
   implicit class RogueOps(val rogue: Rogue) extends AnyVal {
     import Rogue._
 
-    def withStealthProficiency(proficientInStealth: Boolean) =
-      _skills.set(Skills(rogue.skills.perceptionProficiency, proficientInStealth))(rogue)
+    def withStealthScore(score: Int) =
+      _skills.set(Skills(rogue.skills.perception, score))(rogue)
     def isHiddenFrom(enemies: List[Combatant]) = _hiddenFrom.set(enemies)(rogue)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(rogue)
@@ -302,8 +302,8 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbSkills: Arbitrary[Skills] = Arbitrary {
     for {
-      perception <- Gen.oneOf(true, false)
-      stealth    <- Gen.oneOf(true, false)
+      perception <- Gen.choose(0, 6)
+      stealth    <- Gen.choose(0, 6)
     } yield Skills(perception, stealth)
   }
 
@@ -339,7 +339,7 @@ trait TestData extends RandomDataGenerator {
 
         val offHand: Option[Equipment] = optShield
 
-        val armourClass: Int = armour.armourClass(stats.dexterity)
+        val armourClass: Int = armour.armourClass(baseStats.dexterity)
 
         val resistances: List[DamageType]     = List.empty
         val immunities: List[DamageType]      = List.empty
@@ -363,7 +363,6 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
-
       }
   }
 
@@ -410,7 +409,8 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
-        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
+        def resetStartOfTurn(): Creature =  throw new NotImplementedError(
+          "Random generation should delegate to specific resetStartOfTurn()")
       }
   }
 

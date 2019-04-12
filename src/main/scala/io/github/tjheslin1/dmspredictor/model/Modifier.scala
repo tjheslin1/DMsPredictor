@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 object Modifier {
 
   def mod(stat: Stat): Int = modifier(stat.value)
+  def mod(score: Int): Int = modifier(score)
 
   def attributeModifier(creature: Creature, attribute: Attribute): Int = attribute match {
     case Strength     => mod(creature.stats.strength)
@@ -16,7 +17,7 @@ object Modifier {
   }
 
   // format: off
-  private val modifier = Map(
+  val modifier = Map(
     1  -> -5,   10 -> 0,
     2  -> -4,   11 -> 0,
     3  -> -4,   12 -> 1,

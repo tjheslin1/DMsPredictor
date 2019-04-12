@@ -12,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
@@ -72,7 +73,7 @@ object Barbarian {
               BaseStats(15, 13, 14, 12, 8, 10),
               weapon,
               rageUsages = 3,
-              Skills(perceptionProficiency = profBonus, stealthProficiency = 0),
+              Skills(perception = mod(12) + profBonus, stealth = mod(13)),
               NoArmour,
               none[Equipment],
               profBonus)

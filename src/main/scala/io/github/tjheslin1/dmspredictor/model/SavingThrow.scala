@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.model
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
+import io.github.tjheslin1.dmspredictor.monsters.Monster
 
 object SavingThrow {
 

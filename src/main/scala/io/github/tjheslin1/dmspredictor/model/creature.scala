@@ -51,7 +51,7 @@ trait Creature {
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature
 
-  val passivePerception = 10 + Modifier.mod(stats.wisdom) + skills.perceptionProficiency
+  val passivePerception = 10 + skills.perception
 }
 
 object Creature extends LazyLogging {
