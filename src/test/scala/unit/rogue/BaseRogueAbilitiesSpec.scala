@@ -15,14 +15,14 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
   val Priority = 1
 
   "sneakAttack" should {
+
     "apply sneak attack damage" in {
       forAll { (rogue: Rogue, goblin: Goblin) =>
         new TestContext {
           val diceRolls = Iterator(
-            1,
-            15, // attack roll with advantage
-            1, // sneak damage roll
-            1 // weapon damage roll
+            1,  // first attack roll with advantage
+            15, // second attack roll with advantage
+            1,  // sneak damage roll
           )
 
           implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
@@ -42,6 +42,37 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
             sneakAttack(Priority)(sneakingRogue).useAbility(List(healthyGoblin), LowestFirst)
 
           updatedGoblin.health shouldBe 47
+        }
+      }
+    }
+
+    "deal double damage on crit" in {
+      forAll { (rogue: Rogue, goblin: Goblin) =>
+        new TestContext {
+          val diceRolls = Iterator(
+            1,  // first attack roll with advantage
+            20, // second attack roll with advantage
+            2,  // first sneak damage roll
+            3  // second sneak damage roll
+          )
+
+          implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
+
+          val healthyGoblin = goblin.withHealth(50).withMaxHealth(50).withCombatIndex(2)
+
+          val sneakingRogue = rogue
+            .isHiddenFrom(List(healthyGoblin))
+            .withDexterity(12)
+            .withStrength(10)
+            .withBaseWeapon(
+              Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 2))
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
+            sneakAttack(Priority)(sneakingRogue).useAbility(List(healthyGoblin), LowestFirst)
+
+          updatedGoblin.health shouldBe 40
         }
       }
     }
@@ -96,11 +127,7 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
-
-      "use the rogues stealth skill" in {}
-
-      "use the enemies passive perception score" in {}
-    }
+  }
 
   abstract private class TestContext {
     implicit val roll: RollStrategy

@@ -38,15 +38,23 @@ object BaseRogueAbilities extends LazyLogging {
 
           attack(sneakAttackingRogue, sneakAttackingRogue.creature.weapon, target) match {
             case CriticalMiss | Miss => (combatant, others)
-            case attackResult @ (CriticalHit | Hit) =>
-              val sneakAttackDmg = sneakAttackDamage(baseRogue.level) * BaseRogue.SneakAttackDice
+            case attackHitResult =>
+
+              val sneakAttackDmg = {
+                def damage: Int = sneakAttackDamage(baseRogue.level) * BaseRogue.SneakAttackDice
+
+                attackHitResult match {
+                  case CriticalHit => damage + damage
+                  case Hit => damage
+                }
+              }
 
               val (updatedRogue, updatedTarget, updatedOthers) =
                 resolveDamage(sneakAttackingRogue,
                               target,
                               others,
                               sneakAttackingRogue.creature.weapon,
-                              attackResult,
+                  attackHitResult,
                               sneakAttackDmg)
 
               logger.debug(s"${baseRogue.name} dealt $sneakAttackDmg sneak attack damage")
