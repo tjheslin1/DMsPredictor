@@ -1,12 +1,9 @@
 package io.github.tjheslin1.dmspredictor.classes.rogue
 
 import com.typesafe.scalalogging.LazyLogging
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.sneakAttackDamage
 import io.github.tjheslin1.dmspredictor.model.Actions._
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
-import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus

@@ -1,8 +1,8 @@
 package base
 
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-trait PropertyChecksBase extends PropertyChecks {
+trait PropertyChecksBase extends ScalaCheckPropertyChecks {
 
   implicit val propertyCheckConf = PropertyCheckConfiguration(minSuccessful = 1000, maxDiscardedFactor = 100.0)
 }

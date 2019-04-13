@@ -67,16 +67,18 @@ object Barbarian {
     val health    = calculateHealth(LevelOne, 14)
     val profBonus = ProficiencyBonus.fromLevel(LevelOne)
 
-    Barbarian(LevelOne,
-              health,
-              health,
-              BaseStats(15, 13, 14, 12, 8, 10),
-              weapon,
-              rageUsages = 3,
-              Skills(perception = mod(12) + profBonus, stealth = mod(13)),
-              NoArmour,
-              none[Equipment],
-              profBonus)
+    Barbarian(
+      LevelOne,
+      health,
+      health,
+      BaseStats(15, 13, 14, 12, 8, 10),
+      weapon,
+      rageUsages = 3,
+      Skills(perception = mod(12) + profBonus, stealth = mod(13)),
+      NoArmour,
+      none[Equipment],
+      profBonus
+    )
   }
 
   implicit def barbarianShow[_: RS]: Show[Barbarian] = Show.show { barbarian =>

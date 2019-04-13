@@ -115,6 +115,9 @@ object TestData {
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
+
+    def withSkills(perception: Int, stealth: Int) =
+      creatureSkillsOptional.set(Skills(perception, stealth))(creature)
   }
 
   implicit class PlayerOps(val player: Player) extends AnyVal {
@@ -194,6 +197,10 @@ object TestData {
 
 trait TestData extends RandomDataGenerator {
 
+  val nonEmptyString: Gen[String] = Gen.chooseNum(5, 15).flatMap { n =>
+    Gen.buildableOfN[String, Char](n, Gen.alphaChar)
+  }
+
   implicit val arbProficiencyBonus: Arbitrary[ProficiencyBonus] =
     Arbitrary {
       Gen
@@ -258,7 +265,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName       <- Gen.alphaStr.filter(_.nonEmpty)
+      weaponName       <- nonEmptyString
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
       isTwoHanded      <- Gen.oneOf(true, false)
@@ -282,7 +289,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbArmour: Arbitrary[Armour] = Arbitrary {
     for {
-      armourName <- Gen.alphaStr
+      armourName <- nonEmptyString
       baseArmour <- Gen.choose(5, 14)
     } yield
       new Armour {
@@ -318,7 +325,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
-      n              <- Gen.alphaStr.filter(_.nonEmpty)
+      n              <- nonEmptyString
       hp             <- Gen.choose(10, 80)
       baseStats      <- arbBaseStats.arbitrary
       wpn            <- arbWeapon.arbitrary
@@ -409,8 +416,9 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
-        def resetStartOfTurn(): Creature =  throw new NotImplementedError(
-          "Random generation should delegate to specific resetStartOfTurn()")
+        def resetStartOfTurn(): Creature =
+          throw new NotImplementedError(
+            "Random generation should delegate to specific resetStartOfTurn()")
       }
   }
 

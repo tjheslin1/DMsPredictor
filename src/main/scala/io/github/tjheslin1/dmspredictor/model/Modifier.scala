@@ -17,7 +17,7 @@ object Modifier {
   }
 
   // format: off
-  val modifier = Map(
+  private val modifier = Map(
     1  -> -5,   10 -> 0,
     2  -> -4,   11 -> 0,
     3  -> -4,   12 -> 1,
