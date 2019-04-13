@@ -35,7 +35,7 @@ object BaseBarbarianAbilities extends LazyLogging {
         Combatant.creatureLens.set(updateRagingBarbarian(barbarian))(combatant)
 
       val enemies = monsters(others)
-      val target  = nextToFocus(enemies, focus)
+      val target  = nextToFocus(combatant, enemies, focus)
 
       target match {
         case None => (ragingBarbarianCombatant, others)
@@ -93,7 +93,7 @@ object BaseBarbarianAbilities extends LazyLogging {
       val recklessBarbarianCombatant =
         Combatant.creatureLens.set(updateRecklessBarbarian(barbarian))(combatant)
 
-      val target = nextToFocus(monsters(others), focus)
+      val target = nextToFocus(combatant, monsters(others), focus)
 
       target match {
         case None => (recklessBarbarianCombatant, others)

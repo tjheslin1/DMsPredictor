@@ -35,7 +35,7 @@ object VampireAbilities extends LazyLogging {
       val grappledEnemies =
         players(others).filter(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
-      nextToFocus(grappledEnemies, focus) match {
+      nextToFocus(combatant, grappledEnemies, focus) match {
         case None => (combatant, others)
         case Some(grappledTarget) =>
           val attackResult = attack(combatant, Bite, grappledTarget)
@@ -90,7 +90,7 @@ object VampireAbilities extends LazyLogging {
 
       val enemies = players(others)
 
-      nextToFocus(enemies, focus) match {
+      nextToFocus(combatant, enemies, focus) match {
         case None => (combatant, others)
         case Some(target) =>
           attack(combatant, UnarmedStrike, target) match {
@@ -140,7 +140,7 @@ object VampireAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"Vampire used $name")
 
-      nextToFocus(players(others), focus) match {
+      nextToFocus(combatant, players(others), focus) match {
         case None => (combatant, others)
         case Some(target) =>
           if (savingThrowPassed(CharmDC, Wisdom, target.creature))

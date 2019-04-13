@@ -40,7 +40,7 @@ object CoreAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      nextToFocus(monsters(others), focus) match {
+      nextToFocus(combatant, monsters(others), focus) match {
         case None => (combatant, others)
         case Some(target) =>
           nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
@@ -58,7 +58,7 @@ object CoreAbilities extends LazyLogging {
                                             order,
                                             one(SingleAttack))
                 .fold {
-                  nextToFocus(monsters(updatedOthers), focus).fold {
+                  nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
                     (updatedCombatant, updatedOthers)
                   } { focusTarget =>
                     val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
@@ -114,7 +114,7 @@ object CoreAbilities extends LazyLogging {
               }
           }
 
-        val target = nextToFocus(monsters(others), focus)
+        val target = nextToFocus(combatant, monsters(others), focus)
 
         (target, optSpell) match {
           case (_, None) => (combatant, others)
@@ -160,7 +160,7 @@ object CoreAbilities extends LazyLogging {
             spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)
         }
 
-        val target = nextToFocus(players(others), PlayerHealing)
+        val target = nextToFocus(combatant, players(others), PlayerHealing)
 
         val (updatedCombatant, optHealedAlly) = (target, optSpell) match {
           case (_, None) => (combatant, None)
