@@ -77,6 +77,22 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "be used if the rogue has advantage on its attack even if not hidden" in {
+      forAll { rogue: Rogue =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val visibleRogue = rogue
+              .isHiddenFrom(List.empty[Combatant])
+            .withAttackStatus(Advantage)
+            .withBaseWeapon(Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 2))
+            .withCombatIndex(1)
+
+          sneakAttack(Priority)(visibleRogue).conditionMet shouldBe true
+        }
+      }
+    }
+
     "reveal the rogue" in {
       forAll { (rogue: Rogue, goblin: Goblin) =>
         new TestContext {
@@ -114,16 +130,35 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterousRogue = rogue.withStealthScore(2).withCombatIndex(1)
+          val stealthyRogue = rogue.withStealthScore(2).withCombatIndex(1)
           val goblinCombatant = goblinOne.withCombatIndex(2)
           val unwiseGoblin = goblinTwo.withCombatIndex(3)
           val perceptiveVampire = vampire.withCombatIndex(4)
 
           val (Combatant(_, updatedRogue: Rogue), _) =
-            hide(Priority)(dexterousRogue)
+            hide(Priority)(stealthyRogue)
               .useAbility(List(goblinCombatant, unwiseGoblin, perceptiveVampire), LowestFirst)
 
           updatedRogue.hiddenFrom shouldBe List(goblinCombatant, unwiseGoblin)
+        }
+      }
+    }
+
+    "make the rogue unseen to unconscious creatures without fail" in {
+      forAll { (rogue: Rogue, goblin: Goblin, vampireOne: Vampire, vampireTwo: Vampire) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val stealthyRogue = rogue.withStealthScore(4).withCombatIndex(1)
+          val consciousGoblin = goblin.withCombatIndex(2)
+          val consciousVampire = vampireOne.withCombatIndex(3)
+          val unconsciousVampire = vampireTwo.withHealth(0).withCombatIndex(4)
+
+          val (Combatant(_, updatedRogue: Rogue), _) =
+            hide(Priority)(stealthyRogue)
+              .useAbility(List(consciousGoblin, consciousVampire, unconsciousVampire), LowestFirst)
+
+          updatedRogue.hiddenFrom shouldBe List(consciousGoblin, unconsciousVampire)
         }
       }
     }

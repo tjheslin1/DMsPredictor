@@ -88,7 +88,7 @@ object BaseRogueAbilities extends LazyLogging {
 
       val updatedRogue = monsters(others).foldLeft(baseRogue) {
         case (hidingRogue, enemy) =>
-          if (enemy.creature.passivePerception >= hideDc) hidingRogue
+          if (enemy.creature.isConscious && enemy.creature.passivePerception >= hideDc) hidingRogue
           else {
             val updatedEnemiesHiddenFrom = hidingRogue.hiddenFrom ++ List(enemy)
 
