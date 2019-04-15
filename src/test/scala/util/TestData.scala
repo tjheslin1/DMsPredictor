@@ -460,8 +460,7 @@ trait TestData extends RandomDataGenerator {
       creature        <- arbCreature.arbitrary
       creatureType    <- arbMonsterType.arbitrary
       cr              <- arbChallengeRating.arbitrary
-      perceptionScore <- Gen.choose(0, 8)
-      stealthScore    <- Gen.choose(0, 8)
+      arbSkills       <- arbSkills.arbitrary
     } yield
       TestMonster(
         creature.health,
@@ -480,8 +479,8 @@ trait TestData extends RandomDataGenerator {
         turnResetTracker = () => _,
         creatureType,
         cr,
-        perceptionScore,
-        stealthScore,
+        arbSkills.perception,
+        arbSkills.stealth,
         creature.name
       )
   }
