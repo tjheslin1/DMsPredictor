@@ -9,7 +9,7 @@ trait Monster extends Creature {
 
   val challengeRating: Double
 
-  val savingThrowScores: Map[Attribute, Int]
+  val savingThrowsScores: Map[Attribute, Int]
 }
 
 object Monster {
