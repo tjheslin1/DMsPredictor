@@ -2,12 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes
 
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{
-  Spell,
-  SpellEffect,
-  SpellLevel,
-  SpellSlots
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import monocle.Lens
 
 trait SpellCaster extends Creature {

@@ -23,6 +23,7 @@ import monocle.macros.{GenLens, Lenses}
     maxHealth: Int,
     stats: BaseStats,
     baseWeapon: Weapon,
+    skills: Skills,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[FighterFightingStyle] = List.empty[FighterFightingStyle],

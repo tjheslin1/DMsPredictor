@@ -12,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
@@ -25,6 +26,7 @@ import monocle.macros.{GenLens, Lenses}
                                   stats: BaseStats,
                                   baseWeapon: Weapon,
                                   rageUsages: Int,
+                                  skills: Skills,
                                   armour: Armour = NoArmour,
                                   offHand: Option[Equipment] = None,
                                   proficiencyBonus: ProficiencyBonus = 0,
@@ -62,16 +64,21 @@ object Barbarian {
 
   def levelOneBarbarian[_: RS](weapon: Weapon = Greatsword,
                                armour: Armour = NoArmour): Barbarian = {
-    val health = calculateHealth(LevelOne, 14)
-    Barbarian(LevelOne,
-              health,
-              health,
-              BaseStats(15, 13, 14, 12, 8, 10),
-              weapon,
-              rageUsages = 3,
-              NoArmour,
-              none[Equipment],
-              2)
+    val health    = calculateHealth(LevelOne, 14)
+    val profBonus = ProficiencyBonus.fromLevel(LevelOne)
+
+    Barbarian(
+      LevelOne,
+      health,
+      health,
+      BaseStats(15, 13, 14, 12, 8, 10),
+      weapon,
+      rageUsages = 3,
+      Skills(perception = mod(12) + profBonus, stealth = mod(13)),
+      NoArmour,
+      none[Equipment],
+      profBonus
+    )
   }
 
   implicit def barbarianShow[_: RS]: Show[Barbarian] = Show.show { barbarian =>

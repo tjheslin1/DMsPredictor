@@ -84,7 +84,7 @@ object BaseFighterAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
-      nextToFocus(monsters(others), focus) match {
+      nextToFocus(combatant, monsters(others), focus) match {
         case None => (combatant, others)
         case Some(attackTarget) =>
           val mainHandAttack = attack(combatant, combatant.creature.weapon, attackTarget)
@@ -97,7 +97,7 @@ object BaseFighterAbilities extends LazyLogging {
 
           val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
 
-          nextToFocus(updatedEnemies, focus) match {
+          nextToFocus(combatant, updatedEnemies, focus) match {
             case None => (combatant, updatedOthers)
             case Some(nextTarget) =>
               val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
@@ -143,12 +143,12 @@ object BaseFighterAbilities extends LazyLogging {
 
             nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
               .fold {
-                nextToFocus(updatedOthers, focus).fold((updatedAttacker, updatedOthers)) {
-                  nextTarget =>
-                    val (updatedAttacker2, updatedTarget2, updatedOthers2) =
-                      attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+                nextToFocus(updatedAttacker, updatedOthers, focus).fold(
+                  (updatedAttacker, updatedOthers)) { nextTarget =>
+                  val (updatedAttacker2, updatedTarget2, updatedOthers2) =
+                    attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
 
-                    (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
+                  (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
                 }
               } { nextAbility2 =>
                 useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)

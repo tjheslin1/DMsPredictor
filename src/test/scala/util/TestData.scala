@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -114,6 +115,9 @@ object TestData {
 
     def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
     def withCombatIndex(index: Int) = Combatant(index, creature)
+
+    def withSkills(perception: Int, stealth: Int) =
+      creatureSkillsOptional.set(Skills(perception, stealth))(creature)
   }
 
   implicit class PlayerOps(val player: Player) extends AnyVal {
@@ -179,9 +183,23 @@ object TestData {
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(berserker)
   }
+
+  implicit class RogueOps(val rogue: Rogue) extends AnyVal {
+    import Rogue._
+
+    def withStealthScore(score: Int) =
+      _skills.set(Skills(rogue.skills.perception, score))(rogue)
+    def isHiddenFrom(enemies: List[Combatant]) = _hiddenFrom.set(enemies)(rogue)
+
+    def withBonusActionUsed() = _bonusActionUsed.set(true)(rogue)
+  }
 }
 
 trait TestData extends RandomDataGenerator {
+
+  val nonEmptyString: Gen[String] = Gen.chooseNum(5, 15).flatMap { n =>
+    Gen.buildableOfN[String, Char](n, Gen.alphaChar)
+  }
 
   implicit val arbProficiencyBonus: Arbitrary[ProficiencyBonus] =
     Arbitrary {
@@ -247,11 +265,11 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbWeapon: Arbitrary[Weapon] = Arbitrary {
     for {
-      weaponName       <- Gen.alphaStr.filter(_.nonEmpty)
+      weaponName       <- nonEmptyString
       wpnType          <- arbWeaponType.arbitrary
       weaponDamageType <- arbDamageType.arbitrary
-      isTwoHanded         <- Gen.oneOf(true, false)
-      isFinesse         <- Gen.oneOf(true, false)
+      isTwoHanded      <- Gen.oneOf(true, false)
+      isFinesse        <- Gen.oneOf(true, false)
       wpnHitBonus      <- Gen.choose(0, 3)
       sides            <- Gen.choose(1, 12)
     } yield
@@ -271,7 +289,7 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbArmour: Arbitrary[Armour] = Arbitrary {
     for {
-      armourName <- Gen.alphaStr
+      armourName <- nonEmptyString
       baseArmour <- Gen.choose(5, 14)
     } yield
       new Armour {
@@ -289,6 +307,13 @@ trait TestData extends RandomDataGenerator {
     Gen.oneOf(0.25, 0.5, 1, 2, 3, 5)
   }
 
+  implicit val arbSkills: Arbitrary[Skills] = Arbitrary {
+    for {
+      perception <- Gen.choose(0, 6)
+      stealth    <- Gen.choose(0, 6)
+    } yield Skills(perception, stealth)
+  }
+
   implicit val arbMonsterType: Arbitrary[CreatureType] = Arbitrary {
     Gen.oneOf(Undead, Humanoid)
   }
@@ -300,12 +325,13 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbCreature: Arbitrary[Creature] = Arbitrary {
     for {
-      n         <- Gen.alphaStr.filter(_.nonEmpty)
-      hp        <- Gen.choose(10, 80)
-      baseStats <- arbBaseStats.arbitrary
-      wpn       <- arbWeapon.arbitrary
-      armr      <- arbArmour.arbitrary
-      optShield <- arbShield.arbitrary
+      n              <- nonEmptyString
+      hp             <- Gen.choose(10, 80)
+      baseStats      <- arbBaseStats.arbitrary
+      wpn            <- arbWeapon.arbitrary
+      armr           <- arbArmour.arbitrary
+      optShield      <- arbShield.arbitrary
+      creatureSkills <- arbSkills.arbitrary
     } yield
       new Creature {
         val creatureType: CreatureType = PlayerCharacter
@@ -320,7 +346,7 @@ trait TestData extends RandomDataGenerator {
 
         val offHand: Option[Equipment] = optShield
 
-        val armourClass: Int = armour.armourClass(stats.dexterity)
+        val armourClass: Int = armour.armourClass(baseStats.dexterity)
 
         val resistances: List[DamageType]     = List.empty
         val immunities: List[DamageType]      = List.empty
@@ -330,6 +356,8 @@ trait TestData extends RandomDataGenerator {
         val conditions: List[Condition]       = List.empty
         val attackStatus: AttackStatus        = Regular
         val defenseStatus: AttackStatus       = Regular
+
+        val skills: Skills = creatureSkills
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
@@ -361,7 +389,8 @@ trait TestData extends RandomDataGenerator {
         val stats: BaseStats   = creature.stats
         val baseWeapon: Weapon = creature.baseWeapon
 
-        val savingThrowProficiencies: NonEmptyList[Attribute] = NonEmptyList.fromListUnsafe(savingThrowProfs)
+        val savingThrowProficiencies: NonEmptyList[Attribute] =
+          NonEmptyList.fromListUnsafe(savingThrowProfs)
 
         def weapon[_: RS]: Weapon = creature.weapon
 
@@ -377,6 +406,8 @@ trait TestData extends RandomDataGenerator {
         val attackStatus: AttackStatus         = creature.attackStatus
         val defenseStatus: AttackStatus        = creature.defenseStatus
 
+        val skills: Skills = creature.skills
+
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
                                 attackResult: AttackResult): Creature =
@@ -385,7 +416,9 @@ trait TestData extends RandomDataGenerator {
 
         def scoresCritical(roll: Int): Boolean = creature.scoresCritical(roll)
 
-        def resetStartOfTurn(): Creature = creature.resetStartOfTurn()
+        def resetStartOfTurn(): Creature =
+          throw new NotImplementedError(
+            "Random generation should delegate to specific resetStartOfTurn()")
       }
   }
 
@@ -424,9 +457,10 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
-      creature     <- arbCreature.arbitrary
-      creatureType <- arbMonsterType.arbitrary
-      cr           <- arbChallengeRating.arbitrary
+      creature        <- arbCreature.arbitrary
+      creatureType    <- arbMonsterType.arbitrary
+      cr              <- arbChallengeRating.arbitrary
+      arbSkills       <- arbSkills.arbitrary
     } yield
       TestMonster(
         creature.health,
@@ -445,6 +479,8 @@ trait TestData extends RandomDataGenerator {
         turnResetTracker = () => _,
         creatureType,
         cr,
+        arbSkills.perception,
+        arbSkills.stealth,
         creature.name
       )
   }
@@ -465,6 +501,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         player.armour,
         player.offHand,
         fightingStyles.toList,
@@ -495,6 +532,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         armour,
         shield,
         fightingStyles.toList,
@@ -523,6 +561,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         BaseBarbarian.rageUsagesPerLevel(level),
+        player.skills,
         player.armour,
         player.offHand,
         player.proficiencyBonus,
@@ -551,6 +590,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         BaseBarbarian.rageUsagesPerLevel(level),
+        player.skills,
         player.armour,
         player.offHand,
         player.proficiencyBonus,
@@ -578,6 +618,7 @@ trait TestData extends RandomDataGenerator {
         player.health,
         player.stats,
         player.baseWeapon,
+        player.skills,
         SacredFlame.some,
         Cleric.clericSpellSlots(level),
         Cleric.standardClericSpellList,
@@ -593,6 +634,32 @@ trait TestData extends RandomDataGenerator {
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
+        name = player.name
+      )
+  }
+
+  implicit val arbRogue: Arbitrary[Rogue] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield
+      Rogue(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.skills,
+        player.armour,
+        player.offHand,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        Rogue.standardRogueAbilities,
+        conditions = player.conditions,
+        attackStatus = player.attackStatus,
+        defenseStatus = player.defenseStatus,
         name = player.name
       )
   }

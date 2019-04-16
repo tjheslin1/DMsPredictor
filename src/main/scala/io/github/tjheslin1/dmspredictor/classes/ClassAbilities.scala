@@ -28,19 +28,19 @@ object ClassAbilities {
   def useAttackActionTwice[_: RS](attacker: Combatant,
                                   others: List[Combatant],
                                   focus: Focus): (Combatant, List[Combatant]) =
-    nextToFocus(monsters(others), focus).fold((attacker, others)) { target =>
+    nextToFocus(attacker, monsters(others), focus).fold((attacker, others)) { target =>
       val (updatedAttacker, updatedTarget, updatedOthers) =
         attackAndDamage(attacker, target, others.except(target))
 
       val allUpdatedOthers = updatedOthers.replace(updatedTarget)
 
-      nextToFocus(monsters(allUpdatedOthers), focus).fold((updatedAttacker, allUpdatedOthers)) {
-        nextTarget =>
+      nextToFocus(updatedAttacker, monsters(allUpdatedOthers), focus)
+        .fold((updatedAttacker, allUpdatedOthers)) { nextTarget =>
           val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
             attackAndDamage(updatedAttacker, nextTarget, allUpdatedOthers)
 
           (updatedAttacker2, updatedOtherEnemies2.replace(updatedEnemy2))
-      }
+        }
     }
 
   def useAdditionalAbility[_: RS](ability: CombatantAbility,

@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.monsters.Monster
+import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -28,8 +29,14 @@ import monocle.macros.{GenLens, Lenses}
                                     turnResetTracker: Unit => Unit = () => _,
                                     creatureType: CreatureType = Humanoid,
                                     challengeRating: Double = 1,
+                                    perceptionScore: Int,
+                                    stealthScore: Int,
                                     name: String = NameGenerator.randomName)
     extends Monster {
+
+  val skills: Skills = Skills(perceptionScore, stealthScore)
+
+  val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
   def weapon[_: RS]: Weapon = baseWeapon
 

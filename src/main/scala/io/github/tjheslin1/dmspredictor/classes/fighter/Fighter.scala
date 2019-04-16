@@ -12,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, ChainShirt, No
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
@@ -25,6 +26,7 @@ import monocle.macros.{GenLens, Lenses}
                                 maxHealth: Int,
                                 stats: BaseStats,
                                 baseWeapon: Weapon,
+                                skills: Skills,
                                 armour: Armour = NoArmour,
                                 offHand: Option[Equipment] = None,
                                 fightingStyles: List[FighterFightingStyle] =
@@ -58,8 +60,16 @@ object Fighter {
   import BaseFighterAbilities._
 
   def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
-    val health = calculateHealth(LevelOne, 14)
-    Fighter(LevelOne, health, health, BaseStats(15, 13, 14, 12, 8, 10), weapon, armour)
+    val health    = calculateHealth(LevelOne, 14)
+    val profBonus = ProficiencyBonus.fromLevel(LevelOne)
+
+    Fighter(LevelOne,
+            health,
+            health,
+            BaseStats(15, 13, 14, 12, 8, 10),
+            weapon,
+            Skills(perception = mod(12) + profBonus, stealth = mod(13)),
+            armour)
   }
 
   val standardFighterAbilities: List[CombatantAbility] = List(

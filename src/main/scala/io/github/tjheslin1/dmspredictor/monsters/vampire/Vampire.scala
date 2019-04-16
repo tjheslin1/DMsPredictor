@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.monsters.Monster
@@ -38,6 +39,16 @@ import monocle.macros.{GenLens, Lenses}
     with LazyLogging {
 
   val challengeRating: Double = 13.0
+  val skills                  = Skills(perception = 7, stealth = 9)
+
+  val savingThrowScores: Map[Attribute, Int] = Map(
+    Strength     -> mod(stats.strength),
+    Dexterity    -> 9,
+    Constitution -> mod(stats.constitution),
+    Wisdom       -> 7,
+    Intelligence -> mod(stats.intelligence),
+    Charisma     -> 9
+  )
 
   val creatureType: CreatureType = Undead
 

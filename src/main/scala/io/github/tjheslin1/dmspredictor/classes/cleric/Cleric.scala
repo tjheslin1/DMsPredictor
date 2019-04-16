@@ -26,6 +26,7 @@ import monocle.macros.{GenLens, Lenses}
                                maxHealth: Int,
                                stats: BaseStats,
                                baseWeapon: Weapon,
+                               skills: Skills,
                                cantripKnown: Option[Spell],
                                spellSlots: SpellSlots,
                                spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =

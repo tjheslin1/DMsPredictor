@@ -35,7 +35,7 @@ object BerserkerAbilities extends LazyLogging {
         Combatant.creatureLens.set(updateFrenzyingBarbarian(berserker))(combatant)
 
       val enemies = monsters(others)
-      val target  = nextToFocus(enemies, focus)
+      val target  = nextToFocus(combatant, enemies, focus)
 
       target match {
         case None => (ragingBarbarianCombatant, others)
@@ -93,7 +93,7 @@ object BerserkerAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")
 
-      val target = nextToFocus(monsters(others), focus)
+      val target = nextToFocus(combatant, monsters(others), focus)
 
       target match {
         case None => (combatant, others)

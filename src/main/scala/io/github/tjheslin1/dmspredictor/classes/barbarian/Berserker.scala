@@ -24,6 +24,7 @@ import monocle.macros.{GenLens, Lenses}
                                   stats: BaseStats,
                                   baseWeapon: Weapon,
                                   rageUsages: Int,
+                                  skills: Skills,
                                   armour: Armour = NoArmour,
                                   offHand: Option[Equipment] = None,
                                   proficiencyBonus: ProficiencyBonus = 0,

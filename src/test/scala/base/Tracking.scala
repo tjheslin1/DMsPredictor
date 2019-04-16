@@ -1,9 +1,9 @@
 package base
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, BonusAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.{Attribute, Combatant, CombatantAbility, Constitution, Creature, DamageType, Fire, Level, LevelOne, Melee, RS, Slashing, Weapon, Wisdom}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 trait Tracking {

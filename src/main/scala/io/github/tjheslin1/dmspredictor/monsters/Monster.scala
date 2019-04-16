@@ -1,15 +1,27 @@
 package io.github.tjheslin1.dmspredictor.monsters
 
-import io.github.tjheslin1.dmspredictor.model.Creature
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.Lens
 
 trait Monster extends Creature {
 
   val challengeRating: Double
+
+  val savingThrowScores: Map[Attribute, Int]
 }
 
 object Monster {
+
+  def defaultSavingThrowScores(monster: Monster): Map[Attribute, Int] = Map(
+    Strength     -> mod(monster.stats.strength),
+    Dexterity    -> mod(monster.stats.dexterity),
+    Constitution -> mod(monster.stats.constitution),
+    Wisdom       -> mod(monster.stats.wisdom),
+    Intelligence -> mod(monster.stats.intelligence),
+    Charisma     -> mod(monster.stats.charisma)
+  )
 
   val monsterArmourClassLens: Lens[Monster, Int] = Lens[Monster, Int](_.armourClass) { ac =>
     {

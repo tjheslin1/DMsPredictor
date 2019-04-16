@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.monsters.Zombie._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -31,7 +32,9 @@ import monocle.macros.{GenLens, Lenses}
     extends Monster
     with LazyLogging {
 
-  val challengeRating: Double = 0.25
+  val challengeRating: Double                = 0.25
+  val skills                                 = Skills(perception = 0, stealth = 0)
+  val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
   val creatureType: CreatureType = Undead
 

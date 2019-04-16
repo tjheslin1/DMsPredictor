@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.monsters.MonsterAbilities.multiAttack
 import io.github.tjheslin1.dmspredictor.monsters.Werewolf._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -31,7 +32,9 @@ import monocle.macros.{GenLens, Lenses}
                                  name: String = NameGenerator.randomName)
     extends Monster {
 
-  val challengeRating: Double = 3.0
+  val challengeRating: Double                = 3.0
+  val skills                                 = Skills(perception = 4, stealth = 3)
+  val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
   val creatureType: CreatureType = Humanoid
 
