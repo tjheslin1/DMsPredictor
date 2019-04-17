@@ -28,4 +28,4 @@ resolvers ++= Seq(
 )
 
 val MonocleVersion = "1.5.0"
-val RefinedVersion = "0.9.4"
+val RefinedVersion = "0.9.5"
