@@ -15,6 +15,7 @@ object SavingThrow {
         } else {
           (D20.roll() + attributeModifier(p, attribute)) >= dc
         }
-      case m: Monster => (D20.roll() + m.savingThrowScores(attribute)) >= dc
+      case m: Monster =>
+        D20.roll() + m.savingThrowScores(attribute) >= dc
     }
 }

@@ -80,7 +80,13 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
       forAll {
         (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, vampire: Vampire, goblin: Goblin) =>
           new TestContext {
-            override implicit val roll: RollStrategy = _ => RollResult(10)
+            val iterator = Iterator(
+              RollResult(10),   // toughUndead saving throw
+              RollResult(10),   // weakUndead saving throw
+              RollResult(6)     // weak vampire saving throw
+            )
+
+            override implicit val roll: RollStrategy = _ => iterator.next()
 
             val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(18).withCombatIndex(1)
 
@@ -101,7 +107,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
             updatedWeakUndead.health shouldBe 0
 
             updatedVampire.health shouldBe weakVampire.creature.health
-            updatedVampire.conditions should contain theSameElementsAs List(Turned(10, 10))
+            updatedVampire.conditions should contain theSameElementsAs List(Turned(14, 10))
           }
       }
     }
