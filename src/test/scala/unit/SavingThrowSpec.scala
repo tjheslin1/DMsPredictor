@@ -48,7 +48,7 @@ class SavingThrowSpec extends UnitSpecBase {
       }
     }
 
-    "use Player's matching saving throw proficiency" in {
+    "use Player's saving throw proficiencies" in {
       forAll { fighter: Fighter =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -57,6 +57,19 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val dc = 10 + proficientFighter.proficiencyBonus
           savingThrowPassed(dc, Strength, proficientFighter) shouldBe true
+        }
+      }
+    }
+
+    "use Monster's saving throw proficiencies" in {
+      forAll { testMonster: TestMonster =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val monster = testMonster.withSavingThrowScores(strength = 5)
+
+          val dc = 12
+          savingThrowPassed(dc, Strength, monster) shouldBe true
         }
       }
     }

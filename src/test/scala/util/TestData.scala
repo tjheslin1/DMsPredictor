@@ -21,7 +21,7 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -64,6 +64,24 @@ object TestData {
     def withCreatureType(creatureType: CreatureType) = _creatureType.set(creatureType)(testMonster)
     def withChallengeRating(cr: Double)              = _challengeRating.set(cr)(testMonster)
 
+    def withSavingThrowScores(strength: Int = 0,
+                              dexterity: Int = 0,
+                              constitution: Int = 0,
+                              wisdom: Int = 0,
+                              intelligence: Int = 0,
+                              charisma: Int = 0) = {
+      val savingThrowScores = Map(
+        Strength     -> strength,
+        Dexterity    -> dexterity,
+        Constitution -> constitution,
+        Wisdom       -> wisdom,
+        Intelligence -> intelligence,
+        Charisma     -> charisma
+      )
+
+      _savingThrowScores.set(savingThrowScores)(testMonster)
+    }
+
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
   }
 
@@ -71,7 +89,6 @@ object TestData {
     import Monster._
 
     def withArmourClass(ac: Int) = monsterArmourClassLens.set(ac)(monster)
-
   }
 
   implicit class CreatureOps(val creature: Creature) extends AnyVal {
@@ -455,12 +472,22 @@ trait TestData extends RandomDataGenerator {
       )
   }
 
+  implicit val arbWerewolf: Arbitrary[Werewolf] = Arbitrary {
+    for {
+    creature <- arbCreature.arbitrary
+    } yield Werewolf(
+      creature.health,
+      creature.health,
+      name = creature.name
+    )
+  }
+
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
     for {
-      creature        <- arbCreature.arbitrary
-      creatureType    <- arbMonsterType.arbitrary
-      cr              <- arbChallengeRating.arbitrary
-      arbSkills       <- arbSkills.arbitrary
+      creature     <- arbCreature.arbitrary
+      creatureType <- arbMonsterType.arbitrary
+      cr           <- arbChallengeRating.arbitrary
+      arbSkills    <- arbSkills.arbitrary
     } yield
       TestMonster(
         creature.health,
@@ -481,6 +508,7 @@ trait TestData extends RandomDataGenerator {
         cr,
         arbSkills.perception,
         arbSkills.stealth,
+        TestMonster.defaultScores,
         creature.name
       )
   }

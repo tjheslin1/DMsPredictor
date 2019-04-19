@@ -26,7 +26,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
 
           val monster = testMonster
             .withHealth(10)
-            .withDexterity(2)
+            .withSavingThrowScores(dexterity = -4)
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =

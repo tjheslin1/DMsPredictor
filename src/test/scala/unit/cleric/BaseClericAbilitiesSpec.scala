@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
@@ -54,7 +54,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
     "apply the Turned condition on the Undead targets" in {
       forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, goblin: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(15)
+          implicit override val roll: RollStrategy = _ => RollResult(15)
 
           val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
 
@@ -80,9 +80,15 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
       forAll {
         (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, vampire: Vampire, goblin: Goblin) =>
           new TestContext {
-            override implicit val roll: RollStrategy = _ => RollResult(10)
+            val iterator = Iterator(
+              RollResult(10),   // toughUndead saving throw
+              RollResult(10),   // weakUndead saving throw
+              RollResult(6)     // weak vampire saving throw
+            )
 
-            val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(10).withCombatIndex(1)
+            override implicit val roll: RollStrategy = _ => iterator.next()
+
+            val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(18).withCombatIndex(1)
 
             val toughUndead = zombieOne.withWisdom(20).withCombatIndex(2)
             val weakUndead  = zombieTwo.withWisdom(1).withCombatIndex(3)
@@ -101,13 +107,13 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
             updatedWeakUndead.health shouldBe 0
 
             updatedVampire.health shouldBe weakVampire.creature.health
-            updatedVampire.conditions should contain theSameElementsAs List(Turned(10, 10))
+            updatedVampire.conditions should contain theSameElementsAs List(Turned(14, 10))
           }
       }
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
   }
 }
