@@ -92,6 +92,11 @@ object Actions extends LazyLogging {
       }
     )
 
+    /* TODO
+    if dmg > 0
+      check reaction
+     */
+
     val updatedTarget = Combatant.creatureLens.set(
       target.creature.updateHealth(dmg, weapon.damageType, attackResult))(target)
 

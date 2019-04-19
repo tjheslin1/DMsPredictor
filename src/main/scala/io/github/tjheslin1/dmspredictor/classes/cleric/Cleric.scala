@@ -40,6 +40,7 @@ import monocle.macros.{GenLens, Lenses}
                                resistances: List[DamageType] = List.empty,
                                immunities: List[DamageType] = List.empty,
                                bonusActionUsed: Boolean = false,
+                               reactionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
                                concentratingSpell: Option[Spell] = None,
@@ -62,6 +63,8 @@ import monocle.macros.{GenLens, Lenses}
       handleConcentration(updatedCleric, damageTaken)
     else updatedCleric
   }
+
+  def handleReaction(): Creature = this
 }
 
 object Cleric {

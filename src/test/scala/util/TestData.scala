@@ -368,6 +368,7 @@ trait TestData extends RandomDataGenerator {
         val resistances: List[DamageType]     = List.empty
         val immunities: List[DamageType]      = List.empty
         val bonusActionUsed: Boolean          = false
+        val reactionUsed: Boolean             = false
         val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
         val conditions: List[Condition]       = List.empty
@@ -400,6 +401,7 @@ trait TestData extends RandomDataGenerator {
       new Player {
         val level: Level             = lvl
         val bonusActionUsed: Boolean = false
+        val reactionUsed: Boolean = false
 
         val health: Int        = creature.health
         val maxHealth: Int     = creature.maxHealth
@@ -538,6 +540,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Fighter.standardFighterAbilities,
         player.conditions,
         player.attackStatus,
@@ -569,6 +572,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Champion.standardChampionAbilities,
         player.conditions,
         player.attackStatus,
@@ -596,6 +600,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
         inRage = false,
@@ -625,6 +630,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
         inRage = false,
@@ -659,6 +665,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         bonusActionUsed = player.bonusActionUsed,
+        reactionUsed = player.reactionUsed,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
@@ -684,6 +691,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Rogue.standardRogueAbilities,
         conditions = player.conditions,
         attackStatus = player.attackStatus,

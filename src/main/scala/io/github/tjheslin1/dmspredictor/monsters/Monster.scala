@@ -10,6 +10,11 @@ trait Monster extends Creature {
   val challengeRating: Double
 
   val savingThrowScores: Map[Attribute, Int]
+
+  // TODO this may be used to handle legendary actions
+  val reactionUsed: Boolean = true
+
+  def handleReaction(): Creature = this
 }
 
 object Monster {

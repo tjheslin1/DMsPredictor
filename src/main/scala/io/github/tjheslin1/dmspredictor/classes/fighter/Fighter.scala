@@ -36,6 +36,7 @@ import monocle.macros.{GenLens, Lenses}
                                 resistances: List[DamageType] = List.empty,
                                 immunities: List[DamageType] = List.empty,
                                 bonusActionUsed: Boolean = false,
+                                reactionUsed: Boolean = false,
                                 abilities: List[CombatantAbility] = standardFighterAbilities,
                                 conditions: List[Condition] = List.empty,
                                 attackStatus: AttackStatus = Regular,
@@ -53,6 +54,8 @@ import monocle.macros.{GenLens, Lenses}
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
+
+  def handleReaction(): Creature = this
 }
 
 object Fighter {

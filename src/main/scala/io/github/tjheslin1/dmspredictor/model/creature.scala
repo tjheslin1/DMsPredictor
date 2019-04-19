@@ -43,6 +43,10 @@ trait Creature {
   val abilities: List[CombatantAbility]
   val conditions: List[Condition]
 
+  val reactionUsed: Boolean
+
+  def handleReaction(): Creature
+
   val isConscious = health > 0
 
   def scoresCritical(roll: Int): Boolean

@@ -27,6 +27,7 @@ import monocle.macros.{GenLens, Lenses}
                               resistances: List[DamageType] = List.empty,
                               immunities: List[DamageType] = List.empty,
                               bonusActionUsed: Boolean = false,
+                              reactionUsed: Boolean = false,
                               abilities: List[CombatantAbility] = Rogue.standardRogueAbilities,
                               hiddenFrom: List[Combatant] = List.empty,
                               conditions: List[Condition] = List.empty,
@@ -44,6 +45,8 @@ import monocle.macros.{GenLens, Lenses}
   // TODO: Uncanny dodge
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+
+  def handleReaction(): Creature = this
 }
 
 object Rogue {
