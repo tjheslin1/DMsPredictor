@@ -388,24 +388,28 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
+
+        def handleReaction(): Creature = throw new NotImplementedError(
+          "Must be implemented by specific creature"
+        )
       }
   }
 
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
-      lvl              <- arbLevel.arbitrary
-      creature         <- arbCreature.arbitrary
-      profBonus        <- arbProficiencyBonus.arbitrary
+      lvl <- arbLevel.arbitrary
+      creature <- arbCreature.arbitrary
+      profBonus <- arbProficiencyBonus.arbitrary
       savingThrowProfs <- arbSavingThrowProficiencies.arbitrary
     } yield
       new Player {
-        val level: Level             = lvl
+        val level: Level = lvl
         val bonusActionUsed: Boolean = false
         val reactionUsed: Boolean = false
 
-        val health: Int        = creature.health
-        val maxHealth: Int     = creature.maxHealth
-        val stats: BaseStats   = creature.stats
+        val health: Int = creature.health
+        val maxHealth: Int = creature.maxHealth
+        val stats: BaseStats = creature.stats
         val baseWeapon: Weapon = creature.baseWeapon
 
         val savingThrowProficiencies: NonEmptyList[Attribute] =
@@ -413,17 +417,17 @@ trait TestData extends RandomDataGenerator {
 
         def weapon[_: RS]: Weapon = creature.weapon
 
-        val armour: Armour                     = creature.armour
-        val offHand: Option[Equipment]         = creature.offHand
-        val armourClass: Int                   = creature.armourClass
+        val armour: Armour = creature.armour
+        val offHand: Option[Equipment] = creature.offHand
+        val armourClass: Int = creature.armourClass
         val proficiencyBonus: ProficiencyBonus = profBonus
-        val resistances: List[DamageType]      = creature.resistances
-        val immunities: List[DamageType]       = creature.immunities
-        val name: String                       = creature.name
-        val abilities: List[CombatantAbility]  = creature.abilities
-        val conditions: List[Condition]        = creature.conditions
-        val attackStatus: AttackStatus         = creature.attackStatus
-        val defenseStatus: AttackStatus        = creature.defenseStatus
+        val resistances: List[DamageType] = creature.resistances
+        val immunities: List[DamageType] = creature.immunities
+        val name: String = creature.name
+        val abilities: List[CombatantAbility] = creature.abilities
+        val conditions: List[Condition] = creature.conditions
+        val attackStatus: AttackStatus = creature.attackStatus
+        val defenseStatus: AttackStatus = creature.defenseStatus
 
         val skills: Skills = creature.skills
 
@@ -438,6 +442,8 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
+
+        def handleReaction(): Creature = throw new NotImplementedError("Must be implemented by specific player")
       }
   }
 

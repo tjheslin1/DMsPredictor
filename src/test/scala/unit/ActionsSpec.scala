@@ -321,6 +321,12 @@ class ActionsSpec extends UnitSpecBase {
         }
       }
     }
+
+    "handle available reaction on damage" in {
+
+    }
+
+    "not handle available reaction if no damage is taken" in {}
   }
 
   "resolveDamageMainHand" should {

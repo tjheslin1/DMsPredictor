@@ -71,6 +71,20 @@ object Move extends LazyLogging {
     (updatedCombatant, missesTurn)
   }
 
+  def useBonusActionAbility[_: RS](combatant: Combatant,
+                                   others: List[Combatant],
+                                   bonusActionAbility: CombatantAbility,
+                                   focus: Focus): Queue[Combatant] = {
+    val (bonusActionUsedAttacker, updatedOthersAfterBonusAction) =
+      bonusActionAbility(combatant).useAbility(others, focus)
+
+    val updatedBonusActionUsedAttacker = Combatant.creatureLens.set(
+      bonusActionAbility(bonusActionUsedAttacker).update)(bonusActionUsedAttacker)
+
+    Queue(others.replace(updatedOthersAfterBonusAction): _*)
+      .append(updatedBonusActionUsedAttacker)
+  }
+
   private def availableActionAbility(attacker: Combatant,
                                      others: List[Combatant]): Option[CombatantAbility] =
     attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
@@ -110,18 +124,4 @@ object Move extends LazyLogging {
 
       (updatedCombatant, others.replace(targetsOfAbility))
     }
-
-  def useBonusActionAbility[_: RS](combatant: Combatant,
-                                   others: List[Combatant],
-                                   bonusActionAbility: CombatantAbility,
-                                   focus: Focus): Queue[Combatant] = {
-    val (bonusActionUsedAttacker, updatedOthersAfterBonusAction) =
-      bonusActionAbility(combatant).useAbility(others, focus)
-
-    val updatedBonusActionUsedAttacker = Combatant.creatureLens.set(
-      bonusActionAbility(bonusActionUsedAttacker).update)(bonusActionUsedAttacker)
-
-    Queue(others.replace(updatedOthersAfterBonusAction): _*)
-      .append(updatedBonusActionUsedAttacker)
-  }
 }
