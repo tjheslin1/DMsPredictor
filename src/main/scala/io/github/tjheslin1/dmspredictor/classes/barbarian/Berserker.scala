@@ -14,6 +14,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -51,7 +52,8 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
-  def handleReaction(): Creature = this
+  val reactionOnHit: Option[OnHitReaction] = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Berserker {

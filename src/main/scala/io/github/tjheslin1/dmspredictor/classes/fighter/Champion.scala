@@ -13,6 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -51,7 +52,8 @@ import monocle.macros.{GenLens, Lenses}
 
   def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
 
-  def handleReaction(): Creature = this
+  val reactionOnHit: Option[OnHitReaction] = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Champion {

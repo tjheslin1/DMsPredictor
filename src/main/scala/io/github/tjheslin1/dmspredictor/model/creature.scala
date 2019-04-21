@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.monsters._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.{Lens, Optional}
@@ -45,7 +46,8 @@ trait Creature {
 
   val reactionUsed: Boolean
 
-  def handleReaction(): Creature
+  val reactionOnHit: Option[OnHitReaction]
+  val reactionOnDamage: Option[OnDamageReaction]
 
   val isConscious = health > 0
 

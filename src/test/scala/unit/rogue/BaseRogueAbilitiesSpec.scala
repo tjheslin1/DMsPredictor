@@ -164,6 +164,22 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
     }
   }
 
+  "uncannyDodge" should {
+
+    "halve the damage taken by an attack" in {
+      forAll { rogue: Rogue =>
+
+        val levelFiveRogue = rogue.withLevel(LevelFive)
+          .withHealth(50)
+          .withCombatIndex(1)
+
+        val updatedRogue = uncannyDodge(levelFiveRogue, 12, Slashing).effect()
+
+        updatedRogue.health shouldBe 44
+      }
+    }
+  }
+
   abstract private class TestContext {
     implicit val roll: RollStrategy
   }

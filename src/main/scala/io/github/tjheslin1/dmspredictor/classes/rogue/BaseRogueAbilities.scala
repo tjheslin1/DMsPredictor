@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.sneakAttackDamag
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.reaction.OnDamageReaction
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
@@ -105,4 +106,13 @@ object BaseRogueAbilities extends LazyLogging {
 
     def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
   }
+
+  def uncannyDodge(combatant: Combatant, damage: Int, damageType: DamageType): OnDamageReaction =
+    new OnDamageReaction(damage, damageType) {
+      val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
+
+//      val halfDamageRoundedDown
+
+      def effect(): Creature = ??? // baseRogue.updateHealth()
+    }
 }

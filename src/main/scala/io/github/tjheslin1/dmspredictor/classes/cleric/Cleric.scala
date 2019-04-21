@@ -14,6 +14,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
@@ -64,7 +65,8 @@ import monocle.macros.{GenLens, Lenses}
     else updatedCleric
   }
 
-  def handleReaction(): Creature = this
+  val reactionOnHit: Option[OnHitReaction] = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Cleric {
