@@ -17,15 +17,20 @@ object Move extends LazyLogging {
     val (unactedCombatant, others) = queue.dequeue
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
-    val resetUnactedCombatant =
-      Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
+    val resetUnactedCombatant = {
+      val resetCombatant =
+        Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
 
-    val bonusActionUnusedCombatant =
-      (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
-        .set(false)(resetUnactedCombatant)
+      val bonusActionUnusedCombatant =
+        (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
+          .set(false)(resetCombatant)
+
+      (Combatant.playerOptional composeLens Player.playerReactionUsedLens)
+        .set(false)(bonusActionUnusedCombatant)
+    }
 
     val (conditionHandledCombatant, missesTurn) =
-      handleCondition(bonusActionUnusedCombatant)
+      handleCondition(resetUnactedCombatant)
 
     val otherCombatants = others.toList
 
