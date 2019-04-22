@@ -107,12 +107,27 @@ object BaseRogueAbilities extends LazyLogging {
     def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
   }
 
-  def uncannyDodge(combatant: Combatant, damage: Int, damageType: DamageType): OnDamageReaction =
-    new OnDamageReaction(damage, damageType) {
-      val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
+  val uncannyDodge: OnDamageReaction =
+    new OnDamageReaction {
 
-//      val halfDamageRoundedDown
+      val name = "Uncanny Dodge"
 
-      def effect(): Creature = ??? // baseRogue.updateHealth()
+      def effect[_: RS](reactingCreature: Creature,
+                        damage: Int,
+                        damageType: DamageType,
+                        attackResult: AttackResult): Creature = {
+        val baseRogue = reactingCreature.asInstanceOf[BaseRogue]
+
+        if (damage > 0) {
+          val halfDamageRoundedDown = Math.floor(damage / 2).toInt
+
+          val updatedHealthRogue =
+            baseRogue.updateHealth(halfDamageRoundedDown, damageType, attackResult)
+
+          Creature.creatureReactionUsedOptional.set(true)(updatedHealthRogue)
+        } else {
+          baseRogue.updateHealth(damage, damageType, attackResult)
+        }
+      }
     }
 }

@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
@@ -238,7 +239,8 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext with Tracking {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val finesseWeapon = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 1)
+          val finesseWeapon =
+            Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 1)
 
           val strongFighter = fighter.withStrength(14).withDexterity(16).withCombatIndex(1)
           val monster =
@@ -301,7 +303,11 @@ class ActionsSpec extends UnitSpecBase {
 
           val spiritGuardiansCondition = SpiritGuardiansCondition(10, 10, Wisdom)
 
-          val goblinCombatant = goblin.withStrength(10).withDexterity(10).withCondition(spiritGuardiansCondition).withCombatIndex(2)
+          val goblinCombatant = goblin
+            .withStrength(10)
+            .withDexterity(10)
+            .withCondition(spiritGuardiansCondition)
+            .withCombatIndex(2)
           val zombieCombatant = zombie.withCondition(spiritGuardiansCondition).withCombatIndex(3)
 
           val (Combatant(_, updatedGoblin: Goblin),
@@ -323,10 +329,38 @@ class ActionsSpec extends UnitSpecBase {
     }
 
     "handle available reaction on damage" in {
+      forAll { (rogue: Rogue, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
+          val attackingGoblin = goblin.withStrength(10).withBaseWeapon(sixDamageWeapon).withCombatIndex(1)
+          val levelFiveRogue  = rogue.withLevel(LevelFive).withHealth(50).withCombatIndex(2)
+
+          val (_, Combatant(_, updatedRogue: Rogue), _) =
+            resolveDamage(attackingGoblin, levelFiveRogue, List(), sixDamageWeapon, Hit)
+
+          updatedRogue.reactionUsed shouldBe true
+          updatedRogue.health shouldBe 47
+        }
+      }
     }
 
-    "not handle available reaction if no damage is taken" in {}
+    "not use reaction if no damage is taken" in {
+      forAll { (rogue: Rogue, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val attackingGoblin = goblin.withStrength(10).withCombatIndex(1)
+          val levelFiveRogue  = rogue.withLevel(LevelFive).withHealth(50).withCombatIndex(2)
+
+          val (_, Combatant(_, updatedRogue: Rogue), _) =
+            resolveDamage(attackingGoblin, levelFiveRogue, List(), goblin.weapon, Miss)
+
+          updatedRogue.reactionUsed shouldBe false
+          updatedRogue.health shouldBe 50
+        }
+      }
+    }
   }
 
   "resolveDamageMainHand" should {
@@ -425,6 +459,9 @@ class ActionsSpec extends UnitSpecBase {
 
   abstract private class TestContext {
     implicit val roll: RollStrategy
+
+    val sixDamageWeapon =
+      Weapon("six-damage-weapon", Melee, Slashing, isTwoHanded = true, isFinesse = false, 6)
 
     def weaponWithHitBonus(bonus: Int) =
       Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)

@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.rogue
 
 import cats.data.NonEmptyList
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.calculateArmourClass
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogueAbilities._
@@ -48,7 +49,8 @@ import monocle.macros.{GenLens, Lenses}
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   val reactionOnHit: Option[OnHitReaction] = None
-  val reactionOnDamage: Option[OnDamageReaction] = None
+  val reactionOnDamage: Option[OnDamageReaction] =
+    if (level >= 5) uncannyDodge.some else none[OnDamageReaction]
 }
 
 object Rogue {

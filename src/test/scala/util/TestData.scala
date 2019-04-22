@@ -18,6 +18,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
@@ -377,6 +378,9 @@ trait TestData extends RandomDataGenerator {
 
         val skills: Skills = creatureSkills
 
+        val reactionOnHit: Option[OnHitReaction] = None
+        val reactionOnDamage: Option[OnDamageReaction] = None
+
         def scoresCritical(roll: Int): Boolean = roll == 20
 
         def updateHealth[_: RS](dmg: Int,
@@ -388,10 +392,6 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
-
-        def handleReaction(): Creature = throw new NotImplementedError(
-          "Must be implemented by specific creature"
-        )
       }
   }
 
@@ -431,6 +431,9 @@ trait TestData extends RandomDataGenerator {
 
         val skills: Skills = creature.skills
 
+        val reactionOnHit: Option[OnHitReaction] = creature.reactionOnHit
+        val reactionOnDamage: Option[OnDamageReaction] = creature.reactionOnDamage
+
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
                                 attackResult: AttackResult): Creature =
@@ -442,8 +445,6 @@ trait TestData extends RandomDataGenerator {
         def resetStartOfTurn(): Creature =
           throw new NotImplementedError(
             "Random generation should delegate to specific resetStartOfTurn()")
-
-        def handleReaction(): Creature = throw new NotImplementedError("Must be implemented by specific player")
       }
   }
 
@@ -509,6 +510,7 @@ trait TestData extends RandomDataGenerator {
         creature.immunities,
         List.empty, // TODO add core abilities?
         creature.conditions,
+        reactionUsed = false,
         creature.attackStatus,
         creature.defenseStatus,
         turnResetTracker = () => _,

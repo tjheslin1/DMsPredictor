@@ -65,7 +65,7 @@ import monocle.macros.{GenLens, Lenses}
     else updatedCleric
   }
 
-  val reactionOnHit: Option[OnHitReaction] = None
+  val reactionOnHit: Option[OnHitReaction]       = None
   val reactionOnDamage: Option[OnDamageReaction] = None
 }
 

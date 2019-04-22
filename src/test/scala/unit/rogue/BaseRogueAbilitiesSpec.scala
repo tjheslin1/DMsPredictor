@@ -20,9 +20,9 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
       forAll { (rogue: Rogue, goblin: Goblin) =>
         new TestContext {
           val diceRolls = Iterator(
-            1,  // first attack roll with advantage
+            1, // first attack roll with advantage
             15, // second attack roll with advantage
-            1,  // sneak damage roll
+            1, // sneak damage roll
           )
 
           implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
@@ -50,10 +50,10 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
       forAll { (rogue: Rogue, goblin: Goblin) =>
         new TestContext {
           val diceRolls = Iterator(
-            1,  // first attack roll with advantage
+            1, // first attack roll with advantage
             20, // second attack roll with advantage
-            2,  // first sneak damage roll
-            3  // second sneak damage roll
+            2, // first sneak damage roll
+            3 // second sneak damage roll
           )
 
           implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
@@ -83,7 +83,7 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val visibleRogue = rogue
-              .isHiddenFrom(List.empty[Combatant])
+            .isHiddenFrom(List.empty[Combatant])
             .withAttackStatus(Advantage)
             .withBaseWeapon(Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 2))
             .withCombatIndex(1)
@@ -168,14 +168,17 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
 
     "halve the damage taken by an attack" in {
       forAll { rogue: Rogue =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
 
-        val levelFiveRogue = rogue.withLevel(LevelFive)
-          .withHealth(50)
-          .withCombatIndex(1)
+          val levelFiveRogue = rogue.withLevel(LevelFive)
+            .withHealth(50)
 
-        val updatedRogue = uncannyDodge(levelFiveRogue, 12, Slashing).effect()
+          val updatedRogue = uncannyDodge.effect(levelFiveRogue, 12, Slashing, Hit)
 
-        updatedRogue.health shouldBe 44
+          updatedRogue.health shouldBe 44
+          updatedRogue.reactionUsed shouldBe true
+        }
       }
     }
   }
@@ -183,4 +186,5 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
   abstract private class TestContext {
     implicit val roll: RollStrategy
   }
+
 }

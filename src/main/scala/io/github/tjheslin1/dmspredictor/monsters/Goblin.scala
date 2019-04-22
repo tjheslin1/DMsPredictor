@@ -38,6 +38,8 @@ import monocle.macros.{GenLens, Lenses}
 
   val abilities: List[CombatantAbility] = List.empty
 
+  val reactionUsed: Boolean = true
+
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Goblin =

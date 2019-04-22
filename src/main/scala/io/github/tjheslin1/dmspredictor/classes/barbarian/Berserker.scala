@@ -52,7 +52,7 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
-  val reactionOnHit: Option[OnHitReaction] = None
+  val reactionOnHit: Option[OnHitReaction]       = None
   val reactionOnDamage: Option[OnDamageReaction] = None
 }
 

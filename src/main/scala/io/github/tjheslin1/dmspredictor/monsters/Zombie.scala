@@ -38,6 +38,8 @@ import monocle.macros.{GenLens, Lenses}
 
   val creatureType: CreatureType = Undead
 
+  val reactionUsed: Boolean = true
+
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth[_: RS](dmg: Int,

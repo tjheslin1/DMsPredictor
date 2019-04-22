@@ -410,6 +410,38 @@ object Creature extends LazyLogging {
       }
     }
 
+  val creatureReactionUsedOptional: Optional[Creature, Boolean] =
+    Optional[Creature, Boolean] {
+      case c: Champion => c.reactionUsed.some
+      case c: Fighter  => c.reactionUsed.some
+
+      case c: Barbarian => c.reactionUsed.some
+      case c: Berserker => c.reactionUsed.some
+
+      case c: Cleric => c.reactionUsed.some
+      case c: Rogue  => c.reactionUsed.some
+
+      case c: Vampire => c.reactionUsed.some
+
+      case _ => none[Boolean]
+    } { reactionUsed =>
+      {
+        case c: Champion => Champion._reactionUsed.set(reactionUsed)(c)
+        case c: Fighter  => Fighter._reactionUsed.set(reactionUsed)(c)
+
+        case c: Barbarian => Barbarian._reactionUsed.set(reactionUsed)(c)
+        case c: Berserker => Berserker._reactionUsed.set(reactionUsed)(c)
+
+        case c: Cleric => Cleric._reactionUsed.set(reactionUsed)(c)
+
+        case c: Rogue => Rogue._reactionUsed.set(reactionUsed)(c)
+
+        case c: Vampire => Vampire._reactionUsed.set(reactionUsed)(c)
+
+        case c: Creature => c
+      }
+    }
+
   val creatureAttackStatusLens: Lens[Creature, AttackStatus] =
     Lens[Creature, AttackStatus](_.attackStatus) { status =>
       {

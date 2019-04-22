@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.monsters
 
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.Lens
 
@@ -11,10 +12,8 @@ trait Monster extends Creature {
 
   val savingThrowScores: Map[Attribute, Int]
 
-  // TODO this may be used to handle legendary actions
-  val reactionUsed: Boolean = true
-
-  def handleReaction(): Creature = this
+  val reactionOnHit: Option[OnHitReaction]       = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Monster {
