@@ -8,13 +8,14 @@ sealed trait Reaction {
 
 trait OnHitReaction extends Reaction {
 
-  def effect[_: RS](reactingCreature: Creature, attackResult: AttackResult): Creature
+  def updateAttackOnReaction[_: RS](reactingCreature: Creature,
+                                    attackResult: AttackResult): (AttackResult, Creature)
 }
 
 trait OnDamageReaction extends Reaction {
 
-  def effect[_: RS](reactingCreature: Creature,
-                    damage: Int,
-                    damageType: DamageType,
-                    attackResult: AttackResult): Creature
+  def updateHealthOnReaction[_: RS](reactingCreature: Creature,
+                                    damage: Int,
+                                    damageType: DamageType,
+                                    attackResult: AttackResult): Creature
 }

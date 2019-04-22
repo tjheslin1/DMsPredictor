@@ -174,7 +174,7 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
           val levelFiveRogue = rogue.withLevel(LevelFive)
             .withHealth(50)
 
-          val updatedRogue = uncannyDodge.effect(levelFiveRogue, 12, Slashing, Hit)
+          val updatedRogue = uncannyDodge.updateHealthOnReaction(levelFiveRogue, 12, Slashing, Hit)
 
           updatedRogue.health shouldBe 44
           updatedRogue.reactionUsed shouldBe true
