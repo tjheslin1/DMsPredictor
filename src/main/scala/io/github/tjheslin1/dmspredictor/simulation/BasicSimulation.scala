@@ -35,6 +35,12 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus)
 
     val initiative = InitiativeCalculator(creatures).rollInitiative()
 
+    logger.debug("Initiative Scores:")
+    initiative.foreach {
+      case (_, initiative) =>
+        logger.debug(s"${initiative.combatant.creature.name} - ${initiative.score}")
+    }
+
     val (playerCharacters, monsters) =
       initiative.toList.map(_._2.combatant).partition(_.creature.creatureType == PlayerCharacter)
 

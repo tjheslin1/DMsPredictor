@@ -24,6 +24,7 @@ import util.TestMonster.defaultScores
                                     immunities: List[DamageType] = List.empty,
                                     abilities: List[CombatantAbility] = List.empty,
                                     conditions: List[Condition] = List.empty,
+                                    reactionUsed: Boolean = false,
                                     attackStatus: AttackStatus = Regular,
                                     defenseStatus: AttackStatus = Regular,
                                     turnResetTracker: Unit => Unit = () => _,

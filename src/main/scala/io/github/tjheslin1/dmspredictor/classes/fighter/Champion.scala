@@ -13,6 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -32,6 +33,7 @@ import monocle.macros.{GenLens, Lenses}
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardChampionAbilities,
     conditions: List[Condition] = List.empty,
     attackStatus: AttackStatus = Regular,
@@ -49,6 +51,9 @@ import monocle.macros.{GenLens, Lenses}
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
+
+  val reactionOnHit: Option[OnHitReaction]       = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Champion {

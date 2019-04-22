@@ -29,6 +29,7 @@ import monocle.macros.{GenLens, Lenses}
                                   List(Necrotic, Bludgeoning, Piercing, Slashing),
                                 immunities: List[DamageType] = List.empty[DamageType],
                                 conditions: List[Condition] = List.empty,
+                                reactionUsed: Boolean = false,
                                 attackStatus: AttackStatus = Regular,
                                 defenseStatus: AttackStatus = Regular,
                                 radiantDamageTaken: Boolean = false,

@@ -14,11 +14,11 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
-  val rogueHp   = BaseRogue.calculateHealth(LevelTwo, 14)
-  val profBonus = ProficiencyBonus.fromLevel(LevelTwo)
+  val rogueHp   = BaseRogue.calculateHealth(LevelFive, 14)
+  val profBonus = ProficiencyBonus.fromLevel(LevelFive)
 
   val rogue = Rogue(
-    LevelTwo,
+    LevelFive,
     rogueHp,
     rogueHp,
     BaseStats(10, 14, 14, 10, 14, 10),
@@ -31,13 +31,13 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   val creatures = List(
     rogue,
-    Goblin.levelOneGoblin(goblinName = "goblin-1"),
-    Goblin.levelOneGoblin(goblinName = "goblin-2")
+    Goblin.withName("goblin-1"),
+    Goblin.withName("goblin-2")
   )
 
   val simulation = "Rogue vs Goblins"
   val (losses, wins) =
-    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1000)
+    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
 
   logger.debug(s"$simulation simulation started")
   println(s"$wins Wins and $losses Losses")

@@ -92,8 +92,16 @@ object Actions extends LazyLogging {
       }
     )
 
-    val updatedTarget = Combatant.creatureLens.set(
-      target.creature.updateHealth(dmg, weapon.damageType, attackResult))(target)
+    val updatedTarget = target.creature.reactionOnDamage.fold {
+      Combatant.creatureLens.set(
+        target.creature.updateHealth(dmg, weapon.damageType, attackResult))(target)
+    } { reaction =>
+      logger.debug(s"${target.creature.name} used ${reaction.name} (reaction)")
+
+      Combatant.creatureLens.set(
+        reaction.updateHealthOnReaction(target.creature, dmg, weapon.damageType, attackResult))(
+        target)
+    }
 
     val (updatedAttacker, updatedOthers) = (target.creature, updatedTarget.creature) match {
       case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
@@ -154,7 +162,7 @@ object Actions extends LazyLogging {
         f(a, t, o)
     }
 
-  private def weaponModifier(weapon: Weapon, creature: Creature) =
+  private def weaponModifier(weapon: Weapon, creature: Creature): Int =
     if (weapon.finesse) {
       Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
     } else

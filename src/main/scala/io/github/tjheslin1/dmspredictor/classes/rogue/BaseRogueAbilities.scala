@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.sneakAttackDamag
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.reaction.OnDamageReaction
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
@@ -105,4 +106,30 @@ object BaseRogueAbilities extends LazyLogging {
 
     def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
   }
+
+  val uncannyDodge: OnDamageReaction =
+    new OnDamageReaction {
+
+      val name = "Uncanny Dodge"
+
+      def updateHealthOnReaction[_: RS](reactingCreature: Creature,
+                                        damage: Int,
+                                        damageType: DamageType,
+                                        attackResult: AttackResult): Creature = {
+        val baseRogue = reactingCreature.asInstanceOf[BaseRogue]
+
+        if (damage > 0) {
+          val halfDamageRoundedDown = Math.floor(damage / 2).toInt
+
+          logger.debug(s"${baseRogue.name} took half damage ($halfDamageRoundedDown)")
+
+          val updatedHealthRogue =
+            baseRogue.updateHealth(halfDamageRoundedDown, damageType, attackResult)
+
+          Creature.creatureReactionUsedOptional.set(true)(updatedHealthRogue)
+        } else {
+          baseRogue.updateHealth(damage, damageType, attackResult)
+        }
+      }
+    }
 }

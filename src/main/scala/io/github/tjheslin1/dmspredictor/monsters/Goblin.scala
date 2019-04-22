@@ -38,6 +38,8 @@ import monocle.macros.{GenLens, Lenses}
 
   val abilities: List[CombatantAbility] = List.empty
 
+  val reactionUsed: Boolean = true
+
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Goblin =
@@ -52,7 +54,7 @@ object Goblin {
 
   def calculateHealth[_: RS]: Int = 2 * D6
 
-  def levelOneGoblin[_: RS](goblinName: String = NameGenerator.randomName): Goblin = {
+  def withName[_: RS](goblinName: String = NameGenerator.randomName): Goblin = {
     val hp = calculateHealth
     Goblin(hp, hp, name = goblinName)
   }

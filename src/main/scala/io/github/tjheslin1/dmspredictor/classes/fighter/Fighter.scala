@@ -16,6 +16,7 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
@@ -29,13 +30,13 @@ import monocle.macros.{GenLens, Lenses}
                                 skills: Skills,
                                 armour: Armour = NoArmour,
                                 offHand: Option[Equipment] = None,
-                                fightingStyles: List[FighterFightingStyle] =
-                                  List.empty[FighterFightingStyle],
+                                fightingStyles: List[FighterFightingStyle] = List.empty,
                                 abilityUsages: BaseFighterAbilities = allUnused(),
                                 proficiencyBonus: ProficiencyBonus = 0,
                                 resistances: List[DamageType] = List.empty,
                                 immunities: List[DamageType] = List.empty,
                                 bonusActionUsed: Boolean = false,
+                                reactionUsed: Boolean = false,
                                 abilities: List[CombatantAbility] = standardFighterAbilities,
                                 conditions: List[Condition] = List.empty,
                                 attackStatus: AttackStatus = Regular,
@@ -53,6 +54,9 @@ import monocle.macros.{GenLens, Lenses}
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
+
+  val reactionOnHit: Option[OnHitReaction]       = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Fighter {

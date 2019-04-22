@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.strategy
 
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue
-import io.github.tjheslin1.dmspredictor.model.{Combatant, PlayerCharacter}
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 
 import scala.util.{Random => JRandom}

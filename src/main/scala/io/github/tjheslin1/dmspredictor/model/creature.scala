@@ -11,6 +11,7 @@ import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.monsters._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.{Lens, Optional}
@@ -42,6 +43,11 @@ trait Creature {
 
   val abilities: List[CombatantAbility]
   val conditions: List[Condition]
+
+  val reactionUsed: Boolean
+
+  val reactionOnHit: Option[OnHitReaction]
+  val reactionOnDamage: Option[OnDamageReaction]
 
   val isConscious = health > 0
 
@@ -401,6 +407,38 @@ object Creature extends LazyLogging {
         case c: Vampire  => Vampire._conditions.set(conditions)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureConditionsLens")
+      }
+    }
+
+  val creatureReactionUsedOptional: Optional[Creature, Boolean] =
+    Optional[Creature, Boolean] {
+      case c: Champion => c.reactionUsed.some
+      case c: Fighter  => c.reactionUsed.some
+
+      case c: Barbarian => c.reactionUsed.some
+      case c: Berserker => c.reactionUsed.some
+
+      case c: Cleric => c.reactionUsed.some
+      case c: Rogue  => c.reactionUsed.some
+
+      case c: Vampire => c.reactionUsed.some
+
+      case _ => none[Boolean]
+    } { reactionUsed =>
+      {
+        case c: Champion => Champion._reactionUsed.set(reactionUsed)(c)
+        case c: Fighter  => Fighter._reactionUsed.set(reactionUsed)(c)
+
+        case c: Barbarian => Barbarian._reactionUsed.set(reactionUsed)(c)
+        case c: Berserker => Berserker._reactionUsed.set(reactionUsed)(c)
+
+        case c: Cleric => Cleric._reactionUsed.set(reactionUsed)(c)
+
+        case c: Rogue => Rogue._reactionUsed.set(reactionUsed)(c)
+
+        case c: Vampire => Vampire._reactionUsed.set(reactionUsed)(c)
+
+        case c: Creature => c
       }
     }
 

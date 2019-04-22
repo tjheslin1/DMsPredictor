@@ -9,6 +9,8 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.Lens
 
 trait Player extends Creature {
@@ -43,6 +45,25 @@ object Player {
         case _ =>
           throw new NotImplementedError(
             "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
+      }
+  }
+
+  val playerReactionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.reactionUsed) {
+    reactionUsed =>
+      {
+        case c: Champion => Champion._reactionUsed.set(reactionUsed)(c)
+        case c: Fighter  => Fighter._reactionUsed.set(reactionUsed)(c)
+
+        case c: Barbarian => Barbarian._reactionUsed.set(reactionUsed)(c)
+        case c: Berserker => Berserker._reactionUsed.set(reactionUsed)(c)
+
+        case c: Cleric => Cleric._reactionUsed.set(reactionUsed)(c)
+
+        case c: Rogue => Rogue._reactionUsed.set(reactionUsed)(c)
+
+        case _ =>
+          throw new NotImplementedError(
+            "Missing playerReactionUsedLens lens for your new implementation of Player!")
       }
   }
 

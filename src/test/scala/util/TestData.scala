@@ -18,6 +18,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
@@ -153,6 +154,7 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
+    def withReactionUsed() = _reactionUsed.set(true)(fighter)
   }
 
   implicit class ChampionOps(val champion: Champion) extends AnyVal {
@@ -368,6 +370,7 @@ trait TestData extends RandomDataGenerator {
         val resistances: List[DamageType]     = List.empty
         val immunities: List[DamageType]      = List.empty
         val bonusActionUsed: Boolean          = false
+        val reactionUsed: Boolean             = false
         val name: String                      = n
         val abilities: List[CombatantAbility] = standardCoreAbilities
         val conditions: List[Condition]       = List.empty
@@ -375,6 +378,9 @@ trait TestData extends RandomDataGenerator {
         val defenseStatus: AttackStatus       = Regular
 
         val skills: Skills = creatureSkills
+
+        val reactionOnHit: Option[OnHitReaction] = None
+        val reactionOnDamage: Option[OnDamageReaction] = None
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
@@ -392,18 +398,19 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
-      lvl              <- arbLevel.arbitrary
-      creature         <- arbCreature.arbitrary
-      profBonus        <- arbProficiencyBonus.arbitrary
+      lvl <- arbLevel.arbitrary
+      creature <- arbCreature.arbitrary
+      profBonus <- arbProficiencyBonus.arbitrary
       savingThrowProfs <- arbSavingThrowProficiencies.arbitrary
     } yield
       new Player {
-        val level: Level             = lvl
+        val level: Level = lvl
         val bonusActionUsed: Boolean = false
+        val reactionUsed: Boolean = false
 
-        val health: Int        = creature.health
-        val maxHealth: Int     = creature.maxHealth
-        val stats: BaseStats   = creature.stats
+        val health: Int = creature.health
+        val maxHealth: Int = creature.maxHealth
+        val stats: BaseStats = creature.stats
         val baseWeapon: Weapon = creature.baseWeapon
 
         val savingThrowProficiencies: NonEmptyList[Attribute] =
@@ -411,19 +418,22 @@ trait TestData extends RandomDataGenerator {
 
         def weapon[_: RS]: Weapon = creature.weapon
 
-        val armour: Armour                     = creature.armour
-        val offHand: Option[Equipment]         = creature.offHand
-        val armourClass: Int                   = creature.armourClass
+        val armour: Armour = creature.armour
+        val offHand: Option[Equipment] = creature.offHand
+        val armourClass: Int = creature.armourClass
         val proficiencyBonus: ProficiencyBonus = profBonus
-        val resistances: List[DamageType]      = creature.resistances
-        val immunities: List[DamageType]       = creature.immunities
-        val name: String                       = creature.name
-        val abilities: List[CombatantAbility]  = creature.abilities
-        val conditions: List[Condition]        = creature.conditions
-        val attackStatus: AttackStatus         = creature.attackStatus
-        val defenseStatus: AttackStatus        = creature.defenseStatus
+        val resistances: List[DamageType] = creature.resistances
+        val immunities: List[DamageType] = creature.immunities
+        val name: String = creature.name
+        val abilities: List[CombatantAbility] = creature.abilities
+        val conditions: List[Condition] = creature.conditions
+        val attackStatus: AttackStatus = creature.attackStatus
+        val defenseStatus: AttackStatus = creature.defenseStatus
 
         val skills: Skills = creature.skills
+
+        val reactionOnHit: Option[OnHitReaction] = creature.reactionOnHit
+        val reactionOnDamage: Option[OnDamageReaction] = creature.reactionOnDamage
 
         def updateHealth[_: RS](dmg: Int,
                                 damageType: DamageType,
@@ -501,6 +511,7 @@ trait TestData extends RandomDataGenerator {
         creature.immunities,
         List.empty, // TODO add core abilities?
         creature.conditions,
+        reactionUsed = false,
         creature.attackStatus,
         creature.defenseStatus,
         turnResetTracker = () => _,
@@ -538,6 +549,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Fighter.standardFighterAbilities,
         player.conditions,
         player.attackStatus,
@@ -569,6 +581,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Champion.standardChampionAbilities,
         player.conditions,
         player.attackStatus,
@@ -596,6 +609,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
         inRage = false,
@@ -625,6 +639,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
         inRage = false,
@@ -659,6 +674,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         bonusActionUsed = player.bonusActionUsed,
+        reactionUsed = player.reactionUsed,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
@@ -684,6 +700,7 @@ trait TestData extends RandomDataGenerator {
         player.resistances,
         player.immunities,
         player.bonusActionUsed,
+        player.reactionUsed,
         Rogue.standardRogueAbilities,
         conditions = player.conditions,
         attackStatus = player.attackStatus,

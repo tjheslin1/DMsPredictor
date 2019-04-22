@@ -14,6 +14,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
@@ -40,6 +41,7 @@ import monocle.macros.{GenLens, Lenses}
                                resistances: List[DamageType] = List.empty,
                                immunities: List[DamageType] = List.empty,
                                bonusActionUsed: Boolean = false,
+                               reactionUsed: Boolean = false,
                                attackStatus: AttackStatus = Regular,
                                defenseStatus: AttackStatus = Regular,
                                concentratingSpell: Option[Spell] = None,
@@ -62,6 +64,9 @@ import monocle.macros.{GenLens, Lenses}
       handleConcentration(updatedCleric, damageTaken)
     else updatedCleric
   }
+
+  val reactionOnHit: Option[OnHitReaction]       = None
+  val reactionOnDamage: Option[OnDamageReaction] = None
 }
 
 object Cleric {
