@@ -154,6 +154,7 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
+    def withReactionUsed() = _reactionUsed.set(true)(fighter)
   }
 
   implicit class ChampionOps(val champion: Champion) extends AnyVal {

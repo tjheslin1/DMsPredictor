@@ -68,12 +68,28 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
           val queue =
-            Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
+            Queue(fighter.withBonusActionUsed().withCombatIndex(1),
                   monster.withCombatIndex(2))
 
           val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
           updatedFighter.bonusActionUsed shouldBe false
+        }
+      }
+    }
+
+    "reset player's reaction to unused" in {
+      forAll { (fighter: Fighter, monster: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+          val queue =
+            Queue(fighter.withReactionUsed().withCombatIndex(1),
+                  monster.withCombatIndex(2))
+
+          val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
+
+          updatedFighter.reactionUsed shouldBe false
         }
       }
     }
