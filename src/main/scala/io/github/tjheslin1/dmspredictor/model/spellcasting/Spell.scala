@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.model._
 
 import scala.annotation.tailrec
 
-abstract class Spell {
+trait Spell {
 
   val name: String
   val school: SchoolOfMagic
@@ -70,4 +70,11 @@ object Spell {
                                     target: Creature): Boolean =
     savingThrowPassed(spellSaveDc(caster), attribute, target)
 
+  def spellAttack[_: RS](spellCaster: SpellCaster, target: Creature): AttackResult =
+    D20.roll() match {
+      case roll if spellCaster.scoresCritical(roll) => CriticalHit
+      case 1                                        => CriticalMiss
+      case roll =>
+        if ((roll + spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
+    }
 }

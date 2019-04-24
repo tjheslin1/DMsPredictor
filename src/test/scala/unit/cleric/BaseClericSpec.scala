@@ -45,7 +45,6 @@ class BaseClericSpec extends UnitSpecBase {
     }
   }
 
-
   private abstract class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
   }
