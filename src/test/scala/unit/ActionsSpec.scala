@@ -473,7 +473,7 @@ class ActionsSpec extends UnitSpecBase {
       val singleTarget: Boolean = true
 
       val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneAction
+      val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
 
       def conditionFrom(spellCaster: SpellCaster): Condition =

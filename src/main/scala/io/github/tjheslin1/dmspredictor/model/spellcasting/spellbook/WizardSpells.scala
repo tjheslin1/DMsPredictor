@@ -16,7 +16,7 @@ object WizardSpells {
     val damageType: DamageType = Fire
 
     val school                 = Evocation
-    val castingTime            = OneAction
+    val castingTime            = OneActionCast
     val spellTargetStyle       = RangedSpellAttack
     val spellLevel: SpellLevel = 0
     val requiresConcentration  = false
@@ -32,7 +32,7 @@ object WizardSpells {
     val damageType: DamageType = Force
 
     val school                 = Evocation
-    val castingTime            = OneAction
+    val castingTime            = OneActionCast
     val spellTargetStyle       = RangedSpellAttack
     val spellLevel: SpellLevel = 1
     val requiresConcentration  = false
@@ -65,15 +65,15 @@ object WizardSpells {
     val damageType   = Acid
 
     val school                 = Evocation
-    val castingTime            = OneAction
+    val castingTime            = OneActionCast
     val spellLevel: SpellLevel = 2
     val requiresConcentration  = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = 4 * D4
 
     override def effect[_: RS](spellCaster: SpellCaster,
-                      spellLevel: SpellLevel,
-                      targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+                               spellLevel: SpellLevel,
+                               targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
       val target       = targets.head
       val attackResult = spellAttack(spellCaster, target.creature)
 

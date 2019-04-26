@@ -58,7 +58,6 @@ object Wizard {
 
   val standardWizardSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
-    (MagicMissile.spellLevel, MagicMissile.spellEffect)         -> MagicMissile,
-
+    (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
   )
 }

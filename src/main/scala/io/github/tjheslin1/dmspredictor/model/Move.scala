@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
 import io.github.tjheslin1.dmspredictor.model.ability.{AbilityAction, BonusAction}
+import io.github.tjheslin1.dmspredictor.model.condition.{EndOfTurnCondition, StartOfTurnCondition}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -30,7 +31,7 @@ object Move extends LazyLogging {
     }
 
     val (conditionHandledCombatant, missesTurn) =
-      handleCondition(resetUnactedCombatant)
+      handleStartOfTurnConditions(resetUnactedCombatant)
 
     val otherCombatants = others.toList
 
@@ -55,19 +56,26 @@ object Move extends LazyLogging {
 
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
 
-      availableBonusAction(actedCombatant, updatedOthersTargets).fold(
-        Queue(updatedOthersTargets: _*).append(actedCombatant)) { bonusActionAbility =>
-        useBonusActionAbility(actedCombatant, updatedOthersTargets, bonusActionAbility, focus)
-      }
+      val (bonusActionUsedCombatant, updatedOthers) =
+        availableBonusAction(actedCombatant, updatedOthersTargets).fold(
+          (actedCombatant, updatedOthersTargets)) { bonusActionAbility =>
+          useBonusActionAbility(actedCombatant, updatedOthersTargets, bonusActionAbility, focus)
+        }
+
+      val endOfTurnConditionHandledCombatant =
+        handleEndOfTurnConditions(bonusActionUsedCombatant)
+
+      Queue(updatedOthers: _*).append(endOfTurnConditionHandledCombatant)
     } else {
       others.append(conditionHandledCombatant)
     }
   }
 
-  def handleCondition[_: RS](combatant: Combatant): (Combatant, Boolean) = {
+  def handleStartOfTurnConditions[_: RS](combatant: Combatant): (Combatant, Boolean) = {
     val updatedCombatant = Combatant.creatureLens.set {
       combatant.creature.conditions.foldLeft(combatant.creature) {
-        case (creature, condition) => condition.handle(creature)
+        case (creature, condition: StartOfTurnCondition) => condition.handleStartOfTurn(creature)
+        case (creature, _)                               => creature
       }
     }(combatant)
 
@@ -76,18 +84,25 @@ object Move extends LazyLogging {
     (updatedCombatant, missesTurn)
   }
 
+  def handleEndOfTurnConditions[_: RS](combatant: Combatant): Combatant =
+    Combatant.creatureLens.set {
+      combatant.creature.conditions.foldLeft(combatant.creature) {
+        case (creature, condition: EndOfTurnCondition) => condition.handleEndOfTurn(creature)
+        case (creature, _)                             => creature
+      }
+    }(combatant)
+
   def useBonusActionAbility[_: RS](combatant: Combatant,
                                    others: List[Combatant],
                                    bonusActionAbility: CombatantAbility,
-                                   focus: Focus): Queue[Combatant] = {
+                                   focus: Focus): (Combatant, List[Combatant]) = {
     val (bonusActionUsedAttacker, updatedOthersAfterBonusAction) =
       bonusActionAbility(combatant).useAbility(others, focus)
 
     val updatedBonusActionUsedAttacker = Combatant.creatureLens.set(
       bonusActionAbility(bonusActionUsedAttacker).update)(bonusActionUsedAttacker)
 
-    Queue(others.replace(updatedOthersAfterBonusAction): _*)
-      .append(updatedBonusActionUsedAttacker)
+    (updatedBonusActionUsedAttacker, others.replace(updatedOthersAfterBonusAction))
   }
 
   private def availableActionAbility(attacker: Combatant,

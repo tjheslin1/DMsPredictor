@@ -17,8 +17,8 @@ package object spellcasting {
 
   sealed trait CastingTime extends Product with Serializable
 
-  case object OneAction   extends CastingTime
-  case object BonusAction extends CastingTime
+  case object OneActionCast   extends CastingTime
+  case object BonusActionCast extends CastingTime
 
   sealed trait SpellTargetStyle extends Product with Serializable
 

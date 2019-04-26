@@ -5,7 +5,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed, StartOfTurnCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -19,7 +19,7 @@ object ClericSpells extends LazyLogging {
     val damageType: DamageType         = Radiant
     val name                           = "Sacred Flame"
     val school: SchoolOfMagic          = Evocation
-    val castingTime: CastingTime       = OneAction
+    val castingTime: CastingTime       = OneActionCast
     val spellLevel: SpellLevel         = 0
     val requiresConcentration: Boolean = false
 
@@ -33,7 +33,7 @@ object ClericSpells extends LazyLogging {
     val damageType: DamageType             = Radiant
     val name                               = "Guiding Bolt"
     val school: SchoolOfMagic              = Evocation
-    val castingTime: CastingTime           = OneAction
+    val castingTime: CastingTime           = OneActionCast
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
@@ -44,7 +44,7 @@ object ClericSpells extends LazyLogging {
   case object CureWounds extends SingleTargetHealingSpell {
     val name                               = "Cure Wounds"
     val school: SchoolOfMagic              = Evocation
-    val castingTime: CastingTime           = OneAction
+    val castingTime: CastingTime           = OneActionCast
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
@@ -60,7 +60,7 @@ object ClericSpells extends LazyLogging {
     val attribute: Attribute  = Wisdom
 
     val school: SchoolOfMagic    = Enchantment
-    val castingTime: CastingTime = OneAction
+    val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 2
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
@@ -74,7 +74,7 @@ object ClericSpells extends LazyLogging {
     val attribute: Attribute  = Wisdom
 
     val school: SchoolOfMagic    = Conjuration
-    val castingTime: CastingTime = OneAction
+    val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 3
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
@@ -85,11 +85,11 @@ object ClericSpells extends LazyLogging {
                                       turnsLeft: Int,
                                       attribute: Attribute,
                                       name: String = "Spirit Guardians (attack)")
-      extends Condition {
+      extends StartOfTurnCondition {
     val missesTurn: Boolean     = false
     val handleOnDamage: Boolean = false
 
-    def handle[_: RS](creature: Creature): Creature = {
+    def handleStartOfTurn[_: RS](creature: Creature): Creature = {
       val damage = 3 * D8
 
       logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
@@ -99,7 +99,5 @@ object ClericSpells extends LazyLogging {
       else
         creature.updateHealth(damage, Radiant, Hit)
     }
-
-    def handleOnDamage[_: RS](creature: Creature): Creature = creature
   }
 }

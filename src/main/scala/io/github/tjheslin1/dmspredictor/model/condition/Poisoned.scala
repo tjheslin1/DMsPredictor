@@ -10,6 +10,7 @@ import monocle.macros.Lenses
   val missesTurn: Boolean     = false
   val handleOnDamage: Boolean = false
 
-  def handle[_: RS](creature: Creature): Creature         = ???
-  def handleOnDamage[_: RS](creature: Creature): Creature = creature
+  def handleStartOfTurn[_: RS](creature: Creature): Creature = ???
+  def handleOnDamage[_: RS](creature: Creature): Creature    = creature
+  def handleEndOfTurn[_: RS](creature: Creature): Creature   = ???
 }
