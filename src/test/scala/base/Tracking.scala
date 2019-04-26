@@ -85,8 +85,9 @@ trait Tracking {
   var multiMeleeSpellUsedCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel, concentration: Boolean = false): Spell =
     new MultiTargetSavingThrowSpell {
-      val damageType: DamageType         = Fire
       val name: String                   = s"tracked-multi-melee-spell-${spellLvl.value}"
+      val damageType: DamageType         = Fire
+
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl

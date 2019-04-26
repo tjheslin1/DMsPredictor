@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.wizard
 
 import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
@@ -25,11 +26,12 @@ import monocle.macros.{GenLens, Lenses}
                                skills: Skills,
                                cantripKnown: Option[Spell],
                                spellSlots: SpellSlots,
-                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = ???,
+                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =
+                                 Wizard.standardWizardSpellList,
                                mageArmourPrepared: Boolean = true,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
-                               abilities: List[CombatantAbility] = ???,
+                               abilities: List[CombatantAbility] = Wizard.standardWizardAbilities,
                                conditions: List[Condition] = List.empty,
                                proficiencyBonus: ProficiencyBonus = 0,
                                resistances: List[DamageType] = List.empty,
@@ -60,10 +62,14 @@ object Wizard {
   val standardWizardSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
     (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
+    (AcidArrow.spellLevel, AcidArrow.spellEffect)       -> AcidArrow,
     (Fireball.spellLevel, Fireball.spellEffect)         -> Fireball
   )
 
-  val standardWizardAbilities: List[CombatantAbility] = List()
+  val standardWizardAbilities: List[CombatantAbility] = List(
+    castMultiTargetOffensiveSpell(1),
+    castSingleTargetOffensiveSpell(2)
+  )
 
   val strengthLens: Lens[Wizard, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Wizard, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)

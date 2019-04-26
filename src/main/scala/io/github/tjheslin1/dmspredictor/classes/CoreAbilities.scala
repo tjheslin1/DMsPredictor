@@ -241,16 +241,25 @@ object CoreAbilities extends LazyLogging {
       val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean =
-        spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+
+      def conditionMet: Boolean = {
+        val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
+          .fold(spellCaster.cantripKnown.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
+
+        optMaxSpellLevel.fold(false) { maxSpellLevel =>
+          spellCaster.level >= spellCaster.levelSpellcastingLearned &&
           (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined) &&
           spellCaster.spellsKnown.exists {
-            case ((_, spellEffect: SpellEffect), _) =>
+            case ((spellLvl, spellEffect: SpellEffect), _: MultiTargetSavingThrowSpell)
+                if spellLvl <= maxSpellLevel =>
               spellEffect match {
                 case DamageSpell => true
                 case _           => false
               }
+            case _ => false
           }
+        }
+      }
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -258,36 +267,30 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val (optSpell, spellLevelToUse) =
-          (spellCaster.cantripKnown, highestSpellSlot) match {
-            case (cantrip, None) =>
-              (cantrip, 0)
-            case (cantrip, Some(spellSlot)) =>
+          highestSpellSlot match {
+            case None => (none[Spell], 0)
+            case Some(spellSlot) =>
               val optSpell =
-                spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)
-              optSpell.fold((cantrip, 0)) { foundSpell =>
+                spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel, multiAttackOnly = true)
+              optSpell.fold((none[Spell], 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
           }
 
-        val target = nextToFocus(combatant, monsters(others), focus)
+        val updatedTargets = optSpell.fold(others) { spell =>
+          monsters(others).map { target =>
+            val (_, List(updatedTarget)) =
+              spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), List(target))
 
-        (target, optSpell) match {
-          case (_, None) => (combatant, others)
-          case (None, _) => (combatant, others)
-          case (Some(spellTarget), Some(spell)) =>
-            val (updatedSpellCaster, List(updatedTarget)) =
-              spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), List(spellTarget))
-
-            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
-
-            (updatedCombatant, others.replace(updatedTarget))
+            updatedTarget
+          }
         }
+
+        (combatant, others.replace(updatedTargets))
       }
 
       def update: Creature = updateSpellSlot(spellCaster, DamageSpell)
-
     }
-
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))

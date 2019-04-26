@@ -104,15 +104,15 @@ object WizardSpells {
   }
 
   case object Fireball extends MultiTargetSavingThrowSpell {
-    val name: String = "Fireball"
+    val name: String           = "Fireball"
     val damageType: DamageType = Fire
 
-    val school: SchoolOfMagic = Evocation
+    val school: SchoolOfMagic    = Evocation
     val castingTime: CastingTime = OneActionCast
 
-    val attribute: Attribute = Dexterity
-    val halfDamageOnSave: Boolean = true
-    val spellLevel: SpellLevel = 3
+    val attribute: Attribute           = Dexterity
+    val halfDamageOnSave: Boolean      = true
+    val spellLevel: SpellLevel         = 3
     val requiresConcentration: Boolean = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8

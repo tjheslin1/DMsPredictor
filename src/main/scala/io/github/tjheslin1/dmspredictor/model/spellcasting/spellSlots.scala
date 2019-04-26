@@ -38,7 +38,8 @@ object SpellSlots {
     case SpellSlots(_, secondLevel @ SecondLevelSpellSlots(count), _) if count > 0 =>
       secondLevel.some
     case SpellSlots(firstLevel @ FirstLevelSpellSlots(count), _, _) if count > 0 => firstLevel.some
-    case _                                                                       => none[SpellSlot]
+
+    case _ => none[SpellSlot]
   }
 
   val firstLevelSpellSlotLens: Lens[SpellSlots, FirstLevelSpellSlots] =

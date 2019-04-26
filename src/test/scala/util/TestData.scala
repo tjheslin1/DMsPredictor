@@ -10,7 +10,6 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
-import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric.clericSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
@@ -82,6 +81,15 @@ object TestData {
         Intelligence -> intelligence,
         Charisma     -> charisma
       )
+
+      _savingThrowScores.set(savingThrowScores)(testMonster)
+    }
+
+    def withDexteritySavingThrowScore(dexScore: Int) = {
+      val savingThrowScores = testMonster.savingThrowScores.map {
+        case (Dexterity, _) => Dexterity -> dexScore
+        case (attribute, score) => attribute -> score
+      }
 
       _savingThrowScores.set(savingThrowScores)(testMonster)
     }
@@ -225,7 +233,7 @@ object TestData {
       _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
         wizard)
     def withAllSpellSlotsAvailableForLevel(level: Level) =
-      _spellSlots.set(clericSpellSlots(level))(wizard)
+      _spellSlots.set(wizardSpellSlots(level))(wizard)
 
     def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(wizard)
     def withNoCantrip()             = _cantripKnown.set(none[Spell])(wizard)

@@ -1,11 +1,12 @@
 package io.github.tjheslin1.dmspredictor
 
+import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
-import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
+import io.github.tjheslin1.dmspredictor.classes.wizard.{BaseWizard, Wizard}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
@@ -14,28 +15,27 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
-  val rogueHp   = BaseRogue.calculateHealth(LevelFive, 14)
-  val profBonus = ProficiencyBonus.fromLevel(LevelFive)
+  val wizardHp = BaseWizard.calculateHealth(LevelFive, 14)
 
-  val rogue = Rogue(
+  val wizard = Wizard(
     LevelFive,
-    rogueHp,
-    rogueHp,
-    BaseStats(10, 14, 14, 10, 14, 10),
+    wizardHp,
+    wizardHp,
+    BaseStats(10, 10, 14, 14, 14, 10),
     Shortsword,
-    Skills(perception = 2 + profBonus, stealth = 2 + profBonus),
-    NoArmour,
-    proficiencyBonus = profBonus,
-    name = "Rogue"
+    Skills(10, 10),
+    FireBolt.some,
+    Wizard.wizardSpellSlots(LevelFive),
+    name = "Wizard"
   )
 
   val creatures = List(
-    rogue,
-    Goblin.withName("goblin-1"),
-    Goblin.withName("goblin-2")
+    wizard,
+    Goblin(50, 50, name = "goblin-1"),
+    Goblin(50, 50, name = "goblin-2")
   )
 
-  val simulation = "Rogue vs Goblins"
+  val simulation = "Wizard vs Goblins"
   val (losses, wins) =
     SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
 
