@@ -99,23 +99,45 @@ trait Tracking {
       }
     }
 
-  var savingThrowSpellUsedCount = 0
-  def trackedSavingThrowSpell(spellLvl: SpellLevel,
-                              savingAttribute: Attribute,
-                              damageOnSave: Boolean = false): Spell =
+  var singleSavingThrowSpellUsedCount = 0
+  def trackedSingleTargetSavingThrowSpell(spellLvl: SpellLevel,
+                                          savingAttribute: Attribute,
+                                          damageOnSave: Boolean = false): Spell =
     new SingleTargetSavingThrowSpell() {
       val attribute: Attribute      = savingAttribute
       val halfDamageOnSave: Boolean = damageOnSave
 
       val damageType: DamageType         = Fire
-      val name: String                   = "tracked-saving-throw-spell-test"
+      val name: String                   = "tracked-single-target-saving-throw-spell-test"
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration: Boolean = false
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        savingThrowSpellUsedCount += 1
+        singleSavingThrowSpellUsedCount += 1
+        4
+      }
+    }
+
+  var multiSavingThrowSpellUsedCount = 0
+  def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
+                                         savingAttribute: Attribute,
+                                         damageOnSave: Boolean = false): Spell =
+    new MultiTargetSavingThrowSpell {
+      val attribute: Attribute = savingAttribute
+      val halfDamageOnSave: Boolean = damageOnSave
+      val damageType: DamageType = Fire
+
+
+      val name: String = "tracked-multi-target-saving-throw-spell-test"
+      val school: SchoolOfMagic = Evocation
+      val castingTime: CastingTime = OneActionCast
+      val spellLevel: SpellLevel = spellLvl
+      val requiresConcentration: Boolean = false
+
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+        multiSavingThrowSpellUsedCount += 1
         4
       }
     }

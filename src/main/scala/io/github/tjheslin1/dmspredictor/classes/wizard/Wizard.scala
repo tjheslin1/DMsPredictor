@@ -59,6 +59,7 @@ object Wizard {
   val standardWizardSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
     (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
+    (Fireball.spellLevel, Fireball.spellEffect)         -> Fireball
   )
 
   val standardWizardAbilities: List[CombatantAbility] = List()

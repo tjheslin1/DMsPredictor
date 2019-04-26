@@ -120,7 +120,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val trackedCleric = cleric
-            .withSpellKnown(trackedSavingThrowSpell(2, Wisdom))
+            .withSpellKnown(trackedSingleTargetSavingThrowSpell(2, Wisdom))
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withProficiencyBonus(6)
@@ -133,7 +133,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castSingleTargetOffensiveSpell(Priority)(trackedCleric)
             .useAbility(List(monster), LowestFirst)
 
-          savingThrowSpellUsedCount shouldBe 1
+          singleSavingThrowSpellUsedCount shouldBe 1
         }
       }
     }
@@ -144,7 +144,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val trackedCleric = cleric
-            .withSpellKnown(trackedSavingThrowSpell(2, Wisdom))
+            .withSpellKnown(trackedSingleTargetSavingThrowSpell(2, Wisdom))
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withProficiencyBonus(6)
@@ -158,7 +158,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetOffensiveSpell(Priority)(trackedCleric.withCombatIndex(1))
               .useAbility(List(monster), LowestFirst)
 
-          savingThrowSpellUsedCount shouldBe 1
+          singleSavingThrowSpellUsedCount shouldBe 1
         }
       }
     }
@@ -193,8 +193,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedCleric = cleric
-            .withCantrip(trackedSavingThrowSpell(0, Wisdom))
-            .withSpellsKnown(trackedSavingThrowSpell(0, Wisdom), trackedHealingSpell(3))
+            .withCantrip(trackedSingleTargetSavingThrowSpell(0, Wisdom))
+            .withSpellsKnown(trackedSingleTargetSavingThrowSpell(0, Wisdom), trackedHealingSpell(3))
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
@@ -219,7 +219,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val noSpellSlotsCleric = cleric
             .withCantrip(trackedMeleeSpellAttack(0))
-            .withSpellKnown(trackedSavingThrowSpell(1, Wisdom))
+            .withSpellKnown(trackedSingleTargetSavingThrowSpell(1, Wisdom))
             .withNoSpellSlotsAvailable()
             .withWisdom(24)
             .withCombatIndex(1)
@@ -229,7 +229,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric)
             .useAbility(List(monster), LowestFirst)
 
-          savingThrowSpellUsedCount shouldBe 0
+          singleSavingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
         }
       }
@@ -522,7 +522,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val concentrationConditionSpell = trackedConditionSpell(spellLvl = 2)
 
       val concentratingCleric = random[Cleric]
-        .withSpellsKnown(concentrationConditionSpell, trackedSavingThrowSpell(1, Wisdom))
+        .withSpellsKnown(concentrationConditionSpell, trackedSingleTargetSavingThrowSpell(1, Wisdom))
         .withConcentrating(concentrationConditionSpell.some)
         .withLevel(LevelThree)
         .withCombatIndex(1)

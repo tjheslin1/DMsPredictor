@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition}
+import io.github.tjheslin1.dmspredictor.model.condition.AcidArrowCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -101,5 +101,20 @@ object WizardSpells {
 
       (spellCaster, targets.replace(udpdatedTarget))
     }
+  }
+
+  case object Fireball extends MultiTargetSavingThrowSpell {
+    val name: String = "Fireball"
+    val damageType: DamageType = Fire
+
+    val school: SchoolOfMagic = Evocation
+    val castingTime: CastingTime = OneActionCast
+
+    val attribute: Attribute = Dexterity
+    val halfDamageOnSave: Boolean = true
+    val spellLevel: SpellLevel = 3
+    val requiresConcentration: Boolean = false
+
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
   }
 }

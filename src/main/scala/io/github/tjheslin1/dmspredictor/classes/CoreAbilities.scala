@@ -134,7 +134,6 @@ object CoreAbilities extends LazyLogging {
     }
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
-
   def castSingleTargetHealingSpell(currentOrder: Int, bonusHealing: Int = 0)(
       combatant: Combatant): Ability =
     new Ability(combatant) {

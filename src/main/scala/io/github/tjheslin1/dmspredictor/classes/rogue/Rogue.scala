@@ -44,7 +44,6 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
-  // TODO: Uncanny dodge
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
