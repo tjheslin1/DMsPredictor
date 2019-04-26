@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
@@ -13,7 +14,8 @@ import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitR
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
-import monocle.macros.Lenses
+import monocle.Lens
+import monocle.macros.{GenLens, Lenses}
 
 @Lenses("_") case class Wizard(level: Level,
                                health: Int,
@@ -25,6 +27,7 @@ import monocle.macros.Lenses
                                spellSlots: SpellSlots,
                                spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = ???,
                                mageArmourPrepared: Boolean = true,
+                               armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
                                abilities: List[CombatantAbility] = ???,
                                conditions: List[Condition] = List.empty,
@@ -38,8 +41,6 @@ import monocle.macros.Lenses
                                concentratingSpell: Option[Spell] = None,
                                name: String = NameGenerator.randomName)
     extends BaseWizard {
-
-  val armour: Armour = NoArmour
 
   val savingThrowProficiencies = NonEmptyList.of(Intelligence, Wisdom)
 
@@ -63,6 +64,13 @@ object Wizard {
   )
 
   val standardWizardAbilities: List[CombatantAbility] = List()
+
+  val strengthLens: Lens[Wizard, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Wizard, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Wizard, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[Wizard, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[Wizard, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[Wizard, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
   // format: off
   def wizardSpellSlots(level: Level): SpellSlots = level match {

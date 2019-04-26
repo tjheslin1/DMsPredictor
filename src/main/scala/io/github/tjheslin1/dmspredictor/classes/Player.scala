@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
@@ -42,6 +43,8 @@ object Player {
 
         case c: Rogue => Rogue._bonusActionUsed.set(bonusUsed)(c)
 
+        case c: Wizard => Wizard._bonusActionUsed.set(bonusUsed)(c)
+
         case _ =>
           throw new NotImplementedError(
             "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
@@ -61,6 +64,8 @@ object Player {
 
         case c: Rogue => Rogue._reactionUsed.set(reactionUsed)(c)
 
+        case c: Wizard => Wizard._reactionUsed.set(reactionUsed)(c)
+
         case _ =>
           throw new NotImplementedError(
             "Missing playerReactionUsedLens lens for your new implementation of Player!")
@@ -79,6 +84,8 @@ object Player {
         case c: Cleric => Cleric._proficiencyBonus.set(profBonus)(c)
 
         case c: Rogue => Rogue._proficiencyBonus.set(profBonus)(c)
+
+        case c: Wizard => Wizard._proficiencyBonus.set(profBonus)(c)
 
         case _ =>
           throw new NotImplementedError(

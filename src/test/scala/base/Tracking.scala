@@ -82,6 +82,24 @@ trait Tracking {
       }
     }
 
+  var multiMeleeSpellUsedCount = 0
+  def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel, concentration: Boolean = false): Spell =
+    new MultiTargetSavingThrowSpell {
+      val damageType: DamageType         = Fire
+      val name: String                   = s"tracked-multi-melee-spell-${spellLvl.value}"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneActionCast
+      val spellLevel: SpellLevel         = spellLvl
+      val requiresConcentration: Boolean = concentration
+      val attribute: Attribute = Dexterity
+      val halfDamageOnSave: Boolean = false
+
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+        multiMeleeSpellUsedCount += 1
+        4
+      }
+    }
+
   var trackedHealingSpellUsed      = false
   var trackedHealingSpellUsedCount = 0
   def trackedHealingSpell(spellLvl: SpellLevel, healingDone: Int = 1): Spell =

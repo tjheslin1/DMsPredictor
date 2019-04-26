@@ -7,8 +7,10 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
@@ -75,7 +77,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withAbilities(
               List(extraAttack(Priority),
                    trackedAbility(2, action = WholeAction),
-                otherTrackedAbility(3, action = SingleAttack)))
+                   otherTrackedAbility(3, action = SingleAttack)))
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
@@ -474,7 +476,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "spend the highest available spell slot" in {
-      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+      forAll {  cleric: Cleric =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
@@ -486,8 +488,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .asInstanceOf[Cleric]
 
           val clericCombatant = trackedCleric.withCombatIndex(1)
-
-          val monster = testMonster.withArmourClass(10).withCombatIndex(2)
 
           val updatedCleric: Cleric =
             castConcentrationSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
@@ -522,12 +522,138 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val concentrationConditionSpell = trackedConditionSpell(spellLvl = 2)
 
       val concentratingCleric = random[Cleric]
-        .withSpellsKnown(concentrationConditionSpell, trackedSingleTargetSavingThrowSpell(1, Wisdom))
+        .withSpellsKnown(concentrationConditionSpell,
+                         trackedSingleTargetSavingThrowSpell(1, Wisdom))
         .withConcentrating(concentrationConditionSpell.some)
         .withLevel(LevelThree)
         .withCombatIndex(1)
 
       castConcentrationSpell(Priority)(concentratingCleric).conditionMet shouldBe false
+    }
+  }
+
+  "castMultiTargetOffensiveSpell" should {
+
+    "cast a spell (spell attack)" in {
+      forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedWizard = wizard
+            .withSpellKnown(trackedMultiMeleeSpellAttack(2))
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withLevel(LevelThree)
+            .withCombatIndex(1)
+
+          val monsterOne = testMonsterOne.withArmourClass(10).withCombatIndex(2)
+          val monsterTwo = testMonsterTwo.withArmourClass(10).withCombatIndex(3)
+
+          castMultiTargetOffensiveSpell(Priority)(trackedWizard)
+            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+
+          multiMeleeSpellUsedCount shouldBe 2
+        }
+      }
+    }
+
+    "cast a spell (saving throw) using the highest available spell slot" in {
+      forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedWizard = wizard
+            .withSpellKnown(trackedMultiTargetSavingThrowSpell(2, Wisdom))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withProficiencyBonus(6)
+            .withLevel(LevelFive)
+            .withIntelligence(10)
+            .withCombatIndex(1)
+
+          val monsterOne = testMonsterOne.withWisdom(10).withCombatIndex(2)
+          val monsterTwo = testMonsterTwo.withWisdom(10).withCombatIndex(3)
+
+          castMultiTargetOffensiveSpell(Priority)(trackedWizard)
+            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+
+          multiSavingThrowSpellUsedCount shouldBe 2
+        }
+      }
+    }
+
+    "cast a spell (saving throw) using the highest available spell slot which has a damaging spell" in {
+      forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedWizard = wizard
+            .withSpellKnown(trackedMultiTargetSavingThrowSpell(2, Wisdom))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withProficiencyBonus(6)
+            .withLevel(LevelFive)
+            .withIntelligence(10)
+            .asInstanceOf[Wizard]
+
+          val monsterOne = testMonsterOne.withWisdom(10).withCombatIndex(2)
+          val monsterTwo = testMonsterTwo.withWisdom(10).withCombatIndex(3)
+
+          val (Combatant(_, updatedCleric: Cleric), _) =
+            castMultiTargetOffensiveSpell(Priority)(trackedWizard.withCombatIndex(1))
+              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+
+          multiSavingThrowSpellUsedCount shouldBe 2
+        }
+      }
+    }
+
+    "spend the highest available spell slot" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedWizard = wizard
+            .withSpellKnown(trackedMultiMeleeSpellAttack(1))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
+
+          val wizardCombatant = trackedWizard.withCombatIndex(1)
+
+          val updatedWizard: Wizard =
+            castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
+
+          updatedWizard.spellSlots.thirdLevel.count shouldBe (trackedWizard.spellSlots.thirdLevel.count - 1)
+        }
+      }
+    }
+
+    "not meet the condition if the Spell Caster has only a damaging cantrip to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Wizard]
+        .withCantrip(trackedSingleTargetSavingThrowSpell(0, Wisdom))
+        .withSpellsKnown(List.empty[Spell]: _*)
+        .withCombatIndex(1)
+
+      castMultiTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Spell Caster has no damaging spell to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Cleric].withNoCantrip().withSpellKnown(CureWounds).withCombatIndex(1)
+
+      castMultiTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withNoCantrip()
+        .withNoSpellSlotsAvailable()
+        .withCombatIndex(1)
+
+      castMultiTargetOffensiveSpell(Priority)(wizard).conditionMet shouldBe false
     }
   }
 
