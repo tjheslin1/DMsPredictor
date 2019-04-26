@@ -1,11 +1,13 @@
 package io.github.tjheslin1.dmspredictor.classes.wizard
 
-import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 
-trait BaseWizard extends Player with Product with Serializable {
+trait BaseWizard extends Player with SpellCaster {
+
+  val levelSpellcastingLearned: Level = LevelOne
 
   val mageArmourPrepared: Boolean
 

@@ -60,4 +60,17 @@ object Wizard {
     (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
     (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
   )
+
+  val standardWizardAbilities: List[CombatantAbility] = List()
+
+  // format: off
+  def wizardSpellSlots(level: Level): SpellSlots = level match {
+    case LevelOne => SpellSlots(2, 0, 0)
+    case LevelTwo => SpellSlots(3, 0, 0)
+    case LevelThree => SpellSlots(4, 2, 0)
+    case LevelFour => SpellSlots(4, 3, 0)
+    case LevelFive => SpellSlots(4, 3, 2)
+    case LevelTwenty => SpellSlots(4, 3, 3)
+  }
+  // format: on
 }

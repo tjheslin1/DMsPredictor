@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -91,11 +91,11 @@ object WizardSpells {
 
       val udpdatedTarget = attackResult match {
         case CriticalHit | Hit =>
-          val acidArrowCondition: Condition = ???
+          val acidArrowCondition = AcidArrowCondition()
 
-          val currentConditions = target.creature.conditions
+          val currentConditions = damagedTarget.creature.conditions
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-            .set(currentConditions ++ List(acidArrowCondition))(target)
+            .set(currentConditions ++ List(acidArrowCondition))(damagedTarget)
         case CriticalMiss | Miss => damagedTarget
       }
 

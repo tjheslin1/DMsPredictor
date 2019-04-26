@@ -12,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -21,6 +22,7 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.FireBolt
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
@@ -695,7 +697,7 @@ trait TestData extends RandomDataGenerator {
         player.baseWeapon,
         player.skills,
         player.armour,
-        player.offHand,
+        none[Equipment],
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
@@ -707,5 +709,37 @@ trait TestData extends RandomDataGenerator {
         defenseStatus = player.defenseStatus,
         name = player.name
       )
+  }
+
+  implicit val arbWizard: Arbitrary[Wizard] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield {
+      Wizard(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.skills,
+        FireBolt.some,
+        Wizard.wizardSpellSlots(player.level),
+        Wizard.standardWizardSpellList,
+        mageArmourPrepared = true,
+        none[Equipment],
+        Wizard.standardWizardAbilities,
+        player.conditions,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        player.reactionUsed,
+        player.attackStatus,
+        player.defenseStatus,
+        concentratingSpell = none[Spell],
+        name = player.name
+      )
+    }
   }
 }
