@@ -255,6 +255,23 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
       castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
     }
+
+    "not meet the condition if the Spell Caster cannot cast any Single Target spells at its level" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val wizardCombatant = wizard
+            .withNoCantrip()
+            .withSpellsKnown(trackedHealingSpell(2), trackedSingleTargetSavingThrowSpell(3, Wisdom))
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .withCombatIndex(1)
+
+          castSingleTargetOffensiveSpell(Priority)(wizardCombatant).conditionMet shouldBe false
+        }
+      }
+    }
   }
 
   "castSingleTargetHealingSpell" should {
@@ -401,6 +418,23 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
 
       castSingleTargetHealingSpell(Priority)(cleric).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Spell Caster cannot cast any healing spells at its level" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val wizardCombatant = wizard
+            .withNoCantrip()
+            .withSpellsKnown(trackedSingleTargetSavingThrowSpell(2, Wisdom), trackedHealingSpell(3))
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .withCombatIndex(1)
+
+          castSingleTargetHealingSpell(Priority)(wizardCombatant).conditionMet shouldBe false
+        }
+      }
     }
   }
 

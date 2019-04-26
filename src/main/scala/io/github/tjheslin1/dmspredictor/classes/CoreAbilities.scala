@@ -86,16 +86,33 @@ object CoreAbilities extends LazyLogging {
       val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean =
-        spellCaster.level >= spellCaster.levelSpellcastingLearned &&
-          (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined) &&
+//      def conditionMet: Boolean =
+//        spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+//          (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined) &&
+//          spellCaster.spellsKnown.exists {
+//            case ((_, spellEffect: SpellEffect), _) =>
+//              spellEffect match {
+//                case DamageSpell => true
+//                case _           => false
+//              }
+//          }
+
+      def conditionMet: Boolean = {
+        val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
+          .fold(spellCaster.cantripKnown.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
+
+        optMaxSpellLevel.fold(false) { maxSpellLevel =>
+          spellCaster.level >= spellCaster.levelSpellcastingLearned &&
           spellCaster.spellsKnown.exists {
-            case ((_, spellEffect: SpellEffect), _) =>
+            case ((spellLvl, spellEffect: SpellEffect), _) if spellLvl <= maxSpellLevel =>
               spellEffect match {
                 case DamageSpell => true
                 case _           => false
               }
+            case _ => false
           }
+        }
+      }
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -248,7 +265,6 @@ object CoreAbilities extends LazyLogging {
 
         optMaxSpellLevel.fold(false) { maxSpellLevel =>
           spellCaster.level >= spellCaster.levelSpellcastingLearned &&
-          (highestSpellSlotAvailable(spellCaster.spellSlots).isDefined || spellCaster.cantripKnown.isDefined) &&
           spellCaster.spellsKnown.exists {
             case ((spellLvl, spellEffect: SpellEffect), _: MultiTargetSavingThrowSpell)
                 if spellLvl <= maxSpellLevel =>
@@ -271,7 +287,10 @@ object CoreAbilities extends LazyLogging {
             case None => (none[Spell], 0)
             case Some(spellSlot) =>
               val optSpell =
-                spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel, multiAttackOnly = true)
+                spellOfLevelOrBelow(spellCaster,
+                                    DamageSpell,
+                                    spellSlot.spellLevel,
+                                    multiAttackOnly = true)
               optSpell.fold((none[Spell], 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
@@ -295,16 +314,42 @@ object CoreAbilities extends LazyLogging {
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 
-  def spellConditionMet(spellCaster: Player with SpellCaster, effect: SpellEffect): Boolean =
-    spellCaster.level >= spellCaster.levelSpellcastingLearned &&
-      highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
+  /*
+  def conditionMet: Boolean = {
+        val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
+          .fold(spellCaster.cantripKnown.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
+
+        optMaxSpellLevel.fold(false) { maxSpellLevel =>
+          spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+          spellCaster.spellsKnown.exists {
+            case ((spellLvl, spellEffect: SpellEffect), _: MultiTargetSavingThrowSpell)
+                if spellLvl <= maxSpellLevel =>
+              spellEffect match {
+                case DamageSpell => true
+                case _           => false
+              }
+            case _ => false
+          }
+        }
+      }
+   */
+
+  def spellConditionMet(spellCaster: Player with SpellCaster, effect: SpellEffect): Boolean = {
+    val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
+      .fold(none[Int])(_.spellLevel.value.some)
+
+    optMaxSpellLevel.fold(false) { maxSpellLevel =>
+      spellCaster.level >= spellCaster.levelSpellcastingLearned &&
+//        highestSpellSlotAvailable(spellCaster.spellSlots).isDefined &&
       spellCaster.spellsKnown.exists {
-        case ((_, spellEffect: SpellEffect), spell) =>
+        case ((spellLvl, spellEffect: SpellEffect), spell) if spellLvl <= maxSpellLevel =>
           spellEffect match {
             case `effect` if canCastConcentrationSpell(spellCaster, spell) => true
             case _                                                         => false
           }
       }
+    }
+  }
 
   private def canCastConcentrationSpell(spellCaster: SpellCaster, spell: Spell): Boolean =
     if (spell.requiresConcentration)
