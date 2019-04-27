@@ -31,7 +31,7 @@ import monocle.macros.{GenLens, Lenses}
                                 armour: Armour = NoArmour,
                                 offHand: Option[Equipment] = None,
                                 fightingStyles: List[FighterFightingStyle] = List.empty,
-                                abilityUsages: BaseFighterAbilities = allUnused(),
+                                abilityUsages: BaseFighterAbilities = allUnused,
                                 proficiencyBonus: ProficiencyBonus = 0,
                                 resistances: List[DamageType] = List.empty,
                                 immunities: List[DamageType] = List.empty,

@@ -38,10 +38,10 @@ object VampireAbilities extends LazyLogging {
       nextToFocus(combatant, grappledEnemies, focus) match {
         case None => (combatant, others)
         case Some(grappledTarget) =>
-          val attackResult = attack(combatant, Bite, grappledTarget)
+          val (attackResult, hitTarget) = attack(combatant, Bite, grappledTarget)
 
           val (updatedVampireCombatant, updatedTarget, updatedOthers) =
-            resolveDamage(combatant, grappledTarget, others, Bite, attackResult)
+            resolveDamage(combatant, hitTarget, others, Bite, attackResult)
 
           val necroticDamage = attackResult match {
             case CriticalHit  => Bite.necroticDamage + Bite.necroticDamage
@@ -93,26 +93,27 @@ object VampireAbilities extends LazyLogging {
       nextToFocus(combatant, enemies, focus) match {
         case None => (combatant, others)
         case Some(target) =>
-          attack(combatant, UnarmedStrike, target) match {
+          val (attackResult, hitTarget) = attack(combatant, UnarmedStrike, target)
+          attackResult match {
             case CriticalMiss | Miss => (combatant, others)
             case attackResult @ (CriticalHit | Hit) =>
               if (vampire.firstAttack &&
                   enemies.exists(_.creature.conditions
                     .contains(Grappled(UnarmedStrike.GrappleDc))) == false) {
 
-                logger.debug(s"${vampire.name} grapples ${target.creature.name}")
+                logger.debug(s"${vampire.name} grapples ${hitTarget.creature.name}")
 
                 val updatedConditions =
-                  target.creature.conditions :+ Grappled(UnarmedStrike.GrappleDc)
+                  hitTarget.creature.conditions :+ Grappled(UnarmedStrike.GrappleDc)
 
                 val updatedTarget =
                   (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                    .set(updatedConditions)(target)
+                    .set(updatedConditions)(hitTarget)
 
                 (combatant, others.replace(updatedTarget))
               } else {
                 val (updatedVampire, updatedAttackTarget, updatedOthers) =
-                  resolveDamage(combatant, target, others, UnarmedStrike, attackResult)
+                  resolveDamage(combatant, hitTarget, others, UnarmedStrike, attackResult)
 
                 (updatedVampire, updatedOthers.replace(updatedAttackTarget))
               }

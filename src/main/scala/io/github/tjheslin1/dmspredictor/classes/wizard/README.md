@@ -9,3 +9,5 @@ and given it last 8 hours it does not use up an available spell slot.
 when _Fireball_ is available, the Wizard will already have taken the _School of Evocation_
 _Arcane Tradition_ (the only one available in the Systems Reference Document (SRD)) and will be able
 to utilise the _Sculpt Spells_ feature.
+
+- The Wizard will only use a first level spell slot to cast _Shield_.

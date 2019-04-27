@@ -120,28 +120,45 @@ object WizardSpells extends LazyLogging {
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
   }
 
-  case object Shield extends OnHitReaction {
+  case object ShieldSpell extends OnHitReaction {
     val name: String = "Shield (spell)"
 
-    def updateAttackOnReaction[_: RS](reactingCreature: Creature, totalAttackRoll: Int): (AttackResult, Creature) = {
+    def updateAttackOnReaction[_: RS](reactingCreature: Creature,
+                                      totalAttackRoll: Int): (AttackResult, Creature) = {
       logger.debug(s"${reactingCreature.name} used its reaction to cast $name")
 
-      val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition
-      val reactedCreature = Creature.creatureConditionsLens.set(updatedConditions)(reactingCreature)
+      if (totalAttackRoll < reactingCreature.armourClass) (Miss, reactingCreature)
+      else {
+        val spellCaster = reactingCreature.asInstanceOf[SpellCaster]
+        if (spellCaster.spellSlots.firstLevel.count > 0) {
 
-      // TODO does this armourClass take the +5 into account ??
-      val attackResult = if (totalAttackRoll >= reactedCreature.armourClass) Hit else Miss
+          val reactedCreature = {
 
-      (attackResult, reactedCreature)
+            val updatedSpellSlots = spellCaster.spellSlots.copy(
+              firstLevel = FirstLevelSpellSlots(spellCaster.spellSlots.firstLevel.count - 1))
+            val updatedSpellCaster = SpellCaster.spellSlotsLens.set(updatedSpellSlots)(spellCaster)
+
+            val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition
+            val conditionUpdated =
+              Creature.creatureConditionsLens.set(updatedConditions)(updatedSpellCaster)
+
+            Creature.creatureReactionUsedOptional.set(true)(conditionUpdated)
+          }
+
+          val attackResult = if (totalAttackRoll >= reactedCreature.armourClass) Hit else Miss
+
+          (attackResult, reactedCreature)
+        } else (Hit, reactingCreature)
+      }
     }
   }
 
   case object ShieldBuffCondition extends StartOfTurnCondition {
-    val saveDc: Int = 0
-    val turnsLeft: Int = 1
-    val missesTurn: Boolean = false
+    val saveDc: Int             = 0
+    val turnsLeft: Int          = 1
+    val missesTurn: Boolean     = false
     val handleOnDamage: Boolean = false
-    val name: String = "Shield (Buff)"
+    val name: String            = "Shield (Buff)"
 
     def handleStartOfTurn[_: RS](creature: Creature): Creature = {
       val updatedConditions = creature.conditions diff List(ShieldBuffCondition)

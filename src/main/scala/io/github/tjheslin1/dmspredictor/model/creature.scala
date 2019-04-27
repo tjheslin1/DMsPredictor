@@ -454,6 +454,8 @@ object Creature extends LazyLogging {
       case c: Cleric => c.reactionUsed.some
       case c: Rogue  => c.reactionUsed.some
 
+      case c: Wizard => c.reactionUsed.some
+
       case c: Vampire => c.reactionUsed.some
 
       case _ => none[Boolean]
@@ -535,6 +537,8 @@ object Creature extends LazyLogging {
     case c: Cleric => c.skills.some
     case c: Rogue  => c.skills.some
 
+    case c: Wizard => c.skills.some
+
     case _ => none[Skills]
   } { skills =>
     {
@@ -545,7 +549,10 @@ object Creature extends LazyLogging {
       case c: Berserker => Berserker._skills.set(skills)(c)
 
       case c: Cleric => Cleric._skills.set(skills)(c)
-      case c: Rogue  => Rogue._skills.set(skills)(c)
+
+      case c: Rogue => Rogue._skills.set(skills)(c)
+
+      case c: Wizard => Wizard._skills.set(skills)(c)
 
       case c: Creature => c
     }
@@ -562,6 +569,8 @@ object Creature extends LazyLogging {
 
     case c: Rogue => val lvl: Level = c.level; lvl.some
 
+    case c: Wizard => val lvl: Level = c.level; lvl.some
+
     case _ => none[Level]
   } { lvl =>
     {
@@ -572,7 +581,10 @@ object Creature extends LazyLogging {
       case c: Berserker => Berserker._level.set(lvl)(c)
 
       case c: Cleric => Cleric._level.set(lvl)(c)
-      case c: Rogue  => Rogue._level.set(lvl)(c)
+
+      case c: Rogue => Rogue._level.set(lvl)(c)
+
+      case c: Wizard => Wizard._level.set(lvl)(c)
 
       case c: Creature => c
     }

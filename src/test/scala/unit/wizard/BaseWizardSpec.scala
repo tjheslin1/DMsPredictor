@@ -4,6 +4,7 @@ import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ShieldBuffCondition
 
 class BaseWizardSpec extends UnitSpecBase {
 
@@ -25,12 +26,28 @@ class BaseWizardSpec extends UnitSpecBase {
   }
 
   "armourClass" should {
-    "calculate default" in new TestContext {
-      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12), mageArmourPrepared = false) shouldBe 11
+    "calculate unarmoured" in new TestContext {
+      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12),
+                           mageArmourPrepared = false,
+                           conditions = List.empty) shouldBe 11
     }
 
     "calculate whilst Mage Armour is active" in new TestContext {
-      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12), mageArmourPrepared = true) shouldBe 14
+      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12),
+                           mageArmourPrepared = true,
+                           conditions = List.empty) shouldBe 14
+    }
+
+    "calculate unarmoured with Shield spell active" in new TestContext {
+      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12),
+                           mageArmourPrepared = false,
+                           conditions = List(ShieldBuffCondition)) shouldBe 16
+    }
+
+    "calculate whilst Mage Armour is active and Shield spell active" in new TestContext {
+      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12),
+                           mageArmourPrepared = true,
+                           conditions = List(ShieldBuffCondition)) shouldBe 19
     }
   }
 

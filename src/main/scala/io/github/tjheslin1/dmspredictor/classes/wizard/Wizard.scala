@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.wizard
 
 import cats.data.NonEmptyList
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
@@ -28,6 +29,7 @@ import monocle.macros.{GenLens, Lenses}
                                spellSlots: SpellSlots,
                                spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =
                                  Wizard.standardWizardSpellList,
+                               castShieldAsReaction: Boolean = true,
                                mageArmourPrepared: Boolean = true,
                                armour: Armour = NoArmour,
                                offHand: Option[Equipment] = None,
@@ -48,12 +50,13 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  val armourClass: Int = calculateArmourClass(stats, mageArmourPrepared)
+  val armourClass: Int = calculateArmourClass(stats, mageArmourPrepared, conditions)
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Wizard =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
 
-  val reactionOnHit: Option[OnHitReaction]       = None
+  val reactionOnHit: Option[OnHitReaction] =
+    if (castShieldAsReaction) ShieldSpell.some else none[OnHitReaction]
   val reactionOnDamage: Option[OnDamageReaction] = None
 }
 

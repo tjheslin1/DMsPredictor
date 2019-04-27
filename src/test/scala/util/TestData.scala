@@ -242,6 +242,9 @@ object TestData {
       _spellSlots.set(
         SpellSlots(FirstLevelSpellSlots(0), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0)))(
         wizard)
+
+    def withCastShieldOnReaction(willCast: Boolean) = _castShieldAsReaction.set(willCast)(wizard)
+    def withMageArmourPrepared(prepared: Boolean) = _mageArmourPrepared.set(prepared)(wizard)
   }
 }
 
@@ -457,7 +460,7 @@ trait TestData extends RandomDataGenerator {
         val immunities: List[DamageType]       = creature.immunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
-        val conditions: List[Condition]        = creature.conditions
+        val conditions: List[Condition]        = List.empty
         val attackStatus: AttackStatus         = creature.attackStatus
         val defenseStatus: AttackStatus        = creature.defenseStatus
 
@@ -576,7 +579,7 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         fightingStyles.toList,
-        BaseFighterAbilities.allUnused(),
+        BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
@@ -608,7 +611,7 @@ trait TestData extends RandomDataGenerator {
         armour,
         shield,
         fightingStyles.toList,
-        BaseFighterAbilities.allUnused(),
+        BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
@@ -756,6 +759,7 @@ trait TestData extends RandomDataGenerator {
         FireBolt.some,
         Wizard.wizardSpellSlots(player.level),
         Wizard.standardWizardSpellList,
+        castShieldAsReaction = true,
         mageArmourPrepared = true,
         NoArmour,
         none[Equipment],
