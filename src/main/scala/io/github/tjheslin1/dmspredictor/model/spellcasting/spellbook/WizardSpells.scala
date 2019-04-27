@@ -1,15 +1,17 @@
 package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
+import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.AcidArrowCondition
+import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, StartOfTurnCondition}
+import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
-object WizardSpells {
+object WizardSpells extends LazyLogging {
 
   case object FireBolt extends SingleTargetAttackSpell {
     val name                   = "Fire Bolt"
@@ -116,5 +118,34 @@ object WizardSpells {
     val requiresConcentration: Boolean = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
+  }
+
+  case object Shield extends OnHitReaction {
+    val name: String = "Shield (spell)"
+
+    def updateAttackOnReaction[_: RS](reactingCreature: Creature, totalAttackRoll: Int): (AttackResult, Creature) = {
+      logger.debug(s"${reactingCreature.name} used its reaction to cast $name")
+
+      val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition
+      val reactedCreature = Creature.creatureConditionsLens.set(updatedConditions)(reactingCreature)
+
+      // TODO does this armourClass take the +5 into account ??
+      val attackResult = if (totalAttackRoll >= reactedCreature.armourClass) Hit else Miss
+
+      (attackResult, reactedCreature)
+    }
+  }
+
+  case object ShieldBuffCondition extends StartOfTurnCondition {
+    val saveDc: Int = 0
+    val turnsLeft: Int = 1
+    val missesTurn: Boolean = false
+    val handleOnDamage: Boolean = false
+    val name: String = "Shield (Buff)"
+
+    def handleStartOfTurn[_: RS](creature: Creature): Creature = {
+      val updatedConditions = creature.conditions diff List(ShieldBuffCondition)
+      Creature.creatureConditionsLens.set(updatedConditions)(creature)
+    }
   }
 }

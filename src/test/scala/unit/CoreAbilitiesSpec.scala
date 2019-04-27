@@ -550,19 +550,24 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       castConcentrationSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
-    "not meet the condition if the Spell Caster is concentrating and has no non-concentration condition spells to cast" in new TestContext {
-      implicit override val roll: RollStrategy = _ => RollResult(10)
+    "not meet the condition if the Spell Caster is concentrating and has no non-concentration condition spells to cast" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val concentrationConditionSpell = trackedConditionSpell(spellLvl = 2)
+          val concentrationConditionSpell = trackedConditionSpell(spellLvl = 2)
 
-      val concentratingCleric = random[Cleric]
-        .withSpellsKnown(concentrationConditionSpell,
-                         trackedSingleTargetSavingThrowSpell(1, Wisdom))
-        .withConcentrating(concentrationConditionSpell.some)
-        .withLevel(LevelThree)
-        .withCombatIndex(1)
+          val concentratingCleric = cleric
+            .withSpellsKnown(concentrationConditionSpell,
+                             trackedSingleTargetSavingThrowSpell(1, Wisdom))
+            .withConcentrating(concentrationConditionSpell.some)
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withLevel(LevelThree)
+            .withCombatIndex(1)
 
-      castConcentrationSpell(Priority)(concentratingCleric).conditionMet shouldBe false
+          castConcentrationSpell(Priority)(concentratingCleric).conditionMet shouldBe false
+        }
+      }
     }
   }
 
@@ -621,7 +626,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedWizard = wizard
-            .withSpellsKnown(trackedMultiMeleeSpellAttack(2), trackedSingleTargetSavingThrowSpell(3, Wisdom))
+            .withSpellsKnown(trackedMultiMeleeSpellAttack(2),
+                             trackedSingleTargetSavingThrowSpell(3, Wisdom))
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .withIntelligence(20)

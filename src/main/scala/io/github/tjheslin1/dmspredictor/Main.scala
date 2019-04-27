@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.wizard.{BaseWizard, Wizard}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf}
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
 
@@ -32,10 +32,11 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
   val creatures = List(
     wizard,
     Goblin(50, 50, name = "goblin-1"),
-    Goblin(50, 50, name = "goblin-2")
+    Goblin(50, 50, name = "goblin-2"),
+    Werewolf(80, 80, name = "Werewolf")
   )
 
-  val simulation = "Wizard vs Goblins"
+  val simulation = "Wizard vs Goblins and Werewolf"
   val (losses, wins) =
     SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
 
