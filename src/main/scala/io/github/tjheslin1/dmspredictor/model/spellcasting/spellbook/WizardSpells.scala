@@ -4,7 +4,11 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, StartOfTurnCondition}
+import io.github.tjheslin1.dmspredictor.model.condition.{
+  AcidArrowCondition,
+  Condition,
+  StartOfTurnCondition
+}
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -138,7 +142,7 @@ object WizardSpells extends LazyLogging {
               firstLevel = FirstLevelSpellSlots(spellCaster.spellSlots.firstLevel.count - 1))
             val updatedSpellCaster = SpellCaster.spellSlotsLens.set(updatedSpellSlots)(spellCaster)
 
-            val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition
+            val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition()
             val conditionUpdated =
               Creature.creatureConditionsLens.set(updatedConditions)(updatedSpellCaster)
 
@@ -153,12 +157,13 @@ object WizardSpells extends LazyLogging {
     }
   }
 
-  case object ShieldBuffCondition extends StartOfTurnCondition {
+  case class ShieldBuffCondition(turnsLeft: Int = 1) extends StartOfTurnCondition {
     val saveDc: Int             = 0
-    val turnsLeft: Int          = 1
     val missesTurn: Boolean     = false
     val handleOnDamage: Boolean = false
     val name: String            = "Shield (Buff)"
+
+    def decrementTurnsLeft(): Condition = ShieldBuffCondition(turnsLeft = 0)
 
     def handleStartOfTurn[_: RS](creature: Creature): Creature = {
       val updatedConditions = creature.conditions diff List(ShieldBuffCondition)

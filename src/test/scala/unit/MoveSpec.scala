@@ -4,7 +4,8 @@ import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
-import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.{condition, _}
+import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Turned}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
@@ -186,6 +187,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
                               trackedStartOfTurnCondition(50),
                               trackedEndOfTurnCondition(100))
               .withCombatIndex(1)
+
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
@@ -206,12 +208,65 @@ class MoveSpec extends UnitSpecBase with OptionValues {
               .withBaseWeapon(trackedSword)
               .withConditions(trackedStartOfTurnCondition(100, turnMissed = true))
               .withCombatIndex(1)
+
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
 
           trackedStartOfTurnConditionHandledCount shouldBe 1
           swordUsedCount shouldBe 0
+        }
+      }
+    }
+
+    "remove condition at start of turn if turnsLeft is 0" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val turnedCondition = Turned(saveDc = 1, turnsLeft = 0)
+          val turnedFighter   = fighter.withCondition(turnedCondition).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(turnedFighter), LowestFirst)
+
+          updatedFighter.conditions shouldBe List()
+        }
+      }
+    }
+
+    "remove condition at end of turn if turnsLeft is 0" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val paralyzedCondition = Paralyzed(saveDc = 1, turnsLeft = 0, Constitution)
+          val paralyzedFighter   = fighter.withCondition(paralyzedCondition).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(paralyzedFighter), LowestFirst)
+
+          updatedFighter.conditions shouldBe List()
+        }
+      }
+    }
+
+    "decrement turnsLeft on condition at start of turn" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val turnedCondition    = Turned(saveDc = 1, turnsLeft = 5)
+          val paralyzedCondition = Paralyzed(saveDc = 1, turnsLeft = 10, Constitution)
+          val paralyzedTurnedFighter =
+            fighter.withConditions(turnedCondition, paralyzedCondition).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(paralyzedTurnedFighter), LowestFirst)
+
+          updatedFighter.conditions shouldBe
+            List(Turned(saveDc = 1, turnsLeft = 4),
+                 Paralyzed(saveDc = 1, turnsLeft = 9, Constitution))
         }
       }
     }

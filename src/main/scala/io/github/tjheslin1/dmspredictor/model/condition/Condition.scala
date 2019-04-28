@@ -11,6 +11,8 @@ trait Condition {
   val missesTurn: Boolean
   val handleOnDamage: Boolean
 
+  def decrementTurnsLeft(): Condition
+
   def handleStartOfTurn[_: RS](creature: Creature): Creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature
   def handleOnDamage[_: RS](creature: Creature): Creature

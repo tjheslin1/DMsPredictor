@@ -187,14 +187,16 @@ trait Tracking {
     }
 
   var trackedStartOfTurnConditionHandledCount = 0
-  def trackedStartOfTurnCondition(dc: Int, turnMissed: Boolean = false): Condition =
+  def trackedStartOfTurnCondition(dc: Int, turnMissed: Boolean = false, turns: Int = 10): Condition =
     new StartOfTurnCondition {
       val name                    = "tracked-start-of-turn-condition"
       val missesTurn              = turnMissed
       val handleOnDamage: Boolean = false
 
       val saveDc: Int    = dc
-      val turnsLeft: Int = 10
+      val turnsLeft: Int = turns
+
+      def decrementTurnsLeft(): Condition = trackedStartOfTurnCondition(dc, turnMissed, turnsLeft - 1)
 
       def handleStartOfTurn[_: RS](creature: Creature): Creature = {
         trackedStartOfTurnConditionHandledCount += 1
@@ -211,6 +213,8 @@ trait Tracking {
 
       val saveDc: Int    = dc
       val turnsLeft: Int = 10
+
+      def decrementTurnsLeft(): Condition = this
 
       def handleEndOfTurn[_: RS](creature: Creature): Creature = {
         trackedEndOfTurnConditionHandledCount += 1

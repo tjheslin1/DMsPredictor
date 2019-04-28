@@ -378,7 +378,7 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val concentratingCleric = cleric
-            .withConcentrating(concentrationSpell.some)
+            .withConcentrating(spiritGuardiansConcentrationSpell.some)
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)
@@ -391,6 +391,7 @@ class ActionsSpec extends UnitSpecBase {
             .withDexterity(10)
             .withCondition(spiritGuardiansCondition)
             .withCombatIndex(2)
+
           val zombieCombatant = zombie.withCondition(spiritGuardiansCondition).withCombatIndex(3)
 
           val (Combatant(_, updatedGoblin: Goblin),
@@ -550,7 +551,7 @@ class ActionsSpec extends UnitSpecBase {
     def weaponWithHitBonus(bonus: Int) =
       Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)
 
-    val concentrationSpell: Spell = new ConcentrationConditionSpell() {
+    val spiritGuardiansConcentrationSpell: Spell = new ConcentrationConditionSpell() {
       val name: String = "test-concentration-spell"
 
       val attribute: Attribute  = Wisdom

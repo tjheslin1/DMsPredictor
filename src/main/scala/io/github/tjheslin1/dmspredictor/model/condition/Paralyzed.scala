@@ -15,6 +15,8 @@ import monocle.macros.Lenses
   val missesTurn: Boolean     = true
   val handleOnDamage: Boolean = false
 
+  def decrementTurnsLeft(): Condition = this.copy(turnsLeft = this.turnsLeft - 1)
+
   def handleEndOfTurn[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, attribute, creature)) {
       val paralyzed         = creature.conditions.find(_.name == name).get

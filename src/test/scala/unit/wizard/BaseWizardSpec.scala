@@ -41,13 +41,13 @@ class BaseWizardSpec extends UnitSpecBase {
     "calculate unarmoured with Shield spell active" in new TestContext {
       calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12),
                            mageArmourPrepared = false,
-                           conditions = List(ShieldBuffCondition)) shouldBe 16
+                           conditions = List(ShieldBuffCondition())) shouldBe 16
     }
 
     "calculate whilst Mage Armour is active and Shield spell active" in new TestContext {
       calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12),
                            mageArmourPrepared = true,
-                           conditions = List(ShieldBuffCondition)) shouldBe 19
+                           conditions = List(ShieldBuffCondition())) shouldBe 19
     }
   }
 

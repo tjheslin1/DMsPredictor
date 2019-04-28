@@ -89,6 +89,8 @@ object ClericSpells extends LazyLogging {
     val missesTurn: Boolean     = false
     val handleOnDamage: Boolean = false
 
+    def decrementTurnsLeft(): Condition = this.copy(turnsLeft = this.turnsLeft - 1)
+
     def handleStartOfTurn[_: RS](creature: Creature): Creature = {
       val damage = 3 * D8
 

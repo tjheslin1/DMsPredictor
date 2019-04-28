@@ -13,6 +13,8 @@ import monocle.macros.Lenses
   val missesTurn: Boolean     = true
   val handleOnDamage: Boolean = true
 
+  def decrementTurnsLeft(): Condition = Turned(saveDc, turnsLeft - 1)
+
   def handleStartOfTurn[_: RS](creature: Creature): Creature = {
     val turned            = creature.conditions.find(_.name == name).get
     val decrementedTurned = Condition.conditionTurnsLeftLens.set(turned.turnsLeft - 1)(turned)
