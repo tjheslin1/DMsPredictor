@@ -37,7 +37,9 @@ object BaseRogueAbilities extends LazyLogging {
             (Combatant.creatureLens composeLens Creature.creatureAttackStatusLens)
               .set(Advantage)(combatant)
 
-          attack(sneakAttackingRogue, sneakAttackingRogue.creature.weapon, target) match {
+          val (attackResult, hitTarget) =
+            attack(sneakAttackingRogue, sneakAttackingRogue.creature.weapon, target)
+          attackResult match {
             case CriticalMiss | Miss => (combatant, others)
             case attackHitResult =>
               val sneakAttackDmg = {
@@ -49,7 +51,7 @@ object BaseRogueAbilities extends LazyLogging {
 
               val (updatedRogue, updatedTarget, updatedOthers) =
                 resolveDamage(sneakAttackingRogue,
-                              target,
+                              hitTarget,
                               others,
                               sneakAttackingRogue.creature.weapon,
                               attackHitResult,

@@ -1,8 +1,8 @@
 package base
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, BonusAction, WholeAction}
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
+import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 
@@ -15,10 +15,11 @@ trait Tracking {
   })
 
   var offHAndSwordUsedCount = 0
-  val trackedOffHandSword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, {
-    offHAndSwordUsedCount += 1
-    1
-  })
+  val trackedOffHandSword =
+    Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, {
+      offHAndSwordUsedCount += 1
+      1
+    })
 
   var trackedAbilityUsedCount = 0
   var trackedAbilityUsed      = false
@@ -71,7 +72,7 @@ trait Tracking {
       val damageType: DamageType         = Fire
       val name: String                   = s"tracked-melee-spell-${spellLvl.value}"
       val school: SchoolOfMagic          = Evocation
-      val castingTime: CastingTime       = OneAction
+      val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration: Boolean = concentration
 
@@ -81,43 +82,88 @@ trait Tracking {
       }
     }
 
-  var trackedHealingSpellUsed = false
-  var trackedHealingSpellUsedCount = 0
-  def trackedHealingSpell(spellLvl: SpellLevel, healingDone: Int = 1): Spell = new SingleTargetHealingSpell {
-    val name: String                   = "tracked-healing-spell"
-    val school: SchoolOfMagic          = Evocation
-    val castingTime: CastingTime       = OneAction
-    val spellLevel: SpellLevel         = spellLvl
-    val requiresConcentration: Boolean = false
+  var multiMeleeSpellUsedCount = 0
+  def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel, concentration: Boolean = false): Spell =
+    new MultiTargetSavingThrowSpell {
+      val name: String                   = s"tracked-multi-melee-spell-${spellLvl.value}"
+      val damageType: DamageType         = Fire
 
-    def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-      trackedHealingSpellUsed = true
-      trackedHealingSpellUsedCount += 1
-      healingDone
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneActionCast
+      val spellLevel: SpellLevel         = spellLvl
+      val requiresConcentration: Boolean = concentration
+      val attribute: Attribute = Dexterity
+      val halfDamageOnSave: Boolean = false
+
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+        multiMeleeSpellUsedCount += 1
+        4
+      }
     }
-  }
 
-  var savingThrowSpellUsedCount = 0
-  def trackedSavingThrowSpell(spellLvl: SpellLevel, savingAttribute: Attribute, damageOnSave: Boolean = false): Spell =
+  var trackedHealingSpellUsed      = false
+  var trackedHealingSpellUsedCount = 0
+  def trackedHealingSpell(spellLvl: SpellLevel, healingDone: Int = 1): Spell =
+    new SingleTargetHealingSpell {
+      val name: String                   = "tracked-healing-spell"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneActionCast
+      val spellLevel: SpellLevel         = spellLvl
+      val requiresConcentration: Boolean = false
+
+      def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+        trackedHealingSpellUsed = true
+        trackedHealingSpellUsedCount += 1
+        healingDone
+      }
+    }
+
+  var singleSavingThrowSpellUsedCount = 0
+  def trackedSingleTargetSavingThrowSpell(spellLvl: SpellLevel,
+                                          savingAttribute: Attribute,
+                                          damageOnSave: Boolean = false): Spell =
     new SingleTargetSavingThrowSpell() {
-      val attribute: Attribute           = savingAttribute
-      val halfDamageOnSave: Boolean      = damageOnSave
+      val attribute: Attribute      = savingAttribute
+      val halfDamageOnSave: Boolean = damageOnSave
 
       val damageType: DamageType         = Fire
-      val name: String                   = "tracked-saving-throw-spell-test"
+      val name: String                   = "tracked-single-target-saving-throw-spell-test"
       val school: SchoolOfMagic          = Evocation
-      val castingTime: CastingTime       = OneAction
+      val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration: Boolean = false
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        savingThrowSpellUsedCount += 1
+        singleSavingThrowSpellUsedCount += 1
+        4
+      }
+    }
+
+  var multiSavingThrowSpellUsedCount = 0
+  def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
+                                         savingAttribute: Attribute,
+                                         damageOnSave: Boolean = false): Spell =
+    new MultiTargetSavingThrowSpell {
+      val attribute: Attribute = savingAttribute
+      val halfDamageOnSave: Boolean = damageOnSave
+      val damageType: DamageType = Fire
+
+
+      val name: String = "tracked-multi-target-saving-throw-spell-test"
+      val school: SchoolOfMagic = Evocation
+      val castingTime: CastingTime = OneActionCast
+      val spellLevel: SpellLevel = spellLvl
+      val requiresConcentration: Boolean = false
+
+      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+        multiSavingThrowSpellUsedCount += 1
         4
       }
     }
 
   var conditionSpellUsedCount = 0
-  def trackedConditionSpell(spellLvl: SpellLevel, singleTargetSpell: Boolean = true): ConcentrationConditionSpell =
+  def trackedConditionSpell(spellLvl: SpellLevel,
+                            singleTargetSpell: Boolean = true): ConcentrationConditionSpell =
     new ConcentrationConditionSpell() {
       val name: String = s"tracked-melee-spell-${spellLvl.value}"
 
@@ -125,7 +171,7 @@ trait Tracking {
       val singleTarget: Boolean = singleTargetSpell
 
       val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneAction
+      val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = spellLvl
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
@@ -140,40 +186,55 @@ trait Tracking {
       }
     }
 
-  var trackedConditionHandledCount = 0
-  def trackedCondition(dc: Int, turnMissed: Boolean = false): Condition = new Condition {
-    val name                    = "tracked-condition"
-    val missesTurn              = turnMissed
-    val handleOnDamage: Boolean = false
+  var trackedStartOfTurnConditionHandledCount = 0
+  def trackedStartOfTurnCondition(dc: Int, turnMissed: Boolean = false): Condition =
+    new StartOfTurnCondition {
+      val name                    = "tracked-start-of-turn-condition"
+      val missesTurn              = turnMissed
+      val handleOnDamage: Boolean = false
 
-    val saveDc: Int    = dc
-    val turnsLeft: Int = 10
+      val saveDc: Int    = dc
+      val turnsLeft: Int = 10
 
-    def handle[_: RS](creature: Creature): Creature = {
-      trackedConditionHandledCount += 1
-      creature
+      def handleStartOfTurn[_: RS](creature: Creature): Creature = {
+        trackedStartOfTurnConditionHandledCount += 1
+        creature
+      }
     }
 
-    def handleOnDamage[_: RS](creature: Creature): Creature = creature
-  }
+  var trackedEndOfTurnConditionHandledCount = 0
+  def trackedEndOfTurnCondition(dc: Int, turnMissed: Boolean = false): Condition =
+    new EndOfTurnCondition {
+      val name                    = "tracked-end-of-turn-condition"
+      val missesTurn              = turnMissed
+      val handleOnDamage: Boolean = false
 
-  var trackedBonusActionUsed      = false
-  def trackedBonusAction(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-    val name: String     = "test-tracked--bonus-ability"
-    val order            = currentOrder
-    val levelRequirement = LevelOne
-    val abilityAction    = BonusAction
+      val saveDc: Int    = dc
+      val turnsLeft: Int = 10
 
-    def triggerMet(others: List[Combatant]) = true
-    def conditionMet: Boolean               = true
-
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      (combatant, others)
+      def handleEndOfTurn[_: RS](creature: Creature): Creature = {
+        trackedEndOfTurnConditionHandledCount += 1
+        creature
+      }
     }
 
-    def update: Creature = {
-      trackedBonusActionUsed = true
-      Player.playerBonusActionUsedLens.set(true)(combatant.creature.asInstanceOf[Player])
+  var trackedBonusActionUsed = false
+  def trackedBonusAction(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val name: String     = "test-tracked--bonus-ability"
+      val order            = currentOrder
+      val levelRequirement = LevelOne
+      val abilityAction    = BonusAction
+
+      def triggerMet(others: List[Combatant]) = true
+      def conditionMet: Boolean               = true
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
+        (combatant, others)
+
+      def update: Creature = {
+        trackedBonusActionUsed = true
+        Player.playerBonusActionUsedLens.set(true)(combatant.creature.asInstanceOf[Player])
+      }
     }
-  }
 }

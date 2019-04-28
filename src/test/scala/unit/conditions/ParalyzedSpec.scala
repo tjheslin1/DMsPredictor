@@ -19,7 +19,7 @@ class ParalyzedSpec extends UnitSpecBase {
           val poisoned        = Poisoned(10, 10)
           val conditionGoblin = goblin.withWisdom(20).withConditions(paralyzed, poisoned)
 
-          val updatedGoblin = paralyzed.handle(conditionGoblin)
+          val updatedGoblin = paralyzed.handleEndOfTurn(conditionGoblin)
 
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
         }

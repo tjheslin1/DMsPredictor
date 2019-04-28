@@ -9,7 +9,7 @@ sealed trait Reaction {
 trait OnHitReaction extends Reaction {
 
   def updateAttackOnReaction[_: RS](reactingCreature: Creature,
-                                    attackResult: AttackResult): (AttackResult, Creature)
+                                    totalAttackRoll: Int): (AttackResult, Creature)
 }
 
 trait OnDamageReaction extends Reaction {

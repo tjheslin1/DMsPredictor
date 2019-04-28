@@ -7,6 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
@@ -24,65 +25,65 @@ class ActionsSpec extends UnitSpecBase {
 
     "roll with Advantage if the attacking Creature has attackStatus set to Advantage" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        val iterator = Iterator(RollResult(2), RollResult(20))
+        val iterator = Iterator(2, 20)
 
         val advantageFighter = fighter.withAttackStatus(Advantage).withCombatIndex(1)
         val monster          = testMonster.withArmourClass(30).withCombatIndex(2)
 
-        rollAttack(advantageFighter, monster)(_ => iterator.next()) shouldBe 20
+        rollAttack(advantageFighter, monster)(_ => RollResult(iterator.next())) shouldBe 20
       }
     }
 
     "roll with Disadvantage if the attacking Creature has attackStatus set to Disadvantage" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        val iterator = Iterator(RollResult(10), RollResult(1))
+        val iterator = Iterator(10, 1)
 
         val advantageFighter = fighter.withAttackStatus(Disadvantage).withCombatIndex(1)
         val monster          = testMonster.withArmourClass(1).withCombatIndex(2)
 
-        rollAttack(advantageFighter, monster)(_ => iterator.next()) shouldBe 1
+        rollAttack(advantageFighter, monster)(_ => RollResult(iterator.next())) shouldBe 1
       }
     }
 
     "roll with Advantage if the target Creature has defenseStatus set to Disadvantage" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
-        val iterator = Iterator(RollResult(2), RollResult(20))
+        val iterator = Iterator(2, 20)
 
         val monster = goblin.withDefenseStatus(Disadvantage).withCombatIndex(2)
 
-        rollAttack(fighter.withCombatIndex(1), monster)(_ => iterator.next()) shouldBe 20
+        rollAttack(fighter.withCombatIndex(1), monster)(_ => RollResult(iterator.next())) shouldBe 20
       }
     }
 
     "roll with Disadvantage if the Creature has defenseStatus set to Advantage" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
-        val iterator = Iterator(RollResult(19), RollResult(1))
+        val iterator = Iterator(19, 1)
 
         val monster = goblin.withDefenseStatus(Advantage).withCombatIndex(2)
 
-        rollAttack(fighter.withCombatIndex(1), monster)(_ => iterator.next()) shouldBe 1
+        rollAttack(fighter.withCombatIndex(1), monster)(_ => RollResult(iterator.next())) shouldBe 1
       }
     }
 
     "roll regularly if attackStatus is Advantage and defenseStatus is Advantage" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
-        val iterator = Iterator(RollResult(19), RollResult(20))
+        val iterator = Iterator(19, 20)
 
         val advantageFighter = fighter.withAttackStatus(Advantage).withCombatIndex(1)
         val monster          = goblin.withArmourClass(1).withDefenseStatus(Advantage).withCombatIndex(2)
 
-        rollAttack(advantageFighter, monster)(_ => iterator.next()) shouldBe 19
+        rollAttack(advantageFighter, monster)(_ => RollResult(iterator.next())) shouldBe 19
       }
     }
 
     "roll regularly if attackStatus is Disadvantage and defenseStatus is Disadvantage" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
-        val iterator = Iterator(RollResult(19), RollResult(20))
+        val iterator = Iterator(19, 20)
 
         val disadvantageFighter = fighter.withAttackStatus(Disadvantage).withCombatIndex(1)
         val monster             = goblin.withArmourClass(1).withDefenseStatus(Disadvantage).withCombatIndex(2)
 
-        rollAttack(disadvantageFighter, monster)(_ => iterator.next()) shouldBe 19
+        rollAttack(disadvantageFighter, monster)(_ => RollResult(iterator.next())) shouldBe 19
       }
     }
   }
@@ -93,7 +94,10 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = D20.naturalTwenty
 
-          attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2)) shouldBe CriticalHit
+          val (attackResult, _) =
+            attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))
+
+          attackResult shouldBe CriticalHit
         }
       }
     }
@@ -112,12 +116,17 @@ class ActionsSpec extends UnitSpecBase {
             .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
-          attack(fighterCombatant,
-                 plusTwoWeapon,
-                 testMonster.withArmourClass(19).withCombatIndex(2)) shouldBe Miss
-          attack(fighterCombatant,
-                 plusTwoWeapon,
-                 testMonster.withArmourClass(18).withCombatIndex(2)) shouldBe Hit
+          val (attackResult, _) = attack(fighterCombatant,
+                                         plusTwoWeapon,
+                                         testMonster.withArmourClass(19).withCombatIndex(2))
+
+          attackResult shouldBe Miss
+
+          val (attackResult2, _) = attack(fighterCombatant,
+                                          plusTwoWeapon,
+                                          testMonster.withArmourClass(18).withCombatIndex(2))
+
+          attackResult2 shouldBe Hit
         }
       }
     }
@@ -128,7 +137,13 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val plusTwoFinesseWeapon =
-            Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = true, 1, wpnHitBonus = 2)
+            Weapon("test-weapon",
+                   Melee,
+                   Slashing,
+                   isTwoHanded = true,
+                   isFinesse = true,
+                   1,
+                   wpnHitBonus = 2)
 
           val fighterCombatant = fighter
             .withProficiencyBonus(4) // + 4
@@ -137,12 +152,17 @@ class ActionsSpec extends UnitSpecBase {
             .withBaseWeapon(plusTwoFinesseWeapon) // + 2
             .withCombatIndex(1)
 
-          attack(fighterCombatant,
-                 plusTwoFinesseWeapon,
-                 testMonster.withArmourClass(19).withCombatIndex(2)) shouldBe Miss
-          attack(fighterCombatant,
-                 plusTwoFinesseWeapon,
-                 testMonster.withArmourClass(18).withCombatIndex(2)) shouldBe Hit
+          val (attackResult, _) = attack(fighterCombatant,
+                                         plusTwoFinesseWeapon,
+                                         testMonster.withArmourClass(19).withCombatIndex(2))
+
+          attackResult shouldBe Miss
+
+          val (attackResult2, _) = attack(fighterCombatant,
+                                          plusTwoFinesseWeapon,
+                                          testMonster.withArmourClass(18).withCombatIndex(2))
+
+          attackResult2 shouldBe Hit
         }
       }
     }
@@ -162,8 +182,11 @@ class ActionsSpec extends UnitSpecBase {
           val ac12Cleric = cleric.withOffHand(Shield).withDexterity(10).withNoArmour()
           val ac13Cleric = cleric.withOffHand(Shield).withDexterity(12).withNoArmour()
 
-          attack(monster, plusTwoWeapon, ac13Cleric.withCombatIndex(2)) shouldBe Miss
-          attack(monster, plusTwoWeapon, ac12Cleric.withCombatIndex(2)) shouldBe Hit
+          val (attackResult, _) = attack(monster, plusTwoWeapon, ac13Cleric.withCombatIndex(2))
+          attackResult shouldBe Miss
+
+          val (attackResult2, _) = attack(monster, plusTwoWeapon, ac12Cleric.withCombatIndex(2))
+          attackResult2 shouldBe Hit
         }
       }
     }
@@ -175,7 +198,10 @@ class ActionsSpec extends UnitSpecBase {
 
           val ac10Monster = monster.withArmourClass(10)
 
-          attack(fighter.withCombatIndex(1), fighter.weapon, ac10Monster.withCombatIndex(2)) shouldBe Hit
+          val (attackResult, _) =
+            attack(fighter.withCombatIndex(1), fighter.weapon, ac10Monster.withCombatIndex(2))
+
+          attackResult shouldBe Hit
         }
       }
     }
@@ -186,7 +212,10 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(2)
           val ac20Monster                          = monster.withArmourClass(30)
 
-          attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2)) shouldBe Miss
+          val (attackResult, _) =
+            attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2))
+
+          attackResult shouldBe Miss
         }
       }
     }
@@ -196,7 +225,10 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(1)
 
-          attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2)) shouldBe CriticalMiss
+          val (attackResult, _) =
+            attack(fighter.withCombatIndex(1), fighter.weapon, monster.withCombatIndex(2))
+
+          attackResult shouldBe CriticalMiss
         }
       }
     }
@@ -208,9 +240,60 @@ class ActionsSpec extends UnitSpecBase {
 
           val levelThreeChampion = champion.withLevel(LevelThree)
 
-          attack(levelThreeChampion.withCombatIndex(1),
-                 levelThreeChampion.weapon,
-                 monster.withCombatIndex(2)) shouldBe CriticalHit
+          val (attackResult, _) = attack(levelThreeChampion.withCombatIndex(1),
+                                         levelThreeChampion.weapon,
+                                         monster.withCombatIndex(2))
+
+          attackResult shouldBe CriticalHit
+        }
+      }
+    }
+
+    "handle available reaction on hit" in {
+      val bonusHitWeapon = Weapon("bonus-hit",
+                                  Melee,
+                                  Slashing,
+                                  isTwoHanded = false,
+                                  isFinesse = false,
+                                  4,
+                                  wpnHitBonus = 5)
+
+      forAll { (wizard: Wizard, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val attackingGoblin = goblin.withBaseWeapon(bonusHitWeapon).withCombatIndex(1)
+          val wizardCombatant =
+            wizard
+              .withCastShieldOnReaction(true)
+              .withDexterity(10)
+              .withHealth(50)
+              .withCombatIndex(2)
+
+          val (_, Combatant(_, updatedWizard: Wizard)) =
+            attack(attackingGoblin, attackingGoblin.creature.weapon, wizardCombatant)
+
+          updatedWizard.reactionUsed shouldBe true
+        }
+      }
+    }
+
+    "not use reaction if attack missed" in {
+      forAll { (wizard: Wizard, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val attackingGoblin = goblin.withStrength(2).withCombatIndex(1)
+          val highAcWizard = wizard
+            .withCastShieldOnReaction(true)
+            .withDexterity(28)
+            .withHealth(50)
+            .withCombatIndex(2)
+
+          val (_, Combatant(_, updatedWizard: Wizard)) =
+            attack(attackingGoblin, attackingGoblin.creature.weapon, highAcWizard)
+
+          updatedWizard.reactionUsed shouldBe false
         }
       }
     }
@@ -333,8 +416,9 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val attackingGoblin = goblin.withStrength(10).withBaseWeapon(sixDamageWeapon).withCombatIndex(1)
-          val levelFiveRogue  = rogue.withLevel(LevelFive).withHealth(50).withCombatIndex(2)
+          val attackingGoblin =
+            goblin.withStrength(10).withBaseWeapon(sixDamageWeapon).withCombatIndex(1)
+          val levelFiveRogue = rogue.withLevel(LevelFive).withHealth(50).withCombatIndex(2)
 
           val (_, Combatant(_, updatedRogue: Rogue), _) =
             resolveDamage(attackingGoblin, levelFiveRogue, List(), sixDamageWeapon, Hit)
@@ -473,7 +557,7 @@ class ActionsSpec extends UnitSpecBase {
       val singleTarget: Boolean = true
 
       val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneAction
+      val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
 
       def conditionFrom(spellCaster: SpellCaster): Condition =

@@ -41,14 +41,14 @@ object Actions extends LazyLogging {
 
   def attack[_: RS](attacker: Combatant,
                     attackerWeapon: Weapon,
-                    target: Combatant): AttackResult = {
+                    target: Combatant): (AttackResult, Combatant) = {
 
     val roll = rollAttack(attacker, target)
 
     logger.debug(s"D20.roll() of $roll")
 
-    if (attacker.creature.scoresCritical(roll)) CriticalHit
-    else if (roll == 1) CriticalMiss
+    if (attacker.creature.scoresCritical(roll)) (CriticalHit, target)
+    else if (roll == 1) (CriticalMiss, target)
     else {
       val totalAttackRoll = attacker.creature match {
         case player: Player =>
@@ -61,7 +61,18 @@ object Actions extends LazyLogging {
           roll + attackerWeapon.hitBonus
       }
 
-      if (totalAttackRoll >= target.creature.armourClass) Hit else Miss
+      if (totalAttackRoll >= target.creature.armourClass) {
+
+        target.creature.reactionOnHit.fold[(AttackResult, Combatant)]((Hit, target)) {
+          onHitReaction =>
+            val (updatedAttackResult, updatedTarget) =
+              onHitReaction.updateAttackOnReaction(target.creature, totalAttackRoll)
+
+            val updatedTargetCombatant = Combatant.creatureLens.set(updatedTarget)(target)
+
+            (updatedAttackResult, updatedTargetCombatant)
+        }
+      } else (Miss, target)
     }
   }
 
@@ -132,13 +143,13 @@ object Actions extends LazyLogging {
   def attackAndDamage[_: RS](attacker: Combatant,
                              target: Combatant,
                              others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {
-    val attackResult = attack(attacker, attacker.creature.weapon, target)
+    val (attackResult, updatedTarget) = attack(attacker, attacker.creature.weapon, target)
 
     if (attackResult.result > 0)
-      resolveDamage(attacker, target, others, attacker.creature.weapon, attackResult)
+      resolveDamage(attacker, updatedTarget, others, attacker.creature.weapon, attackResult)
     else {
       logger.debug(s"${attacker.creature.name} misses regular attack")
-      (attacker, target, others)
+      (attacker, updatedTarget, others)
     }
   }
 

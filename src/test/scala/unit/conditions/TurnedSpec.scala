@@ -17,7 +17,7 @@ class TurnedSpec extends UnitSpecBase {
 
           val turned = Turned(20, 10)
 
-          val updatedGoblin = turned.handle(goblin.withCondition(turned).withWisdom(1))
+          val updatedGoblin = turned.handleStartOfTurn(goblin.withCondition(turned).withWisdom(1))
 
           updatedGoblin.conditions should contain theSameElementsAs List(Turned(20, 9))
         }

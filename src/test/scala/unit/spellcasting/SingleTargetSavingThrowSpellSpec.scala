@@ -15,7 +15,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val savingThrowSpell = trackedSavingThrowSpell(1, Dexterity, damageOnSave = false)
+          val savingThrowSpell = trackedSingleTargetSavingThrowSpell(1, Dexterity, damageOnSave = false)
 
           val trackedCleric = cleric
             .withSpellKnown(savingThrowSpell)
@@ -32,7 +32,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
-          savingThrowSpellUsedCount shouldBe 1
+          singleSavingThrowSpellUsedCount shouldBe 1
           updatedMonster.health shouldBe monster.creature.health - 4
         }
       }
@@ -43,7 +43,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val savingThrowSpell = trackedSavingThrowSpell(1, Dexterity, damageOnSave = true)
+          val savingThrowSpell = trackedSingleTargetSavingThrowSpell(1, Dexterity, damageOnSave = true)
 
           val trackedCleric = cleric
             .withSpellKnown(savingThrowSpell)
@@ -60,7 +60,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
-          savingThrowSpellUsedCount shouldBe 1
+          singleSavingThrowSpellUsedCount shouldBe 1
           updatedMonster.health shouldBe monster.creature.health - 2
         }
       }
@@ -71,7 +71,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val savingThrowSpell = trackedSavingThrowSpell(1, Dexterity, damageOnSave = false)
+          val savingThrowSpell = trackedSingleTargetSavingThrowSpell(1, Dexterity, damageOnSave = false)
 
           val trackedCleric = cleric
             .withSpellKnown(savingThrowSpell)
@@ -88,7 +88,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
-          savingThrowSpellUsedCount shouldBe 0
+          singleSavingThrowSpellUsedCount shouldBe 0
           updatedMonster.health shouldBe monster.creature.health
         }
       }

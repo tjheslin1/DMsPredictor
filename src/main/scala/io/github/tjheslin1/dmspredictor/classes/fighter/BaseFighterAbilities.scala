@@ -25,8 +25,8 @@ object BaseFighterAbilities extends LazyLogging {
   val actionSurgeUsedLens: Lens[BaseFighterAbilities, Boolean] =
     GenLens[BaseFighterAbilities](_.actionSurgeUsed)
 
-  def allUsed(): BaseFighterAbilities   = BaseFighterAbilities(true, true)
-  def allUnused(): BaseFighterAbilities = BaseFighterAbilities(false, false)
+  val allUsed: BaseFighterAbilities   = BaseFighterAbilities(true, true)
+  val allUnused: BaseFighterAbilities = BaseFighterAbilities(false, false)
 
   def secondWind(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
     val baseFighter = combatant.creature.asInstanceOf[BaseFighter]
@@ -87,13 +87,14 @@ object BaseFighterAbilities extends LazyLogging {
       nextToFocus(combatant, monsters(others), focus) match {
         case None => (combatant, others)
         case Some(attackTarget) =>
-          val mainHandAttack = attack(combatant, combatant.creature.weapon, attackTarget)
+          val (mainHandAttack, hitTarget) =
+            attack(combatant, combatant.creature.weapon, attackTarget)
 
           val (updatedAttacker, attackTarget1, updatedOthers) =
             if (mainHandAttack.result > 0)
-              resolveDamageMainHand(combatant, attackTarget, others, mainHandAttack)
+              resolveDamageMainHand(combatant, hitTarget, others, mainHandAttack)
             else
-              (combatant, attackTarget, others)
+              (combatant, hitTarget, others)
 
           val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
 
@@ -101,17 +102,18 @@ object BaseFighterAbilities extends LazyLogging {
             case None => (combatant, updatedOthers)
             case Some(nextTarget) =>
               val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
-              val offHandAttack = attack(updatedAttacker, offHandWeapon, nextTarget)
+              val (offHandAttack, nextHitTarget) =
+                attack(updatedAttacker, offHandWeapon, nextTarget)
 
               val (attacker2, attackTarget2, updatedOthers2) =
                 if (offHandAttack.result > 0)
                   resolveDamage(updatedAttacker,
-                                nextTarget,
+                                nextHitTarget,
                                 updatedOthers,
                                 offHandWeapon,
                                 offHandAttack)
                 else
-                  (updatedAttacker, nextTarget, updatedOthers)
+                  (updatedAttacker, nextHitTarget, updatedOthers)
 
               (attacker2, updatedOthers2.replace(attackTarget2))
           }

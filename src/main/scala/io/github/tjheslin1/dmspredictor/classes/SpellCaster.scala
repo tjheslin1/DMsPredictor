@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import monocle.Lens
@@ -32,6 +33,8 @@ object SpellCaster {
     spellSlots =>
       {
         case c: Cleric => Cleric._spellSlots.set(spellSlots)(c)
+
+        case c: Wizard => Wizard._spellSlots.set(spellSlots)(c)
 
         case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }

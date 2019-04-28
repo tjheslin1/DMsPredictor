@@ -4,26 +4,43 @@ import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import util.TestData._
 import util.TestMonster
 
 class SpellSpec extends UnitSpecBase {
 
   "spellOfTypeBelowLevel" should {
+
     "return a spell of a specific SpellEffect equal to the level given" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
       spellOfLevelOrBelow(cleric, DamageSpell, 1) shouldBe GuidingBolt.some
     }
 
+    "return a multi attack spell of a specific SpellEffect equal to the level given" in {
+      val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, AcidArrow, Fireball)
+
+      spellOfLevelOrBelow(wizard, DamageSpell, 3, multiAttackOnly = true) shouldBe Fireball.some
+    }
+
     "return a spell of a specific SpellEffect below the level given" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
       spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
+    }
+
+    "return a multi attack spell of a specific SpellEffect below the level given" in new Tracking {
+      val trackedLevelTwoMultiSpell = trackedMultiMeleeSpellAttack(2)
+
+      val cleric = random[Cleric].withSpellsKnown(FireBolt, MagicMissile, trackedLevelTwoMultiSpell, trackedSingleTargetSavingThrowSpell(3, Wisdom))
+
+      spellOfLevelOrBelow(cleric, DamageSpell, 3, multiAttackOnly = true) shouldBe trackedLevelTwoMultiSpell.some
     }
 
     "return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {

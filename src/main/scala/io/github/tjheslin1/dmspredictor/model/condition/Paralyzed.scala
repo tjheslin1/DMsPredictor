@@ -10,12 +10,12 @@ import monocle.macros.Lenses
                                   turnsLeft: Int,
                                   attribute: Attribute,
                                   name: String = "Paralyzed")
-    extends Condition
+    extends EndOfTurnCondition
     with LazyLogging {
   val missesTurn: Boolean     = true
   val handleOnDamage: Boolean = false
 
-  def handle[_: RS](creature: Creature): Creature =
+  def handleEndOfTurn[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, attribute, creature)) {
       val paralyzed         = creature.conditions.find(_.name == name).get
       val updatedConditions = creature.conditions.except(paralyzed)
@@ -27,6 +27,4 @@ import monocle.macros.Lenses
       logger.debug(s"${creature.name} is still $name")
       creature
     }
-
-  def handleOnDamage[_: RS](creature: Creature): Creature = creature
 }

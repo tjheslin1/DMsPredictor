@@ -12,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
+import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -21,6 +22,7 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.FireBolt
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
@@ -79,6 +81,15 @@ object TestData {
         Intelligence -> intelligence,
         Charisma     -> charisma
       )
+
+      _savingThrowScores.set(savingThrowScores)(testMonster)
+    }
+
+    def withDexteritySavingThrowScore(dexScore: Int) = {
+      val savingThrowScores = testMonster.savingThrowScores.map {
+        case (Dexterity, _) => Dexterity -> dexScore
+        case (attribute, score) => attribute -> score
+      }
 
       _savingThrowScores.set(savingThrowScores)(testMonster)
     }
@@ -154,7 +165,7 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
-    def withReactionUsed() = _reactionUsed.set(true)(fighter)
+    def withReactionUsed()    = _reactionUsed.set(true)(fighter)
   }
 
   implicit class ChampionOps(val champion: Champion) extends AnyVal {
@@ -211,6 +222,29 @@ object TestData {
     def isHiddenFrom(enemies: List[Combatant]) = _hiddenFrom.set(enemies)(rogue)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(rogue)
+  }
+
+  implicit class WizardOps(val wizard: Wizard) extends AnyVal {
+    import Wizard._
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(wizard)
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        wizard)
+    def withAllSpellSlotsAvailableForLevel(level: Level) =
+      _spellSlots.set(wizardSpellSlots(level))(wizard)
+
+    def withCantrip(cantrip: Spell) = _cantripKnown.set(cantrip.some)(wizard)
+    def withNoCantrip()             = _cantripKnown.set(none[Spell])(wizard)
+
+    def withNoSpellSlotsAvailable() =
+      _spellSlots.set(
+        SpellSlots(FirstLevelSpellSlots(0), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0)))(
+        wizard)
+
+    def withCastShieldOnReaction(willCast: Boolean) = _castShieldAsReaction.set(willCast)(wizard)
+    def withMageArmourPrepared(prepared: Boolean) = _mageArmourPrepared.set(prepared)(wizard)
   }
 }
 
@@ -379,7 +413,7 @@ trait TestData extends RandomDataGenerator {
 
         val skills: Skills = creatureSkills
 
-        val reactionOnHit: Option[OnHitReaction] = None
+        val reactionOnHit: Option[OnHitReaction]       = None
         val reactionOnDamage: Option[OnDamageReaction] = None
 
         def scoresCritical(roll: Int): Boolean = roll == 20
@@ -398,19 +432,19 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbPlayer: Arbitrary[Player] = Arbitrary {
     for {
-      lvl <- arbLevel.arbitrary
-      creature <- arbCreature.arbitrary
-      profBonus <- arbProficiencyBonus.arbitrary
+      lvl              <- arbLevel.arbitrary
+      creature         <- arbCreature.arbitrary
+      profBonus        <- arbProficiencyBonus.arbitrary
       savingThrowProfs <- arbSavingThrowProficiencies.arbitrary
     } yield
       new Player {
-        val level: Level = lvl
+        val level: Level             = lvl
         val bonusActionUsed: Boolean = false
-        val reactionUsed: Boolean = false
+        val reactionUsed: Boolean    = false
 
-        val health: Int = creature.health
-        val maxHealth: Int = creature.maxHealth
-        val stats: BaseStats = creature.stats
+        val health: Int        = creature.health
+        val maxHealth: Int     = creature.maxHealth
+        val stats: BaseStats   = creature.stats
         val baseWeapon: Weapon = creature.baseWeapon
 
         val savingThrowProficiencies: NonEmptyList[Attribute] =
@@ -418,21 +452,21 @@ trait TestData extends RandomDataGenerator {
 
         def weapon[_: RS]: Weapon = creature.weapon
 
-        val armour: Armour = creature.armour
-        val offHand: Option[Equipment] = creature.offHand
-        val armourClass: Int = creature.armourClass
+        val armour: Armour                     = creature.armour
+        val offHand: Option[Equipment]         = creature.offHand
+        val armourClass: Int                   = creature.armourClass
         val proficiencyBonus: ProficiencyBonus = profBonus
-        val resistances: List[DamageType] = creature.resistances
-        val immunities: List[DamageType] = creature.immunities
-        val name: String = creature.name
-        val abilities: List[CombatantAbility] = creature.abilities
-        val conditions: List[Condition] = creature.conditions
-        val attackStatus: AttackStatus = creature.attackStatus
-        val defenseStatus: AttackStatus = creature.defenseStatus
+        val resistances: List[DamageType]      = creature.resistances
+        val immunities: List[DamageType]       = creature.immunities
+        val name: String                       = creature.name
+        val abilities: List[CombatantAbility]  = creature.abilities
+        val conditions: List[Condition]        = List.empty
+        val attackStatus: AttackStatus         = creature.attackStatus
+        val defenseStatus: AttackStatus        = creature.defenseStatus
 
         val skills: Skills = creature.skills
 
-        val reactionOnHit: Option[OnHitReaction] = creature.reactionOnHit
+        val reactionOnHit: Option[OnHitReaction]       = creature.reactionOnHit
         val reactionOnDamage: Option[OnDamageReaction] = creature.reactionOnDamage
 
         def updateHealth[_: RS](dmg: Int,
@@ -484,12 +518,13 @@ trait TestData extends RandomDataGenerator {
 
   implicit val arbWerewolf: Arbitrary[Werewolf] = Arbitrary {
     for {
-    creature <- arbCreature.arbitrary
-    } yield Werewolf(
-      creature.health,
-      creature.health,
-      name = creature.name
-    )
+      creature <- arbCreature.arbitrary
+    } yield
+      Werewolf(
+        creature.health,
+        creature.health,
+        name = creature.name
+      )
   }
 
   implicit val arbTestMonster: Arbitrary[TestMonster] = Arbitrary {
@@ -544,7 +579,7 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         fightingStyles.toList,
-        BaseFighterAbilities.allUnused(),
+        BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
@@ -576,7 +611,7 @@ trait TestData extends RandomDataGenerator {
         armour,
         shield,
         fightingStyles.toList,
-        BaseFighterAbilities.allUnused(),
+        BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
@@ -695,7 +730,7 @@ trait TestData extends RandomDataGenerator {
         player.baseWeapon,
         player.skills,
         player.armour,
-        player.offHand,
+        none[Equipment],
         player.proficiencyBonus,
         player.resistances,
         player.immunities,
@@ -707,5 +742,39 @@ trait TestData extends RandomDataGenerator {
         defenseStatus = player.defenseStatus,
         name = player.name
       )
+  }
+
+  implicit val arbWizard: Arbitrary[Wizard] = Arbitrary {
+    for {
+      player <- arbPlayer.arbitrary
+      level  <- arbLevel.arbitrary
+    } yield {
+      Wizard(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.skills,
+        FireBolt.some,
+        Wizard.wizardSpellSlots(player.level),
+        Wizard.standardWizardSpellList,
+        castShieldAsReaction = true,
+        mageArmourPrepared = true,
+        NoArmour,
+        none[Equipment],
+        Wizard.standardWizardAbilities,
+        player.conditions,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        player.reactionUsed,
+        player.attackStatus,
+        player.defenseStatus,
+        concentratingSpell = none[Spell],
+        name = player.name
+      )
+    }
   }
 }
