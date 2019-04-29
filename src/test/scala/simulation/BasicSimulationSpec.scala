@@ -4,6 +4,7 @@ import base.PropertyChecksBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.D20
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.simulation._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.{FeatureSpec, Matchers}
@@ -17,9 +18,9 @@ class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksB
     val info = "Fighter vs TestMonster"
 
     scenario("One Fighter vs a TestMonster where Fighter wins") {
-      forAll { (fighter: Fighter, monster: TestMonster) =>
+      forAll { (fighter: Fighter, goblin: Goblin) =>
         val healthyFighter = fighter.withHealth(1000).withStrength(10)
-        val weakTestMonster = monster.withHealth(1)
+        val weakTestMonster = goblin.withHealth(1)
 
         BasicSimulation(List(healthyFighter, weakTestMonster), LowestFirst)
           .run(info)(D20.naturalTwenty) shouldBe SimulationResult(Success, info)

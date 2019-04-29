@@ -27,7 +27,6 @@ import util.TestMonster.defaultScores
                                     reactionUsed: Boolean = false,
                                     attackStatus: AttackStatus = Regular,
                                     defenseStatus: AttackStatus = Regular,
-                                    turnResetTracker: Unit => Unit = () => _,
                                     creatureType: CreatureType = Humanoid,
                                     challengeRating: Double = 1,
                                     perceptionScore: Int = 0,
@@ -45,10 +44,7 @@ import util.TestMonster.defaultScores
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  def resetStartOfTurn(): Creature = {
-    turnResetTracker()
-    this
-  }
+  def resetStartOfTurn(): Creature = this
 }
 
 object TestMonster {

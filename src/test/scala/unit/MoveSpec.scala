@@ -2,11 +2,12 @@ package unit
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model.{condition, _}
 import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Turned}
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
 import util.TestData._
@@ -94,19 +95,17 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     }
 
     "call a creature's resetTurn at the beginning of their move" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+      forAll { barbarian: Barbarian =>
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           var turnReset = false
-          val monster   = testMonster.withResetTurn(_ => turnReset = true)
-
           val queue =
-            Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
+            Queue(barbarian.withAttackStatus(Advantage).withCombatIndex(1))
 
-          takeMove(queue, LowestFirst)
+          val Queue(Combatant(_, updatedBarbarian: Barbarian)) = takeMove(queue, LowestFirst)
 
-          turnReset shouldBe true
+          updatedBarbarian.attackStatus shouldBe Regular
         }
       }
     }
