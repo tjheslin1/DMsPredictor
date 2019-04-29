@@ -255,17 +255,12 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
-          val turnedCondition    = Turned(saveDc = 1, turnsLeft = 5)
-          val paralyzedCondition = Paralyzed(saveDc = 1, turnsLeft = 10, Constitution)
           val paralyzedTurnedFighter =
-            fighter.withConditions(turnedCondition, paralyzedCondition).withCombatIndex(1)
+            fighter.withConditions(trackedStartOfTurnCondition(dc = 1)).withCombatIndex(1)
 
-          val Queue(Combatant(_, updatedFighter: Fighter)) =
             takeMove(Queue(paralyzedTurnedFighter), LowestFirst)
 
-          updatedFighter.conditions shouldBe
-            List(Turned(saveDc = 1, turnsLeft = 4),
-                 Paralyzed(saveDc = 1, turnsLeft = 9, Constitution))
+          trackedStartOfTurnConditionDecremented shouldBe true
         }
       }
     }

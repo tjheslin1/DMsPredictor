@@ -31,6 +31,6 @@ object BaseWizard {
       if (mageArmourPrepared) 13 + mod(stats.dexterity)
       else 10 + mod(stats.dexterity)
 
-    if (conditions.contains(ShieldBuffCondition)) armourClass + 5 else armourClass
+    if (conditions.contains(ShieldBuffCondition())) armourClass + 5 else armourClass
   }
 }

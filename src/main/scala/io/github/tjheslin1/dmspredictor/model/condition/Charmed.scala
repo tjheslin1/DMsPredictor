@@ -14,10 +14,9 @@ import monocle.macros.Lenses
   val missesTurn: Boolean     = true
   val handleOnDamage: Boolean = true
 
-  def decrementTurnsLeft(): Condition = {
+  def decrementTurnsLeft(): Condition =
     // can only be removed by passing the saving throw
     this
-  }
 
   def handleStartOfTurn[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, Wisdom, creature)) {

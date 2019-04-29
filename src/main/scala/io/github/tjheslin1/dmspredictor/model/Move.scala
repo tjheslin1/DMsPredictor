@@ -73,7 +73,13 @@ object Move extends LazyLogging {
 
   def decrementConditionsTurnsLeft(combatant: Combatant): Combatant =
     (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set {
-      combatant.creature.conditions.map(_.decrementTurnsLeft())
+      combatant.creature.conditions.map(_.decrementTurnsLeft()).filter { condition =>
+        if (condition.turnsLeft > 0) true
+        else {
+          logger.debug(s"${condition.name} has run out on ${combatant.creature.name}")
+          false
+        }
+    }
     }(combatant)
 
   def handleStartOfTurnConditions[_: RS](combatant: Combatant): (Combatant, Boolean) = {
