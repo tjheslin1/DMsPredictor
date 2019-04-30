@@ -165,9 +165,6 @@ object WizardSpells extends LazyLogging {
 
     def decrementTurnsLeft(): Condition = ShieldBuffCondition(turnsLeft = 0)
 
-    def handleStartOfTurn[_: RS](creature: Creature): Creature = {
-      val updatedConditions = creature.conditions diff List(ShieldBuffCondition)
-      Creature.creatureConditionsLens.set(updatedConditions)(creature)
-    }
+    def handleStartOfTurn[_: RS](creature: Creature): Creature = creature
   }
 }
