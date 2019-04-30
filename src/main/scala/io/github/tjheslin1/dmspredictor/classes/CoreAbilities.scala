@@ -89,7 +89,7 @@ object CoreAbilities extends LazyLogging {
 
       def conditionMet: Boolean = {
         val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-          .fold(spellCaster.cantripKnown.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
+          .fold(spellCaster.cantrip.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
 
         optMaxSpellLevel.fold(false) { maxSpellLevel =>
           spellCaster.level >= spellCaster.levelSpellcastingLearned &&
@@ -110,13 +110,13 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val (optSpell, spellLevelToUse) =
-          (spellCaster.cantripKnown, highestSpellSlot) match {
-            case (cantrip, None) =>
-              (cantrip, 0)
-            case (cantrip, Some(spellSlot)) =>
+          highestSpellSlot match {
+            case None =>
+              (spellCaster.cantrip, 0)
+            case Some(spellSlot) =>
               val optSpell =
                 spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)
-              optSpell.fold((cantrip, 0)) { foundSpell =>
+              optSpell.fold((spellCaster.cantrip, 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
           }
@@ -251,7 +251,7 @@ object CoreAbilities extends LazyLogging {
 
       def conditionMet: Boolean = {
         val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-          .fold(spellCaster.cantripKnown.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
+          .fold(spellCaster.cantrip.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
 
         optMaxSpellLevel.fold(false) { maxSpellLevel =>
           spellCaster.level >= spellCaster.levelSpellcastingLearned &&

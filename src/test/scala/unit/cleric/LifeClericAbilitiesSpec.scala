@@ -117,7 +117,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
+      val cleric = random[Cleric].withSpellKnown(MagicMissile).withCombatIndex(1)
 
       discipleOfLife(Priority)(cleric).conditionMet shouldBe false
     }
@@ -125,7 +125,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
+      val cleric = random[Cleric].withNoSpellSlotsAvailable().withCombatIndex(1)
 
       discipleOfLife(Priority)(cleric).conditionMet shouldBe false
     }

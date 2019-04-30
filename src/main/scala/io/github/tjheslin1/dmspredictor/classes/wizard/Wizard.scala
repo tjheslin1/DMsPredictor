@@ -25,7 +25,6 @@ import monocle.macros.{GenLens, Lenses}
                                stats: BaseStats,
                                baseWeapon: Weapon,
                                skills: Skills,
-                               cantripKnown: Option[Spell],
                                spellSlots: SpellSlots,
                                spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =
                                  Wizard.standardWizardSpellList,
