@@ -3,6 +3,20 @@ Combat results predictor for DMs for Dungeons & Dragons 5th Edition.
 
 https://www.dmspredictor.com
 
+## Classes:
+
+- [Barbarian](src/main/scala/io/github/tjheslin1/dmspredictor/classes/barbarian/README.md)
+- [Cleric](src/main/scala/io/github/tjheslin1/dmspredictor/classes/cleric/README.md)
+- [Fighter](src/main/scala/io/github/tjheslin1/dmspredictor/classes/fighter/README.md)
+- [Rogue](src/main/scala/io/github/tjheslin1/dmspredictor/classes/rogue/README.md)
+- [Wizard](src/main/scala/io/github/tjheslin1/dmspredictor/classes/wizard/README.md)
+
+## Monsters
+
+This list only includes monsters with README's
+
+- [Vampire](src/main/scala/io/github/tjheslin1/dmspredictor/monsters/vampire/README.md)
+
 ## Requests:
 
 If a subclass, spell or anything else is not present in the simulator, please raise an _Issue_ requesting this,
