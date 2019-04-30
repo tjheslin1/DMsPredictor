@@ -62,8 +62,6 @@ object TestData {
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
-    def withResetTurn(reset: Unit => Unit) = _turnResetTracker.set(reset)(testMonster)
-
     def withCreatureType(creatureType: CreatureType) = _creatureType.set(creatureType)(testMonster)
     def withChallengeRating(cr: Double)              = _challengeRating.set(cr)(testMonster)
 
@@ -549,7 +547,6 @@ trait TestData extends RandomDataGenerator {
         reactionUsed = false,
         creature.attackStatus,
         creature.defenseStatus,
-        turnResetTracker = () => _,
         creatureType,
         cr,
         arbSkills.perception,

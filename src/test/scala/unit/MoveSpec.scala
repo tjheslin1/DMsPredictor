@@ -2,10 +2,12 @@ package unit
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
-import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.model.{condition, _}
+import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Turned}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
 import util.TestData._
@@ -93,19 +95,17 @@ class MoveSpec extends UnitSpecBase with OptionValues {
     }
 
     "call a creature's resetTurn at the beginning of their move" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+      forAll { barbarian: Barbarian =>
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           var turnReset = false
-          val monster   = testMonster.withResetTurn(_ => turnReset = true)
-
           val queue =
-            Queue(monster.withCombatIndex(1), fighter.withCombatIndex(2))
+            Queue(barbarian.withAttackStatus(Advantage).withCombatIndex(1))
 
-          takeMove(queue, LowestFirst)
+          val Queue(Combatant(_, updatedBarbarian: Barbarian)) = takeMove(queue, LowestFirst)
 
-          turnReset shouldBe true
+          updatedBarbarian.attackStatus shouldBe Regular
         }
       }
     }
@@ -186,6 +186,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
                               trackedStartOfTurnCondition(50),
                               trackedEndOfTurnCondition(100))
               .withCombatIndex(1)
+
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
@@ -206,12 +207,60 @@ class MoveSpec extends UnitSpecBase with OptionValues {
               .withBaseWeapon(trackedSword)
               .withConditions(trackedStartOfTurnCondition(100, turnMissed = true))
               .withCombatIndex(1)
+
           val fighterCombatant = fighter.withCombatIndex(2)
 
           takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
 
           trackedStartOfTurnConditionHandledCount shouldBe 1
           swordUsedCount shouldBe 0
+        }
+      }
+    }
+
+    "remove condition at start of turn if turnsLeft is 0" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val turnedCondition = Turned(saveDc = 1, turnsLeft = 0)
+          val turnedFighter   = fighter.withCondition(turnedCondition).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(turnedFighter), LowestFirst)
+
+          updatedFighter.conditions shouldBe List()
+        }
+      }
+    }
+
+    "remove condition at end of turn if turnsLeft is 0" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val paralyzedCondition = Paralyzed(saveDc = 1, turnsLeft = 0, Constitution)
+          val paralyzedFighter   = fighter.withCondition(paralyzedCondition).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(paralyzedFighter), LowestFirst)
+
+          updatedFighter.conditions shouldBe List()
+        }
+      }
+    }
+
+    "decrement turnsLeft on condition at start of turn" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val paralyzedTurnedFighter =
+            fighter.withConditions(trackedStartOfTurnCondition(dc = 1)).withCombatIndex(1)
+
+            takeMove(Queue(paralyzedTurnedFighter), LowestFirst)
+
+          trackedStartOfTurnConditionDecremented shouldBe true
         }
       }
     }

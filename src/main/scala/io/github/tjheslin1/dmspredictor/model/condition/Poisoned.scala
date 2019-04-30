@@ -10,6 +10,8 @@ import monocle.macros.Lenses
   val missesTurn: Boolean     = false
   val handleOnDamage: Boolean = false
 
+  def decrementTurnsLeft(): Condition = Poisoned(saveDc, turnsLeft - 1, name)
+
   def handleStartOfTurn[_: RS](creature: Creature): Creature = ???
   def handleOnDamage[_: RS](creature: Creature): Creature    = creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature   = ???
