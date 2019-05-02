@@ -79,7 +79,7 @@ object Move extends LazyLogging {
           logger.debug(s"${condition.name} has run out on ${combatant.creature.name}")
           false
         }
-    }
+      }
     }(combatant)
 
   def handleStartOfTurnConditions[_: RS](combatant: Combatant): (Combatant, Boolean) = {

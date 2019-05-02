@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes
 
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
@@ -8,7 +9,6 @@ import monocle.Lens
 
 trait SpellCaster extends Creature {
 
-  val cantripKnown: Option[Spell]
   val spellsKnown: Map[(SpellLevel, SpellEffect), Spell]
   val spellSlots: SpellSlots
   val concentratingSpell: Option[Spell]
@@ -16,6 +16,8 @@ trait SpellCaster extends Creature {
   val levelSpellcastingLearned: Level
 
   def isConcentrating: Boolean = concentratingSpell.isDefined
+
+  def cantrip: Option[Spell] = spellsKnown.get((0, DamageSpell))
 }
 
 object SpellCaster {

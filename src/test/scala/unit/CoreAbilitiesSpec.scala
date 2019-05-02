@@ -195,7 +195,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedCleric = cleric
-            .withCantrip(trackedSingleTargetSavingThrowSpell(0, Wisdom))
             .withSpellsKnown(trackedSingleTargetSavingThrowSpell(0, Wisdom), trackedHealingSpell(3))
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
@@ -220,8 +219,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val noSpellSlotsCleric = cleric
-            .withCantrip(trackedMeleeSpellAttack(0))
-            .withSpellKnown(trackedSingleTargetSavingThrowSpell(1, Wisdom))
+            .withSpellsKnown(trackedMeleeSpellAttack(0), trackedSingleTargetSavingThrowSpell(1, Wisdom))
             .withNoSpellSlotsAvailable()
             .withWisdom(24)
             .withCombatIndex(1)
@@ -240,7 +238,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has no damaging spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withSpellKnown(CureWounds).withCombatIndex(1)
+      val cleric = random[Cleric].withSpellKnown(CureWounds).withCombatIndex(1)
 
       castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
     }
@@ -249,7 +247,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
-        .withNoCantrip()
+        .withSpellsKnown(List.empty[Spell]:_*)
         .withNoSpellSlotsAvailable()
         .withCombatIndex(1)
 
@@ -262,7 +260,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val wizardCombatant = wizard
-            .withNoCantrip()
             .withSpellsKnown(trackedHealingSpell(2), trackedSingleTargetSavingThrowSpell(3, Wisdom))
             .withAllSpellSlotsAvailableForLevel(LevelFour)
             .withLevel(LevelFour)
@@ -388,7 +385,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val healingCleric = cleric
-            .withCantrip(trackedHealingSpell(0))
             .withSpellsKnown(trackedHealingSpell(0), trackedMeleeSpellAttack(1))
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
@@ -407,7 +403,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has no healing spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
+      val cleric = random[Cleric].withSpellKnown(MagicMissile).withCombatIndex(1)
 
       castSingleTargetHealingSpell(Priority)(cleric).conditionMet shouldBe false
     }
@@ -415,7 +411,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withNoSpellSlotsAvailable().withCombatIndex(1)
+      val cleric = random[Cleric].withNoSpellSlotsAvailable().withCombatIndex(1)
 
       castSingleTargetHealingSpell(Priority)(cleric).conditionMet shouldBe false
     }
@@ -426,7 +422,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val wizardCombatant = wizard
-            .withNoCantrip()
             .withSpellsKnown(trackedSingleTargetSavingThrowSpell(2, Wisdom), trackedHealingSpell(3))
             .withAllSpellSlotsAvailableForLevel(LevelFour)
             .withLevel(LevelFour)
@@ -534,7 +529,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has no condition spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withSpellKnown(MagicMissile).withCombatIndex(1)
+      val cleric = random[Cleric].withSpellKnown(MagicMissile).withCombatIndex(1)
 
       castConcentrationSpell(Priority)(cleric).conditionMet shouldBe false
     }
@@ -543,7 +538,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
-        .withNoCantrip()
         .withNoSpellSlotsAvailable()
         .withCombatIndex(1)
 
@@ -694,7 +688,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Wizard]
-        .withCantrip(trackedSingleTargetSavingThrowSpell(0, Wisdom))
+        .withSpellKnown(trackedSingleTargetSavingThrowSpell(0, Wisdom))
         .withSpellsKnown(List.empty[Spell]: _*)
         .withCombatIndex(1)
 
@@ -704,7 +698,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     "not meet the condition if the Spell Caster has no damaging spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
-      val cleric = random[Cleric].withNoCantrip().withSpellKnown(CureWounds).withCombatIndex(1)
+      val cleric = random[Cleric].withSpellKnown(CureWounds).withCombatIndex(1)
 
       castMultiTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
     }
@@ -713,7 +707,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val wizard = random[Wizard]
-        .withNoCantrip()
         .withNoSpellSlotsAvailable()
         .withCombatIndex(1)
 
@@ -726,7 +719,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val wizardCombatant = wizard
-            .withNoCantrip()
             .withSpellsKnown(MagicMissile, AcidArrow, Fireball)
             .withAllSpellSlotsAvailableForLevel(LevelFour)
             .withLevel(LevelFour)

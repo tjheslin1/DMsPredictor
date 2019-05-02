@@ -6,7 +6,6 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.wizard.{BaseWizard, Wizard}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf}
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy._
@@ -24,7 +23,6 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     BaseStats(10, 10, 14, 14, 14, 10),
     Shortsword,
     Skills(10, 10),
-    FireBolt.some,
     Wizard.wizardSpellSlots(LevelFive),
     name = "Wizard"
   )
