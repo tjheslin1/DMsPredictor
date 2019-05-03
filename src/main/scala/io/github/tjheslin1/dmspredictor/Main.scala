@@ -14,7 +14,12 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
+  val iterations = args(0).toInt
+
   val wizardHp = BaseWizard.calculateHealth(LevelFive, 14)
+
+  println(s"???????ARGS: ${args.length}")
+  args.foreach(println(_))
 
   val wizard = Wizard(
     LevelFive,
@@ -34,9 +39,9 @@ object Main extends App with scalax.chart.module.Charting with LazyLogging {
     Werewolf(80, 80, name = "Werewolf")
   )
 
-  val simulation = "Wizard vs Goblins and Werewolf"
-  val (losses, wins) =
-    SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, 1)
+  val simulation     = "Wizard vs Goblins and Werewolf"
+  val (losses, wins) = (0, 0)
+  SimulationRunner.run(BasicSimulation(creatures, LowestFirst), simulation, iterations)
 
   logger.debug(s"$simulation simulation started")
   println(s"$wins Wins and $losses Losses")
