@@ -20,7 +20,7 @@ object BaseFighter {
 
   val HitDice = D10
 
-  def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
+  def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
   def weaponWithFightingStyle[_: RS](weapon: Weapon,
