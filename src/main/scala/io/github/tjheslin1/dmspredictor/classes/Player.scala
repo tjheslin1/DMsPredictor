@@ -26,7 +26,7 @@ trait Player extends Creature {
 
 object Player {
 
-  def calculateHealth[_: RS](hitDice: Dice, level: Level, constitutionScore: Stat): Int =
+  def calculateHealth(hitDice: Dice, level: Level, constitutionScore: Stat): Int =
     (hitDice.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(hitDice) + mod(
       constitutionScore)))
 
