@@ -1,31 +1,16 @@
 package io.github.tjheslin1.dmspredictor
 
 import cats.implicits._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.circe.Decoder.Result
 import io.circe._
 import io.github.tjheslin1.dmspredictor.classes.wizard._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
+import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 
 object ArgParser {
-
-  // import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
-
-  /*
-  {
-    "level": 0,
-    "stats": "10,10,10,10,10,10",
-    "weapon": Shortsword,
-    "skills": "2,2",
-    "spellsKnown": "FireBolt,MagicMissile,AcidArrow,Fireball",
-    "castShieldAsReaction": true,
-    "mageArmourPrepared": true,
-    "armour": NoArmour,
-    "offHand": None,
-    "name": "Tom"
-  }
-   */
 
   implicit val wizardDecoder: Decoder[Wizard] = new Decoder[Wizard] {
     def apply(c: HCursor): Result[Wizard] =
@@ -58,6 +43,11 @@ object ArgParser {
     Greatsword.name -> Greatsword
   )
 
+  import eu.timepit.refined._
+  import eu.timepit.refined.api.Refined
+  import eu.timepit.refined.auto._
+  import eu.timepit.refined.numeric._
+
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =
     for {
       ints <- Either
@@ -65,7 +55,8 @@ object ArgParser {
                .leftMap(e => DecodingFailure(e.getMessage, c.history))
       baseStats <- ints match {
                     case Array(str, dex, con, wis, int, cha) =>
-                      BaseStats(str, dex, con, wis, int, cha).asRight
+                      val strength = refineV[Stat](str)
+                      BaseStats(strength, dex, con, wis, int, cha).asRight
                     case _ =>
                       DecodingFailure(s"$statsCsv did not match expected format for stats",
                                       c.history).asLeft
