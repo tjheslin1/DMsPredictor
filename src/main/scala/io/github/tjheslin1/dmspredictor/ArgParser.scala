@@ -1,28 +1,33 @@
 package io.github.tjheslin1.dmspredictor
 
 import cats.implicits._
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
+import eu.timepit.refined.api.Refined.unsafeApply
 import io.circe.Decoder.Result
 import io.circe._
+import io.circe.generic.semiauto._
+import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.wizard._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
-import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters._
 
-object ArgParser {
+trait ArgParser {
+
+  implicit val rollStrategy: RollStrategy
+
+  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
 
   implicit val wizardDecoder: Decoder[Wizard] = new Decoder[Wizard] {
     def apply(c: HCursor): Result[Wizard] =
       for {
-        levelInt <- c.downField("level").as[Int]
-        level     = Level(levelInt)
-        statsStr  <- c.downField("stats").as[String]
-        stats     <- baseStatsConverter(c, statsStr)
-        weapon    <- c.downField("weapon").as[String]
-        skillsStr <- c.downField("skills").as[String]
-        skills    <- skillsConverter(c, skillsStr)
-      wizardName <- c.downField("name").as[String]
+        levelInt   <- c.downField("level").as[Int]
+        level      = Level(levelInt)
+        statsStr   <- c.downField("stats").as[String]
+        stats      <- baseStatsConverter(c, statsStr)
+        weapon     <- c.downField("weapon").as[String]
+        skillsStr  <- c.downField("skills").as[String]
+        skills     <- skillsConverter(c, skillsStr)
+        wizardName <- c.downField("name").as[String]
       } yield {
         val health = BaseWizard.calculateHealth(level, stats.constitution)
         Wizard(level,
@@ -33,20 +38,30 @@ object ArgParser {
                skills,
                Wizard.wizardSpellSlots(level),
                Wizard.standardWizardSpellList,
-          name = wizardName
-        )
+               name = wizardName)
       }
   }
 
-  val weaponsLookup: Map[String, Weapon] = Map(
-    Shortsword.name -> Shortsword,
-    Greatsword.name -> Greatsword
-  )
+  implicit val goblinDecoder: Decoder[Goblin] = new Decoder[Goblin] {
+    override def apply(c: HCursor): Result[Goblin] =
+      for {
+        goblinName <- c.downField("name").as[String]
+      } yield {
+        val health = Goblin.calculateHealth
+        Goblin(health, health, name = goblinName)
+      }
+  }
 
-  import eu.timepit.refined._
-  import eu.timepit.refined.api.Refined
-  import eu.timepit.refined.auto._
-  import eu.timepit.refined.numeric._
+  implicit val playerDecoder: Decoder[Player] =
+    List[Decoder[Player]](Decoder[Wizard].widen).reduceLeft(_ or _)
+
+  implicit val monsterDecoder: Decoder[Monster] =
+    List[Decoder[Monster]](Decoder[Goblin].widen).reduceLeft(_ or _)
+
+  val weaponsLookup: Map[String, Weapon] = Map(
+    Shortsword.name.toLowerCase -> Shortsword,
+    Greatsword.name.toLowerCase -> Greatsword
+  )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =
     for {
@@ -55,8 +70,12 @@ object ArgParser {
                .leftMap(e => DecodingFailure(e.getMessage, c.history))
       baseStats <- ints match {
                     case Array(str, dex, con, wis, int, cha) =>
-                      val strength = refineV[Stat](str)
-                      BaseStats(strength, dex, con, wis, int, cha).asRight
+                      BaseStats(unsafeApply(str),
+                                unsafeApply(dex),
+                                unsafeApply(con),
+                                unsafeApply(wis),
+                                unsafeApply(int),
+                                unsafeApply(cha)).asRight
                     case _ =>
                       DecodingFailure(s"$statsCsv did not match expected format for stats",
                                       c.history).asLeft
