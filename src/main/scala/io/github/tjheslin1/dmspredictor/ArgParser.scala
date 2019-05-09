@@ -6,7 +6,10 @@ import io.circe.Decoder.Result
 import io.circe._
 import io.circe.generic.semiauto._
 import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.wizard._
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
+import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters._
@@ -16,6 +19,38 @@ trait ArgParser {
   implicit val rollStrategy: RollStrategy
 
   implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
+
+  implicit val fighterDecoder: Decoder[Fighter] = new Decoder[Fighter] {
+    def apply(c: HCursor): Result[Fighter] =
+      for {
+        levelInt    <- c.downField("level").as[Int]
+        level       = Level(levelInt)
+        statsStr    <- c.downField("stats").as[String]
+        stats       <- baseStatsConverter(c, statsStr)
+        weapon      <- c.downField("weapon").as[String]
+        armour      <- c.downField("armour").as[String]
+        offHand     <- c.downField("offHand").as[String]
+        skillsStr   <- c.downField("skills").as[String]
+        skills      <- skillsConverter(c, skillsStr)
+        style       <- c.downField("fightingStyles").as[String]
+        fighterName <- c.downField("name").as[String]
+      } yield {
+        val health = BaseFighter.calculateHealth(level, stats.constitution)
+        Fighter(
+          level,
+          health,
+          health,
+          stats,
+          weaponsLookup(weapon),
+          skills,
+          armourLookup(armour),
+          offHandLookup(offHand),
+          List(fightingStyleLookup(style)),
+          proficiencyBonus = ProficiencyBonus.fromLevel(level),
+          name = fighterName
+        )
+      }
+  }
 
   implicit val wizardDecoder: Decoder[Wizard] = new Decoder[Wizard] {
     def apply(c: HCursor): Result[Wizard] =
@@ -30,15 +65,18 @@ trait ArgParser {
         wizardName <- c.downField("name").as[String]
       } yield {
         val health = BaseWizard.calculateHealth(level, stats.constitution)
-        Wizard(level,
-               health,
-               health,
-               stats,
-               weaponsLookup(weapon),
-               skills,
-               Wizard.wizardSpellSlots(level),
-               Wizard.standardWizardSpellList,
-               name = wizardName)
+        Wizard(
+          level,
+          health,
+          health,
+          stats,
+          weaponsLookup(weapon.toLowerCase),
+          skills,
+          Wizard.wizardSpellSlots(level),
+          Wizard.standardWizardSpellList,
+          proficiencyBonus = ProficiencyBonus.fromLevel(level),
+          name = wizardName
+        )
       }
   }
 
@@ -56,15 +94,18 @@ trait ArgParser {
     override def apply(c: HCursor): Result[Player] =
       for {
         playerClass <- c.downField("class").as[String]
-        decoderOpt = playerClassDecoderLookup.get(playerClass.toLowerCase)
-        decoder <- decoderOpt.fold[Result[Decoder[_]]](DecodingFailure(s"Unknown player class $playerClass", c.history).asLeft)(d => d.asRight)
+        decoderOpt  = playerClassDecoderLookup.get(playerClass.toLowerCase)
+        decoder <- decoderOpt.fold[Result[Decoder[_]]](
+                    DecodingFailure(s"Unknown player class $playerClass", c.history).asLeft)(d =>
+                    d.asRight)
         result <- decoder(c).asInstanceOf[Result[Player]]
       } yield result
   }
 //    List[Decoder[Player]](Decoder[Wizard].widen).reduceLeft(_ or _)
 
   val playerClassDecoderLookup: Map[String, Decoder[_]] = Map(
-    "wizard" -> Decoder[Wizard]
+    "fighter" -> Decoder[Fighter],
+    "wizard"  -> Decoder[Wizard]
   )
 
   implicit val monsterDecoder: Decoder[Monster] =
@@ -73,6 +114,26 @@ trait ArgParser {
   val weaponsLookup: Map[String, Weapon] = Map(
     Shortsword.name.toLowerCase -> Shortsword,
     Greatsword.name.toLowerCase -> Greatsword
+  )
+
+  val armourLookup: Map[String, Armour] = Map(
+    NoArmour.name.toLowerCase   -> NoArmour,
+    ChainShirt.name.toLowerCase -> ChainShirt
+  )
+
+  val offHandLookup: Map[String, Option[Equipment]] = Map(
+    "none"                      -> none[Equipment],
+    Shield.name.toLowerCase     -> Shield.some,
+    Shortsword.name.toLowerCase -> Shortsword.some
+  )
+
+  val fightingStyleLookup: Map[String, FighterFightingStyle] = Map(
+    "archery" -> Archery,
+    "defense" -> Defense,
+    "dueling" -> Dueling,
+    "greatWeaponFighting" -> GreatWeaponFighting,
+    "protection" -> Protection,
+    "twoWeaponFighting" -> TwoWeaponFighting
   )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =

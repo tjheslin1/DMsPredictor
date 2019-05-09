@@ -12,26 +12,28 @@ import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationR
 import io.github.tjheslin1.dmspredictor.strategy._
 
 /*
-sbt "runMain Main \"{
- "simulationName": "Wizard vs Goblins",
- "simulations": 2,
- "focus": "LowestFirst",
- "players": [
+sbt 'run "{
+ \"simulationName\": \"Wizard vs Goblins\",
+ \"simulations\": 2,
+ \"focus\": \"LowestFirst\",
+ \"players\": [
    {
-    "class": "wizard",
-    "level": 4,
-    "stats": "10,10,14,14,14,10",
-    "weapon": "Shortsword",
-    "skills": "1,1",
-    "name": "TestWizard"
+    \"class\": \"wizard\",
+    \"level\": 4,
+    \"stats\": \"10,10,14,14,14,10\",
+    \"weapon\": \"Shortsword\",
+    \"skills\": \"1,1\",
+    \"name\": \"TestWizard\"
    }
  ],
- "monsters": [
+ \"monsters\": [
   {
-    "name": "TestGoblin"
+    \"name\": \"TestGoblin\"
   }
  ]
-}\""
+}"'
+
+sbt 'run "{\"simulationName\":\"Wizard vs Goblins\",\"simulations\":2,\"focus\":\"LowestFirst\",\"players\":[{\"class\":\"wizard\",\"level\":5,\"stats\":\"10,10,14,14,14,10\",\"weapon\":\"Shortsword\",\"skills\":\"1,1\",\"name\":\"TestWizard\"}],\"monsters\":[{\"name\":\"TestGoblin\"}]}"'
  */
 
 case class SimulationConfig(simulationName: String,
