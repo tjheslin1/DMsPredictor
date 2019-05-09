@@ -52,8 +52,20 @@ trait ArgParser {
       }
   }
 
-  implicit val playerDecoder: Decoder[Player] =
-    List[Decoder[Player]](Decoder[Wizard].widen).reduceLeft(_ or _)
+  implicit val playerDecoder: Decoder[Player] = new Decoder[Player] {
+    override def apply(c: HCursor): Result[Player] =
+      for {
+        playerClass <- c.downField("class").as[String]
+        decoderOpt = playerClassDecoderLookup.get(playerClass.toLowerCase)
+        decoder <- decoderOpt.fold[Result[Decoder[_]]](DecodingFailure(s"Unknown player class $playerClass", c.history).asLeft)(d => d.asRight)
+        result <- decoder(c).asInstanceOf[Result[Player]]
+      } yield result
+  }
+//    List[Decoder[Player]](Decoder[Wizard].widen).reduceLeft(_ or _)
+
+  val playerClassDecoderLookup: Map[String, Decoder[_]] = Map(
+    "wizard" -> Decoder[Wizard]
+  )
 
   implicit val monsterDecoder: Decoder[Monster] =
     List[Decoder[Monster]](Decoder[Goblin].widen).reduceLeft(_ or _)
