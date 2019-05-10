@@ -5,7 +5,7 @@ import io.github.tjheslin1.dmspredictor.model._
 
 case object NoArmour extends Armour {
 
-  val name: String = "No armour"
+  val name: String = "NoArmour"
 
   def armourClass(dexterity: Stat): Int = 10 + Modifier.mod(dexterity)
 }

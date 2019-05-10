@@ -41,11 +41,11 @@ trait ArgParser {
           health,
           health,
           stats,
-          weaponsLookup(weapon),
+          weaponsLookup(weapon.toLowerCase),
           skills,
-          armourLookup(armour),
-          offHandLookup(offHand),
-          List(fightingStyleLookup(style)),
+          armourLookup(armour.toLowerCase),
+          offHandLookup.get(offHand.toLowerCase),
+          List(fightingStyleLookup(style.toLowerCase)),
           proficiencyBonus = ProficiencyBonus.fromLevel(level),
           name = fighterName
         )
@@ -121,19 +121,18 @@ trait ArgParser {
     ChainShirt.name.toLowerCase -> ChainShirt
   )
 
-  val offHandLookup: Map[String, Option[Equipment]] = Map(
-    "none"                      -> none[Equipment],
-    Shield.name.toLowerCase     -> Shield.some,
-    Shortsword.name.toLowerCase -> Shortsword.some
+  val offHandLookup: Map[String, Equipment] = Map(
+    Shield.name.toLowerCase     -> Shield,
+    Shortsword.name.toLowerCase -> Shortsword
   )
 
   val fightingStyleLookup: Map[String, FighterFightingStyle] = Map(
     "archery" -> Archery,
     "defense" -> Defense,
     "dueling" -> Dueling,
-    "greatWeaponFighting" -> GreatWeaponFighting,
+    "greatweaponfighting" -> GreatWeaponFighting,
     "protection" -> Protection,
-    "twoWeaponFighting" -> TwoWeaponFighting
+    "twoweaponfighting" -> TwoWeaponFighting
   )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =

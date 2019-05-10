@@ -13,27 +13,38 @@ import io.github.tjheslin1.dmspredictor.strategy._
 
 /*
 sbt 'run "{
- \"simulationName\": \"Wizard vs Goblins\",
- \"simulations\": 2,
- \"focus\": \"LowestFirst\",
- \"players\": [
+ "simulationName": "Wizard vs Goblins",
+ "simulations": 2,
+ "focus": "LowestFirst",
+ "players": [
    {
-    \"class\": \"wizard\",
-    \"level\": 4,
-    \"stats\": \"10,10,14,14,14,10\",
-    \"weapon\": \"Shortsword\",
-    \"skills\": \"1,1\",
-    \"name\": \"TestWizard\"
+    "class": "wizard",
+    "level": 4,
+    "stats": "10,10,14,14,14,10",
+    "weapon": "Shortsword",
+    "skills": "1,1",
+    "name": "TestWizard"
+   },
+   {
+    "class": "fighter",
+    "level": 4,
+    "stats": "14,14,14,10,10,10",
+    "weapon": "Greatsword",
+    "armour": "ChainShirt",
+    "offHand": "none",
+    "skills": "1,1",
+    "fightingStyles": "GreatWeaponFighting",
+    "name": "TestFighter"
    }
  ],
- \"monsters\": [
+ "monsters": [
   {
-    \"name\": \"TestGoblin\"
+    "name": "TestGoblin"
   }
  ]
 }"'
 
-sbt 'run "{\"simulationName\":\"Wizard vs Goblins\",\"simulations\":2,\"focus\":\"LowestFirst\",\"players\":[{\"class\":\"wizard\",\"level\":5,\"stats\":\"10,10,14,14,14,10\",\"weapon\":\"Shortsword\",\"skills\":\"1,1\",\"name\":\"TestWizard\"}],\"monsters\":[{\"name\":\"TestGoblin\"}]}"'
+sbt 'run "{\"simulationName\":\"Wizard vs Goblins\",\"simulations\":2,\"focus\":\"LowestFirst\",\"players\":[{\"class\":\"wizard\",\"level\":5,\"stats\":\"10,10,14,14,14,10\",\"weapon\":\"Shortsword\",\"skills\":\"1,1\",\"name\":\"TestWizard\"},{\"class\": \"fighter\",\"level\": 4,\"stats\": \"14,14,14,10,10,10\",\"weapon\": \"Greatsword\",\"armour\": \"ChainShirt\",\"offHand\": \"none\",\"skills\": \"1,1\",\"fightingStyles\": \"GreatWeaponFighting\",\"name\": \"TestFighter\"}],\"monsters\":[{\"name\":\"TestGoblin\"}]}"'
  */
 
 case class SimulationConfig(simulationName: String,
@@ -45,9 +56,6 @@ case class SimulationConfig(simulationName: String,
 object Main extends App with ArgParser with scalax.chart.module.Charting with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
-
-  println("JSON")
-  println(s"${args(0)}")
 
   val x: Either[Error, (SimulationConfig, BasicSimulation)] = for {
     config      <- decode[SimulationConfig](args(0))
