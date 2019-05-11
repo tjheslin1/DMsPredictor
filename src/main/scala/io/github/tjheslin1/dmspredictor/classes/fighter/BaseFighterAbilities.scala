@@ -161,6 +161,5 @@ object BaseFighterAbilities extends LazyLogging {
       def update: Creature =
         (BaseFighter.abilityUsagesLens composeLens actionSurgeUsedLens)
           .set(true)(baseFighter)
-          .asInstanceOf[Creature]
     }
 }

@@ -32,7 +32,7 @@ object BaseBarbarian {
     LevelFive  -> 3
   )
 
-  def calculateHealth[_: RS](level: Level, constitutionScore: Stat): Int =
+  def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
   def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {

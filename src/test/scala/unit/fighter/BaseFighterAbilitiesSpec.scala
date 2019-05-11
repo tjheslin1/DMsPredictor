@@ -186,17 +186,19 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
-  }
 
-  "updated second wind to used" in {
-    forAll { fighter: Fighter =>
-      new TestContext {
-        implicit override val roll: RollStrategy = Dice.defaultRandomiser
+    "updated second wind to used" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-        val updatedBaseFighter =
-          secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
+          val freshFighter = fighter.withAllAbilitiesUnused().withCombatIndex(1)
 
-        updatedBaseFighter.abilityUsages.secondWindUsed shouldBe true
+          val updatedBaseFighter =
+            secondWind(Priority)(freshFighter).update.asInstanceOf[BaseFighter]
+
+          updatedBaseFighter.abilityUsages.secondWindUsed shouldBe true
+        }
       }
     }
   }
@@ -261,6 +263,20 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           trackedAbilityUsedCount shouldBe 1
           otherTrackedAbilityUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "updated the fighters action surge used to true" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val freshFighter = fighter.withAllAbilitiesUnused().withCombatIndex(1)
+
+          val updatedFighter = actionSurge(Priority)(freshFighter).update.asInstanceOf[Fighter]
+
+          updatedFighter.abilityUsages.actionSurgeUsed shouldBe true
         }
       }
     }

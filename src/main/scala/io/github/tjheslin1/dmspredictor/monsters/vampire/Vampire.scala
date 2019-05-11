@@ -92,6 +92,8 @@ object Vampire {
 
   val CharmDC = 17
 
+  def calculateHealth[_: RS] = (17 * D8) + 68
+
   val vampireAbilities: List[CombatantAbility] = List(
     charm(1),
     multiAttack(2, numberOfAttacks = 2),

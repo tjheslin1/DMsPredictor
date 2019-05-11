@@ -29,6 +29,9 @@ The simulation is designed around a single encounter, therefore abilities such a
 class and will be used starting from the highest spell slot to the lowest as well as using other abilities 
 (e.g. a Sorceror's twinned spell).
 
+##### Proficiency with used weapons and armour:
+The simulation assumes that players have proficiency with the equipment it uses.
+
 ##### Ability Score Increases
 
 Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in the characters stats.
@@ -37,6 +40,32 @@ No validation against a Creature's Stats are made.
 For example:
 
 A Fighter could have `BaseStats(1, 1, 1, 1, 1, 1)` or `BaseStats(24, 24, 24, 24, 24, 24)`.
+
+The simulation is configured via JSON:
+
+```json
+{
+ "simulationName": "Wizard vs Goblin",
+ "simulations": 2,
+ "focus": "LowestFirst",
+ "players": [
+   {
+    "class": "wizard",
+    "level": 4,
+    "stats": "10,10,14,14,14,10",
+    "weapon": "Shortsword",
+    "skills": "1,1",
+    "name": "TestWizard"
+   }
+ ],
+ "monsters": [
+  {
+    "monster": "goblin",
+    "name": "TestGoblin"
+  }
+ ]
+}
+```
 
 ##### Example debug logs:
 

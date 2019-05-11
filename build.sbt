@@ -1,3 +1,7 @@
+enablePlugins(JavaAppPackaging)
+
+maintainer := "tjheslin1@kolabnow.com"
+
 lazy val dmspredictor = (project in file("."))
   .settings(
     libraryDependencies ++= Seq(
@@ -10,6 +14,10 @@ lazy val dmspredictor = (project in file("."))
       "eu.timepit"                  %% "refined-scalacheck"               % RefinedVersion,
       "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
       "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
+      
+      "io.circe"                    %% "circe-core"                       % CirceVersion,
+      "io.circe"                    %% "circe-generic"                    % CirceVersion,
+      "io.circe"                    %% "circe-parser"                     % CirceVersion,
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
       "org.scalatest"               %% "scalatest"                        % "3.0.7"         % Test,
@@ -27,5 +35,6 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
+val CirceVersion = "0.10.0"
 val MonocleVersion = "1.5.0"
 val RefinedVersion = "0.9.5"
