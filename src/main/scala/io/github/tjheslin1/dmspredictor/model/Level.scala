@@ -6,11 +6,11 @@ sealed trait Level {
 
 object Level {
   def apply(value: Int): Level = value match {
-    case 1 => LevelOne
-    case 2 => LevelTwo
-    case 3 => LevelThree
-    case 4 => LevelFour
-    case 5 => LevelFive
+    case 1  => LevelOne
+    case 2  => LevelTwo
+    case 3  => LevelThree
+    case 4  => LevelFour
+    case 5  => LevelFive
     case 20 => LevelTwenty
   }
 }

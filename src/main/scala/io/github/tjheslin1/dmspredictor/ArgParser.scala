@@ -52,6 +52,38 @@ trait ArgParser {
       }
   }
 
+  implicit val championDecoder: Decoder[Champion] = new Decoder[Champion] {
+    def apply(c: HCursor): Result[Champion] =
+      for {
+        levelInt    <- c.downField("level").as[Int]
+        level       = Level(levelInt)
+        statsStr    <- c.downField("stats").as[String]
+        stats       <- baseStatsConverter(c, statsStr)
+        weapon      <- c.downField("weapon").as[String]
+        armour      <- c.downField("armour").as[String]
+        offHand     <- c.downField("offHand").as[String]
+        skillsStr   <- c.downField("skills").as[String]
+        skills      <- skillsConverter(c, skillsStr)
+        style       <- c.downField("fightingStyles").as[String]
+        championName <- c.downField("name").as[String]
+      } yield {
+        val health = BaseFighter.calculateHealth(level, stats.constitution)
+        Champion(
+          level,
+          health,
+          health,
+          stats,
+          weaponsLookup(weapon.toLowerCase),
+          skills,
+          armourLookup(armour.toLowerCase),
+          offHandLookup.get(offHand.toLowerCase),
+          List(fightingStyleLookup(style.toLowerCase)),
+          proficiencyBonus = ProficiencyBonus.fromLevel(level),
+          name = championName
+        )
+      }
+  }
+
   implicit val wizardDecoder: Decoder[Wizard] = new Decoder[Wizard] {
     def apply(c: HCursor): Result[Wizard] =
       for {
@@ -101,10 +133,10 @@ trait ArgParser {
         result <- decoder(c).asInstanceOf[Result[Player]]
       } yield result
   }
-//    List[Decoder[Player]](Decoder[Wizard].widen).reduceLeft(_ or _)
 
   val playerClassDecoderLookup: Map[String, Decoder[_]] = Map(
     "fighter" -> Decoder[Fighter],
+    "champion" -> Decoder[Champion],
     "wizard"  -> Decoder[Wizard]
   )
 
@@ -127,12 +159,12 @@ trait ArgParser {
   )
 
   val fightingStyleLookup: Map[String, FighterFightingStyle] = Map(
-    "archery" -> Archery,
-    "defense" -> Defense,
-    "dueling" -> Dueling,
+    "archery"             -> Archery,
+    "defense"             -> Defense,
+    "dueling"             -> Dueling,
     "greatweaponfighting" -> GreatWeaponFighting,
-    "protection" -> Protection,
-    "twoweaponfighting" -> TwoWeaponFighting
+    "protection"          -> Protection,
+    "twoweaponfighting"   -> TwoWeaponFighting
   )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =

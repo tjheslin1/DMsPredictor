@@ -29,6 +29,9 @@ The simulation is designed around a single encounter, therefore abilities such a
 class and will be used starting from the highest spell slot to the lowest as well as using other abilities 
 (e.g. a Sorceror's twinned spell).
 
+##### Proficiency with used weapons and armour:
+The simulation assumes that players have proficiency with the equipment it uses.
+
 ##### Ability Score Increases
 
 Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in the characters stats.
