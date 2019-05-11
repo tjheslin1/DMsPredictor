@@ -81,16 +81,24 @@ object Actions extends LazyLogging {
                                    others: List[Combatant],
                                    attackResult: AttackResult,
                                    damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) =
-    resolveDamage(attacker, target, others, attacker.creature.weapon, attackResult, damageBonus)
+    resolveDamage(attacker,
+                  target,
+                  others,
+                  attacker.creature.weapon,
+                  attackResult,
+                  damageBonus,
+                  addStatModifier = true)
 
-  def resolveDamage[_: RS](attacker: Combatant,
-                           target: Combatant,
-                           others: List[Combatant],
-                           weapon: Weapon,
-                           attackResult: AttackResult,
-                           damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) = {
+  def resolveDamage[_: RS](
+      attacker: Combatant,
+      target: Combatant,
+      others: List[Combatant],
+      weapon: Weapon,
+      attackResult: AttackResult,
+      damageBonus: Int = 0,
+      addStatModifier: Boolean = true): (Combatant, Combatant, List[Combatant]) = {
 
-    val modifier = weaponModifier(weapon, attacker.creature)
+    val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
 
     val dmg = Math.max(
       0,

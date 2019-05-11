@@ -29,12 +29,41 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
             .withStrength(20)
             .withCombatIndex(1)
 
-          val monster = testMonster.withArmourClass(5).withCombatIndex(2)
+          val monster = testMonster.withArmourClass(5).withHealth(50).withCombatIndex(2)
 
-          twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 1
           offHAndSwordUsedCount shouldBe 1
+
+          val mainHandDamage = 6 // 1 + 5 strength modifier
+          val offHandDamage = 6 // 1 + 5 strength modifier
+          updatedMonster.health shouldBe monster.creature.health - (mainHandDamage + offHandDamage)
+        }
+      }
+    }
+
+    "not add the fighters stat modifier to the offhand attack if TwoWeaponFighting style is not chosen" in {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val dualWieldingFighter = fighter
+            .withFightingStyle(Defense)
+            .withBaseWeapon(trackedSword)
+            .withOffHand(trackedOffHandSword)
+            .withStrength(20)
+            .withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(5).withHealth(50).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
+
+          val mainHandDamage = 6 // 1 + 5 strength modifier
+          val offHandDamage = 1 // 1 + no strength modifier
+          updatedMonster.health shouldBe monster.creature.health - (mainHandDamage + offHandDamage)
         }
       }
     }
