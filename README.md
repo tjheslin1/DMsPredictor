@@ -19,7 +19,11 @@ This list only includes monsters with README's
 
 ## Requests:
 
-If a subclass, spell or anything else is not present in the simulator, please raise an _Issue_ requesting this,
+This simulator implements what is available in the
+[Systems Reference Document (SRD)](http://dnd.wizards.com/articles/features/systems-reference-document-srd)
+provide by Wizard of the Coast.
+
+If a spell or anything else is not present in the simulator that you would like to use, please raise an _Issue_ requesting this,
 or contribute yourself via a _Pull Request_!
 
 Assumptions:
@@ -34,15 +38,21 @@ The simulation assumes that players have proficiency with the equipment it uses.
 
 ##### Ability Score Increases
 
-Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in the characters stats.
+Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in
+ the characters stats upon submission to the simulator.
+
 No validation against a Creature's Stats are made.
 
 For example:
 
 A Fighter could have `BaseStats(1, 1, 1, 1, 1, 1)` or `BaseStats(24, 24, 24, 24, 24, 24)`.
 
+## Running the project locally:
+
 The simulation is configured via JSON:
 
+
+// sbt 'run "{\"simulationName\":\"Rogue vs Goblins\"........
 ```json
 {
  "simulationName": "Wizard vs Goblin",
@@ -66,6 +76,8 @@ The simulation is configured via JSON:
  ]
 }
 ```
+
+Otherwise you can create your players and monsters in the Main class to save having to fiddle with JSON.
 
 ##### Example debug logs:
 

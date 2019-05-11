@@ -300,7 +300,7 @@ class ActionsSpec extends UnitSpecBase {
   }
 
   "resolveDamage" should {
-    "use add a players strength modifier" in {
+    "add a players strength modifier" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext with Tracking {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -333,6 +333,24 @@ class ActionsSpec extends UnitSpecBase {
             resolveDamage(strongFighter, monster, List(), finesseWeapon, Hit)
 
           updatedMonster.health shouldBe 46
+        }
+      }
+    }
+
+    "not add players modifier if addStatModifier is false" in {
+      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext with Tracking {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val strongFighter = fighter.withStrength(16).withDexterity(10).withCombatIndex(1)
+
+          val monster =
+            testMonster.withArmourClass(2).withHealth(50).withMaxHealth(50).withCombatIndex(2)
+
+          val (_, Combatant(_, updatedMonster: TestMonster), _) =
+            resolveDamage(strongFighter, monster, List(), trackedSword, Hit, damageBonus = 0, addStatModifier = false)
+
+          updatedMonster.health shouldBe 49
         }
       }
     }

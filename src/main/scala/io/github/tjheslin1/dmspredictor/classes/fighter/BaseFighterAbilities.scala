@@ -105,13 +105,16 @@ object BaseFighterAbilities extends LazyLogging {
               val (offHandAttack, nextHitTarget) =
                 attack(updatedAttacker, offHandWeapon, nextTarget)
 
+              val offHandStatModifier = baseFighter.fightingStyles.contains(TwoWeaponFighting)
+
               val (attacker2, attackTarget2, updatedOthers2) =
                 if (offHandAttack.result > 0)
                   resolveDamage(updatedAttacker,
                                 nextHitTarget,
                                 updatedOthers,
                                 offHandWeapon,
-                                offHandAttack)
+                                offHandAttack,
+                                addStatModifier = offHandStatModifier)
                 else
                   (updatedAttacker, nextHitTarget, updatedOthers)
 
