@@ -41,6 +41,32 @@ For example:
 
 A Fighter could have `BaseStats(1, 1, 1, 1, 1, 1)` or `BaseStats(24, 24, 24, 24, 24, 24)`.
 
+The simulation is configured via JSON:
+
+```json
+{
+ "simulationName": "Wizard vs Goblin",
+ "simulations": 2,
+ "focus": "LowestFirst",
+ "players": [
+   {
+    "class": "wizard",
+    "level": 4,
+    "stats": "10,10,14,14,14,10",
+    "weapon": "Shortsword",
+    "skills": "1,1",
+    "name": "TestWizard"
+   }
+ ],
+ "monsters": [
+  {
+    "monster": "goblin",
+    "name": "TestGoblin"
+  }
+ ]
+}
+```
+
 ##### Example debug logs:
 
 ```

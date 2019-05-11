@@ -13,7 +13,7 @@ import io.github.tjheslin1.dmspredictor.strategy._
 
 /*
 sbt 'run "{
- "simulationName": "Wizard vs Goblins",
+ "simulationName": "Wizard vs Goblin",
  "simulations": 2,
  "focus": "LowestFirst",
  "players": [
@@ -24,28 +24,6 @@ sbt 'run "{
     "weapon": "Shortsword",
     "skills": "1,1",
     "name": "TestWizard"
-   },
-   {
-    "class": "fighter",
-    "level": 4,
-    "stats": "14,14,14,10,10,10",
-    "weapon": "Greatsword",
-    "armour": "ChainShirt",
-    "offHand": "none",
-    "skills": "1,1",
-    "fightingStyles": "GreatWeaponFighting",
-    "name": "TestFighter"
-   },
-   {
-    "class": "champion",
-    "level": 4,
-    "stats": "14,14,14,10,10,10",
-    "weapon": "Shortsword",
-    "armour": "ChainShirt",
-    "offHand": "Shortsword",
-    "skills": "1,1",
-    "fightingStyles": "TwoWeaponFighting",
-    "name": "TestFighter"
    }
  ],
  "monsters": [
