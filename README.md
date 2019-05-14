@@ -52,7 +52,8 @@ A Fighter could have `BaseStats(1, 1, 1, 1, 1, 1)` or `BaseStats(24, 24, 24, 24,
 The simulation is configured via JSON:
 
 
-// sbt 'run "{\"simulationName\":\"Rogue vs Goblins\"........
+`sbt 'run "{\"simulationName\":\"Rogue vs Goblins\"........`
+
 ```json
 {
  "simulationName": "Wizard vs Goblin",
