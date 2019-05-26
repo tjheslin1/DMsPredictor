@@ -37,4 +37,4 @@ resolvers ++= Seq(
 
 val CirceVersion = "0.11.1"
 val MonocleVersion = "1.5.0"
-val RefinedVersion = "0.9.5"
+val RefinedVersion = "0.9.6"
