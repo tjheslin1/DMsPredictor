@@ -1,10 +1,11 @@
-enablePlugins(JavaAppPackaging)
-
-maintainer := "tjheslin1@kolabnow.com"
-
 lazy val dmspredictor = (project in file("."))
   .settings(
-    libraryDependencies ++= Seq(
+    name := "DMsPredictor",
+    version := "1.0",
+    scalaVersion := "2.12.8",
+    mainClass in Compile := some("io.github.tjheslin1.dmspredictor.Main"),
+    assemblyJarName := "DMsPredictor_full.jar",
+      libraryDependencies ++= Seq(
       // format: off
       "org.typelevel"               %% "cats-core"                        % "1.6.0",
       "com.github.wookietreiber"    %% "scala-chart"                      % "0.5.1",
