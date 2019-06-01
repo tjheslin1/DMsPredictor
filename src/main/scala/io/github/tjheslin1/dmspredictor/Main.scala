@@ -17,7 +17,7 @@ case class SimulationConfig(simulationName: String,
                             players: NonEmptyList[Player],
                             monsters: NonEmptyList[Monster])
 
-object Main extends App with ArgParser with scalax.chart.module.Charting with LazyLogging {
+object Main extends App with ArgParser with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
@@ -26,7 +26,7 @@ object Main extends App with ArgParser with scalax.chart.module.Charting with La
     parsedFocus <- parseFocus(configuration.focus)
   } yield (configuration, BasicSimulation(configuration.players.toList ++ configuration.monsters.toList, parsedFocus))
 
-  config match {
+  val (wins, losses) = config match {
     case Left(e) => throw new RuntimeException(s"Error parsing JSON\n${e.getMessage}", e)
     case Right((simulationConfig, basicSimulation)) =>
       val (losses, wins) =
@@ -35,9 +35,11 @@ object Main extends App with ArgParser with scalax.chart.module.Charting with La
       logger.debug(s"${simulationConfig.simulationName} simulation started")
       println(s"$wins Wins and $losses Losses")
 
-      val data  = Seq("wins" -> wins, "losses" -> losses)
-      val chart = BarChart(data)
-      chart.show(title = simulationConfig.simulationName)
+//      val data  = Seq("wins" -> wins, "losses" -> losses)
+//      val chart = BarChart(data)
+//      chart.show(title = simulationConfig.simulationName)
+
+      (wins, losses)
   }
 
   def parseFocus(focus: String): Either[Error, Focus] = focus.toLowerCase match {
@@ -45,4 +47,6 @@ object Main extends App with ArgParser with scalax.chart.module.Charting with La
     case "randomfocus" => RandomFocus.asRight
     case _             => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
   }
+
+  s"$wins,$losses"
 }
