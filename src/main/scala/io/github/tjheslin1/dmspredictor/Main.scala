@@ -48,5 +48,5 @@ object Main extends App with ArgParser with LazyLogging {
     case _             => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
   }
 
-  s"$wins,$losses"
+  s"""{"wins:$wins,"losses:$losses""}"""
 }
