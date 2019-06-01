@@ -51,13 +51,15 @@ A Fighter could have `BaseStats(1, 1, 1, 1, 1, 1)` or `BaseStats(24, 24, 24, 24,
 
 The simulation is configured via JSON:
 
+NOTE: that the maximum number of simulations is currently set to 10,000.
+
 
 `sbt 'run "{\"simulationName\":\"Rogue vs Goblins\"........`
 
 ```json
 {
  "simulationName": "Wizard vs Goblin",
- "simulations": 2,
+ "simulations": 100,
  "focus": "LowestFirst",
  "players": [
    {

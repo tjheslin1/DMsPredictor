@@ -21,23 +21,23 @@ object Main extends App with ArgParser with scalax.chart.module.Charting with La
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
-  val x: Either[Error, (SimulationConfig, BasicSimulation)] = for {
-    config      <- decode[SimulationConfig](args(0))
-    parsedFocus <- parseFocus(config.focus)
-  } yield (config, BasicSimulation(config.players.toList ++ config.monsters.toList, parsedFocus))
+  val config: Either[Error, (SimulationConfig, BasicSimulation)] = for {
+    configuration      <- decode[SimulationConfig](args(0))
+    parsedFocus <- parseFocus(configuration.focus)
+  } yield (configuration, BasicSimulation(configuration.players.toList ++ configuration.monsters.toList, parsedFocus))
 
-  x match {
+  config match {
     case Left(e) => throw new RuntimeException(s"Error parsing JSON\n${e.getMessage}", e)
-    case Right((config, basicSimulation)) =>
+    case Right((simulationConfig, basicSimulation)) =>
       val (losses, wins) =
-        SimulationRunner.run(basicSimulation, config.simulationName, config.simulations)
+        SimulationRunner.run(basicSimulation, simulationConfig.simulationName, Math.max(10000, simulationConfig.simulations))
 
-      logger.debug(s"${config.simulationName} simulation started")
+      logger.debug(s"${simulationConfig.simulationName} simulation started")
       println(s"$wins Wins and $losses Losses")
 
       val data  = Seq("wins" -> wins, "losses" -> losses)
       val chart = BarChart(data)
-      chart.show(title = config.simulationName)
+      chart.show(title = simulationConfig.simulationName)
   }
 
   def parseFocus(focus: String): Either[Error, Focus] = focus.toLowerCase match {
