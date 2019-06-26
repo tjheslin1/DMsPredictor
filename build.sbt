@@ -21,7 +21,7 @@ lazy val dmspredictor = (project in file("."))
       "io.circe"                    %% "circe-parser"                     % CirceVersion,
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
-      "org.scalatest"               %% "scalatest"                        % "3.0.7"         % Test,
+      "org.scalatest"               %% "scalatest"                        % "3.0.8"         % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.14.0"        % Test
       // format: on
     ),
@@ -38,4 +38,4 @@ resolvers ++= Seq(
 
 val CirceVersion = "0.11.1"
 val MonocleVersion = "1.5.0"
-val RefinedVersion = "0.9.7"
+val RefinedVersion = "0.9.8"
