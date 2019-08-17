@@ -17,10 +17,17 @@ import io.github.tjheslin1.dmspredictor.equipment.weapons._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst, RandomFocus}
 
 trait ArgParser {
 
   implicit val rollStrategy: RollStrategy
+
+  def parseFocus(focus: String): Either[Error, Focus] = focus.toLowerCase match {
+    case "lowestfirst" => LowestFirst.asRight
+    case "randomfocus" => RandomFocus.asRight
+    case _ => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
+  }
 
   implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
 

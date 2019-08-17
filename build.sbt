@@ -20,6 +20,9 @@ lazy val dmspredictor = (project in file("."))
       "io.circe"                    %% "circe-generic"                    % CirceVersion,
       "io.circe"                    %% "circe-parser"                     % CirceVersion,
 
+      "com.amazonaws"               % "aws-java-sdk-lambda"                 % "1.11.607",
+      "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
+
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
       "org.scalatest"               %% "scalatest"                        % "3.0.8"         % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.14.0"        % Test
@@ -39,3 +42,8 @@ resolvers ++= Seq(
 val CirceVersion = "0.11.1"
 val MonocleVersion = "1.6.0"
 val RefinedVersion = "0.9.9"
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
