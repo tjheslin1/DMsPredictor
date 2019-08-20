@@ -20,7 +20,7 @@ lazy val dmspredictor = (project in file("."))
       "io.circe"                    %% "circe-generic"                    % CirceVersion,
       "io.circe"                    %% "circe-parser"                     % CirceVersion,
 
-      "com.amazonaws"               % "aws-java-sdk-lambda"                 % "1.11.613",
+      "com.amazonaws"               % "aws-java-sdk-lambda"                 % "1.11.614",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
