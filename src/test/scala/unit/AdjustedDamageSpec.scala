@@ -18,19 +18,27 @@ class AdjustedDamageSpec extends UnitSpecBase {
       }
     }
 
+    "deal half damage to a creature resistance to the damage type" in {
+      forAll { monster: TestMonster =>
+        val resistantMonster = monster.withResistance(Slashing).withHealth(100)
+
+        adjustedDamage(10, Slashing, resistantMonster) shouldBe 5
+      }
+    }
+
     "deal half damage rounded down to a creature resistance to the damage type" in {
       forAll { monster: TestMonster =>
-        val monsterCombatant = monster.withResistance(Slashing).withHealth(100)
+        val resistantMonster = monster.withResistance(Slashing).withHealth(100)
 
-        adjustedDamage(10, Slashing, monsterCombatant) shouldBe 5
+        adjustedDamage(11, Slashing, resistantMonster) shouldBe 5
       }
     }
 
     "deal no damage to a creature immune to the damage type" in {
       forAll { monster: TestMonster =>
-        val monsterCombatant = monster.withImmunity(Slashing).withHealth(100)
+        val immuneMonster = monster.withImmunity(Slashing).withHealth(100)
 
-        adjustedDamage(10, Slashing, monsterCombatant) shouldBe 0
+        adjustedDamage(10, Slashing, immuneMonster) shouldBe 0
       }
     }
   }
