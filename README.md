@@ -41,7 +41,7 @@ The simulation assumes that players have proficiency with the equipment it uses.
 Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in
  the characters stats upon submission to the simulator.
 
-No validation against a Creature's Stats are made.
+##### No validation against a Creature's Stats are made.
 
 For example:
 
