@@ -39,8 +39,8 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
-val CirceVersion = "0.11.1"
-val MonocleVersion = "1.6.0"
+val CirceVersion = "0.12.1"
+val MonocleVersion = "2.0.0"
 val RefinedVersion = "0.9.10"
 
 assemblyMergeStrategy in assembly := {
