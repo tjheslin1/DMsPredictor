@@ -23,7 +23,7 @@ lazy val dmspredictor = (project in file("."))
       "com.amazonaws"               % "aws-java-sdk-lambda"                 % "1.11.623",
       "com.amazonaws"               % "aws-lambda-java-core"                % "1.2.0",
 
-      "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.6"           % Test,
+      "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.7"           % Test,
       "org.scalatest"               %% "scalatest"                        % "3.0.8"         % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.14.1"        % Test
       // format: on
