@@ -25,7 +25,7 @@ lazy val dmspredictor = (project in file("."))
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.7"           % Test,
       "org.scalatest"               %% "scalatest"                        % "3.0.8"         % Test,
-      "org.scalacheck"              %% "scalacheck"                       % "1.14.1"        % Test
+      "org.scalacheck"              %% "scalacheck"                       % "1.14.2"        % Test
       // format: on
     ),
     autoCompilerPlugins := true,
