@@ -29,6 +29,14 @@ trait ArgParser {
     case _ => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
   }
 
+  implicit val sqsMessageDecoder: Decoder[SQSMessage] = deriveDecoder[SQSMessage]
+
+  implicit val sqsRecordDecoder: Decoder[SQSRecord] = deriveDecoder[SQSRecord]
+
+  implicit val messageAttributesDecoder: Decoder[MessageAttributes] = deriveDecoder[MessageAttributes]
+
+  implicit val simulationHashDecoder: Decoder[SimulationHash] = deriveDecoder[SimulationHash]
+
   implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
 
   implicit val barbarianDecoder: Decoder[Barbarian] = new Decoder[Barbarian] {
