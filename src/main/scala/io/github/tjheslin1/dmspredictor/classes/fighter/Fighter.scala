@@ -22,27 +22,28 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Fighter(level: Level,
-                                health: Int,
-                                maxHealth: Int,
-                                stats: BaseStats,
-                                baseWeapon: Weapon,
-                                skills: Skills,
-                                armour: Armour = NoArmour,
-                                offHand: Option[Equipment] = None,
-                                fightingStyles: List[FighterFightingStyle] = List.empty,
-                                abilityUsages: BaseFighterAbilities = allUnused,
-                                proficiencyBonus: ProficiencyBonus = 0,
-                                resistances: List[DamageType] = List.empty,
-                                immunities: List[DamageType] = List.empty,
-                                bonusActionUsed: Boolean = false,
-                                reactionUsed: Boolean = false,
-                                abilities: List[CombatantAbility] = standardFighterAbilities,
-                                conditions: List[Condition] = List.empty,
-                                attackStatus: AttackStatus = Regular,
-                                defenseStatus: AttackStatus = Regular,
-                                name: String = NameGenerator.randomName)
-    extends BaseFighter {
+@Lenses("_") case class Fighter(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    skills: Skills,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    fightingStyles: List[FighterFightingStyle] = List.empty,
+    abilityUsages: BaseFighterAbilities = allUnused,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = standardFighterAbilities,
+    conditions: List[Condition] = List.empty,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    name: String = NameGenerator.randomName
+) extends BaseFighter {
 
   val savingThrowProficiencies = NonEmptyList.of(Strength, Constitution)
 
@@ -67,13 +68,15 @@ object Fighter {
     val health    = calculateHealth(LevelOne, 14)
     val profBonus = ProficiencyBonus.fromLevel(LevelOne)
 
-    Fighter(LevelOne,
-            health,
-            health,
-            BaseStats(15, 13, 14, 12, 8, 10),
-            weapon,
-            Skills(perception = mod(12) + profBonus, stealth = mod(13)),
-            armour)
+    Fighter(
+      LevelOne,
+      health,
+      health,
+      BaseStats(15, 13, 14, 12, 8, 10),
+      weapon,
+      Skills(perception = mod(12) + profBonus, stealth = mod(13)),
+      armour
+    )
   }
 
   val standardFighterAbilities: List[CombatantAbility] = List(

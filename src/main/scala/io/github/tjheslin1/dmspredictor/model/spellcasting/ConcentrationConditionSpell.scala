@@ -27,9 +27,11 @@ abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
       .set(currentConditions ++ List(condition))(target)
   }
 
-  def effect[_: RS](spellCaster: SpellCaster,
-                    spellLevel: SpellLevel,
-                    allTargets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+  def effect[_: RS](
+      spellCaster: SpellCaster,
+      spellLevel: SpellLevel,
+      allTargets: List[Combatant]
+  ): (SpellCaster, List[Combatant]) = {
 
     val targets = if (singleTarget) List(allTargets.head) else allTargets
 

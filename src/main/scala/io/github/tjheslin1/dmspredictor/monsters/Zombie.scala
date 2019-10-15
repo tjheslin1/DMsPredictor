@@ -16,20 +16,21 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Zombie(health: Int,
-                               maxHealth: Int,
-                               stats: BaseStats = BaseStats(13, 6, 16, 3, 6, 5),
-                               armourClass: Int = 8,
-                               baseWeapon: Weapon = Slam,
-                               armour: Armour = NoArmour,
-                               offHand: Option[Equipment] = None,
-                               conditions: List[Condition] = List.empty,
-                               resistances: List[DamageType] = List.empty,
-                               immunities: List[DamageType] = List(Poison),
-                               attackStatus: AttackStatus = Regular,
-                               defenseStatus: AttackStatus = Regular,
-                               name: String = NameGenerator.randomName)
-    extends Monster
+@Lenses("_") case class Zombie(
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats = BaseStats(13, 6, 16, 3, 6, 5),
+    armourClass: Int = 8,
+    baseWeapon: Weapon = Slam,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    conditions: List[Condition] = List.empty,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List(Poison),
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    name: String = NameGenerator.randomName
+) extends Monster
     with LazyLogging {
 
   val challengeRating: Double                = 0.25
@@ -42,9 +43,11 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  def updateHealth[_: RS](dmg: Int,
-                          damageType: DamageType,
-                          attackResult: AttackResult): Creature = {
+  def updateHealth[_: RS](
+      dmg: Int,
+      damageType: DamageType,
+      attackResult: AttackResult
+  ): Creature = {
     val adjustedDmg = adjustedDamage(dmg, damageType, this)
     if ((health - adjustedDmg) <= 0 && attackResult == Hit && damageType != Radiant) {
 

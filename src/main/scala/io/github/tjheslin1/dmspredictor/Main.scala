@@ -11,11 +11,21 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 
-case class SimulationConfig(simulationName: String,
-                            simulations: Int,
-                            focus: String,
-                            players: List[Player],
-                            monsters: List[Monster])
+case class SQSMessage(records: List[SQSRecord])
+
+case class SQSRecord(body: String, messageAttributes: MessageAttributes)
+
+case class MessageAttributes(simulationHash: SimulationHash)
+
+case class SimulationHash(stringValue: String)
+
+case class SimulationConfig(
+    simulationName: String,
+    simulations: Int,
+    focus: String,
+    players: List[Player],
+    monsters: List[Monster]
+)
 
 class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
@@ -25,31 +35,41 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
     val input = scala.io.Source.fromInputStream(request).mkString
 
-    val config: Either[Error, (SimulationConfig, BasicSimulation)] = for {
-      configuration <- decode[SimulationConfig](input)
-      parsedFocus   <- parseFocus(configuration.focus)
-    } yield
-      (configuration, BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
+    val config: Either[Error, (SimulationConfig, String, BasicSimulation)] = parseSimulation(input)
 
     val (wins, losses) = config match {
       case Left(e) =>
         throw new RuntimeException(s"Error parsing JSON\\n$input\\n${e.getMessage}", e)
-      case Right((simulationConfig, basicSimulation)) =>
+      case Right((simulationConfig, simHash, basicSimulation)) =>
         val (losses, wins) =
-          SimulationRunner.run(basicSimulation,
-                               simulationConfig.simulationName,
-                               Math.min(10000, simulationConfig.simulations))
+          SimulationRunner.run(
+            basicSimulation,
+            simulationConfig.simulationName,
+            Math.min(10000, simulationConfig.simulations)
+          )
 
-        logger.debug(s"${simulationConfig.simulationName} simulation started")
+        logger.debug(s"${simulationConfig.simulationName} simulation started - $simHash")
         println(s"$wins Wins and $losses Losses")
 
-        //      val data  = Seq("wins" -> wins, "losses" -> losses)
-        //      val chart = BarChart(data)
-        //      chart.show(title = simulationConfig.simulationName)
+//        val data  = Seq("wins" -> wins, "losses" -> losses)
+//        val chart = BarChart(data)
+//        chart.show(title = simulationConfig.simulationName)
 
         (wins, losses)
     }
 
     output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
+
+  def parseSimulation(input: String): Either[Error, (SimulationConfig, String, BasicSimulation)] =
+    for {
+      sqsMessage    <- decode[SQSMessage](input)
+      message       = sqsMessage.records.head
+      configuration <- decode[SimulationConfig](message.body)
+      simHash       = message.messageAttributes.simulationHash.stringValue
+      parsedFocus   <- parseFocus(configuration.focus)
+    } yield
+      (configuration,
+        simHash,
+        BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
 }

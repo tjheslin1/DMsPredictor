@@ -45,9 +45,10 @@ object LifeClericAbilities extends LazyLogging {
 
           optSpell.fold((combatant, others)) { healingSpell =>
             val healingSpellAbility =
-              castSingleTargetHealingSpell(order,
-                                           bonusHealing =
-                                             discipleOfLifeBonusHealing(healingSpell.spellLevel))(_)
+              castSingleTargetHealingSpell(
+                order,
+                bonusHealing = discipleOfLifeBonusHealing(healingSpell.spellLevel)
+              )(_)
 
             val (updatedLifeCleric, updatedTargets) =
               healingSpellAbility(combatant).useAbility(others, focus)

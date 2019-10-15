@@ -18,7 +18,8 @@ class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrateg
         }
         .sortBy(_.score)
         .reverse
-        .map(_.combatant): _*)
+        .map(_.combatant): _*
+    )
 
   def run(focus: Focus): Queue[Combatant] = {
 

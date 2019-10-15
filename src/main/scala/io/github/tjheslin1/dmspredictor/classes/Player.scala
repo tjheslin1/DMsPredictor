@@ -28,7 +28,8 @@ object Player {
 
   def calculateHealth(hitDice: Dice, level: Level, constitutionScore: Stat): Int =
     (hitDice.max + mod(constitutionScore)) + ((level.value - 1) * (Dice.midpointRoundedUp(hitDice) + mod(
-      constitutionScore)))
+      constitutionScore
+    )))
 
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>
@@ -47,7 +48,8 @@ object Player {
 
         case _ =>
           throw new NotImplementedError(
-            "Missing playerBonusActionUsedLens lens for your new implementation of Player!")
+            "Missing playerBonusActionUsedLens lens for your new implementation of Player!"
+          )
       }
   }
 
@@ -68,7 +70,8 @@ object Player {
 
         case _ =>
           throw new NotImplementedError(
-            "Missing playerReactionUsedLens lens for your new implementation of Player!")
+            "Missing playerReactionUsedLens lens for your new implementation of Player!"
+          )
       }
   }
 
@@ -89,7 +92,8 @@ object Player {
 
         case _ =>
           throw new NotImplementedError(
-            "Missing playerProficiencyBonusLens lens for your new implementation of Player!")
+            "Missing playerProficiencyBonusLens lens for your new implementation of Player!"
+          )
       }
     }
 }

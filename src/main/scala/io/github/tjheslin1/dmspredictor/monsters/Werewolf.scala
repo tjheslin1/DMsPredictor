@@ -16,21 +16,21 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Werewolf(health: Int,
-                                 maxHealth: Int,
-                                 stats: BaseStats = BaseStats(15, 13, 14, 10, 11, 10),
-                                 armourClass: Int = 12,
-                                 baseWeapon: Weapon = HydbridFormClaw,
-                                 armour: Armour = NoArmour,
-                                 offHand: Option[Equipment] = None,
-                                 resistances: List[DamageType] = List.empty[DamageType],
-                                 immunities: List[DamageType] =
-                                   List(Bludgeoning, Piercing, Slashing),
-                                 conditions: List[Condition] = List.empty,
-                                 attackStatus: AttackStatus = Regular,
-                                 defenseStatus: AttackStatus = Regular,
-                                 name: String = NameGenerator.randomName)
-    extends Monster {
+@Lenses("_") case class Werewolf(
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats = BaseStats(15, 13, 14, 10, 11, 10),
+    armourClass: Int = 12,
+    baseWeapon: Weapon = HydbridFormClaw,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    resistances: List[DamageType] = List.empty[DamageType],
+    immunities: List[DamageType] = List(Bludgeoning, Piercing, Slashing),
+    conditions: List[Condition] = List.empty,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    name: String = NameGenerator.randomName
+) extends Monster {
 
   val challengeRating: Double                = 3.0
   val skills                                 = Skills(perception = 4, stealth = 3)

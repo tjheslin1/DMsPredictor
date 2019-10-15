@@ -50,12 +50,14 @@ object BaseRogueAbilities extends LazyLogging {
               }
 
               val (updatedRogue, updatedTarget, updatedOthers) =
-                resolveDamage(sneakAttackingRogue,
-                              hitTarget,
-                              others,
-                              sneakAttackingRogue.creature.weapon,
-                              attackHitResult,
-                              sneakAttackDmg)
+                resolveDamage(
+                  sneakAttackingRogue,
+                  hitTarget,
+                  others,
+                  sneakAttackingRogue.creature.weapon,
+                  attackHitResult,
+                  sneakAttackDmg
+                )
 
               logger.debug(s"${baseRogue.name} dealt $sneakAttackDmg sneak attack damage")
 
@@ -114,10 +116,12 @@ object BaseRogueAbilities extends LazyLogging {
 
       val name = "Uncanny Dodge"
 
-      def updateHealthOnReaction[_: RS](reactingCreature: Creature,
-                                        damage: Int,
-                                        damageType: DamageType,
-                                        attackResult: AttackResult): Creature = {
+      def updateHealthOnReaction[_: RS](
+          reactingCreature: Creature,
+          damage: Int,
+          damageType: DamageType,
+          attackResult: AttackResult
+      ): Creature = {
         val baseRogue = reactingCreature.asInstanceOf[BaseRogue]
 
         if (damage > 0) {

@@ -15,9 +15,11 @@ case object PlayerHealing extends Focus
 
 object Focus {
 
-  def nextToFocus(combatant: Combatant,
-                  targets: List[Combatant],
-                  focus: Focus): Option[Combatant] = {
+  def nextToFocus(
+      combatant: Combatant,
+      targets: List[Combatant],
+      focus: Focus
+  ): Option[Combatant] = {
     val consciousCombatants = targets.filter(_.creature.isConscious)
 
     val visibleCombatants = if (combatant.creature.creatureType != PlayerCharacter) {

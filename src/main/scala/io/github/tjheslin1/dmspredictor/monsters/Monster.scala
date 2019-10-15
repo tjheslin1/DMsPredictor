@@ -35,7 +35,8 @@ object Monster {
 
       case _ =>
         throw new NotImplementedError(
-          "missing implementation in monsterArmourClassLens for new Monster")
+          "missing implementation in monsterArmourClassLens for new Monster"
+        )
     }
   }
 }

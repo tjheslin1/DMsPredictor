@@ -52,15 +52,18 @@ object WizardSpells extends LazyLogging {
     /*
     Magic Missile always Hits
      */
-    override def effect[_: RS](spellCaster: SpellCaster,
-                               spellLevel: SpellLevel,
-                               targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+    override def effect[_: RS](
+        spellCaster: SpellCaster,
+        spellLevel: SpellLevel,
+        targets: List[Combatant]
+    ): (SpellCaster, List[Combatant]) = {
       val target = targets.head
       logger.debug(s"casting $name")
 
       val damagedTarget =
         target.copy(
-          creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit))
+          creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit)
+        )
 
       (spellCaster, targets.replace(damagedTarget))
     }
@@ -77,9 +80,11 @@ object WizardSpells extends LazyLogging {
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = 4 * D4
 
-    override def effect[_: RS](spellCaster: SpellCaster,
-                               spellLevel: SpellLevel,
-                               targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+    override def effect[_: RS](
+        spellCaster: SpellCaster,
+        spellLevel: SpellLevel,
+        targets: List[Combatant]
+    ): (SpellCaster, List[Combatant]) = {
       val target       = targets.head
       val attackResult = spellAttack(spellCaster, target.creature)
 
@@ -127,8 +132,10 @@ object WizardSpells extends LazyLogging {
   case object ShieldSpell extends OnHitReaction {
     val name: String = "Shield (spell)"
 
-    def updateAttackOnReaction[_: RS](reactingCreature: Creature,
-                                      totalAttackRoll: Int): (AttackResult, Creature) = {
+    def updateAttackOnReaction[_: RS](
+        reactingCreature: Creature,
+        totalAttackRoll: Int
+    ): (AttackResult, Creature) = {
       logger.debug(s"${reactingCreature.name} used its reaction to cast $name")
 
       if (totalAttackRoll < reactingCreature.armourClass) (Miss, reactingCreature)
@@ -139,7 +146,8 @@ object WizardSpells extends LazyLogging {
           val reactedCreature = {
 
             val updatedSpellSlots = spellCaster.spellSlots.copy(
-              firstLevel = FirstLevelSpellSlots(spellCaster.spellSlots.firstLevel.count - 1))
+              firstLevel = FirstLevelSpellSlots(spellCaster.spellSlots.firstLevel.count - 1)
+            )
             val updatedSpellCaster = SpellCaster.spellSlotsLens.set(updatedSpellSlots)(spellCaster)
 
             val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition()

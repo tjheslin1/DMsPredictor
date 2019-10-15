@@ -15,7 +15,8 @@ object ClassAbilities {
       attacker: Combatant,
       others: List[Combatant],
       currentOrder: Int,
-      suitableAction: NonEmptyList[AbilityAction]): Option[CombatantAbility] =
+      suitableAction: NonEmptyList[AbilityAction]
+  ): Option[CombatantAbility] =
     attacker.creature.abilities
       .sortBy(ability => ability(attacker).order)
       .find { ability =>
@@ -25,9 +26,11 @@ object ClassAbilities {
         nextAbility.conditionMet && nextAbility.triggerMet(others)
       }
 
-  def useAttackActionTwice[_: RS](attacker: Combatant,
-                                  others: List[Combatant],
-                                  focus: Focus): (Combatant, List[Combatant]) =
+  def useAttackActionTwice[_: RS](
+      attacker: Combatant,
+      others: List[Combatant],
+      focus: Focus
+  ): (Combatant, List[Combatant]) =
     nextToFocus(attacker, monsters(others), focus).fold((attacker, others)) { target =>
       val (updatedAttacker, updatedTarget, updatedOthers) =
         attackAndDamage(attacker, target, others.except(target))
@@ -43,10 +46,12 @@ object ClassAbilities {
         }
     }
 
-  def useAdditionalAbility[_: RS](ability: CombatantAbility,
-                                  attacker: Combatant,
-                                  others: List[Combatant],
-                                  focus: Focus): (Combatant, List[Combatant]) = {
+  def useAdditionalAbility[_: RS](
+      ability: CombatantAbility,
+      attacker: Combatant,
+      others: List[Combatant],
+      focus: Focus
+  ): (Combatant, List[Combatant]) = {
     val (updatedAttacker, updatedOthers) = ability(attacker).useAbility(others, focus)
     val updatedAttackingCreature         = ability(updatedAttacker).update
 

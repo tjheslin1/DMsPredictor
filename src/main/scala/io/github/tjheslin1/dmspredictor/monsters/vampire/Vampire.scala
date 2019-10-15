@@ -18,25 +18,25 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Vampire(health: Int,
-                                maxHealth: Int,
-                                stats: BaseStats = BaseStats(18, 18, 18, 17, 15, 18),
-                                armourClass: Int = 12,
-                                baseWeapon: Weapon = UnarmedStrike,
-                                armour: Armour = NoArmour,
-                                offHand: Option[Equipment] = None,
-                                resistances: List[DamageType] =
-                                  List(Necrotic, Bludgeoning, Piercing, Slashing),
-                                immunities: List[DamageType] = List.empty[DamageType],
-                                conditions: List[Condition] = List.empty,
-                                reactionUsed: Boolean = false,
-                                attackStatus: AttackStatus = Regular,
-                                defenseStatus: AttackStatus = Regular,
-                                radiantDamageTaken: Boolean = false,
-                                firstAttack: Boolean = true,
-                                biteUsed: Boolean = false,
-                                name: String = NameGenerator.randomName)
-    extends Monster
+@Lenses("_") case class Vampire(
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats = BaseStats(18, 18, 18, 17, 15, 18),
+    armourClass: Int = 12,
+    baseWeapon: Weapon = UnarmedStrike,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    resistances: List[DamageType] = List(Necrotic, Bludgeoning, Piercing, Slashing),
+    immunities: List[DamageType] = List.empty[DamageType],
+    conditions: List[Condition] = List.empty,
+    reactionUsed: Boolean = false,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    radiantDamageTaken: Boolean = false,
+    firstAttack: Boolean = true,
+    biteUsed: Boolean = false,
+    name: String = NameGenerator.randomName
+) extends Monster
     with LazyLogging {
 
   val challengeRating: Double = 13.0
@@ -61,7 +61,8 @@ import monocle.macros.{GenLens, Lenses}
     damageType match {
       case Radiant =>
         val updatedVampire = copy(
-          health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+          health = Math.max(0, health - adjustedDamage(dmg, damageType, this))
+        )
         if (dmg > 0) updatedVampire.copy(radiantDamageTaken = true)
         else updatedVampire.copy(radiantDamageTaken = false)
       case _ => copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))

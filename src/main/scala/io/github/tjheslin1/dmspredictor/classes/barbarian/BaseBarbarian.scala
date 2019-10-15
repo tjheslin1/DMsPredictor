@@ -38,13 +38,15 @@ object BaseBarbarian {
   def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {
     lazy val inRageDamage = if (inRage) weapon.damage + 2 else weapon.damage
 
-    Weapon(weapon.name,
-           weapon.weaponType,
-           weapon.damageType,
-           weapon.twoHanded,
-           weapon.finesse,
-           inRageDamage,
-           weapon.hitBonus)
+    Weapon(
+      weapon.name,
+      weapon.weaponType,
+      weapon.damageType,
+      weapon.twoHanded,
+      weapon.finesse,
+      inRageDamage,
+      weapon.hitBonus
+    )
   }
 
   def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int = {

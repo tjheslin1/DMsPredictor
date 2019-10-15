@@ -53,11 +53,12 @@ object CoreAbilities extends LazyLogging {
               val (updatedCombatant, updatedOthers) =
                 useAdditionalAbility(nextAbility, combatant, others, focus)
 
-              nextAbilityToUseInConjunction(updatedCombatant,
-                                            updatedOthers,
-                                            order,
-                                            one(SingleAttack))
-                .fold {
+              nextAbilityToUseInConjunction(
+                updatedCombatant,
+                updatedOthers,
+                order,
+                one(SingleAttack)
+              ).fold {
                   nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
                     (updatedCombatant, updatedOthers)
                   } { focusTarget =>
@@ -141,7 +142,8 @@ object CoreAbilities extends LazyLogging {
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
   def castSingleTargetHealingSpell(currentOrder: Int, bonusHealing: Int = 0)(
-      combatant: Combatant): Ability =
+      combatant: Combatant
+  ): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
@@ -177,8 +179,10 @@ object CoreAbilities extends LazyLogging {
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
             val updatedHealth =
-              Math.min(updatedTarget.creature.maxHealth,
-                       updatedTarget.creature.health + bonusHealing)
+              Math.min(
+                updatedTarget.creature.maxHealth,
+                updatedTarget.creature.health + bonusHealing
+              )
 
             val updatedBonusHealingTarget =
               (Combatant.creatureLens composeLens Creature.creatureHealthLens)
@@ -186,14 +190,16 @@ object CoreAbilities extends LazyLogging {
 
             if (bonusHealing > 0) {
               logger.debug(
-                s"${updatedBonusHealingTarget.creature.name} healed for $bonusHealing bonus healing")
+                s"${updatedBonusHealingTarget.creature.name} healed for $bonusHealing bonus healing"
+              )
             }
 
             (updatedCombatant, updatedBonusHealingTarget.some)
         }
 
-        optHealedAlly.fold((updatedCombatant, others))(updatedTarget =>
-          (updatedCombatant, others.replace(updatedTarget)))
+        optHealedAlly.fold((updatedCombatant, others))(
+          updatedTarget => (updatedCombatant, others.replace(updatedTarget))
+        )
       }
 
       def update: Creature = updateSpellSlot(spellCaster, HealingSpell)
@@ -277,10 +283,12 @@ object CoreAbilities extends LazyLogging {
             case None => (none[Spell], 0)
             case Some(spellSlot) =>
               val optSpell =
-                spellOfLevelOrBelow(spellCaster,
-                                    DamageSpell,
-                                    spellSlot.spellLevel,
-                                    multiAttackOnly = true)
+                spellOfLevelOrBelow(
+                  spellCaster,
+                  DamageSpell,
+                  spellSlot.spellLevel,
+                  multiAttackOnly = true
+                )
               optSpell.fold((none[Spell], 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
@@ -327,17 +335,21 @@ object CoreAbilities extends LazyLogging {
     else
       true
 
-  private def updateSpellSlot(spellCaster: SpellCaster,
-                              spellEffect: SpellEffect,
-                              newlyConcentrating: Boolean = false): Creature =
+  private def updateSpellSlot(
+      spellCaster: SpellCaster,
+      spellEffect: SpellEffect,
+      newlyConcentrating: Boolean = false
+  ): Creature =
     highestSpellSlotAvailable(spellCaster.spellSlots) match {
       case None => spellCaster
       case Some(spellSlotUsed) =>
         val optSpell =
-          spellOfLevelOrBelow(spellCaster,
-                              spellEffect,
-                              spellSlotUsed.spellLevel,
-                              newlyConcentrating == false)
+          spellOfLevelOrBelow(
+            spellCaster,
+            spellEffect,
+            spellSlotUsed.spellLevel,
+            newlyConcentrating == false
+          )
 
         optSpell.fold {
           spellCaster

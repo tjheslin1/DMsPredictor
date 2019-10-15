@@ -21,19 +21,23 @@ trait Spell {
   val spellLevel: SpellLevel
   val requiresConcentration: Boolean
 
-  def effect[_: RS](spellCaster: SpellCaster,
-                    spellLevel: SpellLevel,
-                    targets: List[Combatant]): (SpellCaster, List[Combatant])
+  def effect[_: RS](
+      spellCaster: SpellCaster,
+      spellLevel: SpellLevel,
+      targets: List[Combatant]
+  ): (SpellCaster, List[Combatant])
 }
 
 object Spell {
 
   @tailrec
-  def spellOfLevelOrBelow(spellCaster: SpellCaster,
-                          spellEffect: SpellEffect,
-                          spellLevel: SpellLevel,
-                          checkConcentration: Boolean = true,
-                          multiAttackOnly: Boolean = false): Option[Spell] = {
+  def spellOfLevelOrBelow(
+      spellCaster: SpellCaster,
+      spellEffect: SpellEffect,
+      spellLevel: SpellLevel,
+      checkConcentration: Boolean = true,
+      multiAttackOnly: Boolean = false
+  ): Option[Spell] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
@@ -72,9 +76,11 @@ object Spell {
   def attributeModifierForSchool(spellcaster: SpellCaster): Int =
     attributeModifier(spellcaster, schoolAttribute(spellcaster))
 
-  def spellSavingThrowPassed[_: RS](caster: SpellCaster,
-                                    attribute: Attribute,
-                                    target: Creature): Boolean =
+  def spellSavingThrowPassed[_: RS](
+      caster: SpellCaster,
+      attribute: Attribute,
+      target: Creature
+  ): Boolean =
     savingThrowPassed(spellSaveDc(caster), attribute, target)
 
   def spellAttack[_: RS](spellCaster: SpellCaster, target: Creature): AttackResult =
