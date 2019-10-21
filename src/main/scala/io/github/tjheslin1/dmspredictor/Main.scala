@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 
-case class SQSRecord(body: SimulationConfig, messageAttributes: MessageAttributes)
+case class SQSRecord(body: String, messageAttributes: MessageAttributes)
 
 case class SQSMessage(records: Array[SQSRecord])
 
@@ -33,16 +33,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
     val input = scala.io.Source.fromInputStream(request).mkString
 
-    println(s"INPUT >>>>>>> $input")
-
-    val config: Either[Error, (SimulationConfig, String, BasicSimulation)] = for {
-      sqsMessage <- decode[SQSMessage](input)
-      message = sqsMessage.records.head
-      configuration = message.body
-      simHash = message.messageAttributes.simulationHash.stringValue
-      parsedFocus   <- parseFocus(configuration.focus)
-    } yield
-      (configuration, simHash, BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
+    val config: Either[Error, (SimulationConfig, String, BasicSimulation)] = parseSimulation(input)
 
     val (wins, losses) = config match {
       case Left(e) =>
@@ -65,4 +56,16 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
     output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
+
+  def parseSimulation(input: String): Either[Error, (SimulationConfig, String, BasicSimulation)] =
+    for {
+    sqsMessage    <- decode[SQSMessage](input)
+    message       = sqsMessage.records.head
+    configuration <- decode[SimulationConfig](message.body)
+    simHash       = message.messageAttributes.simulationHash.stringValue
+    parsedFocus   <- parseFocus(configuration.focus)
+  } yield
+    (configuration,
+      simHash,
+      BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
 }
