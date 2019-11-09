@@ -38,27 +38,25 @@ trait ArgParser {
 
   implicit val simulationHashDecoder: Decoder[SimulationHash] = deriveDecoder[SimulationHash]
 
-//  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig
-  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = new Decoder[SimulationConfig] {
-    override def apply(c: HCursor): Result[SimulationConfig] =
-      for {
-        simulationName <- c.downField("simulationName").as[String]
-        simulations    <- c.downField("simulations").as[Int]
-        focus          <- c.downField("focus").as[String]
-        players        <- c.downField("players").as[List[Player]]
-        monsters       <- c.downField("monsters").as[List[Monster]]
-      } yield SimulationConfig(
-        simulationName,
-        simulations,
-        focus,
-        players,
-        monsters
-      )
-  }
+  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
+//  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = Decoder.instance { c =>
+//      for {
+//        simulationName <- c.downField("simulationName").as[String]
+//        simulations    <- c.downField("simulations").as[Int]
+//        focus          <- c.downField("focus").as[String]
+//        players        <- c.downField("players").as[List[Player]]
+//        monsters       <- c.downField("monsters").as[List[Monster]]
+//      } yield SimulationConfig(
+//        simulationName,
+//        simulations,
+//        focus,
+//        players,
+//        monsters
+//      )
+//  }
 
-  implicit val barbarianDecoder: Decoder[Barbarian] = new Decoder[Barbarian] {
-    def apply(c: HCursor): Result[Barbarian] =
-      for {
+  implicit val barbarianDecoder: Decoder[Barbarian] = Decoder.instance {
+    c => for {
         levelInt      <- c.downField("level").as[Int]
         level         = Level(levelInt)
         statsStr      <- c.downField("stats").as[String]
@@ -87,9 +85,8 @@ trait ArgParser {
       }
   }
 
-  implicit val berserkerDecoder: Decoder[Berserker] = new Decoder[Berserker] {
-    def apply(c: HCursor): Result[Berserker] =
-      for {
+  implicit val berserkerDecoder: Decoder[Berserker] = Decoder.instance {
+    c => for {
         levelInt      <- c.downField("level").as[Int]
         level         = Level(levelInt)
         statsStr      <- c.downField("stats").as[String]
@@ -118,9 +115,8 @@ trait ArgParser {
       }
   }
 
-  implicit val clericDecoder: Decoder[Cleric] = new Decoder[Cleric] {
-    def apply(c: HCursor): Result[Cleric] =
-      for {
+  implicit val clericDecoder: Decoder[Cleric] = Decoder.instance {
+    c => for {
         levelInt   <- c.downField("level").as[Int]
         level      = Level(levelInt)
         statsStr   <- c.downField("stats").as[String]
@@ -149,9 +145,8 @@ trait ArgParser {
       }
   }
 
-  implicit val fighterDecoder: Decoder[Fighter] = new Decoder[Fighter] {
-    def apply(c: HCursor): Result[Fighter] =
-      for {
+  implicit val fighterDecoder: Decoder[Fighter] = Decoder.instance {
+    c => for {
         levelInt    <- c.downField("level").as[Int]
         level       = Level(levelInt)
         statsStr    <- c.downField("stats").as[String]
@@ -181,9 +176,8 @@ trait ArgParser {
       }
   }
 
-  implicit val championDecoder: Decoder[Champion] = new Decoder[Champion] {
-    def apply(c: HCursor): Result[Champion] =
-      for {
+  implicit val championDecoder: Decoder[Champion] = Decoder.instance {
+    c => for {
         levelInt     <- c.downField("level").as[Int]
         level        = Level(levelInt)
         statsStr     <- c.downField("stats").as[String]
@@ -213,9 +207,8 @@ trait ArgParser {
       }
   }
 
-  implicit val rogueDecoder: Decoder[Rogue] = new Decoder[Rogue] {
-    override def apply(c: HCursor): Result[Rogue] =
-      for {
+  implicit val rogueDecoder: Decoder[Rogue] = Decoder.instance {
+    c => for {
         levelInt  <- c.downField("level").as[Int]
         level     = Level(levelInt)
         statsStr  <- c.downField("stats").as[String]
@@ -243,9 +236,8 @@ trait ArgParser {
       }
   }
 
-  implicit val wizardDecoder: Decoder[Wizard] = new Decoder[Wizard] {
-    def apply(c: HCursor): Result[Wizard] =
-      for {
+  implicit val wizardDecoder: Decoder[Wizard] = Decoder.instance {
+    c => for {
         levelInt   <- c.downField("level").as[Int]
         level      = Level(levelInt)
         statsStr   <- c.downField("stats").as[String]
@@ -271,9 +263,8 @@ trait ArgParser {
       }
   }
 
-  implicit val goblinDecoder: Decoder[Goblin] = new Decoder[Goblin] {
-    def apply(c: HCursor): Result[Goblin] =
-      for {
+  implicit val goblinDecoder: Decoder[Goblin] = Decoder.instance {
+    c => for {
         goblinName <- c.downField("name").as[String]
       } yield {
         val health = Goblin.calculateHealth
@@ -281,9 +272,8 @@ trait ArgParser {
       }
   }
 
-  implicit val werewolfDecoder: Decoder[Werewolf] = new Decoder[Werewolf] {
-    def apply(c: HCursor): Result[Werewolf] =
-      for {
+  implicit val werewolfDecoder: Decoder[Werewolf] = Decoder.instance {
+    c => for {
         werewolfName <- c.downField("name").as[String]
       } yield {
         val health = Werewolf.calculateHealth
@@ -295,9 +285,8 @@ trait ArgParser {
       }
   }
 
-  implicit val vampireDecoder: Decoder[Vampire] = new Decoder[Vampire] {
-    def apply(c: HCursor): Result[Vampire] =
-      for {
+  implicit val vampireDecoder: Decoder[Vampire] = Decoder.instance {
+    c => for {
         vampireName <- c.downField("name").as[String]
       } yield {
         val health = Vampire.calculateHealth
@@ -309,9 +298,8 @@ trait ArgParser {
       }
   }
 
-  implicit val zombieDecoder: Decoder[Zombie] = new Decoder[Zombie] {
-    def apply(c: HCursor): Result[Zombie] =
-      for {
+  implicit val zombieDecoder: Decoder[Zombie] = Decoder.instance {
+    c => for {
         zombieName <- c.downField("name").as[String]
       } yield {
         val health = Zombie.calculateHealth
@@ -323,11 +311,8 @@ trait ArgParser {
       }
   }
 
-  implicit val listPlayerDecoder: Decoder[List[Player]] = deriveDecoder[List[Player]]
-
-  implicit val playerDecoder: Decoder[Player] = new Decoder[Player] {
-    def apply(c: HCursor): Result[Player] =
-      for {
+  implicit val playerDecoder: Decoder[Player] = Decoder.instance {
+    c => for {
         playerClass <- c.downField("class").as[String]
         decoderOpt  = playerClassDecoderLookup.get(playerClass.toLowerCase)
         decoder <- decoderOpt.fold[Result[Decoder[_]]](
@@ -337,11 +322,8 @@ trait ArgParser {
       } yield result
   }
 
-  implicit val listMonsterDecoder: Decoder[List[Monster]] = deriveDecoder[List[Monster]]
-
-  implicit val monsterDecoder: Decoder[Monster] = new Decoder[Monster] {
-    def apply(c: HCursor): Result[Monster] =
-      for {
+  implicit val monsterDecoder: Decoder[Monster] = Decoder.instance {
+    c => for {
         monster    <- c.downField("monster").as[String]
         decoderOpt = monsterDecoderLookup.get(monster.toLowerCase)
         decoder <- decoderOpt.fold[Result[Decoder[_]]](

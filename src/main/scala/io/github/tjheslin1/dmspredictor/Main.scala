@@ -63,13 +63,13 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
   def parseSimulation(input: String): Either[Error, (SimulationConfig, String, BasicSimulation)] =
     for {
-      sqsMessage <- decode[SQSMessage](input)
-      message    = sqsMessage.records.head
-//      configuration <- decode[SimulationConfig](message.body)
-//      simHash       = message.messageAttributes.simulationHash.stringValue
-//      parsedFocus   <- parseFocus(configuration.focus)
-    } yield throw new RuntimeException(message.body)
-//      (configuration,
-//       simHash,
-//       BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
+      sqsMessage    <- decode[SQSMessage](input)
+      message       = sqsMessage.records.head
+      configuration <- decode[SimulationConfig](message.body)
+      simHash       = message.messageAttributes.simulationHash.stringValue
+      parsedFocus   <- parseFocus(configuration.focus)
+    } yield
+      (configuration,
+        simHash,
+        BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
 }

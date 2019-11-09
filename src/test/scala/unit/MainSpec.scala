@@ -13,7 +13,8 @@ import org.scalatest.EitherValues
 
 class MainSpec extends UnitSpecBase with EitherValues {
 
-  "parseSimulation" ignore {
+  "parseSimulation" should {
+
     "parse SQS message" in {
 
       val sqsMessage =
