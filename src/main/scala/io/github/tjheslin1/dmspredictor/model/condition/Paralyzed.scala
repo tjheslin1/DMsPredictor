@@ -6,11 +6,12 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
-@Lenses("_") case class Paralyzed(saveDc: Int,
-                                  turnsLeft: Int,
-                                  attribute: Attribute,
-                                  name: String = "Paralyzed")
-    extends EndOfTurnCondition
+@Lenses("_") case class Paralyzed(
+    saveDc: Int,
+    turnsLeft: Int,
+    attribute: Attribute,
+    name: String = "Paralyzed"
+) extends EndOfTurnCondition
     with LazyLogging {
   val missesTurn: Boolean     = true
   val handleOnDamage: Boolean = false

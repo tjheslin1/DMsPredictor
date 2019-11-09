@@ -47,18 +47,21 @@ object Move extends LazyLogging {
 
       val (actedCombatant, updatedTargets) = {
         val optAbility = availableActionAbility(conditionHandledCombatant, otherCombatants)
-        actionAgainstTarget(conditionHandledCombatant,
-                            attackTarget,
-                            otherCombatants,
-                            optAbility,
-                            focus)
+        actionAgainstTarget(
+          conditionHandledCombatant,
+          attackTarget,
+          otherCombatants,
+          optAbility,
+          focus
+        )
       }
 
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
 
       val (bonusActionUsedCombatant, updatedOthers) =
         availableBonusAction(actedCombatant, updatedOthersTargets).fold(
-          (actedCombatant, updatedOthersTargets)) { bonusActionAbility =>
+          (actedCombatant, updatedOthersTargets)
+        ) { bonusActionAbility =>
           useBonusActionAbility(actedCombatant, updatedOthersTargets, bonusActionAbility, focus)
         }
 
@@ -103,21 +106,26 @@ object Move extends LazyLogging {
       }
     }(combatant)
 
-  def useBonusActionAbility[_: RS](combatant: Combatant,
-                                   others: List[Combatant],
-                                   bonusActionAbility: CombatantAbility,
-                                   focus: Focus): (Combatant, List[Combatant]) = {
+  def useBonusActionAbility[_: RS](
+      combatant: Combatant,
+      others: List[Combatant],
+      bonusActionAbility: CombatantAbility,
+      focus: Focus
+  ): (Combatant, List[Combatant]) = {
     val (bonusActionUsedAttacker, updatedOthersAfterBonusAction) =
       bonusActionAbility(combatant).useAbility(others, focus)
 
     val updatedBonusActionUsedAttacker = Combatant.creatureLens.set(
-      bonusActionAbility(bonusActionUsedAttacker).update)(bonusActionUsedAttacker)
+      bonusActionAbility(bonusActionUsedAttacker).update
+    )(bonusActionUsedAttacker)
 
     (updatedBonusActionUsedAttacker, others.replace(updatedOthersAfterBonusAction))
   }
 
-  private def availableActionAbility(attacker: Combatant,
-                                     others: List[Combatant]): Option[CombatantAbility] =
+  private def availableActionAbility(
+      attacker: Combatant,
+      others: List[Combatant]
+  ): Option[CombatantAbility] =
     attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
       val ability = combatantAbility(attacker)
       AbilityAction.MainAction.toList
@@ -125,8 +133,10 @@ object Move extends LazyLogging {
         .triggerMet(others)
     }
 
-  private def availableBonusAction(attacker: Combatant,
-                                   others: List[Combatant]): Option[CombatantAbility] =
+  private def availableBonusAction(
+      attacker: Combatant,
+      others: List[Combatant]
+  ): Option[CombatantAbility] =
     attacker.creature match {
       case player: Player if player.bonusActionUsed == false =>
         attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
@@ -136,11 +146,13 @@ object Move extends LazyLogging {
       case _ => None
     }
 
-  private def actionAgainstTarget[_: RS](combatant: Combatant,
-                                         target: Option[Combatant],
-                                         others: List[Combatant],
-                                         optAbility: Option[CombatantAbility],
-                                         focus: Focus): (Combatant, List[Combatant]) =
+  private def actionAgainstTarget[_: RS](
+      combatant: Combatant,
+      target: Option[Combatant],
+      others: List[Combatant],
+      optAbility: Option[CombatantAbility],
+      focus: Focus
+  ): (Combatant, List[Combatant]) =
     optAbility.fold {
       target.fold((combatant, others)) { targetToAttack =>
         val (updatedAttacker, updatedTarget, updatedOthers) =

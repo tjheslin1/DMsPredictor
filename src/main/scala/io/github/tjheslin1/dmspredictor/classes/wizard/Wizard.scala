@@ -19,31 +19,31 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Wizard(level: Level,
-                               health: Int,
-                               maxHealth: Int,
-                               stats: BaseStats,
-                               baseWeapon: Weapon,
-                               skills: Skills,
-                               spellSlots: SpellSlots,
-                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =
-                                 Wizard.standardWizardSpellList,
-                               castShieldAsReaction: Boolean = true,
-                               mageArmourPrepared: Boolean = true,
-                               armour: Armour = NoArmour,
-                               offHand: Option[Equipment] = None,
-                               abilities: List[CombatantAbility] = Wizard.standardWizardAbilities,
-                               conditions: List[Condition] = List.empty,
-                               proficiencyBonus: ProficiencyBonus = 0,
-                               resistances: List[DamageType] = List.empty,
-                               immunities: List[DamageType] = List.empty,
-                               bonusActionUsed: Boolean = false,
-                               reactionUsed: Boolean = false,
-                               attackStatus: AttackStatus = Regular,
-                               defenseStatus: AttackStatus = Regular,
-                               concentratingSpell: Option[Spell] = None,
-                               name: String = NameGenerator.randomName)
-    extends BaseWizard {
+@Lenses("_") case class Wizard(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    skills: Skills,
+    spellSlots: SpellSlots,
+    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Wizard.standardWizardSpellList,
+    castShieldAsReaction: Boolean = true,
+    mageArmourPrepared: Boolean = true,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    abilities: List[CombatantAbility] = Wizard.standardWizardAbilities,
+    conditions: List[Condition] = List.empty,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    concentratingSpell: Option[Spell] = None,
+    name: String = NameGenerator.randomName
+) extends BaseWizard {
 
   val savingThrowProficiencies = NonEmptyList.of(Intelligence, Wisdom)
 

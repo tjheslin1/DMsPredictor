@@ -15,9 +15,11 @@ abstract class MultiTargetSavingThrowSpell extends Spell with LazyLogging {
 
   def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
-  def effect[_: RS](spellCaster: SpellCaster,
-                    spellLevel: SpellLevel,
-                    targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+  def effect[_: RS](
+      spellCaster: SpellCaster,
+      spellLevel: SpellLevel,
+      targets: List[Combatant]
+  ): (SpellCaster, List[Combatant]) = {
     val updatedTargets = targets.map { target =>
       val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
 

@@ -26,18 +26,35 @@ trait ArgParser {
   def parseFocus(focus: String): Either[Error, Focus] = focus.toLowerCase match {
     case "lowestfirst" => LowestFirst.asRight
     case "randomfocus" => RandomFocus.asRight
-    case _ => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
+    case _             => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
   }
 
   implicit val sqsMessageDecoder: Decoder[SQSMessage] = deriveDecoder[SQSMessage]
 
   implicit val sqsRecordDecoder: Decoder[SQSRecord] = deriveDecoder[SQSRecord]
 
-  implicit val messageAttributesDecoder: Decoder[MessageAttributes] = deriveDecoder[MessageAttributes]
+  implicit val messageAttributesDecoder: Decoder[MessageAttributes] =
+    deriveDecoder[MessageAttributes]
 
   implicit val simulationHashDecoder: Decoder[SimulationHash] = deriveDecoder[SimulationHash]
 
-  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
+//  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig
+  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = new Decoder[SimulationConfig] {
+    override def apply(c: HCursor): Result[SimulationConfig] =
+      for {
+        simulationName <- c.downField("simulationName").as[String]
+        simulations    <- c.downField("simulations").as[Int]
+        focus          <- c.downField("focus").as[String]
+        players        <- c.downField("players").as[List[Player]]
+        monsters       <- c.downField("monsters").as[List[Monster]]
+      } yield SimulationConfig(
+        simulationName,
+        simulations,
+        focus,
+        players,
+        monsters
+      )
+  }
 
   implicit val barbarianDecoder: Decoder[Barbarian] = new Decoder[Barbarian] {
     def apply(c: HCursor): Result[Barbarian] =
@@ -306,17 +323,21 @@ trait ArgParser {
       }
   }
 
+  implicit val listPlayerDecoder: Decoder[List[Player]] = deriveDecoder[List[Player]]
+
   implicit val playerDecoder: Decoder[Player] = new Decoder[Player] {
     def apply(c: HCursor): Result[Player] =
       for {
         playerClass <- c.downField("class").as[String]
         decoderOpt  = playerClassDecoderLookup.get(playerClass.toLowerCase)
         decoder <- decoderOpt.fold[Result[Decoder[_]]](
-                    DecodingFailure(s"Unknown player class: $playerClass", c.history).asLeft)(d =>
-                    d.asRight)
+                    DecodingFailure(s"Unknown player class: $playerClass", c.history).asLeft
+                  )(d => d.asRight)
         result <- decoder(c).asInstanceOf[Result[Player]]
       } yield result
   }
+
+  implicit val listMonsterDecoder: Decoder[List[Monster]] = deriveDecoder[List[Monster]]
 
   implicit val monsterDecoder: Decoder[Monster] = new Decoder[Monster] {
     def apply(c: HCursor): Result[Monster] =
@@ -324,7 +345,8 @@ trait ArgParser {
         monster    <- c.downField("monster").as[String]
         decoderOpt = monsterDecoderLookup.get(monster.toLowerCase)
         decoder <- decoderOpt.fold[Result[Decoder[_]]](
-                    DecodingFailure(s"Unknown monster: $monster", c.history).asLeft)(d => d.asRight)
+                    DecodingFailure(s"Unknown monster: $monster", c.history).asLeft
+                  )(d => d.asRight)
         result <- decoder(c).asInstanceOf[Result[Monster]]
       } yield result
   }
@@ -379,15 +401,19 @@ trait ArgParser {
                .leftMap(e => DecodingFailure(e.getMessage, c.history))
       baseStats <- ints match {
                     case Array(str, dex, con, wis, int, cha) =>
-                      BaseStats(unsafeApply(str),
-                                unsafeApply(dex),
-                                unsafeApply(con),
-                                unsafeApply(wis),
-                                unsafeApply(int),
-                                unsafeApply(cha)).asRight
+                      BaseStats(
+                        unsafeApply(str),
+                        unsafeApply(dex),
+                        unsafeApply(con),
+                        unsafeApply(wis),
+                        unsafeApply(int),
+                        unsafeApply(cha)
+                      ).asRight
                     case _ =>
-                      DecodingFailure(s"$statsCsv did not match expected format for stats",
-                                      c.history).asLeft
+                      DecodingFailure(
+                        s"$statsCsv did not match expected format for stats",
+                        c.history
+                      ).asLeft
                   }
     } yield baseStats
 
@@ -399,8 +425,10 @@ trait ArgParser {
       skills <- ints match {
                  case Array(perception, stealth) => Skills(perception, stealth).asRight
                  case _ =>
-                   DecodingFailure(s"$skillsCsv did not match expected format for skills",
-                                   c.history).asLeft
+                   DecodingFailure(
+                     s"$skillsCsv did not match expected format for skills",
+                     c.history
+                   ).asLeft
                }
     } yield skills
 }

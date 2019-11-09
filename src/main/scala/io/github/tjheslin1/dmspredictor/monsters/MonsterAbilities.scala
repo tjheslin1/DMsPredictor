@@ -32,10 +32,12 @@ object MonsterAbilities extends LazyLogging {
 
         (1 to numberOfAttacks).foldLeft((combatant, others)) {
           case ((attacker, otherTargets), _) =>
-            nextAbilityToUseInConjunction(attacker,
-                                          otherTargets,
-                                          order,
-                                          NonEmptyList.of(SingleAttack)).fold {
+            nextAbilityToUseInConjunction(
+              attacker,
+              otherTargets,
+              order,
+              NonEmptyList.of(SingleAttack)
+            ).fold {
               nextToFocus(attacker, players(otherTargets), focus).fold((attacker, otherTargets)) {
                 target =>
                   val (updatedMonster, updatedEnemy, updatedOthers) =

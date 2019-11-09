@@ -22,13 +22,15 @@ abstract class Weapon extends Equipment {
 
 object Weapon {
 
-  def apply(wpName: String,
-            `type`: WeaponType,
-            dmgType: DamageType,
-            isTwoHanded: Boolean,
-            isFinesse: Boolean,
-            dmg: => Int,
-            wpnHitBonus: Int = 0): Weapon =
+  def apply(
+      wpName: String,
+      `type`: WeaponType,
+      dmgType: DamageType,
+      isTwoHanded: Boolean,
+      isFinesse: Boolean,
+      dmg: => Int,
+      wpnHitBonus: Int = 0
+  ): Weapon =
     new Weapon {
       val name: String           = wpName
       val weaponType: WeaponType = `type`
@@ -41,20 +43,24 @@ object Weapon {
     }
 
   def bonusToHitWeapon[_: RS](weapon: Weapon, bonus: Int): Weapon =
-    Weapon(weapon.name,
-           weapon.weaponType,
-           weapon.damageType,
-           weapon.twoHanded,
-           weapon.finesse,
-           weapon.damage,
-           weapon.hitBonus + bonus)
+    Weapon(
+      weapon.name,
+      weapon.weaponType,
+      weapon.damageType,
+      weapon.twoHanded,
+      weapon.finesse,
+      weapon.damage,
+      weapon.hitBonus + bonus
+    )
 
-  def fixedDamageWeapon[_: RS](weaponName: String,
-                               wpnType: WeaponType = Melee,
-                               weaponDamageType: DamageType,
-                               twoHands: Boolean,
-                               finesse: Boolean,
-                               dmg: Int): Weapon =
+  def fixedDamageWeapon[_: RS](
+      weaponName: String,
+      wpnType: WeaponType = Melee,
+      weaponDamageType: DamageType,
+      twoHands: Boolean,
+      finesse: Boolean,
+      dmg: Int
+  ): Weapon =
     Weapon(weaponName, wpnType, weaponDamageType, twoHands, finesse, dmg)
 
   case class UnarmedStrike(creature: Creature) extends Weapon {
