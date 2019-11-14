@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 
-case class SQSMessage(records: Array[SQSRecord])
+case class SQSMessage(records: List[SQSRecord])
 
 case class SQSRecord(body: String, messageAttributes: MessageAttributes)
 
