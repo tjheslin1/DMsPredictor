@@ -68,8 +68,9 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
       configuration <- decode[SimulationConfig](message.body)
       simHash       = message.messageAttributes.simulationHash.stringValue
       parsedFocus   <- parseFocus(configuration.focus)
-    } yield
-      (configuration,
-        simHash,
-        BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus))
+    } yield (
+      configuration,
+      simHash,
+      BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus)
+    )
 }

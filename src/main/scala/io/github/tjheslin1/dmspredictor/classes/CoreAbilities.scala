@@ -59,17 +59,17 @@ object CoreAbilities extends LazyLogging {
                 order,
                 one(SingleAttack)
               ).fold {
-                  nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
-                    (updatedCombatant, updatedOthers)
-                  } { focusTarget =>
-                    val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
-                      attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
+                nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
+                  (updatedCombatant, updatedOthers)
+                } { focusTarget =>
+                  val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
+                    attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
 
-                    (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
-                  }
-                } { nextAbility2 =>
-                  useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
+                  (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
                 }
+              } { nextAbility2 =>
+                useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
+              }
             }
       }
     }

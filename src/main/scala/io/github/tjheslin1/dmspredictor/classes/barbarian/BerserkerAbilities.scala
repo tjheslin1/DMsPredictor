@@ -46,16 +46,16 @@ object BerserkerAbilities extends LazyLogging {
             order,
             AbilityAction.MainAction
           ).fold {
-              val (updatedAttacker, updatedTarget, updatedOthers) =
-                attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
+            val (updatedAttacker, updatedTarget, updatedOthers) =
+              attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
 
-              (updatedAttacker, updatedOthers.replace(updatedTarget))
-            } { nextAbility =>
-              val (updatedAttacker, updatedOthers) =
-                useAdditionalAbility(nextAbility, ragingBarbarianCombatant, others, focus)
+            (updatedAttacker, updatedOthers.replace(updatedTarget))
+          } { nextAbility =>
+            val (updatedAttacker, updatedOthers) =
+              useAdditionalAbility(nextAbility, ragingBarbarianCombatant, others, focus)
 
-              (updatedAttacker, updatedOthers)
-            }
+            (updatedAttacker, updatedOthers)
+          }
       }
     }
 
