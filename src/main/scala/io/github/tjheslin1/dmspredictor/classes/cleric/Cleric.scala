@@ -22,30 +22,30 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Cleric(level: Level,
-                               health: Int,
-                               maxHealth: Int,
-                               stats: BaseStats,
-                               baseWeapon: Weapon,
-                               skills: Skills,
-                               spellSlots: SpellSlots,
-                               spellsKnown: Map[(SpellLevel, SpellEffect), Spell] =
-                                 standardClericSpellList,
-                               channelDivinityUsed: Boolean = false,
-                               armour: Armour = NoArmour,
-                               offHand: Option[Equipment] = None,
-                               abilities: List[model.CombatantAbility] = standardClericAbilities,
-                               conditions: List[Condition] = List.empty,
-                               proficiencyBonus: ProficiencyBonus = 0,
-                               resistances: List[DamageType] = List.empty,
-                               immunities: List[DamageType] = List.empty,
-                               bonusActionUsed: Boolean = false,
-                               reactionUsed: Boolean = false,
-                               attackStatus: AttackStatus = Regular,
-                               defenseStatus: AttackStatus = Regular,
-                               concentratingSpell: Option[Spell] = None,
-                               name: String = NameGenerator.randomName)
-    extends BaseCleric {
+@Lenses("_") case class Cleric(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    skills: Skills,
+    spellSlots: SpellSlots,
+    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardClericSpellList,
+    channelDivinityUsed: Boolean = false,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    abilities: List[model.CombatantAbility] = standardClericAbilities,
+    conditions: List[Condition] = List.empty,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    concentratingSpell: Option[Spell] = None,
+    name: String = NameGenerator.randomName
+) extends BaseCleric {
 
   val savingThrowProficiencies = NonEmptyList.of(Wisdom, Charisma)
 
@@ -53,9 +53,11 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
-  def updateHealth[_: RS](dmg: Int,
-                          damageType: DamageType,
-                          attackResult: AttackResult): Creature = {
+  def updateHealth[_: RS](
+      dmg: Int,
+      damageType: DamageType,
+      attackResult: AttackResult
+  ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedCleric = copy(health = Math.max(0, health - damageTaken))
 

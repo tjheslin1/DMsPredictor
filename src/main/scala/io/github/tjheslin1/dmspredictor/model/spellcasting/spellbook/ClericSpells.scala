@@ -81,11 +81,12 @@ object ClericSpells extends LazyLogging {
       SpiritGuardiansCondition(spellSaveDc(spellCaster), 100, Wisdom)
   }
 
-  case class SpiritGuardiansCondition(saveDc: Int,
-                                      turnsLeft: Int,
-                                      attribute: Attribute,
-                                      name: String = "Spirit Guardians (attack)")
-      extends StartOfTurnCondition {
+  case class SpiritGuardiansCondition(
+      saveDc: Int,
+      turnsLeft: Int,
+      attribute: Attribute,
+      name: String = "Spirit Guardians (attack)"
+  ) extends StartOfTurnCondition {
     val missesTurn: Boolean     = false
     val handleOnDamage: Boolean = false
 

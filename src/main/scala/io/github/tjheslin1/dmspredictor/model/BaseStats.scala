@@ -5,12 +5,14 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 
-case class BaseStats(strength: Stat,
-                     dexterity: Stat,
-                     constitution: Stat,
-                     wisdom: Stat,
-                     intelligence: Stat,
-                     charisma: Stat)
+case class BaseStats(
+    strength: Stat,
+    dexterity: Stat,
+    constitution: Stat,
+    wisdom: Stat,
+    intelligence: Stat,
+    charisma: Stat
+)
 
 object BaseStats {
   type Stat = Int Refined Interval.ClosedOpen[W.`1`.T, W.`31`.T]

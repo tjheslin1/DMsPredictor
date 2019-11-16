@@ -5,7 +5,7 @@ lazy val dmspredictor = (project in file("."))
     scalaVersion := "2.12.8",
     mainClass in Compile := some("io.github.tjheslin1.dmspredictor.Main"),
     assemblyJarName := "DMsPredictor_full.jar",
-      libraryDependencies ++= Seq(
+    libraryDependencies ++= Seq(
       // format: off
       "org.typelevel"               %% "cats-core"                        % "2.0.0",
       "com.github.wookietreiber"    %% "scala-chart"                      % "0.5.1",
@@ -39,11 +39,11 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
-val CirceVersion = "0.12.3"
+val CirceVersion   = "0.12.3"
 val MonocleVersion = "2.0.0"
 val RefinedVersion = "0.9.10"
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
+  case x                             => MergeStrategy.first
 }

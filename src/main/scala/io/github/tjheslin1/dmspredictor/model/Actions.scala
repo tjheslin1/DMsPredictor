@@ -39,9 +39,11 @@ object Actions extends LazyLogging {
       case _                            => D20.roll()
     }
 
-  def attack[_: RS](attacker: Combatant,
-                    attackerWeapon: Weapon,
-                    target: Combatant): (AttackResult, Combatant) = {
+  def attack[_: RS](
+      attacker: Combatant,
+      attackerWeapon: Weapon,
+      target: Combatant
+  ): (AttackResult, Combatant) = {
 
     val roll = rollAttack(attacker, target)
 
@@ -76,18 +78,22 @@ object Actions extends LazyLogging {
     }
   }
 
-  def resolveDamageMainHand[_: RS](attacker: Combatant,
-                                   target: Combatant,
-                                   others: List[Combatant],
-                                   attackResult: AttackResult,
-                                   damageBonus: Int = 0): (Combatant, Combatant, List[Combatant]) =
-    resolveDamage(attacker,
-                  target,
-                  others,
-                  attacker.creature.weapon,
-                  attackResult,
-                  damageBonus,
-                  addStatModifier = true)
+  def resolveDamageMainHand[_: RS](
+      attacker: Combatant,
+      target: Combatant,
+      others: List[Combatant],
+      attackResult: AttackResult,
+      damageBonus: Int = 0
+  ): (Combatant, Combatant, List[Combatant]) =
+    resolveDamage(
+      attacker,
+      target,
+      others,
+      attacker.creature.weapon,
+      attackResult,
+      damageBonus,
+      addStatModifier = true
+    )
 
   def resolveDamage[_: RS](
       attacker: Combatant,
@@ -96,7 +102,8 @@ object Actions extends LazyLogging {
       weapon: Weapon,
       attackResult: AttackResult,
       damageBonus: Int = 0,
-      addStatModifier: Boolean = true): (Combatant, Combatant, List[Combatant]) = {
+      addStatModifier: Boolean = true
+  ): (Combatant, Combatant, List[Combatant]) = {
 
     val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
 
@@ -113,13 +120,14 @@ object Actions extends LazyLogging {
 
     val updatedTarget = target.creature.reactionOnDamage.fold {
       Combatant.creatureLens.set(
-        target.creature.updateHealth(dmg, weapon.damageType, attackResult))(target)
+        target.creature.updateHealth(dmg, weapon.damageType, attackResult)
+      )(target)
     } { reaction =>
       logger.debug(s"${target.creature.name} used ${reaction.name} (reaction)")
 
       Combatant.creatureLens.set(
-        reaction.updateHealthOnReaction(target.creature, dmg, weapon.damageType, attackResult))(
-        target)
+        reaction.updateHealthOnReaction(target.creature, dmg, weapon.damageType, attackResult)
+      )(target)
     }
 
     val (updatedAttacker, updatedOthers) = (target.creature, updatedTarget.creature) match {
@@ -148,9 +156,11 @@ object Actions extends LazyLogging {
     (updatedAttacker, conditionHandledTarget, updatedOthers)
   }
 
-  def attackAndDamage[_: RS](attacker: Combatant,
-                             target: Combatant,
-                             others: List[Combatant]): (Combatant, Combatant, List[Combatant]) = {
+  def attackAndDamage[_: RS](
+      attacker: Combatant,
+      target: Combatant,
+      others: List[Combatant]
+  ): (Combatant, Combatant, List[Combatant]) = {
     val (attackResult, updatedTarget) = attack(attacker, attacker.creature.weapon, target)
 
     if (attackResult.result > 0)
@@ -165,7 +175,8 @@ object Actions extends LazyLogging {
       times: Int,
       attacker: Combatant,
       target: Combatant,
-      others: List[Combatant]): (Combatant, Combatant, List[Combatant]) =
+      others: List[Combatant]
+  ): (Combatant, Combatant, List[Combatant]) =
     runCombatantTimes(times, attacker, target, others, attackAndDamage)
 
   def runCombatantTimes(
@@ -173,8 +184,8 @@ object Actions extends LazyLogging {
       c1: Combatant,
       c2: Combatant,
       c3: List[Combatant],
-      f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant]))
-    : (Combatant, Combatant, List[Combatant]) =
+      f: (Combatant, Combatant, List[Combatant]) => (Combatant, Combatant, List[Combatant])
+  ): (Combatant, Combatant, List[Combatant]) =
     (1 to times).foldLeft[(Combatant, Combatant, List[Combatant])]((c1, c2, c3)) {
       (combatants, _) =>
         val (a, t, o) = combatants
@@ -187,8 +198,10 @@ object Actions extends LazyLogging {
     } else
       mod(creature.stats.strength)
 
-  private def lossOfConcentration(spellCaster: SpellCaster,
-                                  updatedSpellCaster: SpellCaster): Boolean =
+  private def lossOfConcentration(
+      spellCaster: SpellCaster,
+      updatedSpellCaster: SpellCaster
+  ): Boolean =
     spellCaster.isConcentrating && updatedSpellCaster.isConcentrating == false
 
   private def removeCondition(combatant: Combatant, condition: Condition): Combatant =

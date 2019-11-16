@@ -19,29 +19,30 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Berserker(level: Level,
-                                  health: Int,
-                                  maxHealth: Int,
-                                  stats: BaseStats,
-                                  baseWeapon: Weapon,
-                                  rageUsages: Int,
-                                  skills: Skills,
-                                  armour: Armour = NoArmour,
-                                  offHand: Option[Equipment] = None,
-                                  proficiencyBonus: ProficiencyBonus = 0,
-                                  resistances: List[DamageType] = List.empty,
-                                  immunities: List[DamageType] = List.empty,
-                                  bonusActionUsed: Boolean = false,
-                                  reactionUsed: Boolean = false,
-                                  abilities: List[CombatantAbility] = standardBerserkerAbilities,
-                                  conditions: List[Condition] = List.empty,
-                                  attackStatus: AttackStatus = Regular,
-                                  defenseStatus: AttackStatus = Regular,
-                                  inRage: Boolean = false,
-                                  inFrenzy: Boolean = false,
-                                  rageTurnsLeft: Int = 10,
-                                  name: String = NameGenerator.randomName)
-    extends BaseBarbarian {
+@Lenses("_") case class Berserker(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    rageUsages: Int,
+    skills: Skills,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = standardBerserkerAbilities,
+    conditions: List[Condition] = List.empty,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    inRage: Boolean = false,
+    inFrenzy: Boolean = false,
+    rageTurnsLeft: Int = 10,
+    name: String = NameGenerator.randomName
+) extends BaseBarbarian {
 
   val savingThrowProficiencies = NonEmptyList.of(Strength, Constitution)
 
@@ -77,9 +78,11 @@ object Berserker {
   val strengthLens: Lens[Berserker, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
   val constitutionLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](
-    _.constitution)
+    _.constitution
+  )
   val wisdomLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](
-    _.intelligence)
+    _.intelligence
+  )
   val charismaLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
 }

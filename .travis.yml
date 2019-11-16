@@ -19,4 +19,4 @@ before_cache:
   - find $HOME/.sbt        -name "*.lock"               -print -delete
 
 script:
-- ./sbt test
+- ./sbt scalafmtCheck test

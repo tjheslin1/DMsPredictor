@@ -16,9 +16,11 @@ abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
 
   def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
-  def effect[_: RS](spellCaster: SpellCaster,
-                    spellLevel: SpellLevel,
-                    targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+  def effect[_: RS](
+      spellCaster: SpellCaster,
+      spellLevel: SpellLevel,
+      targets: List[Combatant]
+  ): (SpellCaster, List[Combatant]) = {
     val target            = targets.head
     val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
 

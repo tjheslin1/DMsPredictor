@@ -46,8 +46,10 @@ object BaseFighterAbilities extends LazyLogging {
       logger.debug(s"${combatant.creature.name} used Second wind")
 
       val updatedHealth =
-        Math.min(combatant.creature.maxHealth,
-                 combatant.creature.health + (1 * HitDice) + baseFighter.level.value)
+        Math.min(
+          combatant.creature.maxHealth,
+          combatant.creature.health + (1 * HitDice) + baseFighter.level.value
+        )
       val updatedCombatant =
         (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
@@ -109,12 +111,14 @@ object BaseFighterAbilities extends LazyLogging {
 
               val (attacker2, attackTarget2, updatedOthers2) =
                 if (offHandAttack.result > 0)
-                  resolveDamage(updatedAttacker,
-                                nextHitTarget,
-                                updatedOthers,
-                                offHandWeapon,
-                                offHandAttack,
-                                addStatModifier = offHandStatModifier)
+                  resolveDamage(
+                    updatedAttacker,
+                    nextHitTarget,
+                    updatedOthers,
+                    offHandWeapon,
+                    offHandAttack,
+                    addStatModifier = offHandStatModifier
+                  )
                 else
                   (updatedAttacker, nextHitTarget, updatedOthers)
 
@@ -149,7 +153,8 @@ object BaseFighterAbilities extends LazyLogging {
             nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
               .fold {
                 nextToFocus(updatedAttacker, updatedOthers, focus).fold(
-                  (updatedAttacker, updatedOthers)) { nextTarget =>
+                  (updatedAttacker, updatedOthers)
+                ) { nextTarget =>
                   val (updatedAttacker2, updatedTarget2, updatedOthers2) =
                     attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
 

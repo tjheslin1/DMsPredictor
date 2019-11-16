@@ -21,28 +21,29 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Barbarian(level: Level,
-                                  health: Int,
-                                  maxHealth: Int,
-                                  stats: BaseStats,
-                                  baseWeapon: Weapon,
-                                  rageUsages: Int,
-                                  skills: Skills,
-                                  armour: Armour = NoArmour,
-                                  offHand: Option[Equipment] = None,
-                                  proficiencyBonus: ProficiencyBonus = 0,
-                                  resistances: List[DamageType] = List.empty,
-                                  immunities: List[DamageType] = List.empty,
-                                  bonusActionUsed: Boolean = false,
-                                  reactionUsed: Boolean = false,
-                                  abilities: List[CombatantAbility] = standardBarbarianAbilities,
-                                  conditions: List[Condition] = List.empty,
-                                  attackStatus: AttackStatus = Regular,
-                                  defenseStatus: AttackStatus = Regular,
-                                  inRage: Boolean = false,
-                                  rageTurnsLeft: Int = 10,
-                                  name: String = NameGenerator.randomName)
-    extends BaseBarbarian {
+@Lenses("_") case class Barbarian(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    rageUsages: Int,
+    skills: Skills,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = standardBarbarianAbilities,
+    conditions: List[Condition] = List.empty,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    inRage: Boolean = false,
+    rageTurnsLeft: Int = 10,
+    name: String = NameGenerator.randomName
+) extends BaseBarbarian {
 
   val savingThrowProficiencies = NonEmptyList.of(Strength, Constitution)
 
@@ -67,8 +68,10 @@ object Barbarian {
     recklessAttack(3)
   )
 
-  def levelOneBarbarian[_: RS](weapon: Weapon = Greatsword,
-                               armour: Armour = NoArmour): Barbarian = {
+  def levelOneBarbarian[_: RS](
+      weapon: Weapon = Greatsword,
+      armour: Armour = NoArmour
+  ): Barbarian = {
     val health    = calculateHealth(LevelOne, 14)
     val profBonus = ProficiencyBonus.fromLevel(LevelOne)
 
@@ -96,9 +99,11 @@ object Barbarian {
   val strengthLens: Lens[Barbarian, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
   val constitutionLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](
-    _.constitution)
+    _.constitution
+  )
   val wisdomLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](
-    _.intelligence)
+    _.intelligence
+  )
   val charismaLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
 }

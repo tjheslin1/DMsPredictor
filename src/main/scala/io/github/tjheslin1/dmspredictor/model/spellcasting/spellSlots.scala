@@ -22,16 +22,20 @@ case class ThirdLevelSpellSlots(count: Int) extends SpellSlot {
   val spellLevel: SpellLevel = 3
 }
 
-case class SpellSlots(firstLevel: FirstLevelSpellSlots,
-                      secondLevel: SecondLevelSpellSlots,
-                      thirdLevel: ThirdLevelSpellSlots)
+case class SpellSlots(
+    firstLevel: FirstLevelSpellSlots,
+    secondLevel: SecondLevelSpellSlots,
+    thirdLevel: ThirdLevelSpellSlots
+)
 
 object SpellSlots {
 
   def apply(firstLevelSlots: Int, secondLevelSlots: Int, thirdLevelSlots: Int): SpellSlots =
-    SpellSlots(FirstLevelSpellSlots(firstLevelSlots),
-               SecondLevelSpellSlots(secondLevelSlots),
-               ThirdLevelSpellSlots(thirdLevelSlots))
+    SpellSlots(
+      FirstLevelSpellSlots(firstLevelSlots),
+      SecondLevelSpellSlots(secondLevelSlots),
+      ThirdLevelSpellSlots(thirdLevelSlots)
+    )
 
   def highestSpellSlotAvailable(spellSlots: SpellSlots): Option[SpellSlot] = spellSlots match {
     case SpellSlots(_, _, thirdLevel @ ThirdLevelSpellSlots(count)) if count > 0 => thirdLevel.some
@@ -58,7 +62,7 @@ object SpellSlots {
     GenLens[SecondLevelSpellSlots](_.count)
 
   val secondLevelLens
-    : Lens[SpellSlots, Int] = secondLevelSpellSlotLens composeLens secondLevelSpellSlotCountLens
+      : Lens[SpellSlots, Int] = secondLevelSpellSlotLens composeLens secondLevelSpellSlotCountLens
 
   val thirdLevelSpellSlotLens: Lens[SpellSlots, ThirdLevelSpellSlots] =
     GenLens[SpellSlots](_.thirdLevel)
@@ -67,5 +71,5 @@ object SpellSlots {
     GenLens[ThirdLevelSpellSlots](_.count)
 
   val thirdLevelLens
-    : Lens[SpellSlots, Int] = thirdLevelSpellSlotLens composeLens thirdLevelSpellSlotCountLens
+      : Lens[SpellSlots, Int] = thirdLevelSpellSlotLens composeLens thirdLevelSpellSlotCountLens
 }

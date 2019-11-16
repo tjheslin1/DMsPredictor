@@ -38,8 +38,8 @@ import monocle.macros.{GenLens, Lenses}
     conditions: List[Condition] = List.empty,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
-    name: String = NameGenerator.randomName)
-    extends BaseFighter {
+    name: String = NameGenerator.randomName
+) extends BaseFighter {
 
   val savingThrowProficiencies = NonEmptyList.of(Strength, Constitution)
 

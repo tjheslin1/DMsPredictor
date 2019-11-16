@@ -24,9 +24,11 @@ object BaseWizard {
   def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
-  def calculateArmourClass(stats: BaseStats,
-                           mageArmourPrepared: Boolean,
-                           conditions: List[Condition]): Int = {
+  def calculateArmourClass(
+      stats: BaseStats,
+      mageArmourPrepared: Boolean,
+      conditions: List[Condition]
+  ): Int = {
     val armourClass =
       if (mageArmourPrepared) 13 + mod(stats.dexterity)
       else 10 + mod(stats.dexterity)

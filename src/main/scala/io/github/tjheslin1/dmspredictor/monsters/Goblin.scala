@@ -15,20 +15,21 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Goblin(health: Int,
-                               maxHealth: Int,
-                               stats: BaseStats = BaseStats(8, 14, 10, 10, 8, 8),
-                               armourClass: Int = 15,
-                               baseWeapon: Weapon = Shortsword,
-                               armour: Armour = NoArmour,
-                               offHand: Option[Equipment] = None,
-                               resistances: List[DamageType] = List(),
-                               immunities: List[DamageType] = List(),
-                               conditions: List[Condition] = List.empty,
-                               attackStatus: AttackStatus = Regular,
-                               defenseStatus: AttackStatus = Regular,
-                               name: String = NameGenerator.randomName)
-    extends Monster {
+@Lenses("_") case class Goblin(
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats = BaseStats(8, 14, 10, 10, 8, 8),
+    armourClass: Int = 15,
+    baseWeapon: Weapon = Shortsword,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    resistances: List[DamageType] = List(),
+    immunities: List[DamageType] = List(),
+    conditions: List[Condition] = List.empty,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    name: String = NameGenerator.randomName
+) extends Monster {
 
   val challengeRating: Double                = 0.25
   val skills                                 = Skills(perception = 0, stealth = 6)

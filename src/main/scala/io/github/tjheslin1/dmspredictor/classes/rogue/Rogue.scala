@@ -17,26 +17,27 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-@Lenses("_") case class Rogue(level: Level,
-                              health: Int,
-                              maxHealth: Int,
-                              stats: BaseStats,
-                              baseWeapon: Weapon,
-                              skills: Skills,
-                              armour: Armour = NoArmour,
-                              offHand: Option[Equipment] = None,
-                              proficiencyBonus: ProficiencyBonus = 0,
-                              resistances: List[DamageType] = List.empty,
-                              immunities: List[DamageType] = List.empty,
-                              bonusActionUsed: Boolean = false,
-                              reactionUsed: Boolean = false,
-                              abilities: List[CombatantAbility] = Rogue.standardRogueAbilities,
-                              hiddenFrom: List[Combatant] = List.empty,
-                              conditions: List[Condition] = List.empty,
-                              attackStatus: AttackStatus = Regular,
-                              defenseStatus: AttackStatus = Regular,
-                              name: String = NameGenerator.randomName)
-    extends BaseRogue {
+@Lenses("_") case class Rogue(
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    skills: Skills,
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    proficiencyBonus: ProficiencyBonus = 0,
+    resistances: List[DamageType] = List.empty,
+    immunities: List[DamageType] = List.empty,
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = Rogue.standardRogueAbilities,
+    hiddenFrom: List[Combatant] = List.empty,
+    conditions: List[Condition] = List.empty,
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    name: String = NameGenerator.randomName
+) extends BaseRogue {
 
   val savingThrowProficiencies: NonEmptyList[Attribute] = NonEmptyList.of(Dexterity, Intelligence)
 

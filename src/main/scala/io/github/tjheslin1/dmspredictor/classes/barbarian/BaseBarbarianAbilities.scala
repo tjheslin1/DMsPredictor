@@ -15,9 +15,10 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BaseBarbarianAbilities extends LazyLogging {
 
-  def rage(currentOrder: Int,
-           rageResistances: List[DamageType] = List(Bludgeoning, Piercing, Slashing))(
-      combatant: Combatant): Ability = new Ability(combatant) {
+  def rage(
+      currentOrder: Int,
+      rageResistances: List[DamageType] = List(Bludgeoning, Piercing, Slashing)
+  )(combatant: Combatant): Ability = new Ability(combatant) {
     val barbarian = combatant.creature.asInstanceOf[BaseBarbarian]
 
     val name                         = "Rage"
@@ -40,10 +41,12 @@ object BaseBarbarianAbilities extends LazyLogging {
       target match {
         case None => (ragingBarbarianCombatant, others)
         case Some(targetOfAttack) =>
-          nextAbilityToUseInConjunction(ragingBarbarianCombatant,
-                                        enemies,
-                                        order,
-                                        AbilityAction.MainAction).fold {
+          nextAbilityToUseInConjunction(
+            ragingBarbarianCombatant,
+            enemies,
+            order,
+            AbilityAction.MainAction
+          ).fold {
 
             val (updatedAttacker, updatedTarget, updatedOthers) =
               attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
