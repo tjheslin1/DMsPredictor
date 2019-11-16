@@ -39,21 +39,6 @@ trait ArgParser {
   implicit val simulationHashDecoder: Decoder[SimulationHash] = deriveDecoder[SimulationHash]
 
   implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
-//  implicit val simulationConfigDecoder: Decoder[SimulationConfig] = Decoder.instance { c =>
-//      for {
-//        simulationName <- c.downField("simulationName").as[String]
-//        simulations    <- c.downField("simulations").as[Int]
-//        focus          <- c.downField("focus").as[String]
-//        players        <- c.downField("players").as[List[Player]]
-//        monsters       <- c.downField("monsters").as[List[Monster]]
-//      } yield SimulationConfig(
-//        simulationName,
-//        simulations,
-//        focus,
-//        players,
-//        monsters
-//      )
-//  }
 
   implicit val barbarianDecoder: Decoder[Barbarian] = Decoder.instance {
     c => for {
