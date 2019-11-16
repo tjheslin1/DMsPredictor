@@ -20,7 +20,7 @@ class MainSpec extends UnitSpecBase with EitherValues {
       val sqsMessage =
         """
           |{
-          |    "records": [
+          |    "Records": [
           |        {
           |            "messageId": "c9a6dca2-ccc2-41ba-92ca-588177fd5f5d",
           |            "receiptHandle": "AQEBDNzhoPWsq/oMuBG7BnrzGbe8tYYH47M14hgZUTWlX0zNWdg+KXQYDecHv+RKKvD3lbPRtpiUv6ahS26Z7JXe2FI4y93XZp6l5wr9GLxYVInhS6gTtfjC1AivqzRGcKavUMT9yeUYMuC2B1iHG7SQTLuhF5B1i3gVftsELIGZ/9Mmp+UpfJllYI4rfdT0TARDK1/0e7RwGlyHlq6RfXPxlgay+hlhJlLVgGJpDbk+XhAV+WfnA1MF2pENFA/T1GrEuuu/x8KGOePfIURu4n/k0TIVWqkNTv1lILQOvHNcBOkN1pMy9DjyEkZhgge2lxt18i2wDBtPn/T336pR19BTILmBnvxLyxXE4LqdDbULOBzkGlSsGQLZ4Z5OuL4gz2wqq36lIBY3BRvhY6AhqIufBg==",

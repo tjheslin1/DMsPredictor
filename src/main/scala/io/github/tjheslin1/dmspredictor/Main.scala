@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 
-case class SQSMessage(records: List[SQSRecord])
+case class SQSMessage(Records: Seq[SQSRecord])
 
 case class SQSRecord(body: String, messageAttributes: MessageAttributes)
 
@@ -64,7 +64,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
   def parseSimulation(input: String): Either[Error, (SimulationConfig, String, BasicSimulation)] =
     for {
       sqsMessage    <- decode[SQSMessage](input)
-      message       = sqsMessage.records.head
+      message       = sqsMessage.Records.head
       configuration <- decode[SimulationConfig](message.body)
       simHash       = message.messageAttributes.simulationHash.stringValue
       parsedFocus   <- parseFocus(configuration.focus)
