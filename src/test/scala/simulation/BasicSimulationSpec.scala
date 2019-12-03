@@ -7,11 +7,12 @@ import io.github.tjheslin1.dmspredictor.model.D20
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.simulation._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
-import org.scalatest.{FeatureSpec, Matchers}
 import util.TestData._
 import util._
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.matchers.should.Matchers
 
-class BasicSimulationSpec extends FeatureSpec with Matchers with PropertyChecksBase with TestData {
+class BasicSimulationSpec extends AnyFeatureSpec with Matchers with PropertyChecksBase with TestData {
 
   feature("BasicSimulation") {
 

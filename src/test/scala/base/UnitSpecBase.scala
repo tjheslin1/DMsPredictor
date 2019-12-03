@@ -1,6 +1,7 @@
 package base
 
-import org.scalatest.{Matchers, WordSpec}
 import util.TestData
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-trait UnitSpecBase extends WordSpec with Matchers with PropertyChecksBase with TestData
+trait UnitSpecBase extends AnyWordSpec with Matchers with PropertyChecksBase with TestData
