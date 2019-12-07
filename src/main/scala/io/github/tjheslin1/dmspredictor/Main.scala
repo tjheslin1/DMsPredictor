@@ -11,10 +11,7 @@ import io.circe.parser.decode
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
-import io.github.tjheslin1.dmspredictor.simulation.{
-  BasicSimulation,
-  SimulationRunner
-}
+import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 
 case class SQSMessage(Records: Seq[SQSRecord])
 
@@ -38,9 +35,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
 
-  override def handleRequest(request: InputStream,
-                             output: OutputStream,
-                             context: Context): Unit = {
+  override def handleRequest(request: InputStream, output: OutputStream, context: Context): Unit = {
 
     val input = scala.io.Source.fromInputStream(request).mkString
 
@@ -49,9 +44,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
     val (wins, losses, sim_hash) = config match {
       case Left(e) =>
-        throw new RuntimeException(
-          s"Error parsing JSON\\n$input\\n${e.getMessage}",
-          e)
+        throw new RuntimeException(s"Error parsing JSON\\n$input\\n${e.getMessage}", e)
       case Right((simulationConfig, simHash, basicSimulation)) =>
         val (losses, wins) =
           SimulationRunner.run(
@@ -60,8 +53,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
             Math.min(10000, simulationConfig.simulations)
           )
 
-        logger.debug(
-          s"${simulationConfig.simulationName} simulation started - $simHash")
+        logger.debug(s"${simulationConfig.simulationName} simulation started - $simHash")
         println(s"$wins Wins and $losses Losses")
 
 //        val data  = Seq("wins" -> wins, "losses" -> losses)
@@ -72,7 +64,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     }
 
     val client = AmazonDynamoDBClientBuilder.standard().build()
-    val table = Table[SimulationResult]("simulation_results")
+    val table  = Table[SimulationResult]("simulation_results")
 
     Scanamo.exec(client) {
       table.put(SimulationResult(sim_hash, s"wins: $wins, losses: $losses"))
@@ -85,19 +77,16 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
 
-  def parseSimulation(input: String)
-    : Either[Error, (SimulationConfig, String, BasicSimulation)] =
+  def parseSimulation(input: String): Either[Error, (SimulationConfig, String, BasicSimulation)] =
     for {
-      sqsMessage <- decode[SQSMessage](input)
-      message = sqsMessage.Records.head
+      sqsMessage    <- decode[SQSMessage](input)
+      message       = sqsMessage.Records.head
       configuration <- decode[SimulationConfig](message.body)
-      simHash = message.messageAttributes.simulationHash.stringValue
-      parsedFocus <- parseFocus(configuration.focus)
-    } yield
-      (
-        configuration,
-        simHash,
-        BasicSimulation(configuration.players ++ configuration.monsters,
-                        parsedFocus)
-      )
+      simHash       = message.messageAttributes.simulationHash.stringValue
+      parsedFocus   <- parseFocus(configuration.focus)
+    } yield (
+      configuration,
+      simHash,
+      BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus)
+    )
 }

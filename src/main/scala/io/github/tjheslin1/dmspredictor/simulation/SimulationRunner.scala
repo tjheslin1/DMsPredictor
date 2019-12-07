@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.model.RS
 object SimulationRunner extends LazyLogging {
 
   def run[_: RS](simulation: Simulation, info: String, iterations: Int) =
-    (1 to iterations).foldLeft((0, 0))((results, _) => {
+    (1 to iterations).foldLeft((0, 0)) { (results, _) =>
       val (losses, wins) = results
       logger.debug("\n\n------------ New Simulation ------------\n")
       simulation.run(info).result match {
@@ -14,5 +14,5 @@ object SimulationRunner extends LazyLogging {
         case Success    => (losses, wins + 1)
         case Unresolved => (losses, wins)
       }
-    })
+    }
 }

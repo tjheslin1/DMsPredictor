@@ -197,8 +197,8 @@ object CoreAbilities extends LazyLogging {
             (updatedCombatant, updatedBonusHealingTarget.some)
         }
 
-        optHealedAlly.fold((updatedCombatant, others))(
-          updatedTarget => (updatedCombatant, others.replace(updatedTarget))
+        optHealedAlly.fold((updatedCombatant, others))(updatedTarget =>
+          (updatedCombatant, others.replace(updatedTarget))
         )
       }
 

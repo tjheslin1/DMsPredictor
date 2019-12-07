@@ -26,8 +26,8 @@ object InitiativeCalculator {
   ): Map[Int, Initiative] = {
     val updatedInitiative = mutable.Map[Int, Initiative]()
     pcs.foreach(pc => updatedInitiative.put(pc.index, Initiative(pc, initiative(pc.index).score)))
-    mobs.foreach(
-      mob => updatedInitiative.put(mob.index, Initiative(mob, initiative(mob.index).score))
+    mobs.foreach(mob =>
+      updatedInitiative.put(mob.index, Initiative(mob, initiative(mob.index).score))
     )
     updatedInitiative.toMap
   }
