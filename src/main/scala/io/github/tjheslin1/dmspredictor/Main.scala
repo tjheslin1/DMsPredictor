@@ -58,6 +58,13 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
         (wins, losses)
     }
 
+    import org.scanamo._
+    import org.scanamo.syntax._
+    import org.scanamo.auto._
+
+    val client = DynamoDB.client()
+
+
     output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
 
