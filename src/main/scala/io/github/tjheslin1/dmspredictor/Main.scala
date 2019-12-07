@@ -82,7 +82,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
       case _ => ()
     }
 
-    output.write("{\"}".getBytes("UTF-8"))
+    output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
 
   def parseSimulation(input: String)
