@@ -43,7 +43,7 @@ class VampireSpec extends UnitSpecBase {
   }
 
   "resetStartOfTurn" should {
-    "regenerate 20 hit points if the Vampire hasn't taken Radiant damage last turn" in {
+    "regenerate 20 hit points if the Vampire hasn't taken Radiant damage since its last turn" in {
       forAll { vampire: Vampire =>
         val regeneratedVampire = vampire.withHealth(50).withMaxHealth(100).resetStartOfTurn()
 

@@ -2,7 +2,9 @@ package io.github.tjheslin1.dmspredictor
 
 import java.io.{InputStream, OutputStream}
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.lambda.runtime.{Context, RequestStreamHandler}
+import com.gu.scanamo.{Scanamo, Table}
 import com.typesafe.scalalogging.LazyLogging
 import io.circe._
 import io.circe.parser.decode
@@ -27,6 +29,8 @@ case class SimulationConfig(
     monsters: List[Monster]
 )
 
+case class SimulationResult(sim_hash: String, result: String)
+
 class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
   implicit val rollStrategy = Dice.defaultRandomiser
@@ -35,9 +39,10 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
     val input = scala.io.Source.fromInputStream(request).mkString
 
-    val config: Either[Error, (SimulationConfig, String, BasicSimulation)] = parseSimulation(input)
+    val config: Either[Error, (SimulationConfig, String, BasicSimulation)] =
+      parseSimulation(input)
 
-    val (wins, losses) = config match {
+    val (wins, losses, sim_hash) = config match {
       case Left(e) =>
         throw new RuntimeException(s"Error parsing JSON\\n$input\\n${e.getMessage}", e)
       case Right((simulationConfig, simHash, basicSimulation)) =>
@@ -55,7 +60,18 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 //        val chart = BarChart(data)
 //        chart.show(title = simulationConfig.simulationName)
 
-        (wins, losses)
+        (wins, losses, simHash)
+    }
+
+    val client = AmazonDynamoDBClientBuilder.standard().build()
+    val table  = Table[SimulationResult]("simulation_results")
+
+    Scanamo.exec(client) {
+      table.put(SimulationResult(sim_hash, s"wins: $wins, losses: $losses"))
+    } match {
+      case Some(Left(dynamoError)) =>
+        throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
+      case _ => ()
     }
 
     output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
