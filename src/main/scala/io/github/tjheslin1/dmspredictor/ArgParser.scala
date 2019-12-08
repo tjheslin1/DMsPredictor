@@ -228,8 +228,8 @@ trait ArgParser {
       statsStr   <- c.downField("stats").as[String]
       stats      <- baseStatsConverter(c, statsStr)
       weapon     <- c.downField("weapon").as[String]
-      armour      <- c.downField("armour").as[String]
-      offHand     <- c.downField("offHand").as[String]
+      armour     <- c.downField("armour").as[String]
+      offHand    <- c.downField("offHand").as[String]
       skillsStr  <- c.downField("skills").as[String]
       skills     <- skillsConverter(c, skillsStr)
       wizardName <- c.downField("name").as[String]
