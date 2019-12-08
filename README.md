@@ -59,16 +59,18 @@ NOTE: that the maximum number of simulations is currently set to 10,000.
 ```json
 {
  "simulationName": "Wizard vs Goblin",
- "simulations": 100,
+ "simulations": 10,
  "focus": "LowestFirst",
  "players": [
    {
+    "name": "Weston",
     "class": "wizard",
     "level": 4,
     "stats": "10,10,14,14,14,10",
     "weapon": "Shortsword",
-    "skills": "1,1",
-    "name": "TestWizard"
+    "armour": "none",
+    "offHand": "none",
+    "skills": "1,1"
    }
  ],
  "monsters": [
