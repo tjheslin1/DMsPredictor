@@ -70,7 +70,9 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
 
-  def parseSimulation(input: String): Either[Error, (SimulationConfig, String, BasicSimulation, String)] =
+  def parseSimulation(
+      input: String
+  ): Either[Error, (SimulationConfig, String, BasicSimulation, String)] =
     for {
       sqsMessage    <- decode[SQSMessage](input)
       message       = sqsMessage.Records.head
