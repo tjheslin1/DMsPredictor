@@ -45,7 +45,7 @@ resolvers ++= Seq(
 )
 
 val CirceVersion   = "0.12.3"
-val MonocleVersion = "2.0.0"
+val MonocleVersion = "2.0.1"
 val RefinedVersion = "0.9.10"
 
 assemblyMergeStrategy in assembly := {
