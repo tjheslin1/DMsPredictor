@@ -40,6 +40,8 @@ trait ArgParser {
 
   implicit val simulationConfigDecoder: Decoder[SimulationConfig] = deriveDecoder[SimulationConfig]
 
+  implicit val simulationNameFieldDecoder: Decoder[SimulationNameField] = deriveDecoder[SimulationNameField]
+
   implicit val barbarianDecoder: Decoder[Barbarian] = Decoder.instance { c =>
     for {
       levelInt      <- c.downField("level").as[Int]

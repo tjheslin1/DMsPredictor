@@ -1,6 +1,8 @@
 package io.github.tjheslin1.dmspredictor
 
 import java.io.{InputStream, OutputStream}
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.lambda.runtime.{Context, RequestStreamHandler}
@@ -29,6 +31,8 @@ case class SimulationConfig(
     monsters: List[Monster]
 )
 
+case class SimulationNameField(simulationName: String)
+
 case class SimulationResult(sim_hash: String, sim_name: String, result: String, config: String)
 
 class Main extends RequestStreamHandler with ArgParser with LazyLogging {
@@ -42,9 +46,16 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     val config: Either[Error, (SimulationConfig, String, BasicSimulation, String)] =
       parseSimulation(input)
 
-    val (wins, losses, sim_hash, sim_name, jsonConfig) = config match {
+    config match {
       case Left(e) =>
-        throw new RuntimeException(s"Error parsing JSON\\n$input\\n${e.getMessage}", e)
+          parseSimulationHash(input) match {
+            case Left(nameFieldError) =>
+              val dateTime = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)
+
+              writeToDynamo(SimulationResult(dateTime, "unknown", nameFieldError.getMessage, "unknown config"))
+            case Right(simHash) =>
+              writeToDynamo(SimulationResult(simHash, "unknown", e.getMessage, "unknown config"))
+          }
       case Right((simulationConfig, simHash, basicSimulation, json)) =>
         val (losses, wins) =
           SimulationRunner.run(
@@ -53,21 +64,10 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
             Math.min(10000, simulationConfig.simulations)
           )
 
-        (wins, losses, simHash, simulationConfig.simulationName, json)
+        writeToDynamo(SimulationResult(simHash, simulationConfig.simulationName, s"wins: $wins, losses: $losses", json))
+
+        output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
     }
-
-    val client = AmazonDynamoDBClientBuilder.standard().build()
-    val table  = Table[SimulationResult]("simulation_results")
-
-    Scanamo.exec(client) {
-      table.put(SimulationResult(sim_hash, sim_name, s"wins: $wins, losses: $losses", jsonConfig))
-    } match {
-      case Some(Left(dynamoError)) =>
-        throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
-      case _ => ()
-    }
-
-    output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
   }
 
   def parseSimulation(
@@ -85,4 +85,26 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
       BasicSimulation(configuration.players ++ configuration.monsters, parsedFocus),
       message.body
     )
+
+  private def parseSimulationHash(
+      input: String
+  ): Either[Error, String] =
+    for {
+      sqsMessage    <- decode[SQSMessage](input)
+      message       = sqsMessage.Records.head
+      simHash       = message.messageAttributes.simulationHash.stringValue
+    } yield simHash
+
+    private def writeToDynamo(simulationResult: SimulationResult): Unit = {
+      val client = AmazonDynamoDBClientBuilder.standard().build()
+      val table = Table[SimulationResult]("simulation_results")
+
+      Scanamo.exec(client) {
+        table.put(simulationResult)
+      } match {
+        case Some(Left(dynamoError)) =>
+          throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
+        case _ => ()
+      }
+    }
 }
