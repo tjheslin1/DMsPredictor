@@ -48,14 +48,16 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 
     config match {
       case Left(e) =>
-          parseSimulationHash(input) match {
-            case Left(nameFieldError) =>
-              val dateTime = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)
+        parseSimulationHash(input) match {
+          case Left(nameFieldError) =>
+            val dateTime = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)
 
-              writeToDynamo(SimulationResult(dateTime, "unknown", nameFieldError.getMessage, "unknown config"))
-            case Right(simHash) =>
-              writeToDynamo(SimulationResult(simHash, "unknown", e.getMessage, "unknown config"))
-          }
+            writeToDynamo(
+              SimulationResult(dateTime, "unknown", nameFieldError.getMessage, "unknown config")
+            )
+          case Right(simHash) =>
+            writeToDynamo(SimulationResult(simHash, "unknown", e.getMessage, "unknown config"))
+        }
       case Right((simulationConfig, simHash, basicSimulation, json)) =>
         val (losses, wins) =
           SimulationRunner.run(
@@ -64,7 +66,14 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
             Math.min(10000, simulationConfig.simulations)
           )
 
-        writeToDynamo(SimulationResult(simHash, simulationConfig.simulationName, s"wins: $wins, losses: $losses", json))
+        writeToDynamo(
+          SimulationResult(
+            simHash,
+            simulationConfig.simulationName,
+            s"wins: $wins, losses: $losses",
+            json
+          )
+        )
 
         output.write(s"""{"wins":$wins,"losses":$losses}""".getBytes("UTF-8"))
     }
@@ -90,21 +99,21 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
       input: String
   ): Either[Error, String] =
     for {
-      sqsMessage    <- decode[SQSMessage](input)
-      message       = sqsMessage.Records.head
-      simHash       = message.messageAttributes.simulationHash.stringValue
+      sqsMessage <- decode[SQSMessage](input)
+      message    = sqsMessage.Records.head
+      simHash    = message.messageAttributes.simulationHash.stringValue
     } yield simHash
 
-    private def writeToDynamo(simulationResult: SimulationResult): Unit = {
-      val client = AmazonDynamoDBClientBuilder.standard().build()
-      val table = Table[SimulationResult]("simulation_results")
+  private def writeToDynamo(simulationResult: SimulationResult): Unit = {
+    val client = AmazonDynamoDBClientBuilder.standard().build()
+    val table  = Table[SimulationResult]("simulation_results")
 
-      Scanamo.exec(client) {
-        table.put(simulationResult)
-      } match {
-        case Some(Left(dynamoError)) =>
-          throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
-        case _ => ()
-      }
+    Scanamo.exec(client) {
+      table.put(simulationResult)
+    } match {
+      case Some(Left(dynamoError)) =>
+        throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
+      case _ => ()
     }
+  }
 }
