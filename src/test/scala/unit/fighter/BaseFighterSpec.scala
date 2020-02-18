@@ -37,9 +37,9 @@ class BaseFighterSpec extends UnitSpecBase {
     }
   }
 
-  "weapon" should {
+  "weaponWithFightingStyle" should {
     "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, 10)
+      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, dmg = 10)
 
       weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 2
     }

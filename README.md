@@ -39,7 +39,8 @@ The simulation assumes that players have proficiency with the equipment it uses.
 ##### Ability Score Increases
 
 Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in
- the characters stats upon submission to the simulator.
+ the characters stats upon submission to the simulator. The same is true of racial bonuses. 
+ Racial abilities are not currently implemented. These will be done after all classes.
 
 ##### No validation against a Creature's Stats are made.
 
