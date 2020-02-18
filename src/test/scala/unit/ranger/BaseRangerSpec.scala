@@ -37,6 +37,11 @@ class BaseRangerSpec extends UnitSpecBase {
 
       weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 2
     }
+    "apply +2 to hit bonus for a ranged weapon with the Ranger fighting style" in new TestContext {
+      val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = false, isFinesse = false, dmg = 10)
+
+      weaponWithFightingStyle(bow, List(Dueling)).hitBonus shouldBe 2
+    }
   }
 
   private class TestContext {

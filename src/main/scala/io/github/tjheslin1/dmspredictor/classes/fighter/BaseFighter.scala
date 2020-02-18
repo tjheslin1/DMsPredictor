@@ -49,7 +49,6 @@ object BaseFighter {
           rerollingDamage,
           weapon.hitBonus
         )
-      case _ => weapon
     }
 
   def armourClassWithFightingStyle(
