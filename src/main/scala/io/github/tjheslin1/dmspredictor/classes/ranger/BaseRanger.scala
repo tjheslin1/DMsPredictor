@@ -21,6 +21,8 @@ object BaseRanger {
     weapon.weaponType match {
       case Ranged if fightingStyles.contains(Archery) =>
         bonusToHitWeapon(weapon, 2)
-      case Melee =>
+      case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+        bonusToHitWeapon(weapon, 2)
+      case _ => weapon
     }
 }
