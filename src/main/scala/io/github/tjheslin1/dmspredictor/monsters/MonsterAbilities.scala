@@ -45,9 +45,7 @@ object MonsterAbilities extends LazyLogging {
 
                   (updatedMonster, updatedOthers.replace(updatedEnemy))
               }
-            } { ability =>
-              useAdditionalAbility(ability, attacker, otherTargets, focus)
-            }
+            }(ability => useAdditionalAbility(ability, attacker, otherTargets, focus))
         }
       }
 
