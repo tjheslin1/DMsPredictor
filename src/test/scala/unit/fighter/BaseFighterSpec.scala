@@ -79,7 +79,7 @@ class BaseFighterSpec extends UnitSpecBase {
     }
   }
 
-  "armourClass" should {
+  "armourClassWithFightingStyle" should {
     "calculate default armour class for no armour and no shield" in new TestContext {
       armourClassWithFightingStyle(BaseStats(12, 12, 12, 12, 12, 12),
         NoArmour,

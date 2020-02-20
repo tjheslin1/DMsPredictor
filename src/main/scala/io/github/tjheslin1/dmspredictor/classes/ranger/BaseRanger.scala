@@ -1,6 +1,8 @@
 package io.github.tjheslin1.dmspredictor.classes.ranger
 
 import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
+import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
@@ -25,4 +27,11 @@ object BaseRanger {
         bonusToHitWeapon(weapon, 2)
       case _ => weapon
     }
+
+  def armourClassWithFightingStyle(
+      stats: BaseStats,
+      armour: Armour,
+      offHand: Option[Equipment],
+      fightingStyles: List[RangerFightingStyle]
+  ): Int = ???
 }

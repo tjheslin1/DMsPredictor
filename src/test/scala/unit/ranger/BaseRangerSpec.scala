@@ -1,9 +1,12 @@
 package unit.ranger
 
 import base.UnitSpecBase
+import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger._
 import io.github.tjheslin1.dmspredictor.classes.ranger._
+import io.github.tjheslin1.dmspredictor.equipment.Equipment
+import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 
@@ -54,6 +57,40 @@ class BaseRangerSpec extends UnitSpecBase {
       val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
       weaponWithFightingStyle(bow, List(Dueling)).hitBonus shouldBe 0
+    }
+  }
+
+  "armourClass" should {
+    "calculate default armour class for no armour and no shield" in new TestContext {
+      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+        NoArmour,
+        none[Equipment],
+        List.empty[RangerFightingStyle]
+      ) shouldBe 10
+    }
+
+    "calculate armour class for wearing armour but no shield" in new TestContext {
+
+    }
+
+    "calculate armour class for wearing a shield but no armour" in new TestContext {
+
+    }
+
+    "calculate armour class for wearing armour and a shield" in new TestContext {
+
+    }
+
+    "calculate armour class for wearing armour, shield and with high dexterity" in new TestContext {
+
+    }
+
+    "calculate armour class for having armour and the Defense fighting style" in new TestContext {
+
+    }
+
+    "calculate armour class for having no armour and ignoring Defense fighting style" in new TestContext {
+
     }
   }
 
