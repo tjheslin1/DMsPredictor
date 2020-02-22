@@ -7,10 +7,11 @@ import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
-import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -83,7 +84,7 @@ object TestData {
 
     def withDexteritySavingThrowScore(dexScore: Int) = {
       val savingThrowScores = testMonster.savingThrowScores.map {
-        case (Dexterity, _) => Dexterity -> dexScore
+        case (Dexterity, _)     => Dexterity -> dexScore
         case (attribute, score) => attribute -> score
       }
 
@@ -235,7 +236,16 @@ object TestData {
         wizard)
 
     def withCastShieldOnReaction(willCast: Boolean) = _castShieldAsReaction.set(willCast)(wizard)
-    def withMageArmourPrepared(prepared: Boolean) = _mageArmourPrepared.set(prepared)(wizard)
+    def withMageArmourPrepared(prepared: Boolean)   = _mageArmourPrepared.set(prepared)(wizard)
+  }
+
+  implicit class RangerOps(val ranger: Ranger) extends AnyVal {
+    import Ranger._
+
+    def withFightingStyle(fightingStyle: RangerFightingStyle) =
+      _fightingStyles.set(List(fightingStyle))(ranger)
+
+    def withBonusActionUsed() = _bonusActionUsed.set(true)(ranger)
   }
 }
 
@@ -550,7 +560,12 @@ trait TestData extends RandomDataGenerator {
   }
 
   implicit val arbFighterFightingStyle: Arbitrary[Seq[FighterFightingStyle]] = Arbitrary {
-    Gen.someOf(Archery, Defense, Dueling, GreatWeaponFighting, Protection, TwoWeaponFighting)
+    Gen.someOf(fighter.Archery,
+               fighter.Defense,
+               fighter.Dueling,
+               GreatWeaponFighting,
+               Protection,
+               fighter.TwoWeaponFighting)
   }
 
   implicit val arbFighter: Arbitrary[Fighter] = Arbitrary {
@@ -737,7 +752,7 @@ trait TestData extends RandomDataGenerator {
     for {
       player <- arbPlayer.arbitrary
       level  <- arbLevel.arbitrary
-    } yield {
+    } yield
       Wizard(
         level,
         player.health,
@@ -763,6 +778,38 @@ trait TestData extends RandomDataGenerator {
         concentratingSpell = none[Spell],
         name = player.name
       )
-    }
+  }
+
+  implicit val arbRangerFightingStyle: Arbitrary[Seq[RangerFightingStyle]] = Arbitrary {
+    Gen.someOf(ranger.Archery, ranger.Defense, ranger.Dueling, ranger.TwoWeaponFighting)
+  }
+
+  implicit val arbRanger: Arbitrary[Ranger] = Arbitrary {
+    for {
+      player         <- arbPlayer.arbitrary
+      fightingStyles <- arbRangerFightingStyle.arbitrary
+      level          <- arbLevel.arbitrary
+    } yield
+      Ranger(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.skills,
+        player.armour,
+        player.offHand,
+        fightingStyles.toList,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        player.reactionUsed,
+        Ranger.standardRangerAbilities,
+        player.conditions,
+        player.attackStatus,
+        player.defenseStatus,
+        player.name
+      )
   }
 }

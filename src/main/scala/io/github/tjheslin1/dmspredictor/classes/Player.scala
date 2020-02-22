@@ -4,14 +4,13 @@ import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf, Zombie}
-import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.Lens
 
 trait Player extends Creature {
@@ -46,6 +45,8 @@ object Player {
 
         case c: Wizard => Wizard._bonusActionUsed.set(bonusUsed)(c)
 
+        case c: Ranger => Ranger._bonusActionUsed.set(bonusUsed)(c)
+
         case _ =>
           throw new NotImplementedError(
             "Missing playerBonusActionUsedLens lens for your new implementation of Player!"
@@ -68,6 +69,8 @@ object Player {
 
         case c: Wizard => Wizard._reactionUsed.set(reactionUsed)(c)
 
+        case c: Ranger => Ranger._reactionUsed.set(reactionUsed)(c)
+
         case _ =>
           throw new NotImplementedError(
             "Missing playerReactionUsedLens lens for your new implementation of Player!"
@@ -89,6 +92,8 @@ object Player {
         case c: Rogue => Rogue._proficiencyBonus.set(profBonus)(c)
 
         case c: Wizard => Wizard._proficiencyBonus.set(profBonus)(c)
+
+        case c: Ranger => Ranger._proficiencyBonus.set(profBonus)(c)
 
         case _ =>
           throw new NotImplementedError(

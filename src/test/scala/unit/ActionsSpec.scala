@@ -274,6 +274,7 @@ class ActionsSpec extends UnitSpecBase {
             attack(attackingGoblin, attackingGoblin.creature.weapon, wizardCombatant)
 
           updatedWizard.reactionUsed shouldBe true
+          updatedWizard.health shouldBe 50
         }
       }
     }

@@ -4,6 +4,7 @@ import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
@@ -102,46 +103,43 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "meet the condition if the Player wields two weapons" in new TestContext {
+    "meet the condition if the Fighter wields two weapons" in new TestContext {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val dualWieldingFighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
         .withBaseWeapon(trackedSword)
         .withOffHand(trackedOffHandSword)
-        .withLevel(LevelFour)
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe true
     }
 
-    "not meet the condition if the Player does not wield two weapons" in new TestContext {
+    "not meet the condition if the Fighter does not wield two weapons" in new TestContext {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val fighter = random[Fighter]
         .withFightingStyle(TwoWeaponFighting)
         .withBaseWeapon(trackedSword)
         .withNoOffHand()
-        .withLevel(LevelFive)
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(fighter).conditionMet shouldBe false
     }
 
-    "not meet the condition if the Player does not have the Two Weapon Fighting fighting style" in new TestContext {
+    "not meet the condition if the Fighter wields a two-handed weapon" in new TestContext {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val fighter = random[Fighter]
         .withFightingStyle(GreatWeaponFighting)
-        .withBaseWeapon(trackedSword)
-        .withNoOffHand()
-        .withLevel(LevelFive)
+        .withBaseWeapon(Greatsword)
+        .withOffHand(trackedOffHandSword)
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(fighter).conditionMet shouldBe false
     }
 
-    "not meet the condition if the Player has already used their bonus action this turn" in new TestContext {
+    "not meet the condition if the Fighter has already used their bonus action this turn" in new TestContext {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val dualWieldingFighter = random[Fighter]
@@ -149,7 +147,6 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         .withBonusActionUsed()
         .withBaseWeapon(trackedSword)
         .withOffHand(trackedOffHandSword)
-        .withLevel(LevelFour)
         .withCombatIndex(1)
 
       twoWeaponFighting(Priority)(dualWieldingFighter).conditionMet shouldBe false

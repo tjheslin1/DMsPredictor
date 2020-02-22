@@ -2,12 +2,17 @@ package io.github.tjheslin1.dmspredictor.classes.ranger
 
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
-import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
+import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 
-trait BaseRanger extends Player with Product with Serializable {}
+trait BaseRanger extends Player with Product with Serializable {
+
+  val fightingStyles: List[RangerFightingStyle]
+
+  def resetStartOfTurn(): Creature = this
+}
 
 object BaseRanger {
 
@@ -48,5 +53,4 @@ object BaseRanger {
       case _        => baseArmourClass + shieldBonus + defenseBonus
     }
   }
-
 }
