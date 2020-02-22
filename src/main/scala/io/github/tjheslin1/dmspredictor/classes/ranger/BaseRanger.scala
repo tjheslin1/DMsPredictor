@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.ranger
 
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
-import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
+import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
@@ -33,5 +33,20 @@ object BaseRanger {
       armour: Armour,
       offHand: Option[Equipment],
       fightingStyles: List[RangerFightingStyle]
-  ): Int = ???
+  ): Int = {
+    val baseArmourClass = armour.armourClass(stats.dexterity)
+
+    val shieldBonus = offHand match {
+      case Some(Shield) => Shield.armourClass(stats.dexterity)
+      case _            => 0
+    }
+
+    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+
+    armour match {
+      case NoArmour => baseArmourClass + shieldBonus
+      case _        => baseArmourClass + shieldBonus + defenseBonus
+    }
+  }
+
 }

@@ -59,6 +59,7 @@ object BaseFighter {
       fightingStyles: List[FighterFightingStyle]
   ): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
+
     val shieldBonus = offHand match {
       case Some(Shield) => Shield.armourClass(stats.dexterity)
       case _            => 0
