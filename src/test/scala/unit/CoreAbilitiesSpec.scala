@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
@@ -324,12 +324,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) =
+          val (Combatant(_, updatedCleric: Cleric), List(Combatant(_, healedFighter: Fighter))) =
             castSingleTargetHealingSpell(Priority)(healingCleric)
               .useAbility(List(damagedFighter), LowestFirst)
 
           trackedHealingSpellUsed shouldBe true
           healedFighter.creature.health shouldBe 11
+
+          updatedCleric.spellSlots shouldBe SpellSlots(4, 3, 1)
         }
       }
     }
@@ -348,12 +350,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) =
+          val (Combatant(_, updatedCleric: Cleric), List(Combatant(_, healedFighter: Fighter))) =
             castSingleTargetHealingSpell(Priority)(healingCleric)
               .useAbility(List(damagedFighter), LowestFirst)
 
           trackedHealingSpellUsed shouldBe true
           healedFighter.creature.health shouldBe 11
+
+          updatedCleric.spellSlots shouldBe SpellSlots(4, 3, 1)
         }
       }
     }

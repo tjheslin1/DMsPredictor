@@ -37,12 +37,12 @@ object Move extends LazyLogging {
 
     if (conditionHandledCombatant.creature.isConscious && missesTurn == false) {
 
-      val mobToAttack = nextToFocus(conditionHandledCombatant, mobs.toList, focus)
-      val pcToAttack  = nextToFocus(conditionHandledCombatant, pcs.toList, focus)
+      val mobToFocus = nextToFocus(conditionHandledCombatant, mobs.toList, focus)
+      val pcToFocus  = nextToFocus(conditionHandledCombatant, pcs.toList, focus)
 
       val attackTarget = conditionHandledCombatant.creature.creatureType match {
-        case PlayerCharacter => mobToAttack
-        case _               => pcToAttack
+        case PlayerCharacter => mobToFocus
+        case _               => pcToFocus
       }
 
       val (actedCombatant, updatedTargets) = {

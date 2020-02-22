@@ -14,10 +14,12 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 import Ranger._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
 
 @Lenses("_") case class Ranger(
     level: Level,
@@ -26,6 +28,8 @@ import Ranger._
     stats: BaseStats,
     baseWeapon: Weapon,
     skills: Skills,
+    spellSlots: SpellSlots,
+    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardRangerSpellList,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[RangerFightingStyle] = List.empty[RangerFightingStyle],
@@ -38,6 +42,7 @@ import Ranger._
     conditions: List[Condition] = List.empty,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    concentratingSpell: Option[spellcasting.Spell] = None,
     name: String = NameGenerator.randomName
 ) extends BaseRanger {
 
@@ -59,8 +64,13 @@ import Ranger._
 object Ranger {
 
   val standardRangerAbilities: List[CombatantAbility] = List(
-    extraAttack(1),
-    twoWeaponFighting(2)
+    castSingleTargetHealingSpell(1),
+    extraAttack(2),
+    twoWeaponFighting(3),
+  )
+
+  val standardRangerSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
+    (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds
   )
 
   implicit def rangerShow[_: RS]: Show[Ranger] = Show.show { ranger =>
@@ -76,4 +86,15 @@ object Ranger {
   val wisdomLens: Lens[Ranger, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Ranger, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Ranger, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+
+  // format: off
+  def rangerSpellSlots(level: Level): SpellSlots = level match {
+    case LevelOne => SpellSlots(0, 0, 0)
+    case LevelTwo => SpellSlots(2, 0, 0)
+    case LevelThree => SpellSlots(3, 0, 0)
+    case LevelFour => SpellSlots(3, 0, 0)
+    case LevelFive => SpellSlots(4, 2, 0)
+    case LevelTwenty => SpellSlots(4, 3, 3)
+  }
+  // format: on
 }

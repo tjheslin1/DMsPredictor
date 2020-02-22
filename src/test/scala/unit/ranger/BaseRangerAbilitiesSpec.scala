@@ -2,6 +2,7 @@ package unit.ranger
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRangerAbilities._
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
@@ -16,6 +17,33 @@ import scala.collection.immutable.Queue
 class BaseRangerAbilitiesSpec extends UnitSpecBase {
 
   val Priority = 1
+
+  "Ranger" should {
+    "prioritise healing ally" in {
+      forAll { (ranger: Ranger, fighter: Fighter, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val healingRanger = ranger
+            .withSpellKnown(trackedHealingSpell(1))
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          val woundedFighter = fighter
+            .withHealth(2)
+            .withMaxHealth(10)
+            .withCombatIndex(2)
+
+          val monster = testMonster.withCombatIndex(3)
+
+          Move.takeMove(Queue(healingRanger, woundedFighter, monster), LowestFirst)
+
+          trackedHealingSpellUsed shouldBe true
+        }
+      }
+    }
+  }
 
   "Two Weapon Fighting" should {
     "be used if Player is equipped with two weapons" in {

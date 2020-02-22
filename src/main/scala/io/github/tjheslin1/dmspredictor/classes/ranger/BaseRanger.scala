@@ -1,15 +1,20 @@
 package io.github.tjheslin1.dmspredictor.classes.ranger
 
-import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 
-trait BaseRanger extends Player with Product with Serializable {
+trait BaseRanger extends Player with SpellCaster {
 
   val fightingStyles: List[RangerFightingStyle]
+
+  override val cantrip: Option[Spell] = None
+
+  val levelSpellcastingLearned = LevelTwo
 
   def resetStartOfTurn(): Creature = this
 }

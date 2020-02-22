@@ -142,8 +142,7 @@ object CoreAbilities extends LazyLogging {
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
   def castSingleTargetHealingSpell(currentOrder: Int, bonusHealing: Int = 0)(
-      combatant: Combatant
-  ): Ability =
+      combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
 
@@ -198,8 +197,7 @@ object CoreAbilities extends LazyLogging {
         }
 
         optHealedAlly.fold((updatedCombatant, others))(updatedTarget =>
-          (updatedCombatant, others.replace(updatedTarget))
-        )
+          (updatedCombatant, others.replace(updatedTarget)))
       }
 
       def update: Creature = updateSpellSlot(spellCaster, HealingSpell)

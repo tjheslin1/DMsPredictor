@@ -246,6 +246,12 @@ object TestData {
       _fightingStyles.set(List(fightingStyle))(ranger)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(ranger)
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(ranger)
+
+    def withAllSpellSlotsAvailableForLevel(level: Level) =
+      _spellSlots.set(rangerSpellSlots(level))(ranger)
   }
 }
 
@@ -797,6 +803,8 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        Ranger.rangerSpellSlots(level),
+        Ranger.standardRangerSpellList,
         player.armour,
         player.offHand,
         fightingStyles.toList,
@@ -809,6 +817,7 @@ trait TestData extends RandomDataGenerator {
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
+        concentratingSpell = none[Spell],
         player.name
       )
   }
