@@ -30,6 +30,12 @@ abstract class EndOfTurnCondition extends Condition {
   def handleOnDamage[_: RS](creature: Creature): Creature    = creature
 }
 
+abstract class OnDamageCondition extends Condition {
+
+  def handleStartOfTurn[_: RS](creature: Creature): Creature = creature
+  def handleEndOfTurn[_: RS](creature: Creature): Creature   = creature
+}
+
 object Condition {
 
   implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>

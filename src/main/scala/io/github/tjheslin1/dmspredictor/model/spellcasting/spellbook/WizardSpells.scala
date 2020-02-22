@@ -4,11 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{
-  AcidArrowCondition,
-  Condition,
-  StartOfTurnCondition
-}
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
 import io.github.tjheslin1.dmspredictor.model.spellcasting._

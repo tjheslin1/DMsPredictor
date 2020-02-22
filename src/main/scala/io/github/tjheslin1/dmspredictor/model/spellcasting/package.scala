@@ -14,6 +14,7 @@ package object spellcasting {
   case object Abjuration  extends SchoolOfMagic
   case object Enchantment extends SchoolOfMagic
   case object Conjuration extends SchoolOfMagic
+  case object Divination extends SchoolOfMagic
 
   sealed trait CastingTime extends Product with Serializable
 
