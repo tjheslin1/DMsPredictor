@@ -86,15 +86,15 @@ trait Tracking {
   var multiMeleeSpellUsedCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel, concentration: Boolean = false): Spell =
     new MultiTargetSavingThrowSpell {
-      val name: String                   = s"tracked-multi-melee-spell-${spellLvl.value}"
-      val damageType: DamageType         = Fire
+      val name: String           = s"tracked-multi-melee-spell-${spellLvl.value}"
+      val damageType: DamageType = Fire
 
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration: Boolean = concentration
-      val attribute: Attribute = Dexterity
-      val halfDamageOnSave: Boolean = false
+      val attribute: Attribute           = Dexterity
+      val halfDamageOnSave: Boolean      = false
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         multiMeleeSpellUsedCount += 1
@@ -145,15 +145,14 @@ trait Tracking {
                                          savingAttribute: Attribute,
                                          damageOnSave: Boolean = false): Spell =
     new MultiTargetSavingThrowSpell {
-      val attribute: Attribute = savingAttribute
+      val attribute: Attribute      = savingAttribute
       val halfDamageOnSave: Boolean = damageOnSave
-      val damageType: DamageType = Fire
+      val damageType: DamageType    = Fire
 
-
-      val name: String = "tracked-multi-target-saving-throw-spell-test"
-      val school: SchoolOfMagic = Evocation
-      val castingTime: CastingTime = OneActionCast
-      val spellLevel: SpellLevel = spellLvl
+      val name: String                   = "tracked-multi-target-saving-throw-spell-test"
+      val school: SchoolOfMagic          = Evocation
+      val castingTime: CastingTime       = OneActionCast
+      val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration: Boolean = false
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
@@ -187,9 +186,34 @@ trait Tracking {
       }
     }
 
+  var selfBuffSpellUsedCount = 0
+  def trackedSelfBuffSpell(buffCondition: Condition,
+                           spellLvl: SpellLevel,
+                           castionAction: CastingTime = OneActionCast,
+                           concentration: Boolean = false): SelfBuffSpell = new SelfBuffSpell {
+
+    val name: String                 = s"tracked-self-buff-spell-${spellLvl.value}"
+    val selfBuffCondition: Condition = buffCondition
+
+    val school: SchoolOfMagic          = Divination
+    val castingTime: CastingTime       = castionAction
+    val spellLevel: SpellLevel         = spellLvl
+    val requiresConcentration: Boolean = concentration
+
+    override def effect[_: RS](spellCaster: SpellCaster,
+                               spellLevel: SpellLevel,
+                               targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+      selfBuffSpellUsedCount += 1
+
+      (spellCaster, targets)
+    }
+  }
+
   var trackedStartOfTurnConditionHandledCount = 0
-  var trackedStartOfTurnConditionDecremented = false
-  def trackedStartOfTurnCondition(dc: Int, turnMissed: Boolean = false, turns: Int = 10): Condition =
+  var trackedStartOfTurnConditionDecremented  = false
+  def trackedStartOfTurnCondition(dc: Int,
+                                  turnMissed: Boolean = false,
+                                  turns: Int = 10): Condition =
     new StartOfTurnCondition {
       val name                    = "tracked-start-of-turn-condition"
       val missesTurn              = turnMissed

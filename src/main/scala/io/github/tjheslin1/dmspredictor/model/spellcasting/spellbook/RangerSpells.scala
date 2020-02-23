@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, OnDamageCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -35,27 +34,14 @@ object RangerSpells extends LazyLogging {
 
   def huntersMarkDamage[_: RS](): Int = 1 * D6
 
-  case object HuntersMark extends Spell {
-    val name: String             = "Hunter's Mark"
+  case object HuntersMark extends SelfBuffSpell {
+    val name: String                 = "Hunter's Mark"
+    val selfBuffCondition: Condition = HuntersMarkCondition
+
     val school: SchoolOfMagic    = Divination
     val castingTime: CastingTime = BonusActionCast
-    val spellEffect: SpellEffect = ConcentrationSpell
 
     val spellLevel: SpellLevel         = 1
     val requiresConcentration: Boolean = true
-
-    def effect[_: RS](spellCaster: SpellCaster,
-                      spellLevel: SpellLevel,
-                      targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
-
-      val concentratingCaster = SpellCaster.concentratingLens.set(Some(HuntersMark))(spellCaster)
-
-      val currentConditions = concentratingCaster.conditions
-      val conditionAppliedCaster = Creature.creatureConditionsLens
-        .set(currentConditions ++ List(HuntersMarkCondition))(spellCaster)
-        .asInstanceOf[SpellCaster]
-
-      (conditionAppliedCaster, targets)
-    }
   }
 }

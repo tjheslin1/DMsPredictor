@@ -7,11 +7,13 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.{HuntersMark, HuntersMarkCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -734,7 +736,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
   "castSelfBuffSpell" should {
     "cast a spell (Self Buff)" in {
-      fail("TODO: high level test to check if spell is triggered")
+      forAll {ranger: Ranger =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(19)
+
+          val buffingRanger = ranger
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withSpellKnown(trackedSelfBuffSpell(HuntersMarkCondition, 1))
+            .withLevel(LevelTwo)
+            .asInstanceOf[Ranger]
+
+            HuntersMark.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
+
+          selfBuffSpellUsedCount shouldBe 1
+        }
+      }
     }
   }
 

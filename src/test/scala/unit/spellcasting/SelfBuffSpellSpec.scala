@@ -1,12 +1,36 @@
 package unit.spellcasting
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
+import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
+import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
+import util.TestData._
 
 class SelfBuffSpellSpec extends UnitSpecBase {
 
   "effect" should {
     "apply buff condition to caster" in {
-      fail("TODO: check if condition is applied to caster")
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(19)
+
+          val buffingRanger = ranger
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withSpellKnown(trackedSelfBuffSpell(HuntersMarkCondition, 1))
+            .withLevel(LevelTwo)
+            .asInstanceOf[Ranger]
+
+          val (updatedRanger: Ranger, _) =
+            HuntersMark.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
+
+          updatedRanger.conditions shouldBe List(HuntersMarkCondition)
+        }
+      }
     }
+  }
+
+  abstract private class TestContext extends Tracking {
+    implicit val rollStrategy: RollStrategy
   }
 }
