@@ -318,20 +318,19 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val healingCleric = cleric
             .withSpellKnown(trackedHealingSpell(3))
             .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
             .withWisdom(12)
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), List(Combatant(_, healedFighter: Fighter))) =
+          val (_, List(Combatant(_, healedFighter: Fighter))) =
             castSingleTargetHealingSpell(Priority)(healingCleric)
               .useAbility(List(damagedFighter), LowestFirst)
 
           trackedHealingSpellUsed shouldBe true
           healedFighter.creature.health shouldBe 11
-
-          updatedCleric.spellSlots shouldBe SpellSlots(4, 3, 1)
         }
       }
     }
@@ -344,20 +343,19 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val healingCleric = cleric
             .withSpellKnown(trackedHealingSpell(2))
             .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
             .withWisdom(12)
             .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), List(Combatant(_, healedFighter: Fighter))) =
+          val (_, List(Combatant(_, healedFighter: Fighter))) =
             castSingleTargetHealingSpell(Priority)(healingCleric)
               .useAbility(List(damagedFighter), LowestFirst)
 
           trackedHealingSpellUsed shouldBe true
           healedFighter.creature.health shouldBe 11
-
-          updatedCleric.spellSlots shouldBe SpellSlots(4, 3, 1)
         }
       }
     }
@@ -731,6 +729,12 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castMultiTargetOffensiveSpell(Priority)(wizardCombatant).conditionMet shouldBe false
         }
       }
+    }
+  }
+
+  "castSelfBuffSpell" should {
+    "cast a spell (Self Buff)" in {
+      fail("TODO: high level test to check if spell is triggered")
     }
   }
 

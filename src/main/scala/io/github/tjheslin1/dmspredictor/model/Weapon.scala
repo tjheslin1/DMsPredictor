@@ -53,6 +53,17 @@ object Weapon {
       weapon.hitBonus + bonus
     )
 
+  def bonusDamageWeapon[_: RS](weapon: Weapon, bonusDamage: => Int): Weapon =
+    Weapon(
+      weapon.name,
+      weapon.weaponType,
+      weapon.damageType,
+      weapon.twoHanded,
+      weapon.finesse,
+      weapon.damage + bonusDamage,
+      weapon.hitBonus
+    )
+
   def fixedDamageWeapon[_: RS](
       weaponName: String,
       wpnType: WeaponType = Melee,

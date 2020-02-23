@@ -35,13 +35,13 @@ abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
 
     val targets = if (singleTarget) List(allTargets.head) else allTargets
 
-    logger.debug(s"casting $name")
+    logger.debug(s"${spellCaster.name} is casting $name")
 
     val updatedTargets = targets.map { target =>
       val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
 
-      logger.debug(s"${target.creature.name} rolls saving throw - ${if (savingThrowPassed) "Passed"
-      else "Failed"}")
+      val savingThrowResult = if (savingThrowPassed) "Passed" else "Failed"
+      logger.debug(s"${target.creature.name} rolls saving throw - $savingThrowResult")
 
       if (savingThrowPassed) target
       else applyCondition(spellCaster, target)

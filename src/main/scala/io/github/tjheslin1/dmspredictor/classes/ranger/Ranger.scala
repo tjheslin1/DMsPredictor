@@ -20,6 +20,8 @@ import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 import Ranger._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 
 @Lenses("_") case class Ranger(
     level: Level,
@@ -50,7 +52,16 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpell
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+  def weapon[_: RS]: Weapon = {
+    val fightingStyleAppliedWeapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+
+    if (conditions.contains(HuntersMarkCondition)) {
+      lazy val extraDamage = huntersMarkDamage()
+
+      Weapon.bonusDamageWeapon(fightingStyleAppliedWeapon, extraDamage)
+    } else
+      fightingStyleAppliedWeapon
+  }
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Ranger =
     copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))

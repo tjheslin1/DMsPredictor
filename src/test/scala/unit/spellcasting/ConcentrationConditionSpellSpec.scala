@@ -28,7 +28,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
             .withWisdom(15)
             .asInstanceOf[Cleric]
 
-          val (updatedCleric: Cleric,
+          val (_,
           List(Combatant(_, updatedGoblinOne: Goblin),
           Combatant(_, updatedGoblinTwo: Goblin),
           Combatant(_, updatedGoblinThree: Goblin))) =
@@ -93,7 +93,6 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
-            .withAllSpellSlotsAvailableForLevel(cleric.level)
             .withChannelDivinityUsed()
             .withWisdom(15)
             .asInstanceOf[Cleric]
@@ -119,7 +118,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
       }
     }
 
-    "set cleric to concentrating on spell at least one enemy failed the saving throw" in {
+    "set cleric to concentrating on spell if at least one enemy failed the saving throw" in {
       forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -141,7 +140,36 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
                                            dexterityConditionSpell.spellLevel,
                                            List(slowGoblin, quickGoblin))
 
+          updatedCleric.isConcentrating shouldBe true
           updatedCleric.concentratingSpell shouldBe dexterityConditionSpell.some
+        }
+      }
+    }
+
+    "not set cleric to concentrating on spell if at least one enemy failed the saving throw" in {
+      forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val dexterityConditionSpell = dexterityConditionSaveSpell(singleTargetSpell = false)
+
+          val conditionSpellCleric = cleric
+            .withSpellKnown(dexterityConditionSpell)
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
+            .withChannelDivinityUsed()
+            .withWisdom(5)
+            .asInstanceOf[Cleric]
+
+          val slowGoblin = highDexGoblin(goblinOne, 2)
+          val quickGoblin = highDexGoblin(goblinTwo, 3)
+
+          val (updatedCleric: Cleric, _) =
+            dexterityConditionSpell.effect(conditionSpellCleric,
+                                           dexterityConditionSpell.spellLevel,
+                                           List(slowGoblin, quickGoblin))
+
+          updatedCleric.isConcentrating shouldBe false
+          updatedCleric.concentratingSpell shouldBe none[Spell]
         }
       }
     }

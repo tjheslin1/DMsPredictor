@@ -209,8 +209,8 @@ object CoreAbilities extends LazyLogging {
 
       val name             = "Cast Spell (Condition)"
       val order            = currentOrder
-      val levelRequirement = LevelFive
-      val abilityAction    = SingleAttack
+      val levelRequirement = LevelOne
+      val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean               = spellConditionMet(spellCaster, ConcentrationSpell)
@@ -305,6 +305,22 @@ object CoreAbilities extends LazyLogging {
       }
 
       def update: Creature = updateSpellSlot(spellCaster, DamageSpell)
+    }
+
+  def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val name: String = "Cast Spell (self buff)"
+      val order: Int = currentOrder
+      val levelRequirement: Level = LevelOne
+      val abilityAction: AbilityAction = buffAction
+
+      def triggerMet(others: List[Combatant]): Boolean = ???
+
+      def conditionMet: Boolean = true
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
+
+      def update: Creature = ???
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
