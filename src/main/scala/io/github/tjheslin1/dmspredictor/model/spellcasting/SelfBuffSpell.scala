@@ -28,4 +28,6 @@ abstract class SelfBuffSpell extends Spell with LazyLogging {
 
     (buffedSpellCaster, targets)
   }
+
+  def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster
 }

@@ -32,13 +32,13 @@ class RangerSpellsSpec extends UnitSpecBase {
           val (updatedRanger: Ranger, _) =
             HuntersMark.effect(levelTwoRanger, 1, List(monster))
 
-          updatedRanger.conditions shouldBe List(HuntersMarkCondition)
+          updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
           updatedRanger.weapon.damage shouldBe 8 // normal bow damage + hunters mark damage
         }
       }
     }
 
-    "should be removed if the casters loses concentration" in {
+    "be removed if the casters loses concentration" in {
       forAll { ranger: Ranger =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(4)
@@ -58,7 +58,7 @@ class RangerSpellsSpec extends UnitSpecBase {
           val (updatedRanger: Ranger, _) =
             HuntersMark.effect(levelTwoRanger, 1, List.empty[Combatant])
 
-          updatedRanger.conditions shouldBe List(HuntersMarkCondition)
+          updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
           updatedRanger.weapon.damage shouldBe 8 // normal bow damage + hunters mark damage
 
           val healthUpdatedRanger = updatedRanger.updateHealth(20, Bludgeoning, Hit)

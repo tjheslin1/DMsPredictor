@@ -7,14 +7,21 @@ import io.github.tjheslin1.dmspredictor.model._
 
 object Concentration extends LazyLogging {
 
-  def handleConcentration[_: RS](spellCaster: SpellCaster, damageTaken: Int): SpellCaster = {
+  def handleConcentration[_: RS](spellCaster: SpellCaster, concentrationSpell: Spell, damageTaken: Int): SpellCaster = {
     val dc = concentrationDifficultyClass(damageTaken)
 
     if (savingThrowPassed(dc, Constitution, spellCaster)) spellCaster
     else {
       logger.debug(s"${spellCaster.name} loses concentration")
 
-      SpellCaster.concentratingLens.set(None)(spellCaster)
+      concentrationSpell match {
+        case selfBuffSpell: SelfBuffSpell =>
+          val selfBuffHandledCaster = selfBuffSpell.onLossOfConcentration(spellCaster)
+
+          SpellCaster.concentratingLens.set(None)(selfBuffHandledCaster)
+        case _ =>
+          SpellCaster.concentratingLens.set(None)(spellCaster)
+      }
     }
   }
 

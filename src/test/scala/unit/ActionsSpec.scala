@@ -397,7 +397,7 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val concentratingCleric = cleric
-            .withConcentrating(spiritGuardiansConcentrationSpell.some)
+            .withConcentrating(spiritGuardiansConcentrationSpell)
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)

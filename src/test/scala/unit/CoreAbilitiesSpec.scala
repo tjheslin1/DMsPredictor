@@ -11,9 +11,9 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{SelfBuffSpell, Spell}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.{HuntersMark, HuntersMarkCondition}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.{HuntersMark, HuntersMarkBuffCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -558,7 +558,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val concentratingCleric = cleric
             .withSpellsKnown(concentrationConditionSpell,
                              trackedSingleTargetSavingThrowSpell(1, Wisdom))
-            .withConcentrating(concentrationConditionSpell.some)
+            .withConcentrating(concentrationConditionSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
             .withCombatIndex(1)
@@ -740,13 +740,15 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(19)
 
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
+
           val buffingRanger = ranger
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
-            .withSpellKnown(trackedSelfBuffSpell(HuntersMarkCondition, 1))
+            .withSpellKnown(trackedBuffSpell)
             .withLevel(LevelTwo)
             .asInstanceOf[Ranger]
 
-            HuntersMark.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
+          trackedBuffSpell.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
 
           selfBuffSpellUsedCount shouldBe 1
         }

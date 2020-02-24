@@ -7,13 +7,13 @@ import eu.timepit.refined
 import eu.timepit.refined.W
 import eu.timepit.refined.numeric.Interval
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilities
-import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -175,8 +175,8 @@ object TestData {
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
-    def withConcentrating(concentratingSpell: Option[Spell]) =
-      _concentratingSpell.set(concentratingSpell)(cleric)
+    def withConcentrating(concentratingSpell: Spell) =
+      _concentratingSpell.set(concentratingSpell.some)(cleric)
 
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(cleric)
@@ -235,8 +235,12 @@ object TestData {
         SpellSlots(FirstLevelSpellSlots(0), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0)))(
         wizard)
 
+    def withConcentratingOn(concentrationSpell: Spell) =
+      _concentratingSpell.set(concentrationSpell.some)(wizard)
+
     def withCastShieldOnReaction(willCast: Boolean) = _castShieldAsReaction.set(willCast)(wizard)
     def withMageArmourPrepared(prepared: Boolean)   = _mageArmourPrepared.set(prepared)(wizard)
+
   }
 
   implicit class RangerOps(val ranger: Ranger) extends AnyVal {
@@ -252,6 +256,8 @@ object TestData {
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(rangerSpellSlots(level))(ranger)
+
+    def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(ranger)
   }
 }
 

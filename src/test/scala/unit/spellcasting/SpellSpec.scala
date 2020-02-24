@@ -47,7 +47,7 @@ class SpellSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
-        .withConcentrating(trackedConditionSpell(1).some)
+        .withConcentrating(trackedConditionSpell(1))
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
       spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3, checkConcentration = false) shouldBe None
@@ -57,7 +57,7 @@ class SpellSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
-        .withConcentrating(trackedConditionSpell(1).some)
+        .withConcentrating(trackedConditionSpell(1))
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
       spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3) shouldBe None

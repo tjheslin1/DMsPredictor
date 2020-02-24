@@ -17,14 +17,14 @@ class SelfBuffSpellSpec extends UnitSpecBase {
 
           val buffingRanger = ranger
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
-            .withSpellKnown(trackedSelfBuffSpell(HuntersMarkCondition, 1))
+            .withSpellKnown(trackedSelfBuffSpell(HuntersMarkBuffCondition, 1))
             .withLevel(LevelTwo)
             .asInstanceOf[Ranger]
 
           val (updatedRanger: Ranger, _) =
             HuntersMark.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
 
-          updatedRanger.conditions shouldBe List(HuntersMarkCondition)
+          updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
         }
       }
     }

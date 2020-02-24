@@ -13,6 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -51,8 +52,17 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, mageArmourPrepared, conditions)
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Wizard =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int,
+                           damageType: DamageType,
+                           attackResult: AttackResult
+                         ): Creature = {
+    val damageTaken   = adjustedDamage(dmg, damageType, this)
+    val updatedWizard = copy(health = Math.max(0, health - damageTaken))
+
+    if (updatedWizard.isConscious && isConcentrating && damageTaken > 0)
+      handleConcentration(updatedWizard, updatedWizard.concentratingSpell.get, damageTaken)
+    else updatedWizard
+  }
 
   val reactionOnHit: Option[OnHitReaction] =
     if (castShieldAsReaction) ShieldSpell.some else none[OnHitReaction]

@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, OnDamageCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -9,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 object RangerSpells extends LazyLogging {
 
-  case object HuntersMarkCondition extends OnDamageCondition {
+  case object HuntersMarkBuffCondition extends OnDamageCondition {
     val name: String            = "Hunter's Mark (bonus damage)"
     val saveDc: Int             = 0 // caster maintains benefit until lost
     val turnsLeft: Int          = 100 // lasts 1 hour
@@ -36,12 +37,19 @@ object RangerSpells extends LazyLogging {
 
   case object HuntersMark extends SelfBuffSpell {
     val name: String                 = "Hunter's Mark"
-    val selfBuffCondition: Condition = HuntersMarkCondition
+    val selfBuffCondition: Condition = HuntersMarkBuffCondition
 
     val school: SchoolOfMagic    = Divination
     val castingTime: CastingTime = BonusActionCast
 
     val spellLevel: SpellLevel         = 1
     val requiresConcentration: Boolean = true
+
+    def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+      val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
+
+//      SpellCaster.
+        ???
+    }
   }
 }

@@ -19,6 +19,7 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 import Ranger._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
@@ -55,7 +56,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpell
   def weapon[_: RS]: Weapon = {
     val fightingStyleAppliedWeapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-    if (conditions.contains(HuntersMarkCondition)) {
+    if (conditions.contains(HuntersMarkBuffCondition)) {
       lazy val extraDamage = huntersMarkDamage()
 
       Weapon.bonusDamageWeapon(fightingStyleAppliedWeapon, extraDamage)
@@ -63,8 +64,16 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpell
       fightingStyleAppliedWeapon
   }
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Ranger =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int,
+                          damageType: DamageType,
+                          attackResult: AttackResult): Creature = {
+    val damageTaken   = adjustedDamage(dmg, damageType, this)
+    val updatedRanger = copy(health = Math.max(0, health - damageTaken))
+
+    if (updatedRanger.isConscious && isConcentrating && damageTaken > 0)
+      handleConcentration(updatedRanger, updatedRanger.concentratingSpell.get, damageTaken)
+    else updatedRanger
+  }
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 

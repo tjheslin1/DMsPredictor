@@ -187,6 +187,7 @@ trait Tracking {
     }
 
   var selfBuffSpellUsedCount = 0
+  var selfBuffSpellConcentrationHandled = false
   def trackedSelfBuffSpell(buffCondition: Condition,
                            spellLvl: SpellLevel,
                            castionAction: CastingTime = OneActionCast,
@@ -206,6 +207,12 @@ trait Tracking {
       selfBuffSpellUsedCount += 1
 
       (spellCaster, targets)
+    }
+
+    def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+      selfBuffSpellConcentrationHandled = true
+
+      spellCaster
     }
   }
 

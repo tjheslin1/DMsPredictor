@@ -62,7 +62,7 @@ import monocle.macros.{GenLens, Lenses}
     val updatedCleric = copy(health = Math.max(0, health - damageTaken))
 
     if (updatedCleric.isConscious && isConcentrating && damageTaken > 0)
-      handleConcentration(updatedCleric, damageTaken)
+      handleConcentration(updatedCleric, updatedCleric.concentratingSpell.get, damageTaken)
     else updatedCleric
   }
 
