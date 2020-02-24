@@ -52,10 +52,11 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = calculateArmourClass(stats, mageArmourPrepared, conditions)
 
-  def updateHealth[_: RS](dmg: Int,
-                           damageType: DamageType,
-                           attackResult: AttackResult
-                         ): Creature = {
+  def updateHealth[_: RS](
+      dmg: Int,
+      damageType: DamageType,
+      attackResult: AttackResult
+  ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedWizard = copy(health = Math.max(0, health - damageTaken))
 

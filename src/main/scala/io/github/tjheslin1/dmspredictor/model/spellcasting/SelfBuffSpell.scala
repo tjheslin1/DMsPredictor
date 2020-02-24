@@ -12,19 +12,22 @@ abstract class SelfBuffSpell extends Spell with LazyLogging {
 
   val spellEffect: SpellEffect = SelfBuff
 
-  def effect[_: RS](spellCaster: SpellCaster,
-                    spellLevel: SpellLevel,
-                    targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+  def effect[_: RS](
+      spellCaster: SpellCaster,
+      spellLevel: SpellLevel,
+      targets: List[Combatant]
+  ): (SpellCaster, List[Combatant]) = {
 
     val currentConditions = spellCaster.conditions
     val conditionAppliedCaster = Creature.creatureConditionsLens
       .set(currentConditions ++ List(selfBuffCondition))(spellCaster)
       .asInstanceOf[SpellCaster]
 
-    val buffedSpellCaster = if (requiresConcentration)
-      SpellCaster.concentratingLens.set(this.some)(conditionAppliedCaster)
-    else
-      conditionAppliedCaster
+    val buffedSpellCaster =
+      if (requiresConcentration)
+        SpellCaster.concentratingLens.set(this.some)(conditionAppliedCaster)
+      else
+        conditionAppliedCaster
 
     (buffedSpellCaster, targets)
   }

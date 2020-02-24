@@ -186,7 +186,7 @@ trait Tracking {
       }
     }
 
-  var selfBuffSpellUsedCount = 0
+  var selfBuffSpellUsedCount            = 0
   var selfBuffSpellConcentrationHandled = false
   def trackedSelfBuffSpell(buffCondition: Condition,
                            spellLvl: SpellLevel,
@@ -212,7 +212,9 @@ trait Tracking {
     def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
       selfBuffSpellConcentrationHandled = true
 
-      spellCaster
+      val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
+
+      Creature.creatureConditionsLens.set(updatedConditions)(spellCaster).asInstanceOf[SpellCaster]
     }
   }
 

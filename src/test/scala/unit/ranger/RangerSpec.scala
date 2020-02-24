@@ -28,6 +28,12 @@ class RangerSpec extends UnitSpecBase {
     }
   }
 
+  "weapon" should {
+    "roll extra damage for HuntersMark spell if active" in {
+
+    }
+  }
+
   abstract private class TestContext {
     implicit val roll: RollStrategy
   }

@@ -38,7 +38,7 @@ class RangerSpellsSpec extends UnitSpecBase {
       }
     }
 
-    "be removed if the casters loses concentration" in {
+    "be removed if the caster loses concentration" in {
       forAll { ranger: Ranger =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(4)
@@ -67,6 +67,12 @@ class RangerSpellsSpec extends UnitSpecBase {
           healthUpdatedRanger.weapon.damage shouldBe 4 // normal bow damage only
         }
       }
+    }
+  }
+
+  "HuntersMarkCondition" should {
+    "be lost on loss of concentration" in {
+
     }
   }
 

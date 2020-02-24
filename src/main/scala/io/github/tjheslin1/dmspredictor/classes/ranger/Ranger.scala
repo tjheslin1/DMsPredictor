@@ -21,7 +21,6 @@ import monocle.macros.{GenLens, Lenses}
 import Ranger._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 
 @Lenses("_") case class Ranger(
@@ -64,9 +63,11 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpell
       fightingStyleAppliedWeapon
   }
 
-  def updateHealth[_: RS](dmg: Int,
-                          damageType: DamageType,
-                          attackResult: AttackResult): Creature = {
+  def updateHealth[_: RS](
+      dmg: Int,
+      damageType: DamageType,
+      attackResult: AttackResult
+  ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedRanger = copy(health = Math.max(0, health - damageTaken))
 
@@ -86,7 +87,7 @@ object Ranger {
   val standardRangerAbilities: List[CombatantAbility] = List(
     castSingleTargetHealingSpell(1),
     extraAttack(2),
-    twoWeaponFighting(3),
+    twoWeaponFighting(3)
   )
 
   val standardRangerSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(

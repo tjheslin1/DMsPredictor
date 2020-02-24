@@ -7,6 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.HuntersMarkBuffCondition
@@ -67,7 +68,7 @@ class ConcentrationSpec extends UnitSpecBase {
       }
     }
 
-    "handle maintaining of concentration of SelfBuffSpell" in {
+    "handle loss of concentration of SelfBuffSpell" in {
       forAll { ranger: Ranger =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -84,14 +85,12 @@ class ConcentrationSpec extends UnitSpecBase {
             .asInstanceOf[Ranger]
 
           val updatedRanger =
-            handleConcentration(concentratingRanger, trackedSpell, 50).asInstanceOf
+            handleConcentration(concentratingRanger, trackedSpell, 50).asInstanceOf[Ranger]
 
+          updatedRanger.conditions shouldBe List.empty[Condition]
+          updatedRanger.concentratingSpell shouldBe none[Spell]
         }
       }
-    }
-
-    "handle loss of concentration of SelfBuffSpell" in {
-      fail("TODO: ")
     }
   }
 
