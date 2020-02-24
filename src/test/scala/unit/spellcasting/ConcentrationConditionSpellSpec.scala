@@ -185,7 +185,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     var dexteritySaveConditionCount = 0
-    def dexterityConditionSaveSpell(singleTargetSpell: Boolean): ConcentrationConditionSpell = new ConcentrationConditionSpell() {
+    def dexterityConditionSaveSpell(singleTargetSpell: Boolean): ConcentrationConditionSpell = new ConcentrationConditionSpell {
       val name: String                   = "tracked-multi-dexterity-save-spell"
 
       val attribute: Attribute = Dexterity
@@ -194,6 +194,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = 1
+      val useHigherSpellSlot = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
 

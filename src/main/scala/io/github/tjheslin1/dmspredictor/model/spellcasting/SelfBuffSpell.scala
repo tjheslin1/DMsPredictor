@@ -10,7 +10,7 @@ abstract class SelfBuffSpell extends Spell with LazyLogging {
 
   val selfBuffCondition: Condition
 
-  val spellEffect: SpellEffect = SelfBuff
+  val spellEffect: SpellEffect = BuffSpell
 
   def effect[_: RS](
       spellCaster: SpellCaster,

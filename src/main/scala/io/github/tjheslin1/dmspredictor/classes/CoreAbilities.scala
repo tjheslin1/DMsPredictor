@@ -117,6 +117,7 @@ object CoreAbilities extends LazyLogging {
             case Some(spellSlot) =>
               val optSpell =
                 spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)
+
               optSpell.fold((spellCaster.cantrip, 0)) { foundSpell =>
                 (foundSpell.some, spellSlot.spellLevel)
               }
@@ -313,19 +314,28 @@ object CoreAbilities extends LazyLogging {
       combatant: Combatant
   ): Ability =
     new Ability(combatant) {
+      val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
+
       val name: String                 = "Cast Spell (self buff)"
       val order: Int                   = currentOrder
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = buffAction
 
-      def triggerMet(others: List[Combatant]): Boolean = ???
+      def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = true
+      def conditionMet: Boolean = ???
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-        ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
 
-      def update: Creature = ???
+        (combatant, others)
+      }
+
+      def update: Creature = {
+        updateSpellSlot(spellCaster, DamageSpell)
+
+
+      }
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =

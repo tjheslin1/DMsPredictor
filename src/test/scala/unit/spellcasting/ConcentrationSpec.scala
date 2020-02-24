@@ -34,7 +34,7 @@ class ConcentrationSpec extends UnitSpecBase {
           val trackedSpell = trackedConditionSpell(1)
 
           val lowConstitutionCleric = cleric
-            .withConcentrating(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withConstitution(5)
             .asInstanceOf[SpellCaster]
 
@@ -55,7 +55,7 @@ class ConcentrationSpec extends UnitSpecBase {
           val trackedSpell = trackedConditionSpell(1)
 
           val highConstitutionCleric = cleric
-            .withConcentrating(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withConstitution(18)
             .asInstanceOf[SpellCaster]
 

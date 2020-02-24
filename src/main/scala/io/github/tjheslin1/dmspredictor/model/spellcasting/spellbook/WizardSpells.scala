@@ -22,6 +22,7 @@ object WizardSpells extends LazyLogging {
     val spellTargetStyle       = RangedSpellAttack
     val spellLevel: SpellLevel = 0
     val requiresConcentration  = false
+    val useHigherSpellSlot = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D10
@@ -38,6 +39,7 @@ object WizardSpells extends LazyLogging {
     val spellTargetStyle       = RangedSpellAttack
     val spellLevel: SpellLevel = 1
     val requiresConcentration  = false
+    val useHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
       val numberOfDarts = 2 + spellLevel
@@ -73,8 +75,9 @@ object WizardSpells extends LazyLogging {
     val castingTime            = OneActionCast
     val spellLevel: SpellLevel = 2
     val requiresConcentration  = false
+    val useHigherSpellSlot     = true
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = 4 * D4
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (spellLevel + 2) * D4
 
     override def effect[_: RS](
         spellCaster: SpellCaster,
@@ -98,7 +101,7 @@ object WizardSpells extends LazyLogging {
 
       val udpdatedTarget = attackResult match {
         case CriticalHit | Hit =>
-          val acidArrowCondition = AcidArrowCondition()
+          val acidArrowCondition = AcidArrowCondition(spellLevel)
 
           val currentConditions = damagedTarget.creature.conditions
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
@@ -118,9 +121,10 @@ object WizardSpells extends LazyLogging {
     val castingTime: CastingTime = OneActionCast
 
     val attribute: Attribute           = Dexterity
-    val halfDamageOnSave: Boolean      = true
+    val halfDamageOnSave      = true
     val spellLevel: SpellLevel         = 3
-    val requiresConcentration: Boolean = false
+    val requiresConcentration = false
+    val useHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
   }

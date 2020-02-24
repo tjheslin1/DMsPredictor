@@ -15,7 +15,7 @@ class ClericSpec extends UnitSpecBase {
       implicit val roll: RollStrategy = _ => RollResult(19)
 
       val concentratingCleric = random[Cleric]
-        .withConcentrating(SpiritGuardians)
+        .withConcentratingOn(SpiritGuardians)
         .withConstitution(2)
 
       val updatedCleric = concentratingCleric.updateHealth(0, Bludgeoning, Hit).asInstanceOf[Cleric]

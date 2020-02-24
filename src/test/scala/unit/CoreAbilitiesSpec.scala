@@ -11,9 +11,9 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{SelfBuffSpell, Spell}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.{HuntersMark, HuntersMarkBuffCondition}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -25,7 +25,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   val Priority = 1
 
   "Extra Attack" should {
-
     "make two weapon attacks" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
@@ -95,7 +94,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castSingleTargetOffensiveSpell" should {
-
     "cast a spell (spell attack)" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -221,7 +219,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val noSpellSlotsCleric = cleric
-            .withSpellsKnown(trackedMeleeSpellAttack(0), trackedSingleTargetSavingThrowSpell(1, Wisdom))
+            .withSpellsKnown(trackedMeleeSpellAttack(0),
+                             trackedSingleTargetSavingThrowSpell(1, Wisdom))
             .withNoSpellSlotsAvailable()
             .withWisdom(24)
             .withCombatIndex(1)
@@ -237,6 +236,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "spend the highest available spell slot when beneficial" in {
+      fail("TODO")
+    }
+
+    "spend the lowest available spell slot if using a higher slot has no benefit" in {
+      fail("TODO")
+    }
+
     "not meet the condition if the Spell Caster has no damaging spell to cast" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
@@ -249,7 +256,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
-        .withSpellsKnown(List.empty[Spell]:_*)
+        .withSpellsKnown(List.empty[Spell]: _*)
         .withNoSpellSlotsAvailable()
         .withCombatIndex(1)
 
@@ -274,7 +281,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castSingleTargetHealingSpell" should {
-
     "trigger when a players health is below 50%" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -362,6 +368,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "spend the highest available spell slot when beneficial" in {
+      fail("TODO")
+    }
+
+    "spend the lowest available spell slot if using a higher slot has no benefit" in {
+      fail("TODO")
+    }
+
     "spend the highest available spell slot" in {
       forAll { cleric: Cleric =>
         new TestContext {
@@ -438,7 +452,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castConditionSpell" should {
-
     "cast a spell (condition)" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -508,6 +521,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "spend the highest available spell slot when beneficial" in {
+      fail("TODO")
+    }
+
+    "spend the lowest available spell slot if using a higher slot has no benefit" in {
+      fail("TODO")
+    }
+
     "spend the highest available spell slot" in {
       forAll { cleric: Cleric =>
         new TestContext {
@@ -558,7 +579,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val concentratingCleric = cleric
             .withSpellsKnown(concentrationConditionSpell,
                              trackedSingleTargetSavingThrowSpell(1, Wisdom))
-            .withConcentrating(concentrationConditionSpell)
+            .withConcentratingOn(concentrationConditionSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
             .withCombatIndex(1)
@@ -570,7 +591,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castMultiTargetOffensiveSpell" should {
-
     "cast a spell (spell attack)" in {
       forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
         new TestContext {
@@ -667,6 +687,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "spend the highest available spell slot when beneficial" in {
+      fail("TODO")
+    }
+
+    "spend the lowest available spell slot if using a higher slot has no benefit" in {
+      fail("TODO")
+    }
+
     "spend the highest available spell slot" in {
       forAll { wizard: Wizard =>
         new TestContext {
@@ -735,10 +763,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castSelfBuffSpell" should {
-    "cast a spell (Self Buff)" in {
-      forAll {ranger: Ranger =>
+    "cast a spell (Self Buff) updating the casters spell slots and conditions" in {
+      forAll { ranger: Ranger =>
         new TestContext {
-          implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit val roll: RollStrategy = _ => RollResult(10)
 
           val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
 
@@ -748,11 +776,25 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .asInstanceOf[Ranger]
 
-          trackedBuffSpell.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
+          val rangerCombatant = buffingRanger.withCombatIndex(1)
+
+          val updatedRanger = castSelfBuffSpell(Priority)(rangerCombatant).update
+            .asInstanceOf[Ranger]
 
           selfBuffSpellUsedCount shouldBe 1
+
+          updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
+          updatedRanger.spellSlots.firstLevel.count shouldBe buffingRanger.spellSlots.firstLevel.count - 1
         }
       }
+    }
+
+    "spend the highest available spell slot when beneficial" in {
+      fail("TODO")
+    }
+
+    "spend the lowest available spell slot if using a higher slot has no benefit" in {
+      fail("TODO")
     }
   }
 

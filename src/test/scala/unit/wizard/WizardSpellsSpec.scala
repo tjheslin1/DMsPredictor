@@ -10,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
+import util.TestMonster
 
 class WizardSpellsSpec extends UnitSpecBase {
 
@@ -23,14 +24,20 @@ class WizardSpellsSpec extends UnitSpecBase {
                                    2, 2, 2, 2) // damage rolls (4d4)
           // format: on
 
-          implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
+          implicit val rollStrategy: RollStrategy = _ => RollResult(diceRolls.next())
+
+          val levelFourWizard = wizard
+            .withSpellKnown(AcidArrow)
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .asInstanceOf[Wizard]
 
           val goblinCombatant = goblin.withArmourClass(10).withHealth(50).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(wizard, 2, List(goblinCombatant))
+            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
 
-          updatedGoblin.conditions shouldBe List(AcidArrowCondition())
+          updatedGoblin.conditions shouldBe List(AcidArrowCondition(1))
         }
       }
     }
@@ -42,12 +49,18 @@ class WizardSpellsSpec extends UnitSpecBase {
           val diceRolls = Iterator(20, // attack roll
             2, 2, 2, 2, 2, 2, 2, 2) // damage rolls (4d4 twice)
           // format: n
-          implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
+          implicit val rollStrategy: RollStrategy = _ => RollResult(diceRolls.next())
+
+          val levelFourWizard = wizard
+            .withSpellKnown(AcidArrow)
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .asInstanceOf[Wizard]
 
           val goblinCombatant = goblin.withHealth(50).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(wizard, 2, List(goblinCombatant))
+            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
 
           updatedGoblin.health shouldBe 34
         }
@@ -62,12 +75,18 @@ class WizardSpellsSpec extends UnitSpecBase {
                                    2, 2, 2, 2) // damage rolls (4d4)
           // format: on
 
-          implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
+          implicit val rollStrategy: RollStrategy = _ => RollResult(diceRolls.next())
+
+          val levelFourWizard = wizard
+            .withSpellKnown(AcidArrow)
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .asInstanceOf[Wizard]
 
           val goblinCombatant = goblin.withArmourClass(10).withHealth(50).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(wizard, 2, List(goblinCombatant))
+            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
 
           updatedGoblin.health shouldBe 42
         }
@@ -82,12 +101,18 @@ class WizardSpellsSpec extends UnitSpecBase {
                                    2, 2, 2, 2) // damage rolls (4d4)
           // format: on
 
-          implicit override val roll: RollStrategy = _ => RollResult(diceRolls.next())
+          implicit val rollStrategy: RollStrategy = _ => RollResult(diceRolls.next())
+
+          val levelFourWizard = wizard
+            .withSpellKnown(AcidArrow)
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .asInstanceOf[Wizard]
 
           val goblinCombatant = goblin.withArmourClass(20).withHealth(50).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(wizard, 2, List(goblinCombatant))
+            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
 
           updatedGoblin.health shouldBe 46
         }
@@ -97,14 +122,50 @@ class WizardSpellsSpec extends UnitSpecBase {
     "deal no damage on critical miss" in {
       forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(0)
+          implicit val rollStrategy: RollStrategy = _ => RollResult(0)
+
+          val levelFourWizard = wizard
+            .withSpellKnown(AcidArrow)
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .asInstanceOf[Wizard]
 
           val goblinCombatant = goblin.withArmourClass(20).withHealth(50).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(wizard, 2, List(goblinCombatant))
+            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
 
           updatedGoblin.health shouldBe 50
+        }
+      }
+    }
+
+    "be cast using the highest spell slot available" in {
+      forAll { (wizard: Wizard, testMonster: TestMonster) =>
+        new TestContext {
+          // format: off
+          val diceRolls = Iterator(19, // attack roll
+            2, 2, 2, 2, 2) // damage rolls (5d4)
+          // format: on
+
+          implicit val rollStrategy: RollStrategy = _ => RollResult(diceRolls.next())
+
+          val levelFiveWizard = wizard
+              .withSpellKnown(AcidArrow)
+              .withAllSpellSlotsAvailableForLevel(LevelFive)
+              .withLevel(LevelFive)
+              .asInstanceOf[Wizard]
+
+          val monster = testMonster
+              .withArmourClass(1)
+              .withHealth(50)
+              .withMaxHealth(50)
+              .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            AcidArrow.effect(levelFiveWizard, 3, List(monster))
+
+          updatedMonster.health shouldBe 40
         }
       }
     }
@@ -114,7 +175,7 @@ class WizardSpellsSpec extends UnitSpecBase {
     "use a first level spell slot if available" in {
       forAll { wizard: Wizard =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           val ac13Wizard = wizard.withDexterity(10).asInstanceOf[Wizard]
 
@@ -132,7 +193,7 @@ class WizardSpellsSpec extends UnitSpecBase {
     "return the original attack result if no first level spell slots are available" in {
       forAll { wizard: Wizard =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           val noSpellSlotsWizard =
             wizard.withMageArmourPrepared(false).withNoSpellSlotsAvailable().withDexterity(10)
@@ -145,7 +206,7 @@ class WizardSpellsSpec extends UnitSpecBase {
     "return the original attack result if the attack missed" in {
       forAll { wizard: Wizard =>
         new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(10)
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           ShieldSpell.updateAttackOnReaction(wizard, 0) shouldBe (Miss, wizard)
         }
@@ -154,6 +215,6 @@ class WizardSpellsSpec extends UnitSpecBase {
   }
 
   abstract private class TestContext {
-    implicit val roll: RollStrategy
+    implicit val rollStrategy: RollStrategy
   }
 }

@@ -21,7 +21,8 @@ object ClericSpells extends LazyLogging {
     val school: SchoolOfMagic          = Evocation
     val castingTime: CastingTime       = OneActionCast
     val spellLevel: SpellLevel         = 0
-    val requiresConcentration: Boolean = false
+    val requiresConcentration = false
+    val useHigherSpellSlot = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D8
@@ -37,6 +38,7 @@ object ClericSpells extends LazyLogging {
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
+    val useHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
   }
@@ -48,6 +50,7 @@ object ClericSpells extends LazyLogging {
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
+    val useHigherSpellSlot = true
 
     def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
@@ -62,6 +65,7 @@ object ClericSpells extends LazyLogging {
     val school: SchoolOfMagic    = Enchantment
     val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 2
+    val useHigherSpellSlot = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
@@ -76,12 +80,14 @@ object ClericSpells extends LazyLogging {
     val school: SchoolOfMagic    = Conjuration
     val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 3
+    val useHigherSpellSlot = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
-      SpiritGuardiansCondition(spellSaveDc(spellCaster), 100, Wisdom)
+      SpiritGuardiansCondition(spellLevel, spellSaveDc(spellCaster), 100, Wisdom)
   }
 
   case class SpiritGuardiansCondition(
+      spellLevel: SpellLevel,
       saveDc: Int,
       turnsLeft: Int,
       attribute: Attribute,
@@ -93,7 +99,7 @@ object ClericSpells extends LazyLogging {
     def decrementTurnsLeft(): Condition = this.copy(turnsLeft = this.turnsLeft - 1)
 
     def handleStartOfTurn[_: RS](creature: Creature): Creature = {
-      val damage = 3 * D8
+      val damage = spellLevel.value * D8
 
       logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
 

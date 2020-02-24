@@ -11,11 +11,12 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 object RangerSpells extends LazyLogging {
 
   case object HuntersMarkBuffCondition extends OnDamageCondition {
-    val name           = "Hunter's Mark (bonus damage)"
-    val saveDc         = 0 // caster maintains benefit until lost
-    val turnsLeft      = 100 // lasts 1 hour
-    val missesTurn     = false
-    val handleOnDamage = true
+    val name               = "Hunter's Mark (bonus damage)"
+    val saveDc             = 0 // caster maintains benefit until lost
+    val turnsLeft          = 100 // lasts 1 hour
+    val missesTurn         = false
+    val handleOnDamage     = true
+    val useHigherSpellSlot = false
 
     def decrementTurnsLeft(): Condition = this
 
@@ -44,6 +45,7 @@ object RangerSpells extends LazyLogging {
 
     val spellLevel: SpellLevel = 1
     val requiresConcentration  = true
+    val useHigherSpellSlot     = false
 
     def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
       val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)

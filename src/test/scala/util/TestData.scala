@@ -175,7 +175,7 @@ object TestData {
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
     import Cleric._
 
-    def withConcentrating(concentratingSpell: Spell) =
+    def withConcentratingOn(concentratingSpell: Spell) =
       _concentratingSpell.set(concentratingSpell.some)(cleric)
 
     def withSpellKnown(spell: Spell) =

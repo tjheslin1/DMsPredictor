@@ -397,13 +397,13 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val concentratingCleric = cleric
-            .withConcentrating(spiritGuardiansConcentrationSpell)
+            .withConcentratingOn(spiritGuardiansConcentrationSpell)
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)
             .withCombatIndex(1)
 
-          val spiritGuardiansCondition = SpiritGuardiansCondition(10, 10, Wisdom)
+          val spiritGuardiansCondition = SpiritGuardiansCondition(3, 10, 10, Wisdom)
 
           val goblinCombatant = goblin
             .withStrength(10)
@@ -570,7 +570,7 @@ class ActionsSpec extends UnitSpecBase {
     def weaponWithHitBonus(bonus: Int) =
       Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)
 
-    val spiritGuardiansConcentrationSpell: Spell = new ConcentrationConditionSpell() {
+    val spiritGuardiansConcentrationSpell: Spell = new ConcentrationConditionSpell {
       val name: String = "test-concentration-spell"
 
       val attribute: Attribute  = Wisdom
@@ -579,9 +579,11 @@ class ActionsSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
+      val useHigherSpellSlot = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
-        SpiritGuardiansCondition(10, 10, Wisdom)
+      SpiritGuardiansCondition(3, 10, 10, Wisdom)
+
     }
   }
 }

@@ -20,6 +20,7 @@ trait Spell {
   val spellEffect: SpellEffect
   val spellLevel: SpellLevel
   val requiresConcentration: Boolean
+  val useHigherSpellSlot: Boolean
 
   def effect[_: RS](
       spellCaster: SpellCaster,
@@ -30,6 +31,10 @@ trait Spell {
 
 object Spell {
 
+  /**
+    *
+    * @param checkConcentration is used to find the spell a caster had just used when finding the spell slot to update
+    */
   @tailrec
   def spellOfLevelOrBelow(
       spellCaster: SpellCaster,
