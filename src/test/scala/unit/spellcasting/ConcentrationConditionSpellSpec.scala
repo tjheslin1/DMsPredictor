@@ -29,14 +29,14 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
             .asInstanceOf[Cleric]
 
           val (_,
-          List(Combatant(_, updatedGoblinOne: Goblin),
-          Combatant(_, updatedGoblinTwo: Goblin),
-          Combatant(_, updatedGoblinThree: Goblin))) =
+               List(Combatant(_, updatedGoblinOne: Goblin),
+                    Combatant(_, updatedGoblinTwo: Goblin),
+                    Combatant(_, updatedGoblinThree: Goblin))) =
             dexterityConditionSpell.effect(conditionSpellCleric,
-              dexterityConditionSpell.spellLevel,
-              List(lowDexGoblin(goblinOne, 2),
-                lowDexGoblin(goblinTwo, 3),
-                lowDexGoblin(goblinThree, 4)))
+                                           dexterityConditionSpell.spellLevel,
+                                           List(lowDexGoblin(goblinOne, 2),
+                                                lowDexGoblin(goblinTwo, 3),
+                                                lowDexGoblin(goblinThree, 4)))
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
@@ -132,7 +132,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
             .withWisdom(15)
             .asInstanceOf[Cleric]
 
-          val slowGoblin = lowDexGoblin(goblinOne, 2)
+          val slowGoblin  = lowDexGoblin(goblinOne, 2)
           val quickGoblin = highDexGoblin(goblinTwo, 3)
 
           val (updatedCleric: Cleric, _) =
@@ -160,7 +160,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
             .withWisdom(5)
             .asInstanceOf[Cleric]
 
-          val slowGoblin = highDexGoblin(goblinOne, 2)
+          val slowGoblin  = highDexGoblin(goblinOne, 2)
           val quickGoblin = highDexGoblin(goblinTwo, 3)
 
           val (updatedCleric: Cleric, _) =
@@ -185,23 +185,25 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
     implicit val roll: RollStrategy
 
     var dexteritySaveConditionCount = 0
-    def dexterityConditionSaveSpell(singleTargetSpell: Boolean): ConcentrationConditionSpell = new ConcentrationConditionSpell {
-      val name: String                   = "tracked-multi-dexterity-save-spell"
+    def dexterityConditionSaveSpell(singleTargetSpell: Boolean): ConcentrationConditionSpell =
+      new ConcentrationConditionSpell {
+        val name: String = "tracked-multi-dexterity-save-spell"
 
-      val attribute: Attribute = Dexterity
-       val singleTarget: Boolean = singleTargetSpell
+        val attribute: Attribute  = Dexterity
+        val singleTarget: Boolean = singleTargetSpell
 
-      val school: SchoolOfMagic          = Evocation
-      val castingTime: CastingTime       = OneActionCast
-      val spellLevel: SpellLevel         = 1
-      val useHigherSpellSlot = true
+        val school: SchoolOfMagic    = Evocation
+        val castingTime: CastingTime = OneActionCast
+        val spellLevel: SpellLevel   = 1
+        val useHigherSpellSlot       = true
 
-      def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
+        def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
 
-      override def applyCondition[_: RS](spellCaster: SpellCaster, target: Combatant): Combatant = {
-        dexteritySaveConditionCount += 1
-        super.applyCondition(spellCaster, target)(roll)
+        override def applyCondition[_: RS](spellCaster: SpellCaster,
+                                           target: Combatant): Combatant = {
+          dexteritySaveConditionCount += 1
+          super.applyCondition(spellCaster, target)(roll)
+        }
       }
-}
   }
 }

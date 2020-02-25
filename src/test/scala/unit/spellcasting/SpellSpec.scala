@@ -30,8 +30,14 @@ class SpellSpec extends UnitSpecBase {
       spellOfLevelOrBelow(wizard, DamageSpell, 3, multiAttackOnly = true) shouldBe Fireball.some
     }
 
-    "return a multi attack spell of a specific SpellEffect below the level given" in new Tracking {
-      val trackedMultiAttackDamageSpell = trackedMultiMeleeSpellAttack(1, concentration = false, higherSpellSlot = true)
+    "return a spell of a specific SpellEffect below the level given" in {
+      val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+
+      spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
+    }
+
+    "return a multi attack spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
+      val trackedMultiAttackDamageSpell = trackedMultiMeleeSpellAttack(1, concentration = false, higherSpellSlot = false)
 
       val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, trackedMultiAttackDamageSpell, AcidArrow)
 
@@ -40,21 +46,16 @@ class SpellSpec extends UnitSpecBase {
       fail("multiAttack param not being passed recurisvely in spellOfLevelOrBelow")
     }
 
-    "return a spell of a specific SpellEffect below the level given" in {
-      val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
-
-      spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
-    }
-
-    "return a multi attack spell of a specific SpellEffect below the level given" in new Tracking {
-      val trackedLevelTwoMultiSpell = trackedMultiMeleeSpellAttack(2)
+    "return a multi attack spell of a specific SpellEffect below the level given using the highest spell slot" in new Tracking {
+      val trackedLevelTwoMultiSpell = trackedMultiMeleeSpellAttack(2, concentration = false, higherSpellSlot = true)
+      val trackedSpellUsingHigherSlot = trackedMultiMeleeSpellAttack(3, concentration = false, higherSpellSlot = true)
 
       val cleric = random[Cleric].withSpellsKnown(FireBolt,
-                                                  MagicMissile,
-                                                  trackedLevelTwoMultiSpell,
-                                                  trackedSingleTargetSavingThrowSpell(3, Wisdom))
+        MagicMissile,
+        trackedLevelTwoMultiSpell,
+        trackedSingleTargetSavingThrowSpell(3, Wisdom))
 
-      spellOfLevelOrBelow(cleric, DamageSpell, 3, multiAttackOnly = true) shouldBe trackedLevelTwoMultiSpell.some
+      spellOfLevelOrBelow(cleric, DamageSpell, 3, multiAttackOnly = true) shouldBe trackedSpellUsingHigherSlot.some
     }
 
     "return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {
