@@ -217,7 +217,7 @@ trait Tracking {
                                targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
       selfBuffSpellUsedCount += 1
 
-      (spellCaster, targets)
+      super.effect(spellCaster, spellLevel, targets)
     }
 
     def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {

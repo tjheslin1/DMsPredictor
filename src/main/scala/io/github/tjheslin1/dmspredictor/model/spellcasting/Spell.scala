@@ -36,13 +36,13 @@ object Spell {
     * @param checkConcentration is used to find the spell a caster had just used when finding the spell slot to update
     */
   @tailrec
-  def spellOfLevelOrBelow(
-      spellCaster: SpellCaster,
-      spellEffect: SpellEffect,
-      spellLevel: SpellLevel,
+  def spellOfLevelOrBelow(spellCaster: SpellCaster,
+                          spellEffect: SpellEffect,
+                          spellLevel: SpellLevel)(
+      originalSpellLevel: SpellLevel = spellLevel,
       checkConcentration: Boolean = true,
       multiAttackOnly: Boolean = false
-  ): Option[Spell] = {
+  ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
@@ -51,13 +51,16 @@ object Spell {
       val spell = spellLookup.get
 
       if (multiAttackOnly && spell.isInstanceOf[MultiTargetSavingThrowSpell] == false)
-        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
       else if (checkConcentration && spellCaster.isConcentrating && spell.requiresConcentration)
-        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
       else
-        spellLookup
-    } else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)
-    else none[Spell]
+        spellLookup match {
+          case Some(foundSpell) if foundSpell.useHigherSpellSlot => (foundSpell, originalSpellLevel).some
+          case _                                                 => _
+        }
+    } else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
+    else none[(Spell, SpellLevel)]
   }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int = spellCaster match {

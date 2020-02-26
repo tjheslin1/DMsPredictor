@@ -37,7 +37,7 @@ class WizardSpellsSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
 
-          updatedGoblin.conditions shouldBe List(AcidArrowCondition(1))
+          updatedGoblin.conditions shouldBe List(AcidArrowCondition(2))
         }
       }
     }
@@ -141,7 +141,7 @@ class WizardSpellsSpec extends UnitSpecBase {
     }
 
     "be cast using the highest spell slot available" in {
-      forAll { (wizard: Wizard, testMonster: TestMonster) =>
+      forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
           // format: off
           val diceRolls = Iterator(19, // attack roll
@@ -156,16 +156,16 @@ class WizardSpellsSpec extends UnitSpecBase {
               .withLevel(LevelFive)
               .asInstanceOf[Wizard]
 
-          val monster = testMonster
+          val fiftyHpGoblin = goblin
               .withArmourClass(1)
               .withHealth(50)
               .withMaxHealth(50)
               .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            AcidArrow.effect(levelFiveWizard, 3, List(monster))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
+            AcidArrow.effect(levelFiveWizard, 3, List(fiftyHpGoblin))
 
-          updatedMonster.health shouldBe 40
+          updatedGoblin.health shouldBe 40
         }
       }
     }

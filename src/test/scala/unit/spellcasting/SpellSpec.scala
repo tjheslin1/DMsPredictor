@@ -2,6 +2,7 @@ package unit.spellcasting
 
 import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
@@ -30,32 +31,64 @@ class SpellSpec extends UnitSpecBase {
       spellOfLevelOrBelow(wizard, DamageSpell, 3, multiAttackOnly = true) shouldBe Fireball.some
     }
 
-    "return a spell of a specific SpellEffect below the level given" in {
-      val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
+    "return a spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
+      val trackedLevelOneDamageSpell = trackedMeleeSpellAttack(1, higherSpellSlot = false)
 
-      spellOfLevelOrBelow(cleric, DamageSpell, 3) shouldBe GuidingBolt.some
+      val cleric = random[Cleric]
+        .withSpellsKnown(SacredFlame, trackedLevelOneDamageSpell, CureWounds, HoldPerson)
+        .withAllSpellSlotsAvailableForLevel(LevelFive)
+        .withLevel(LevelFive)
+        .asInstanceOf[Cleric]
+
+      val actual = spellOfLevelOrBelow(cleric, DamageSpell, 3).get
+
+      actual.name shouldBe trackedLevelOneDamageSpell.name
+      actual.spellLevel.value shouldBe 1
+    }
+
+    "return a spell of a specific SpellEffect below the level given using the highest spell slot" in new Tracking {
+      val trackedLevelOneDamageSpell = trackedMeleeSpellAttack(1, higherSpellSlot = true)
+
+      val cleric = random[Cleric]
+        .withSpellsKnown(SacredFlame, trackedLevelOneDamageSpell, CureWounds, HoldPerson)
+        .withAllSpellSlotsAvailableForLevel(LevelFive)
+        .withLevel(LevelFive)
+        .asInstanceOf[Cleric]
+
+      val actual = spellOfLevelOrBelow(cleric, DamageSpell, 3).get
+
+      actual.name shouldBe trackedLevelOneDamageSpell.name
+      actual.spellLevel.value shouldBe 3
     }
 
     "return a multi attack spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
-      val trackedMultiAttackDamageSpell = trackedMultiMeleeSpellAttack(1, concentration = false, higherSpellSlot = false)
+      val trackedMultiAttackDamageSpell =
+        trackedMultiMeleeSpellAttack(1, concentration = false, higherSpellSlot = false)
 
-      val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, trackedMultiAttackDamageSpell, AcidArrow)
+      val wizard = random[Wizard].withSpellsKnown(FireBolt,
+                                                  MagicMissile,
+                                                  trackedMultiAttackDamageSpell,
+                                                  AcidArrow)
 
-      spellOfLevelOrBelow(wizard, DamageSpell, 2, multiAttackOnly = true) shouldBe trackedMultiAttackDamageSpell.some
+      val actual = spellOfLevelOrBelow(wizard, DamageSpell, 2, multiAttackOnly = true).get
 
-      fail("multiAttack param not being passed recurisvely in spellOfLevelOrBelow")
+      actual.name shouldBe trackedMultiAttackDamageSpell.name
+      actual.spellLevel.value shouldBe 1
     }
 
     "return a multi attack spell of a specific SpellEffect below the level given using the highest spell slot" in new Tracking {
-      val trackedLevelTwoMultiSpell = trackedMultiMeleeSpellAttack(2, concentration = false, higherSpellSlot = true)
-      val trackedSpellUsingHigherSlot = trackedMultiMeleeSpellAttack(3, concentration = false, higherSpellSlot = true)
+      val trackedLevelTwoMultiSpell =
+        trackedMultiMeleeSpellAttack(2, concentration = false, higherSpellSlot = true)
 
       val cleric = random[Cleric].withSpellsKnown(FireBolt,
-        MagicMissile,
-        trackedLevelTwoMultiSpell,
-        trackedSingleTargetSavingThrowSpell(3, Wisdom))
+                                                  MagicMissile,
+                                                  trackedLevelTwoMultiSpell,
+                                                  trackedSingleTargetSavingThrowSpell(3, Wisdom))
 
-      spellOfLevelOrBelow(cleric, DamageSpell, 3, multiAttackOnly = true) shouldBe trackedSpellUsingHigherSlot.some
+      val actual: Spell = spellOfLevelOrBelow(cleric, DamageSpell, 3, multiAttackOnly = true).get
+
+      actual.name shouldBe trackedLevelTwoMultiSpell.name
+      actual.spellLevel.value shouldBe 3
     }
 
     "return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {
@@ -81,13 +114,16 @@ class SpellSpec extends UnitSpecBase {
     "return the highest spell slot for a spell which benefits from a higher slot" in new TestContext {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
-      val spellToCastHighestLevel = trackedSelfBuffSpell(HuntersMarkBuffCondition, spellLvl = 1, concentration = false, higherSpellSlot = true)
+      val spellToCastHighestLevel = trackedSelfBuffSpell(HuntersMarkBuffCondition,
+                                                         spellLvl = 1,
+                                                         concentration = false,
+                                                         higherSpellSlot = true)
 
       val clericWithLevelThirdLevelSpellSlots = random[Cleric]
         .withSpellKnown(spellToCastHighestLevel)
         .withAllSpellSlotsAvailableForLevel(LevelFive)
         .withLevel(LevelFive)
-        .asInstanceOf[Ranger]
+        .asInstanceOf[Cleric]
 
       spellOfLevelOrBelow(clericWithLevelThirdLevelSpellSlots, BuffSpell, 3) shouldBe spellToCastHighestLevel.some
     }
@@ -96,9 +132,9 @@ class SpellSpec extends UnitSpecBase {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val spellToCastLowestLevel = trackedSelfBuffSpell(HuntersMarkBuffCondition,
-                                              spellLvl = 1,
-                                              concentration = true,
-                                              higherSpellSlot = false)
+                                                        spellLvl = 1,
+                                                        concentration = true,
+                                                        higherSpellSlot = false)
 
       val ranger = random[Ranger]
         .withSpellKnown(spellToCastLowestLevel)

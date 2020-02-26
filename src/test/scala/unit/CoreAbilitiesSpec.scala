@@ -189,6 +189,31 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
+      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedCleric = cleric
+            .withSpellKnown(trackedMeleeSpellAttack(1, higherSpellSlot = false))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Cleric]
+
+          val clericCombatant = trackedCleric.withCombatIndex(1)
+
+          val monster = testMonster.withArmourClass(10).withCombatIndex(2)
+
+          val updatedCleric: Cleric =
+            castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.firstLevel.count shouldBe (trackedCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
+        }
+      }
+    }
+
     "not spend a spell slot if cantrip was found and used" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
@@ -234,14 +259,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           meleeSpellUsedCount shouldBe 1
         }
       }
-    }
-
-    "spend the highest available spell slot when beneficial" in {
-      fail("TODO")
-    }
-
-    "spend the lowest available spell slot if using a higher slot has no benefit" in {
-      fail("TODO")
     }
 
     "not meet the condition if the Spell Caster has no damaging spell to cast" in new TestContext {
@@ -368,14 +385,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "spend the highest available spell slot when beneficial" in {
-      fail("TODO")
-    }
-
-    "spend the lowest available spell slot if using a higher slot has no benefit" in {
-      fail("TODO")
-    }
-
     "spend the highest available spell slot" in {
       forAll { cleric: Cleric =>
         new TestContext {
@@ -393,6 +402,28 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.thirdLevel.count shouldBe (healingCleric.spellSlots.thirdLevel.count - 1)
+        }
+      }
+    }
+
+    "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val healingCleric = cleric
+            .withSpellsKnown(trackedHealingSpell(1, higherSpellSlot = false))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .withWisdom(12)
+            .asInstanceOf[Cleric]
+
+          val updatedCleric =
+            castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1)).update
+              .asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.firstLevel.count shouldBe (healingCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe healingCleric.spellSlots.thirdLevel.count
         }
       }
     }
@@ -521,14 +552,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "spend the highest available spell slot when beneficial" in {
-      fail("TODO")
-    }
-
-    "spend the lowest available spell slot if using a higher slot has no benefit" in {
-      fail("TODO")
-    }
-
     "spend the highest available spell slot" in {
       forAll { cleric: Cleric =>
         new TestContext {
@@ -547,6 +570,29 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castConcentrationSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
+        }
+      }
+    }
+
+    "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
+      forAll { cleric: Cleric =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedCleric = cleric
+            .withSpellKnown(trackedConditionSpell(1, higherSpellSlot = false))
+            .withChannelDivinityUsed()
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Cleric]
+
+          val clericCombatant = trackedCleric.withCombatIndex(1)
+
+          val updatedCleric: Cleric =
+            castConcentrationSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
+
+          updatedCleric.spellSlots.firstLevel.count shouldBe (trackedCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }
       }
     }
@@ -687,14 +733,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "spend the highest available spell slot when beneficial" in {
-      fail("TODO")
-    }
-
-    "spend the lowest available spell slot if using a higher slot has no benefit" in {
-      fail("TODO")
-    }
-
     "spend the highest available spell slot" in {
       forAll { wizard: Wizard =>
         new TestContext {
@@ -712,6 +750,28 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
 
           updatedWizard.spellSlots.thirdLevel.count shouldBe (trackedWizard.spellSlots.thirdLevel.count - 1)
+        }
+      }
+    }
+
+    "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedWizard = wizard
+            .withSpellKnown(trackedMultiMeleeSpellAttack(1, higherSpellSlot = false))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
+
+          val wizardCombatant = trackedWizard.withCombatIndex(1)
+
+          val updatedWizard: Wizard =
+            castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
+
+          updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe trackedWizard.spellSlots.thirdLevel.count
         }
       }
     }
@@ -778,23 +838,63 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val rangerCombatant = buffingRanger.withCombatIndex(1)
 
-          val updatedRanger = castSelfBuffSpell(Priority)(rangerCombatant).update
-            .asInstanceOf[Ranger]
+          val (Combatant(_, updatedRanger: Ranger), _) =
+            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
-
-          updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
-          updatedRanger.spellSlots.firstLevel.count shouldBe buffingRanger.spellSlots.firstLevel.count - 1
         }
       }
     }
 
-    "spend the highest available spell slot when beneficial" in {
-      fail("TODO")
+    "spend the highest available spell slot" in {
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
+
+          val buffingRanger = ranger
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withSpellKnown(trackedBuffSpell)
+            .withLevel(LevelFive)
+            .asInstanceOf[Ranger]
+
+          val rangerCombatant = buffingRanger.withCombatIndex(1)
+
+          val updatedRanger = castSelfBuffSpell(Priority)(rangerCombatant).update
+            .asInstanceOf[Ranger]
+
+          updatedRanger.spellSlots.secondLevel.count shouldBe buffingRanger.spellSlots.secondLevel.count - 1
+        }
+      }
     }
 
     "spend the lowest available spell slot if using a higher slot has no benefit" in {
-      fail("TODO")
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, higherSpellSlot = false)
+
+          val buffingRanger = ranger
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withSpellKnown(trackedBuffSpell)
+            .withLevel(LevelFive)
+            .asInstanceOf[Ranger]
+
+          val rangerCombatant = buffingRanger.withCombatIndex(1)
+
+          val updatedRanger = castSelfBuffSpell(Priority)(rangerCombatant).update
+            .asInstanceOf[Ranger]
+
+          updatedRanger.spellSlots.firstLevel.count shouldBe buffingRanger.spellSlots.firstLevel.count - 1
+          updatedRanger.spellSlots.secondLevel.count shouldBe buffingRanger.spellSlots.secondLevel.count
+        }
+      }
+    }
+
+    "conditionMet" in {
+      fail("TODO: test conditionMet")
     }
   }
 
