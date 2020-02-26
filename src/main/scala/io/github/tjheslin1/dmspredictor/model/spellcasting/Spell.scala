@@ -60,7 +60,8 @@ object Spell {
         spellLookup match {
           case Some(foundSpell) if foundSpell.useHigherSpellSlot =>
             (foundSpell, originalSpellLevel).some
-          case _ => _
+          case Some(foundSpell) => (foundSpell, foundSpell.spellLevel).some
+          case _                => none[(Spell, SpellLevel)]
         }
     } else if (spellLevelBelow >= 0)
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
