@@ -118,8 +118,9 @@ object CoreAbilities extends LazyLogging {
               val optSpell =
                 spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)()
 
-              optSpell.fold((spellCaster.cantrip, 0)) { case (foundSpell, foundSpellLevel) =>
-                (foundSpell.some, spellSlot.spellLevel) // TODO replace `spellSlot.spellLevel` with `foundSpellLevel`
+              optSpell.fold((spellCaster.cantrip, 0)) {
+                case (foundSpell, foundSpellLevel) =>
+                  (foundSpell.some, spellSlot.spellLevel) // TODO replace `spellSlot.spellLevel` with `foundSpellLevel`
               }
           }
 
@@ -163,7 +164,7 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val optSpell: Option[(Spell, SpellLevel)] = highestSpellSlot match {
-          case None => none[(Spell,SpellLevel)]
+          case None => none[(Spell, SpellLevel)]
           case Some(spellSlot) =>
             spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)
         }
@@ -233,7 +234,7 @@ object CoreAbilities extends LazyLogging {
           case None => (combatant, others)
           case Some((foundSpell, foundSpellLevel)) =>
             val (updatedSpellCaster, updatedTargets) =
-        foundSpell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others)) // TODO replace `highestSpellSlot.get.spellLevel` with `foundSpellLevel`
+              foundSpell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others)) // TODO replace `highestSpellSlot.get.spellLevel` with `foundSpellLevel`
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -332,15 +333,15 @@ object CoreAbilities extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-          case None => none[Spell]
-          case Some(spellSlot) =>
-            val optSpell =
-              spellOfLevelOrBelow(spellCaster, BuffSpell, spellSlot.spellLevel)
+            case None => none[Spell]
+            case Some(spellSlot) =>
+              val optSpell =
+                spellOfLevelOrBelow(spellCaster, BuffSpell, spellSlot.spellLevel)
 
-            optSpell.fold(none[Spell]) { foundSpell =>
-              foundSpell.some
-            }
-        }
+              optSpell.fold(none[Spell]) { foundSpell =>
+                foundSpell.some
+              }
+          }
 
         optSpell.fold((combatant, others)) { selfBuffSpell =>
           val (updatedSpellCaster, updatedOthers) =

@@ -32,5 +32,5 @@ package object spellcasting {
   case object DamageSpell        extends SpellEffect
   case object HealingSpell       extends SpellEffect
   case object ConcentrationSpell extends SpellEffect
-  case object BuffSpell           extends SpellEffect
+  case object BuffSpell          extends SpellEffect
 }

@@ -16,13 +16,13 @@ object ClericSpells extends LazyLogging {
     val attribute: Attribute      = Dexterity
     val halfDamageOnSave: Boolean = false
 
-    val damageType: DamageType         = Radiant
-    val name                           = "Sacred Flame"
-    val school: SchoolOfMagic          = Evocation
-    val castingTime: CastingTime       = OneActionCast
-    val spellLevel: SpellLevel         = 0
-    val requiresConcentration = false
-    val useHigherSpellSlot = false
+    val damageType: DamageType   = Radiant
+    val name                     = "Sacred Flame"
+    val school: SchoolOfMagic    = Evocation
+    val castingTime: CastingTime = OneActionCast
+    val spellLevel: SpellLevel   = 0
+    val requiresConcentration    = false
+    val useHigherSpellSlot       = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D8
@@ -38,7 +38,7 @@ object ClericSpells extends LazyLogging {
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
-    val useHigherSpellSlot = true
+    val useHigherSpellSlot                 = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
   }
@@ -50,7 +50,7 @@ object ClericSpells extends LazyLogging {
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
-    val useHigherSpellSlot = true
+    val useHigherSpellSlot                 = true
 
     def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
@@ -65,7 +65,7 @@ object ClericSpells extends LazyLogging {
     val school: SchoolOfMagic    = Enchantment
     val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 2
-    val useHigherSpellSlot = false
+    val useHigherSpellSlot       = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
@@ -80,7 +80,7 @@ object ClericSpells extends LazyLogging {
     val school: SchoolOfMagic    = Conjuration
     val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 3
-    val useHigherSpellSlot = false
+    val useHigherSpellSlot       = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       SpiritGuardiansCondition(spellLevel, spellSaveDc(spellCaster), 100, Wisdom)

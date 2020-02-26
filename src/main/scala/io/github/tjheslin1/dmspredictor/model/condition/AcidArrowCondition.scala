@@ -5,7 +5,8 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellLevel
 import monocle.macros.Lenses
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
-@Lenses("_") case class AcidArrowCondition(spellLevel: SpellLevel, turnsLeft: Int = 1) extends EndOfTurnCondition {
+@Lenses("_") case class AcidArrowCondition(spellLevel: SpellLevel, turnsLeft: Int = 1)
+    extends EndOfTurnCondition {
   val name: String            = "Acid Arrow (condition)"
   val saveDc: Int             = 0
   val missesTurn: Boolean     = false

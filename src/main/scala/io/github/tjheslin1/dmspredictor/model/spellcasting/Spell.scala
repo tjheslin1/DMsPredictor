@@ -36,9 +36,11 @@ object Spell {
     * @param checkConcentration is used to find the spell a caster had just used when finding the spell slot to update
     */
   @tailrec
-  def spellOfLevelOrBelow(spellCaster: SpellCaster,
-                          spellEffect: SpellEffect,
-                          spellLevel: SpellLevel)(
+  def spellOfLevelOrBelow(
+      spellCaster: SpellCaster,
+      spellEffect: SpellEffect,
+      spellLevel: SpellLevel
+  )(
       originalSpellLevel: SpellLevel = spellLevel,
       checkConcentration: Boolean = true,
       multiAttackOnly: Boolean = false
@@ -56,10 +58,12 @@ object Spell {
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
       else
         spellLookup match {
-          case Some(foundSpell) if foundSpell.useHigherSpellSlot => (foundSpell, originalSpellLevel).some
-          case _                                                 => _
+          case Some(foundSpell) if foundSpell.useHigherSpellSlot =>
+            (foundSpell, originalSpellLevel).some
+          case _ => _
         }
-    } else if (spellLevelBelow >= 0) spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
+    } else if (spellLevelBelow >= 0)
+      spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
     else none[(Spell, SpellLevel)]
   }
 
