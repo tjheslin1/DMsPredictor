@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
+import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
@@ -7,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.highestSpellSlotAvailable
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpell, SpellLevel}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpell, Spell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -38,27 +39,28 @@ object LifeClericAbilities extends LazyLogging {
               .contains(CastSingleTargetHealingSpellName)) {
 
           val optSpell = highestSpellSlotAvailable(lifeCleric.spellSlots) match {
-            case None => None
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(lifeCleric, HealingSpell, spellSlot.spellLevel)
+              spellOfLevelOrBelow(lifeCleric, HealingSpell, spellSlot.spellLevel)()
           }
 
-          optSpell.fold((combatant, others)) { healingSpell =>
-            val healingSpellAbility =
-              castSingleTargetHealingSpell(
-                order,
-                bonusHealing = discipleOfLifeBonusHealing(healingSpell.spellLevel)
-              )(_)
+          optSpell.fold((combatant, others)) {
+            case (foundSpell, foundSpellLevel) =>
+              val healingSpellAbility =
+                castSingleTargetHealingSpell(
+                  order,
+                  bonusHealing = discipleOfLifeBonusHealing(foundSpell.spellLevel) // TODO replace `foundSpell.spellLevel` with `foundSpellLevel`
+                )(_)
 
-            val (updatedLifeCleric, updatedTargets) =
-              healingSpellAbility(combatant).useAbility(others, focus)
+              val (updatedLifeCleric, updatedTargets) =
+                healingSpellAbility(combatant).useAbility(others, focus)
 
-            val updatedSpellSlotLifeCleric = healingSpellAbility(updatedLifeCleric).update
+              val updatedSpellSlotLifeCleric = healingSpellAbility(updatedLifeCleric).update
 
-            val updatedAttackingCombatant =
-              Combatant.creatureLens.set(updatedSpellSlotLifeCleric)(updatedLifeCleric)
+              val updatedAttackingCombatant =
+                Combatant.creatureLens.set(updatedSpellSlotLifeCleric)(updatedLifeCleric)
 
-            (updatedAttackingCombatant, others.replace(updatedTargets))
+              (updatedAttackingCombatant, others.replace(updatedTargets))
           }
         } else {
           (combatant, others)

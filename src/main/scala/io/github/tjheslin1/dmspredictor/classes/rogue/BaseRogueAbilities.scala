@@ -127,7 +127,9 @@ object BaseRogueAbilities extends LazyLogging {
         if (damage > 0) {
           val halfDamageRoundedDown = Math.floor(damage / 2).toInt
 
-          logger.debug(s"${baseRogue.name} took half damage ($halfDamageRoundedDown)")
+          logger.debug(
+            s"${baseRogue.name} used $name and took half damage ($halfDamageRoundedDown)"
+          )
 
           val updatedHealthRogue =
             baseRogue.updateHealth(halfDamageRoundedDown, damageType, attackResult)
