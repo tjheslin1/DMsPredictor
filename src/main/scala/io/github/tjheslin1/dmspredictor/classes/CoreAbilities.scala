@@ -95,7 +95,14 @@ object CoreAbilities extends LazyLogging {
         optMaxSpellLevel.fold(false) { maxSpellLevel =>
           spellCaster.level >= spellCaster.levelSpellcastingLearned &&
           spellCaster.spellsKnown.exists {
-            case ((spellLvl, spellEffect: SpellEffect), _) if spellLvl <= maxSpellLevel =>
+            case ((spellLvl, spellEffect: SpellEffect), _: SingleTargetAttackSpell)
+                if spellLvl <= maxSpellLevel =>
+              spellEffect match {
+                case DamageSpell => true
+                case _           => false
+              }
+            case ((spellLvl, spellEffect: SpellEffect), _: SingleTargetSavingThrowSpell)
+                if spellLvl <= maxSpellLevel =>
               spellEffect match {
                 case DamageSpell => true
                 case _           => false
@@ -318,7 +325,7 @@ object CoreAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = ???
+      def conditionMet: Boolean = spellConditionMet(spellCaster, BuffSpell)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -352,7 +359,7 @@ object CoreAbilities extends LazyLogging {
 
   def spellConditionMet(spellCaster: Player with SpellCaster, effect: SpellEffect): Boolean = {
     val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-      .fold(none[Int])(_.spellLevel.value.some)
+      .fold(spellCaster.cantrip.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
 
     optMaxSpellLevel.fold(false) { maxSpellLevel =>
       spellCaster.level >= spellCaster.levelSpellcastingLearned &&
@@ -386,7 +393,7 @@ object CoreAbilities extends LazyLogging {
         ).fold {
           spellCaster
         } {
-          case (foundSpell, foundSpellLevel) =>
+          case (_, foundSpellLevel) =>
             if (foundSpellLevel.value == 0) {
               spellCaster
             } else {

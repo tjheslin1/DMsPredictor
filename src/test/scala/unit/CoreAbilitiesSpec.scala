@@ -11,10 +11,10 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
@@ -280,13 +280,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       castSingleTargetOffensiveSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
-    "not meet the condition if the Spell Caster cannot cast any Single Target spells at its level" in {
+    "not meet the condition if the Spell Caster cannot cast any Single Target Damage spells at its level" in {
       forAll { wizard: Wizard =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val wizardCombatant = wizard
-            .withSpellsKnown(trackedHealingSpell(2), trackedSingleTargetSavingThrowSpell(3, Wisdom))
+            .withSpellsKnown(trackedMultiMeleeSpellAttack(1), trackedSingleTargetSavingThrowSpell(3, Wisdom))
             .withAllSpellSlotsAvailableForLevel(LevelFour)
             .withLevel(LevelFour)
             .withCombatIndex(1)
@@ -295,6 +295,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
+
+    "not meet the condition of the Spell Caster only knows a multi target damaging spell" in {}
   }
 
   "castSingleTargetHealingSpell" should {
@@ -839,7 +841,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val rangerCombatant = buffingRanger.withCombatIndex(1)
 
           val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant], LowestFirst)
+            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant],
+                                                                    LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
         }
@@ -874,7 +877,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, higherSpellSlot = false)
+          val trackedBuffSpell =
+            trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, higherSpellSlot = false)
 
           val buffingRanger = ranger
             .withAllSpellSlotsAvailableForLevel(LevelFive)
@@ -893,8 +897,48 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "conditionMet" in {
-      fail("TODO: test conditionMet")
+    "meet the condition if the Spell Caster has a Self Buff spell to cast" in new TestContext {
+      implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val wizard = random[Wizard]
+        .withSpellsKnown(trackedSelfBuffSpell(HuntersMarkBuffCondition, 2))
+        .withAllSpellSlotsAvailableForLevel(LevelFour)
+        .withLevel(LevelFour)
+        .withCombatIndex(1)
+
+      castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe true
+    }
+
+    "meet the condition if the Spell Caster has only a Self Buff cantrip to cast" in new TestContext {
+      implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val wizard = random[Wizard]
+        .withSpellsKnown(trackedSelfBuffSpell(HuntersMarkBuffCondition, 0))
+        .withCombatIndex(1)
+
+      castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe true
+    }
+
+    "not meet the condition if the Spell Caster does not have a Self Buff spell to cast" in new TestContext {
+      implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val wizard = random[Wizard]
+        .withSpellsKnown(FireBolt, Fireball)
+        .withCombatIndex(1)
+
+      castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Spell Caster cannot cast any Self Buff spells at its level" in new TestContext {
+      implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val wizard = random[Wizard]
+        .withSpellsKnown(FireBolt, trackedSelfBuffSpell(HuntersMarkBuffCondition, 3))
+        .withSpellSlots(SpellSlots(firstLevelSlots = 4, secondLevelSlots = 3, thirdLevelSlots = 0))
+        .withLevel(LevelFive)
+        .withCombatIndex(1)
+
+      castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe false
     }
   }
 

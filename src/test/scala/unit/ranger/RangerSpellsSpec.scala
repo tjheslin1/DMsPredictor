@@ -71,8 +71,12 @@ class RangerSpellsSpec extends UnitSpecBase {
   }
 
   "HuntersMarkCondition" should {
-    "be lost on loss of concentration" in {
+    "be maintained on pass of concentration check" in {
+      fail("TODO: HuntersMarkCondition should be maintained on pass of concentration check")
+    }
 
+    "be lost on loss of concentration" in {
+      fail("TODO: HuntersMarkCondition should be lost on loss of concentration")
     }
   }
 

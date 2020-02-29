@@ -22,13 +22,13 @@ class SpellSpec extends UnitSpecBase {
     "return a spell of a specific SpellEffect equal to the level given" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(cleric, DamageSpell, 1) shouldBe GuidingBolt.some
+      spellOfLevelOrBelow(cleric, DamageSpell, 1)().get shouldBe (GuidingBolt, GuidingBolt.spellLevel)
     }
 
     "return a multi attack spell of a specific SpellEffect equal to the level given" in {
       val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, AcidArrow, Fireball)
 
-      spellOfLevelOrBelow(wizard, DamageSpell, 3, multiAttackOnly = true) shouldBe Fireball.some
+      spellOfLevelOrBelow(wizard, DamageSpell, 3)(multiAttackOnly = true).get shouldBe (Fireball, Fireball.spellLevel)
     }
 
     "return a spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
@@ -40,10 +40,10 @@ class SpellSpec extends UnitSpecBase {
         .withLevel(LevelFive)
         .asInstanceOf[Cleric]
 
-      val actual = spellOfLevelOrBelow(cleric, DamageSpell, 3).get
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(cleric, DamageSpell, 3)().get
 
-      actual.name shouldBe trackedLevelOneDamageSpell.name
-      actual.spellLevel.value shouldBe 1
+      actualSpell.name shouldBe trackedLevelOneDamageSpell.name
+      actualSpellLevel.value shouldBe 1
     }
 
     "return a spell of a specific SpellEffect below the level given using the highest spell slot" in new Tracking {
@@ -55,10 +55,10 @@ class SpellSpec extends UnitSpecBase {
         .withLevel(LevelFive)
         .asInstanceOf[Cleric]
 
-      val actual = spellOfLevelOrBelow(cleric, DamageSpell, 3).get
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(cleric, DamageSpell, 3)().get
 
-      actual.name shouldBe trackedLevelOneDamageSpell.name
-      actual.spellLevel.value shouldBe 3
+      actualSpell.name shouldBe trackedLevelOneDamageSpell.name
+      actualSpellLevel.value shouldBe 3
     }
 
     "return a multi attack spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
@@ -70,10 +70,10 @@ class SpellSpec extends UnitSpecBase {
                                                   trackedMultiAttackDamageSpell,
                                                   AcidArrow)
 
-      val actual = spellOfLevelOrBelow(wizard, DamageSpell, 2, multiAttackOnly = true).get
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(wizard, DamageSpell, 2)(multiAttackOnly = true).get
 
-      actual.name shouldBe trackedMultiAttackDamageSpell.name
-      actual.spellLevel.value shouldBe 1
+      actualSpell.name shouldBe trackedMultiAttackDamageSpell.name
+      actualSpellLevel.value shouldBe 1
     }
 
     "return a multi attack spell of a specific SpellEffect below the level given using the highest spell slot" in new Tracking {
@@ -85,20 +85,20 @@ class SpellSpec extends UnitSpecBase {
                                                   trackedLevelTwoMultiSpell,
                                                   trackedSingleTargetSavingThrowSpell(3, Wisdom))
 
-      val actual: Spell = spellOfLevelOrBelow(cleric, DamageSpell, 3, multiAttackOnly = true).get
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(cleric, DamageSpell, 3)(multiAttackOnly = true).get
 
-      actual.name shouldBe trackedLevelTwoMultiSpell.name
-      actual.spellLevel.value shouldBe 3
+      actualSpell.name shouldBe trackedLevelTwoMultiSpell.name
+      actualSpellLevel.value shouldBe 3
     }
 
-    "return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {
+    "not return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
         .withConcentratingOn(trackedConditionSpell(1))
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3, checkConcentration = false) shouldBe None
+      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3)(checkConcentration = false) shouldBe none[(Spell, SpellLevel)]
     }
 
     "not return a concentration spell if already concentrating when checkConcentration is set to true" in new TestContext {
@@ -108,7 +108,7 @@ class SpellSpec extends UnitSpecBase {
         .withConcentratingOn(trackedConditionSpell(1))
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3) shouldBe None
+      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3)() shouldBe none[(Spell, SpellLevel)]
     }
 
     "return the highest spell slot for a spell which benefits from a higher slot" in new TestContext {
@@ -125,7 +125,10 @@ class SpellSpec extends UnitSpecBase {
         .withLevel(LevelFive)
         .asInstanceOf[Cleric]
 
-      spellOfLevelOrBelow(clericWithLevelThirdLevelSpellSlots, BuffSpell, 3) shouldBe spellToCastHighestLevel.some
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(clericWithLevelThirdLevelSpellSlots, BuffSpell, 3)().get
+
+      actualSpell.name shouldBe spellToCastHighestLevel.name
+      actualSpellLevel.value shouldBe 3
     }
 
     "return a the lowest spell slot for a spell which does not benefit from a higher slot" in new TestContext {
@@ -142,13 +145,34 @@ class SpellSpec extends UnitSpecBase {
         .withLevel(LevelFive)
         .asInstanceOf[Ranger]
 
-      spellOfLevelOrBelow(ranger, BuffSpell, 2) shouldBe spellToCastLowestLevel.some
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(ranger, BuffSpell, 2)().get
+
+      actualSpell.name shouldBe spellToCastLowestLevel.name
+      actualSpellLevel.value shouldBe 1
+    }
+
+    "not return a higher spell slot for a cantrip" in new TestContext {
+      implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+      // expecting `higherSpellSlot to be ignored for a cantrip
+      val trackedCantrip = trackedSingleTargetSavingThrowSpell(0, Strength, higherSpellSlot = true)
+
+      val cleric = random[Cleric]
+        .withSpellsKnown(trackedCantrip, CureWounds, HoldPerson)
+        .withAllSpellSlotsAvailableForLevel(LevelThree)
+        .withLevel(LevelThree)
+        .asInstanceOf[Cleric]
+
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(cleric, DamageSpell, 2)().get
+
+      actualSpell.name shouldBe trackedCantrip.name
+      actualSpellLevel.value shouldBe 0
     }
 
     "return none if no spell of SpellEffect is found" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds)
 
-      spellOfLevelOrBelow(cleric, ConcentrationSpell, 2) shouldBe None
+      spellOfLevelOrBelow(cleric, ConcentrationSpell, 2)() shouldBe none[(Spell, SpellLevel)]
     }
   }
 

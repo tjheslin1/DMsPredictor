@@ -229,6 +229,8 @@ object TestData {
         wizard)
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(wizardSpellSlots(level))(wizard)
+    def withSpellSlots(spellSlots: SpellSlots) =
+      _spellSlots.set(spellSlots)(wizard)
 
     def withNoSpellSlotsAvailable() =
       _spellSlots.set(
