@@ -125,7 +125,7 @@ object CoreAbilities extends LazyLogging {
               spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)()
                 .fold((spellCaster.cantrip, 0)) {
                   case (foundSpell, foundSpellLevel) =>
-                    (foundSpell.some, spellSlot.spellLevel) // TODO replace `spellSlot.spellLevel` with `foundSpellLevel`
+                    (foundSpell.some, foundSpellLevel)
                 }
           }
 
@@ -181,7 +181,7 @@ object CoreAbilities extends LazyLogging {
           case (None, _) => (combatant, None)
           case (Some(spellTarget), Some((foundSpell, foundSpellLevel))) =>
             val (updatedSpellCaster, List(updatedTarget)) =
-              foundSpell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget)) // TODO inject `foundSpellLevel` instead of `highestSpellSlot.get.spellLevel`
+              foundSpell.effect(spellCaster, foundSpellLevel, List(spellTarget))
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -239,7 +239,7 @@ object CoreAbilities extends LazyLogging {
           case None => (combatant, others)
           case Some((foundSpell, foundSpellLevel)) =>
             val (updatedSpellCaster, updatedTargets) =
-              foundSpell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others)) // TODO replace `highestSpellSlot.get.spellLevel` with `foundSpellLevel`
+              foundSpell.effect(spellCaster, foundSpellLevel, monsters(others))
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -293,7 +293,7 @@ object CoreAbilities extends LazyLogging {
                 multiAttackOnly = true
               ).fold((none[Spell], 0)) {
                 case (foundSpell, foundSpellLevel) =>
-                  (foundSpell.some, spellSlot.spellLevel) // TODO replace `spellSlot.spellLevel` with `foundSpellLevel`
+                  (foundSpell.some, foundSpellLevel)
               }
           }
 

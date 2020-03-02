@@ -582,8 +582,7 @@ class ActionsSpec extends UnitSpecBase {
       val useHigherSpellSlot = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
-      SpiritGuardiansCondition(3, 10, 10, Wisdom)
-
+        SpiritGuardiansCondition(3, 10, 10, Wisdom)
     }
   }
 }
