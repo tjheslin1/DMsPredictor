@@ -7,10 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.{Defense, Ranger}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.{
-  HuntersMark,
-  HuntersMarkBuffCondition
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import util.TestData._
 
 class RangerSpec extends UnitSpecBase {
@@ -71,7 +68,7 @@ class RangerSpec extends UnitSpecBase {
             .withStrength(10)
             .withDexterity(10)
 
-          ranger.weapon.damage shouldBe 6
+          unbuffedRanger.weapon.damage shouldBe 6
 
           buffedRanger.weapon.damage shouldBe 6 + 6 // Shortsword 1 * D6 plus HuntersMarkDamage 1 * D6
         }

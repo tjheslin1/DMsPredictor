@@ -369,16 +369,19 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val turnedFighter = fighter.withCondition(Turned(10, 10)).withCombatIndex(2)
+          val turnedFighter =
+            fighter.withDexterity(5).withNoArmour().withCondition(Turned(10, 10)).withCombatIndex(2)
+
+          val damagingMonster = monster.withStrength(18).withDexterity(18).withCombatIndex(1)
 
           val (_, Combatant(_, updatedFighter: Fighter), _) =
-            resolveDamage(monster.withCombatIndex(1),
+            resolveDamage(damagingMonster,
                           turnedFighter,
-                          List(),
+                          List.empty[Combatant],
                           monster.baseWeapon,
                           Hit)
 
-          updatedFighter.conditions shouldBe List()
+          updatedFighter.conditions shouldBe List.empty[Condition]
         }
       }
     }

@@ -35,6 +35,10 @@ import monocle.macros.Lenses
 
     logger.debug(s"${creature.name} is no longer Turned")
 
-    Creature.creatureConditionsLens.set(updatedConditions)(creature)
+    if (damage > 0) {
+      Creature.creatureConditionsLens.set(updatedConditions)(creature)
+    } else {
+      creature
+    }
   }
 }

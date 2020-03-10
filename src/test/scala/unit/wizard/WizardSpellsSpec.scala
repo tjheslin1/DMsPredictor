@@ -5,12 +5,15 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.AcidArrowCondition
+import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
+
+import scala.collection.immutable.Queue
 
 class WizardSpellsSpec extends UnitSpecBase {
 
@@ -215,14 +218,21 @@ class WizardSpellsSpec extends UnitSpecBase {
     }
 
     "no longer be in effect at the start of the casters next turn" in {
-      forAll { wizard: Wizard =>
+      forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val ac13Wizard =
-            wizard.withMageArmourPrepared(true).withDexterity(10).asInstanceOf[Wizard]
+          val ac13Wizard = wizard.withMageArmourPrepared(true).withDexterity(10)
+          val (attackResult, shieldSpellActiveWizard: Wizard) = ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
 
-          fail("TODO: test shield buff is removed")
+          attackResult shouldBe Miss // checking Shield was activated
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val Queue(_, Combatant(_, updatedWizard: Wizard)) =
+            Move.takeMove(Queue(shieldSpellActiveWizard.withCombatIndex(1), goblinCombatant), LowestFirst)
+
+          updatedWizard.conditions shouldBe List.empty[Condition]
         }
       }
     }
