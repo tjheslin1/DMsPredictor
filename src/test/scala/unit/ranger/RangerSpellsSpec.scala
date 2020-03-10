@@ -70,28 +70,6 @@ class RangerSpellsSpec extends UnitSpecBase {
     }
   }
 
-  "HuntersMarkCondition" should {
-    "be maintained on pass of concentration check" in {
-      forAll { ranger: Ranger =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val buffedRanger = ranger
-            .withCondition(HuntersMarkBuffCondition)
-            .withConstitution(18)
-
-          val updatedRanger = HuntersMarkBuffCondition.handleOnDamage(buffedRanger)
-
-          updatedRanger.conditions shouldBe List.empty[Condition]
-        }
-      }
-    }
-
-    "be lost on loss of concentration" in {
-      fail("TODO: HuntersMarkCondition should be lost on loss of concentration")
-    }
-  }
-
   abstract private class TestContext {
     implicit val roll: RollStrategy
   }

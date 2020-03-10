@@ -220,7 +220,7 @@ trait Tracking {
       super.effect(spellCaster, spellLevel, targets)
     }
 
-    def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+    def onLossOfConcentration(spellCaster: SpellCaster, damage: Int): SpellCaster = {
       selfBuffSpellConcentrationHandled = true
 
       val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
@@ -237,7 +237,7 @@ trait Tracking {
     new StartOfTurnCondition {
       val name                    = "tracked-start-of-turn-condition"
       val missesTurn              = turnMissed
-      val handleOnDamage: Boolean = false
+      val isHandledOnDamage: Boolean = false
 
       val saveDc: Int    = dc
       val turnsLeft: Int = turns
@@ -258,7 +258,7 @@ trait Tracking {
     new EndOfTurnCondition {
       val name                    = "tracked-end-of-turn-condition"
       val missesTurn              = turnMissed
-      val handleOnDamage: Boolean = false
+      val isHandledOnDamage: Boolean = false
 
       val saveDc: Int    = dc
       val turnsLeft: Int = 10

@@ -144,10 +144,10 @@ object WizardSpells extends LazyLogging {
         if (spellCaster.spellSlots.firstLevel.count > 0) {
 
           val reactedCreature = {
-
             val updatedSpellSlots = spellCaster.spellSlots.copy(
               firstLevel = FirstLevelSpellSlots(spellCaster.spellSlots.firstLevel.count - 1)
             )
+
             val updatedSpellCaster = SpellCaster.spellSlotsLens.set(updatedSpellSlots)(spellCaster)
 
             val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition()
@@ -166,10 +166,10 @@ object WizardSpells extends LazyLogging {
   }
 
   case class ShieldBuffCondition(turnsLeft: Int = 1) extends StartOfTurnCondition {
-    val saveDc: Int             = 0
-    val missesTurn: Boolean     = false
-    val handleOnDamage: Boolean = false
-    val name: String            = "Shield (Buff)"
+    val saveDc: Int                = 0
+    val missesTurn: Boolean        = false
+    val isHandledOnDamage: Boolean = false
+    val name: String               = "Shield (Buff)"
 
     def decrementTurnsLeft(): Condition = ShieldBuffCondition(turnsLeft = 0)
 

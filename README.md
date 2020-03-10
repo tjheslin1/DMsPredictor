@@ -18,6 +18,10 @@ This list only includes monsters with README's
 
 - [Vampire](src/main/scala/io/github/tjheslin1/dmspredictor/monsters/vampire/README.md)
 
+## Spellbook
+
+- [Spell discussion](src/main/scala/io/github/tjheslin1/dmspredictor/model/spellcasting/spellbook/README.md)
+
 ## Requests:
 
 This simulator implements what is available in the

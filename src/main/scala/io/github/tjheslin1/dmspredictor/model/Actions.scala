@@ -147,9 +147,11 @@ object Actions extends LazyLogging {
     }
 
     val conditionHandledCreature =
-      updatedTarget.creature.conditions.filter(_.handleOnDamage).foldLeft(updatedTarget.creature) {
-        case (creature, condition) => condition.handleOnDamage(creature)
-      }
+      updatedTarget.creature.conditions
+        .filter(_.isHandledOnDamage)
+        .foldLeft(updatedTarget.creature) {
+          case (creature, condition) => condition.handleOnDamage(creature, dmg)
+        }
 
     val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(updatedTarget)
 

@@ -9,9 +9,9 @@ import monocle.macros.Lenses
     extends StartOfTurnCondition
     with LazyLogging {
 
-  val attribute: Attribute    = Wisdom
-  val missesTurn: Boolean     = true
-  val handleOnDamage: Boolean = true
+  val attribute: Attribute       = Wisdom
+  val missesTurn: Boolean        = true
+  val isHandledOnDamage: Boolean = true
 
   def decrementTurnsLeft(): Condition = Turned(saveDc, turnsLeft - 1, name)
 
@@ -29,7 +29,7 @@ import monocle.macros.Lenses
     Creature.creatureConditionsLens.set(updatedCondition)(creature)
   }
 
-  override def handleOnDamage[_: RS](creature: Creature): Creature = {
+  override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = {
     val turned            = creature.conditions.find(_.name == name).get
     val updatedConditions = creature.conditions.except(turned)
 

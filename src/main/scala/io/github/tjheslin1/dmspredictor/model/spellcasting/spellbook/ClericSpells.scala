@@ -93,8 +93,8 @@ object ClericSpells extends LazyLogging {
       attribute: Attribute,
       name: String = "Spirit Guardians (attack)"
   ) extends StartOfTurnCondition {
-    val missesTurn: Boolean     = false
-    val handleOnDamage: Boolean = false
+    val missesTurn: Boolean        = false
+    val isHandledOnDamage: Boolean = false
 
     def decrementTurnsLeft(): Condition = this.copy(turnsLeft = this.turnsLeft - 1)
 

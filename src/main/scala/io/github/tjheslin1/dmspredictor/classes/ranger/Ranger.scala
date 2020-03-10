@@ -71,7 +71,9 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpell
     val damageTaken   = adjustedDamage(dmg, damageType, this)
     val updatedRanger = copy(health = Math.max(0, health - damageTaken))
 
-    if (updatedRanger.isConscious && isConcentrating && damageTaken > 0)
+    if (updatedRanger.isConscious == false && isConcentrating)
+      handleConcentration(updatedRanger, updatedRanger.concentratingSpell.get, Integer.MAX_VALUE)
+    else if (updatedRanger.isConscious && isConcentrating && damageTaken > 0)
       handleConcentration(updatedRanger, updatedRanger.concentratingSpell.get, damageTaken)
     else updatedRanger
   }

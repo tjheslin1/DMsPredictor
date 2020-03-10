@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
@@ -15,6 +16,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardiansCondition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import util.TestData._
 import util.TestMonster
@@ -349,7 +351,13 @@ class ActionsSpec extends UnitSpecBase {
             testMonster.withArmourClass(2).withHealth(50).withMaxHealth(50).withCombatIndex(2)
 
           val (_, Combatant(_, updatedMonster: TestMonster), _) =
-            resolveDamage(strongFighter, monster, List(), trackedSword, Hit, damageBonus = 0, addStatModifier = false)
+            resolveDamage(strongFighter,
+                          monster,
+                          List(),
+                          trackedSword,
+                          Hit,
+                          damageBonus = 0,
+                          addStatModifier = false)
 
           updatedMonster.health shouldBe 49
         }
@@ -391,7 +399,7 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "handle loss of concentration on spell" in {
+    "handle loss of concentration of a ConcentrationConditionSpell" in {
       forAll { (cleric: Cleric, goblin: Goblin, zombie: Zombie) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -423,10 +431,39 @@ class ActionsSpec extends UnitSpecBase {
                           Hit,
                           damageBonus = 30)
 
-          updatedGoblin.conditions shouldBe List()
-          updatedZombie.conditions shouldBe List()
+          updatedGoblin.conditions shouldBe List.empty[Condition]
+          updatedZombie.conditions shouldBe List.empty[Condition]
 
           updatedCleric.concentratingSpell shouldBe none[Spell]
+        }
+      }
+    }
+
+    "handle loss of concentration of a SelfBuffSpell" in {
+      forAll { (ranger: Ranger, zombie: Zombie) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val concentratingRanger = ranger
+            .withConcentratingOn(HuntersMark)
+            .withCondition(HuntersMarkBuffCondition)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withConstitution(2)
+            .withCombatIndex(1)
+
+          val zombieCombatant = zombie.withCombatIndex(2)
+
+          val (_, Combatant(_, updatedRanger: Ranger), _) =
+            resolveDamage(zombieCombatant,
+                          concentratingRanger,
+                          List.empty[Combatant],
+                          zombie.weapon,
+                          Hit,
+                          damageBonus = 30)
+
+          updatedRanger.conditions shouldBe List.empty[Condition]
+          updatedRanger.concentratingSpell shouldBe none[Spell]
         }
       }
     }
@@ -579,7 +616,7 @@ class ActionsSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
-      val useHigherSpellSlot = true
+      val useHigherSpellSlot       = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
         SpiritGuardiansCondition(3, 10, 10, Wisdom)

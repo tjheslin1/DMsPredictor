@@ -11,9 +11,9 @@ import monocle.macros.Lenses
     extends StartOfTurnCondition
     with LazyLogging {
 
-  val turnsLeft: Int          = 100
-  val missesTurn: Boolean     = false
-  val handleOnDamage: Boolean = false
+  val turnsLeft: Int             = 100
+  val missesTurn: Boolean        = false
+  val isHandledOnDamage: Boolean = false
 
   def decrementTurnsLeft(): Condition =
     // can only be removed by passing the saving throw

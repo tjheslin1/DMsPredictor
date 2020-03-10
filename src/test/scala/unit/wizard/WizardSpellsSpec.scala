@@ -151,16 +151,16 @@ class WizardSpellsSpec extends UnitSpecBase {
           implicit val rollStrategy: RollStrategy = _ => RollResult(diceRolls.next())
 
           val levelFiveWizard = wizard
-              .withSpellKnown(AcidArrow)
-              .withAllSpellSlotsAvailableForLevel(LevelFive)
-              .withLevel(LevelFive)
-              .asInstanceOf[Wizard]
+            .withSpellKnown(AcidArrow)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
 
           val fiftyHpGoblin = goblin
-              .withArmourClass(1)
-              .withHealth(50)
-              .withMaxHealth(50)
-              .withCombatIndex(2)
+            .withArmourClass(1)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             AcidArrow.effect(levelFiveWizard, 3, List(fiftyHpGoblin))
@@ -177,7 +177,8 @@ class WizardSpellsSpec extends UnitSpecBase {
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val ac13Wizard = wizard.withDexterity(10).asInstanceOf[Wizard]
+          val ac13Wizard =
+            wizard.withMageArmourPrepared(true).withDexterity(10).asInstanceOf[Wizard]
 
           val (_, updatedSpellcaster: SpellCaster) =
             ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
@@ -209,6 +210,19 @@ class WizardSpellsSpec extends UnitSpecBase {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           ShieldSpell.updateAttackOnReaction(wizard, 0) shouldBe (Miss, wizard)
+        }
+      }
+    }
+
+    "no longer be in effect at the start of the casters next turn" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val ac13Wizard =
+            wizard.withMageArmourPrepared(true).withDexterity(10).asInstanceOf[Wizard]
+
+          fail("TODO: test shield buff is removed")
         }
       }
     }
