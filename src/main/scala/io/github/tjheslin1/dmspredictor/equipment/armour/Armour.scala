@@ -10,7 +10,5 @@ abstract class Armour {
 }
 
 object Armour {
-  implicit val armourShow: Show[Armour] = Show.show { armour =>
-    s"Armour: ${armour.name}"
-  }
+  implicit val armourShow: Show[Armour] = Show.show(armour => s"Armour: ${armour.name}")
 }

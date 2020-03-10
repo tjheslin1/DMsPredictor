@@ -26,7 +26,7 @@ This list only includes monsters with README's
 
 This simulator implements what is available in the
 [Systems Reference Document (SRD)](http://dnd.wizards.com/articles/features/systems-reference-document-srd)
-provide by Wizard of the Coast.
+provide by Wizards of the Coast.
 
 If a spell or anything else is not present in the simulator that you would like to use, please raise an _Issue_ requesting this,
 or contribute yourself via a _Pull Request_!

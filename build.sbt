@@ -7,7 +7,7 @@ lazy val dmspredictor = (project in file("."))
     assemblyJarName := "DMsPredictor_full.jar",
     libraryDependencies ++= Seq(
       // format: off
-      "org.typelevel"               %% "cats-core"                        % "2.1.0",
+      "org.typelevel"               %% "cats-core"                        % "2.1.1",
       "com.github.wookietreiber"    %% "scala-chart"                      % "0.5.1",
       "ch.qos.logback"              %  "logback-classic"                  % "1.2.3",
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.2",
@@ -26,7 +26,7 @@ lazy val dmspredictor = (project in file("."))
       
       "com.gu"                      %% "scanamo"                          % "1.0.0-M8",
 
-      "org.scalatest"               %% "scalatest"                        % "3.1.0"         % Test,
+      "org.scalatest"               %% "scalatest"                        % "3.1.1"         % Test,
       "org.scalatestplus"           %% "scalatestplus-scalacheck"         % "3.1.0.0-RC2"   % Test,
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.8"           % Test,
@@ -45,8 +45,8 @@ resolvers ++= Seq(
 )
 
 val CirceVersion   = "0.13.0"
-val MonocleVersion = "2.0.1"
-val RefinedVersion = "0.9.12"
+val MonocleVersion = "2.0.4"
+val RefinedVersion = "0.9.13"
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard

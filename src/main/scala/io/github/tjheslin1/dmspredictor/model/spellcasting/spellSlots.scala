@@ -69,8 +69,8 @@ object SpellSlots {
   val secondLevelSpellSlotCountLens: Lens[SecondLevelSpellSlots, Int] =
     GenLens[SecondLevelSpellSlots](_.count)
 
-  val secondLevelLens
-      : Lens[SpellSlots, Int] = secondLevelSpellSlotLens composeLens secondLevelSpellSlotCountLens
+  val secondLevelLens: Lens[SpellSlots, Int] =
+    secondLevelSpellSlotLens composeLens secondLevelSpellSlotCountLens
 
   val thirdLevelSpellSlotLens: Lens[SpellSlots, ThirdLevelSpellSlots] =
     GenLens[SpellSlots](_.thirdLevel)
@@ -78,6 +78,6 @@ object SpellSlots {
   val thirdLevelSpellSlotCountLens: Lens[ThirdLevelSpellSlots, Int] =
     GenLens[ThirdLevelSpellSlots](_.count)
 
-  val thirdLevelLens
-      : Lens[SpellSlots, Int] = thirdLevelSpellSlotLens composeLens thirdLevelSpellSlotCountLens
+  val thirdLevelLens: Lens[SpellSlots, Int] =
+    thirdLevelSpellSlotLens composeLens thirdLevelSpellSlotCountLens
 }
