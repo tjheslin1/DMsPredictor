@@ -22,7 +22,6 @@ class RangerSpec extends UnitSpecBase {
         .withConcentratingOn(HuntersMark)
         .withLevel(LevelTwo)
         .withConstitution(2)
-        .asInstanceOf[Ranger]
 
       val updatedRanger = concentratingRanger.updateHealth(0, Bludgeoning, Hit).asInstanceOf[Ranger]
 
@@ -40,7 +39,6 @@ class RangerSpec extends UnitSpecBase {
         .withConstitution(2)
         .withHealth(1)
         .withMaxHealth(50)
-        .asInstanceOf[Ranger]
 
       val updatedRanger = concentratingRanger.updateHealth(1, Bludgeoning, Hit).asInstanceOf[Ranger]
 

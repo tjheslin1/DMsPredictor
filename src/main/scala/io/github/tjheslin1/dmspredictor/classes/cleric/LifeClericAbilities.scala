@@ -49,7 +49,7 @@ object LifeClericAbilities extends LazyLogging {
               val healingSpellAbility =
                 castSingleTargetHealingSpell(
                   order,
-                  bonusHealing = discipleOfLifeBonusHealing(foundSpell.spellLevel) // TODO replace `foundSpell.spellLevel` with `foundSpellLevel`
+                  bonusHealing = discipleOfLifeBonusHealing(foundSpellLevel)
                 )(_)
 
               val (updatedLifeCleric, updatedTargets) =
