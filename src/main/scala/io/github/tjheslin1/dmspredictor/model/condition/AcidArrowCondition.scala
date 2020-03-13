@@ -7,10 +7,9 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 @Lenses("_") case class AcidArrowCondition(spellLevel: SpellLevel, turnsLeft: Int = 1)
     extends EndOfTurnCondition {
-  val name: String               = "Acid Arrow (condition)"
-  val saveDc: Int                = 0
-  val missesTurn: Boolean        = false
-  val isHandledOnDamage: Boolean = false
+  val name: String        = "Acid Arrow (condition)"
+  val saveDc: Int         = 0
+  val missesTurn: Boolean = false
 
   def decrementTurnsLeft(): Condition = AcidArrowCondition(spellLevel, turnsLeft = 0)
 

@@ -14,7 +14,6 @@ object RangerSpells extends LazyLogging {
     val saveDc             = 0 // caster maintains benefit until lost
     val turnsLeft          = 100 // lasts 1 hour
     val missesTurn         = false
-    val isHandledOnDamage  = true
     val useHigherSpellSlot = false
 
     def decrementTurnsLeft(): Condition = this

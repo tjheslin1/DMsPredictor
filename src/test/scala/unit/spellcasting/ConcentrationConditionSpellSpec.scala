@@ -146,7 +146,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
       }
     }
 
-    "not set cleric to concentrating on spell if at least one enemy failed the saving throw" in {
+    "not set cleric to concentrating on spell if all enemies passed the saving throw" in {
       forAll { (cleric: Cleric, goblinOne: Goblin, goblinTwo: Goblin) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)

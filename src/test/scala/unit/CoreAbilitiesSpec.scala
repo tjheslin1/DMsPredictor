@@ -825,7 +825,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castSelfBuffSpell" should {
-    "cast a spell (Self Buff) updating the casters spell slots and conditions" in {
+    "cast a spell (Self Buff) updating the casters conditions" in {
       forAll { ranger: Ranger =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)

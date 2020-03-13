@@ -258,7 +258,6 @@ trait Tracking {
     new EndOfTurnCondition {
       val name                    = "tracked-end-of-turn-condition"
       val missesTurn              = turnMissed
-      val isHandledOnDamage: Boolean = false
 
       val saveDc: Int    = dc
       val turnsLeft: Int = 10
