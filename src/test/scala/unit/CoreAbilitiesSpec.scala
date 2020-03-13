@@ -296,7 +296,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "not meet the condition of the Spell Caster only knows a multi target damaging spell" in {}
+    "not meet the condition if the Spell Caster only knows multi target damaging spells" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val wizardCombatant = wizard
+            .withSpellsKnown(trackedMultiMeleeSpellAttack(1), trackedMultiMeleeSpellAttack(2))
+            .withAllSpellSlotsAvailableForLevel(LevelFour)
+            .withLevel(LevelFour)
+            .withCombatIndex(1)
+
+          castSingleTargetOffensiveSpell(Priority)(wizardCombatant).conditionMet shouldBe false
+        }
+      }
+    }
   }
 
   "castSingleTargetHealingSpell" should {

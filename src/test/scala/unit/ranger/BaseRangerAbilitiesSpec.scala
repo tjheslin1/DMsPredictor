@@ -46,7 +46,7 @@ class BaseRangerAbilitiesSpec extends UnitSpecBase {
   }
 
   "Two Weapon Fighting" should {
-    "be used if Player is equipped with two weapons" in {
+    "add the rangers stat modifier to the offhand attack if TwoWeaponFighting style is chosen" in {
       forAll { (ranger: Ranger, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
