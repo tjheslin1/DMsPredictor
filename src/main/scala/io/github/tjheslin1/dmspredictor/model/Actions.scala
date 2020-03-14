@@ -194,11 +194,19 @@ object Actions extends LazyLogging {
         f(a, t, o)
     }
 
+//  private def weaponModifier(weapon: Weapon, creature: Creature): Int =
+//    if (weapon.finesse) {
+//      Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
+//    } else
+//      mod(creature.stats.strength)
+
   private def weaponModifier(weapon: Weapon, creature: Creature): Int =
-    if (weapon.finesse) {
-      Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
-    } else
-      mod(creature.stats.strength)
+    weapon.weaponType match {
+      case Melee if weapon.finesse =>
+        Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
+      case Melee  => mod(creature.stats.strength)
+      case Ranged => mod(creature.stats.dexterity)
+    }
 
   private def lossOfConcentration(
       spellCaster: SpellCaster,

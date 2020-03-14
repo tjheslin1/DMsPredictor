@@ -280,7 +280,7 @@ trait ArgParser {
     for {
       vampireName <- c.downField("name").as[String]
     } yield {
-      val health = Vampire.calculateHealth
+      val health = Vampire.calculateHealth()
       Vampire(
         health,
         health,

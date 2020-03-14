@@ -14,13 +14,13 @@ import org.scalatest.matchers.should.Matchers
 
 class BasicSimulationSpec extends AnyFeatureSpec with Matchers with PropertyChecksBase with TestData {
 
-  feature("BasicSimulation") {
+  Feature("BasicSimulation") {
 
     val info = "Fighter vs TestMonster"
 
-    scenario("One Fighter vs a TestMonster where Fighter wins") {
+    Scenario("One Fighter vs a TestMonster where Fighter wins") {
       forAll { (fighter: Fighter, goblin: Goblin) =>
-        val healthyFighter = fighter.withHealth(1000).withStrength(10)
+        val healthyFighter = fighter.withHealth(1000).withStrength(10).withDexterity(10)
         val weakTestMonster = goblin.withHealth(1)
 
         BasicSimulation(List(healthyFighter, weakTestMonster), LowestFirst)
@@ -28,7 +28,7 @@ class BasicSimulationSpec extends AnyFeatureSpec with Matchers with PropertyChec
       }
     }
 
-    scenario("One Fighter vs a TestMonster where TestMonster wins") {
+    Scenario("One Fighter vs a TestMonster where TestMonster wins") {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         val weakFighter = fighter.withHealth(1)
         val healthyTestMonster = goblin.withHealth(1000).withStrength(10)

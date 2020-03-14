@@ -320,7 +320,7 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "use add a players dexterity modifier if higher than strength for a finesse weapon" in {
+    "add a players dexterity modifier if higher than strength for a finesse weapon" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext with Tracking {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -337,6 +337,26 @@ class ActionsSpec extends UnitSpecBase {
 
           updatedMonster.health shouldBe 46
         }
+      }
+    }
+
+    "add a players dexterity modifier for a Ranged weapon" in {
+      forAll { (ranger: Ranger, testMonster: TestMonster) =>
+        implicit val roll: RollStrategy = _ => RollResult(19)
+
+        val rangedWeapon =
+          Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 1)
+
+        val dextrousRanger =
+          ranger.withBaseWeapon(rangedWeapon).withDexterity(14).withStrength(2).withCombatIndex(1)
+
+        val monster =
+          testMonster.withArmourClass(2).withHealth(50).withMaxHealth(50).withCombatIndex(2)
+
+        val (_, Combatant(_, updatedMonster: TestMonster), _) =
+          resolveDamage(dextrousRanger, monster, List(), rangedWeapon, Hit)
+
+        updatedMonster.health shouldBe 47
       }
     }
 

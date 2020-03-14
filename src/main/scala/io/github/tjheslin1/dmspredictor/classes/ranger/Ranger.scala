@@ -88,12 +88,14 @@ object Ranger {
 
   val standardRangerAbilities: List[CombatantAbility] = List(
     castSingleTargetHealingSpell(1),
-    extraAttack(2),
-    twoWeaponFighting(3)
+    castSelfBuffSpell(2),
+    extraAttack(3),
+    twoWeaponFighting(4)
   )
 
   val standardRangerSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds
+    (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds,
+    (HuntersMark.spellLevel, HuntersMark.spellEffect) -> HuntersMark
   )
 
   implicit def rangerShow[_: RS]: Show[Ranger] = Show.show { ranger =>
