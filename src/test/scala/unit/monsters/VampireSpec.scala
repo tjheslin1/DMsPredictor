@@ -51,6 +51,14 @@ class VampireSpec extends UnitSpecBase {
       }
     }
 
+    "not regenerate hit points if the Vampire is already at max hp" in {
+      forAll { vampire: Vampire =>
+        val regeneratedVampire = vampire.withHealth(100).withMaxHealth(100).resetStartOfTurn()
+
+        regeneratedVampire.health shouldBe 100
+      }
+    }
+
     "not regenerate hit points if the Vampire has taken Radiant damage last turn" in {
       forAll { vampire: Vampire =>
         val regeneratedVampire =

@@ -14,14 +14,13 @@ import monocle.macros.Lenses
   val missesTurn: Boolean        = true
   val isHandledOnDamage: Boolean = true
 
-  def decrementTurnsLeft(): Condition =
-    // can only be removed by passing the saving throw
-    this
+  // can only be removed by passing the saving throw
+  def decrementTurnsLeft(): Condition = this
 
   def handleStartOfTurn[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, Wisdom, creature)) {
       val charmed           = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions.except(charmed)
+      val updatedConditions = creature.conditions.except(charmed) :+ VampireCharmImmunity
 
       logger.debug(s"${creature.name} is no longer $name")
 

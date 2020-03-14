@@ -5,7 +5,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Charmed, Grappled}
+import io.github.tjheslin1.dmspredictor.model.condition.{Charmed, Condition, Grappled, VampireCharmImmunity}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -169,7 +169,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedCleric: Cleric))) =
             unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
 
-          updatedCleric.conditions shouldBe List()
+          updatedCleric.conditions shouldBe List.empty[Condition]
           updatedCleric.health < cleric.health
         }
       }
@@ -183,7 +183,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       }
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
-      val cleric  = random[Cleric].withCombatIndex(3)
+      val cleric = random[Cleric].withCombatIndex(3)
 
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe true
     }
@@ -194,7 +194,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       }
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
-      val cleric  = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
+      val cleric = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
 
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe false
     }
@@ -209,7 +209,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
           val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
-          charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
+            charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(Charmed(Vampire.CharmDC))
         }
@@ -226,9 +226,35 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
           val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
-          charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
+            charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
 
-          updatedCleric.conditions shouldBe List()
+          updatedCleric.conditions shouldBe List.empty[Condition]
+        }
+      }
+    }
+
+    "not apply the Charmed condition if the enemy has the VampireCharmImmunity condition" in {
+      forAll { (vampire: Vampire, cleric: Cleric) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(15)
+
+          val vampireCombatant = vampire.withCombatIndex(1)
+          val clericCombatant = cleric.withWisdom(2).withCondition(VampireCharmImmunity).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedCleric: Cleric))) =
+            charm(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+
+          updatedCleric.conditions shouldBe List.empty[Condition]
+        }
+      }
+    }
+
+    "not be triggered if all enemies not charmed are immune" in {
+      forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(15)
+
+          fail("TODO: list diff ")
         }
       }
     }

@@ -11,8 +11,6 @@ object RangerSpells extends LazyLogging {
 
   case object HuntersMarkBuffCondition extends PassiveCondition {
     val name               = "Hunter's Mark (bonus damage)"
-    val saveDc             = 0 // caster maintains benefit until lost
-    val turnsLeft          = 100 // lasts 1 hour
     val missesTurn         = false
     val useHigherSpellSlot = false
 

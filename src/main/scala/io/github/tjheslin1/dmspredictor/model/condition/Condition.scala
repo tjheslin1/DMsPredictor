@@ -20,6 +20,8 @@ trait Condition {
 
 abstract class PassiveCondition extends Condition {
 
+  val turnsLeft          = Integer.MAX_VALUE
+  val saveDc             = 0
   val isHandledOnDamage = false
 
   def handleStartOfTurn[_: RS](creature: Creature): Creature           = creature
