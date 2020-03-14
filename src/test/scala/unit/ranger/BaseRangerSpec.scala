@@ -1,19 +1,16 @@
-package unit.fighter
+package unit.ranger
 
 import base.UnitSpecBase
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
-import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger._
+import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
-import util.TestMonster
 
-import scala.util.Random
-
-class BaseFighterSpec extends UnitSpecBase {
+class BaseRangerSpec extends UnitSpecBase {
 
   "calculateHealth" should {
     "calculate starting health for level one fighter with default constitution score" in new TestContext {
@@ -51,82 +48,73 @@ class BaseFighterSpec extends UnitSpecBase {
     }
 
     "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in new TestContext {
-      val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, 10)
+      val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
       weaponWithFightingStyle(bow, List(Archery)).hitBonus shouldBe 2
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in new TestContext {
-      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, 10)
+      val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(sword, List.empty).hitBonus shouldBe 0
-    }
-
-    "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in new TestContext {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
-        var count = 0
-        val twoHandedWeapon = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, {
-          count += 1
-          D6.roll()(_ => Random.nextInt(2) + 1)
-        })
-
-        val twoHanderFighter = fighter.withFightingStyle(GreatWeaponFighting).withBaseWeapon(twoHandedWeapon)
-
-        Actions.resolveDamageMainHand(twoHanderFighter.withCombatIndex(1), testMonster.withCombatIndex(2), List(), Hit)
-
-        count shouldBe 2
-      }
+      weaponWithFightingStyle(bow, List(Dueling)).hitBonus shouldBe 0
     }
   }
 
-  "armourClassWithFightingStyle" should {
+  "armourClass" should {
     "calculate default armour class for no armour and no shield" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(12, 12, 12, 12, 12, 12),
+      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
         none[Equipment],
-        List.empty[FighterFightingStyle]) shouldBe 11
+        List.empty[RangerFightingStyle]
+      ) shouldBe 10
     }
 
     "calculate armour class for wearing armour but no shield" in new TestContext {
       armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
         none[Equipment],
-        List.empty[FighterFightingStyle]) shouldBe 13
+        List.empty[RangerFightingStyle]
+      ) shouldBe 13
     }
 
     "calculate armour class for wearing a shield but no armour" in new TestContext {
       armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
         Shield.some,
-        List.empty[FighterFightingStyle]) shouldBe 12
+        List.empty[RangerFightingStyle]
+      ) shouldBe 12
     }
 
     "calculate armour class for wearing armour and a shield" in new TestContext {
       armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
         Shield.some,
-        List.empty[FighterFightingStyle]) shouldBe 15
+        List.empty[RangerFightingStyle]
+      ) shouldBe 15
     }
 
     "calculate armour class for wearing armour, shield and with high dexterity" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(14, 14, 14, 14, 14, 14),
+      armourClassWithFightingStyle(BaseStats(10, 14, 10, 10, 10, 10),
         ChainShirt,
         Shield.some,
-        List.empty[FighterFightingStyle]) shouldBe 17
+        List.empty[RangerFightingStyle]
+      ) shouldBe 17
     }
 
     "calculate armour class for having armour and the Defense fighting style" in new TestContext {
       armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
         none[Equipment],
-        List(Defense)) shouldBe 14
+        List(Defense)
+      ) shouldBe 14
     }
 
     "calculate armour class for having no armour and ignoring Defense fighting style" in new TestContext {
       armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
         none[Equipment],
-        List(Defense)) shouldBe 10
+        List(Defense)
+      ) shouldBe 10
     }
   }
 

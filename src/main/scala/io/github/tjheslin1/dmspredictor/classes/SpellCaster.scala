@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes
 
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -27,6 +28,10 @@ object SpellCaster {
       {
         case c: Cleric => Cleric._concentratingSpell.set(concentratingSpell)(c)
 
+        case c: Wizard => Wizard._concentratingSpell.set(concentratingSpell)(c)
+
+        case c: Ranger => Ranger._concentratingSpell.set(concentratingSpell)(c)
+
         case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }
     }
@@ -37,6 +42,8 @@ object SpellCaster {
         case c: Cleric => Cleric._spellSlots.set(spellSlots)(c)
 
         case c: Wizard => Wizard._spellSlots.set(spellSlots)(c)
+
+        case c: Ranger => Ranger._spellSlots.set(spellSlots)(c)
 
         case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }

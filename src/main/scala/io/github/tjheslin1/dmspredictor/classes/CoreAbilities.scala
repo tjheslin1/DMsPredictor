@@ -95,7 +95,14 @@ object CoreAbilities extends LazyLogging {
         optMaxSpellLevel.fold(false) { maxSpellLevel =>
           spellCaster.level >= spellCaster.levelSpellcastingLearned &&
           spellCaster.spellsKnown.exists {
-            case ((spellLvl, spellEffect: SpellEffect), _) if spellLvl <= maxSpellLevel =>
+            case ((spellLvl, spellEffect: SpellEffect), _: SingleTargetAttackSpell)
+                if spellLvl <= maxSpellLevel =>
+              spellEffect match {
+                case DamageSpell => true
+                case _           => false
+              }
+            case ((spellLvl, spellEffect: SpellEffect), _: SingleTargetSavingThrowSpell)
+                if spellLvl <= maxSpellLevel =>
               spellEffect match {
                 case DamageSpell => true
                 case _           => false
@@ -115,11 +122,11 @@ object CoreAbilities extends LazyLogging {
             case None =>
               (spellCaster.cantrip, 0)
             case Some(spellSlot) =>
-              val optSpell =
-                spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)
-              optSpell.fold((spellCaster.cantrip, 0)) { foundSpell =>
-                (foundSpell.some, spellSlot.spellLevel)
-              }
+              spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)()
+                .fold((spellCaster.cantrip, 0)) {
+                  case (foundSpell, foundSpellLevel) =>
+                    (foundSpell.some, foundSpellLevel)
+                }
           }
 
         val target = nextToFocus(combatant, monsters(others), focus)
@@ -162,9 +169,9 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val optSpell = highestSpellSlot match {
-          case None => None
+          case None => none[(Spell, SpellLevel)]
           case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)
+            spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)()
         }
 
         val target = nextToFocus(combatant, players(others), PlayerHealing)
@@ -172,9 +179,9 @@ object CoreAbilities extends LazyLogging {
         val (updatedCombatant, optHealedAlly) = (target, optSpell) match {
           case (_, None) => (combatant, None)
           case (None, _) => (combatant, None)
-          case (Some(spellTarget), Some(spell)) =>
+          case (Some(spellTarget), Some((foundSpell, foundSpellLevel))) =>
             val (updatedSpellCaster, List(updatedTarget)) =
-              spell.effect(spellCaster, highestSpellSlot.get.spellLevel, List(spellTarget))
+              foundSpell.effect(spellCaster, foundSpellLevel, List(spellTarget))
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -211,8 +218,8 @@ object CoreAbilities extends LazyLogging {
 
       val name             = "Cast Spell (Condition)"
       val order            = currentOrder
-      val levelRequirement = LevelFive
-      val abilityAction    = SingleAttack
+      val levelRequirement = LevelOne
+      val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean               = spellConditionMet(spellCaster, ConcentrationSpell)
@@ -223,16 +230,16 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val optSpell = highestSpellSlot match {
-          case None => None
+          case None => none[(Spell, SpellLevel)]
           case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, ConcentrationSpell, spellSlot.spellLevel)
+            spellOfLevelOrBelow(spellCaster, ConcentrationSpell, spellSlot.spellLevel)()
         }
 
         optSpell match {
           case None => (combatant, others)
-          case Some(spell) =>
+          case Some((foundSpell, foundSpellLevel)) =>
             val (updatedSpellCaster, updatedTargets) =
-              spell.effect(spellCaster, highestSpellSlot.get.spellLevel, monsters(others))
+              foundSpell.effect(spellCaster, foundSpellLevel, monsters(others))
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -282,15 +289,11 @@ object CoreAbilities extends LazyLogging {
           highestSpellSlot match {
             case None => (none[Spell], 0)
             case Some(spellSlot) =>
-              val optSpell =
-                spellOfLevelOrBelow(
-                  spellCaster,
-                  DamageSpell,
-                  spellSlot.spellLevel,
-                  multiAttackOnly = true
-                )
-              optSpell.fold((none[Spell], 0)) { foundSpell =>
-                (foundSpell.some, spellSlot.spellLevel)
+              spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(
+                multiAttackOnly = true
+              ).fold((none[Spell], 0)) {
+                case (foundSpell, foundSpellLevel) =>
+                  (foundSpell.some, foundSpellLevel)
               }
           }
 
@@ -309,12 +312,54 @@ object CoreAbilities extends LazyLogging {
       def update: Creature = updateSpellSlot(spellCaster, DamageSpell)
     }
 
+  def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(
+      combatant: Combatant
+  ): Ability =
+    new Ability(combatant) {
+      val spellCaster = combatant.creature.asInstanceOf[Player with SpellCaster]
+
+      val name: String                 = "Cast Spell (self buff)"
+      val order: Int                   = currentOrder
+      val levelRequirement: Level      = LevelOne
+      val abilityAction: AbilityAction = buffAction
+
+      def triggerMet(others: List[Combatant]): Boolean = true
+
+      def conditionMet: Boolean = spellConditionMet(spellCaster, BuffSpell)
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
+
+        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
+
+        val optSpell =
+          highestSpellSlot match {
+            case None => none[(Spell, SpellLevel)]
+            case Some(spellSlot) =>
+              spellOfLevelOrBelow(spellCaster, BuffSpell, spellSlot.spellLevel)()
+          }
+
+        optSpell.fold((combatant, others)) {
+          case (foundSpell, foundSpellLevel) =>
+            val (updatedSpellCaster, updatedOthers) =
+              foundSpell.effect(spellCaster, foundSpellLevel, others)
+
+            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+
+            (updatedCombatant, others.replace(updatedOthers))
+        }
+
+      }
+
+      def update: Creature = updateSpellSlot(spellCaster, BuffSpell)
+    }
+
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 
   def spellConditionMet(spellCaster: Player with SpellCaster, effect: SpellEffect): Boolean = {
     val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-      .fold(none[Int])(_.spellLevel.value.some)
+      .fold(spellCaster.cantrip.fold(none[Int])(_ => 0.some))(_.spellLevel.value.some)
 
     optMaxSpellLevel.fold(false) { maxSpellLevel =>
       spellCaster.level >= spellCaster.levelSpellcastingLearned &&
@@ -342,33 +387,30 @@ object CoreAbilities extends LazyLogging {
   ): Creature =
     highestSpellSlotAvailable(spellCaster.spellSlots) match {
       case None => spellCaster
-      case Some(spellSlotUsed) =>
-        val optSpell =
-          spellOfLevelOrBelow(
-            spellCaster,
-            spellEffect,
-            spellSlotUsed.spellLevel,
-            newlyConcentrating == false
-          )
-
-        optSpell.fold {
+      case Some(spellSlotFound) =>
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotFound.spellLevel)(
+          checkConcentration = newlyConcentrating == false
+        ).fold {
           spellCaster
-        } { foundSpell =>
-          if (foundSpell.spellLevel.value == 0) {
-            spellCaster
-          } else {
-            val updatedSpellSlotCount = spellSlotUsed.count - 1
+        } {
+          case (_, foundSpellLevel) =>
+            if (foundSpellLevel.value == 0) {
+              spellCaster
+            } else {
+              val spellSlotUsed = spellSlotFromLevel(spellCaster, foundSpellLevel)
 
-            val spellSlotLens = spellSlotUsed match {
-              case FirstLevelSpellSlots(_)  => firstLevelLens
-              case SecondLevelSpellSlots(_) => secondLevelLens
-              case ThirdLevelSpellSlots(_)  => thirdLevelLens
+              val updatedSpellSlotCount = spellSlotUsed.count - 1
+
+              val spellSlotLens = spellSlotUsed match {
+                case FirstLevelSpellSlots(_)  => firstLevelLens
+                case SecondLevelSpellSlots(_) => secondLevelLens
+                case ThirdLevelSpellSlots(_)  => thirdLevelLens
+              }
+
+              (SpellCaster.spellSlotsLens composeLens spellSlotLens)
+                .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
+                .asInstanceOf[Player with SpellCaster]
             }
-
-            (SpellCaster.spellSlotsLens composeLens spellSlotLens)
-              .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
-              .asInstanceOf[Player with SpellCaster]
-          }
         }
     }
 }

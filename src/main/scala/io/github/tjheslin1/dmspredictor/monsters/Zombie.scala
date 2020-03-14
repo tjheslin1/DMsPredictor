@@ -68,10 +68,10 @@ import monocle.macros.{GenLens, Lenses}
 
 object Zombie {
 
-  def calculateHealth[_: RS] = (3 * D8) + 9
+  def calculateHealth[_: RS](): Int = (3 * D8) + 9
 
   def apply[_: RS](): Zombie = {
-    val hp = calculateHealth
+    val hp = calculateHealth()
     Zombie(hp, hp)
   }
 

@@ -53,10 +53,10 @@ import monocle.macros.{GenLens, Lenses}
 
 object Goblin {
 
-  def calculateHealth[_: RS]: Int = 2 * D6
+  def calculateHealth[_: RS](): Int = 2 * D6
 
   def withName[_: RS](goblinName: String = NameGenerator.randomName): Goblin = {
-    val hp = calculateHealth
+    val hp = calculateHealth()
     Goblin(hp, hp, name = goblinName)
   }
 

@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting
 
 import cats.syntax.option._
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import monocle.Lens
 import monocle.macros.GenLens
 
@@ -45,6 +46,13 @@ object SpellSlots {
 
     case _ => none[SpellSlot]
   }
+
+  def spellSlotFromLevel(spellCaster: SpellCaster, spellLevel: SpellLevel): SpellSlot =
+    spellLevel.value match {
+      case 1 => spellCaster.spellSlots.firstLevel
+      case 2 => spellCaster.spellSlots.secondLevel
+      case 3 => spellCaster.spellSlots.thirdLevel
+    }
 
   val firstLevelSpellSlotLens: Lens[SpellSlots, FirstLevelSpellSlots] =
     GenLens[SpellSlots](_.firstLevel)

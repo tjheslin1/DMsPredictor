@@ -4,11 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{
-  AcidArrowCondition,
-  Condition,
-  StartOfTurnCondition
-}
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -26,6 +22,7 @@ object WizardSpells extends LazyLogging {
     val spellTargetStyle       = RangedSpellAttack
     val spellLevel: SpellLevel = 0
     val requiresConcentration  = false
+    val useHigherSpellSlot     = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
       case p: Player if p.level == LevelFive => 2 * D10
@@ -42,6 +39,7 @@ object WizardSpells extends LazyLogging {
     val spellTargetStyle       = RangedSpellAttack
     val spellLevel: SpellLevel = 1
     val requiresConcentration  = false
+    val useHigherSpellSlot     = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
       val numberOfDarts = 2 + spellLevel
@@ -77,8 +75,9 @@ object WizardSpells extends LazyLogging {
     val castingTime            = OneActionCast
     val spellLevel: SpellLevel = 2
     val requiresConcentration  = false
+    val useHigherSpellSlot     = true
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = 4 * D4
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (spellLevel + 2) * D4
 
     override def effect[_: RS](
         spellCaster: SpellCaster,
@@ -102,7 +101,7 @@ object WizardSpells extends LazyLogging {
 
       val udpdatedTarget = attackResult match {
         case CriticalHit | Hit =>
-          val acidArrowCondition = AcidArrowCondition()
+          val acidArrowCondition = AcidArrowCondition(spellLevel)
 
           val currentConditions = damagedTarget.creature.conditions
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
@@ -121,10 +120,11 @@ object WizardSpells extends LazyLogging {
     val school: SchoolOfMagic    = Evocation
     val castingTime: CastingTime = OneActionCast
 
-    val attribute: Attribute           = Dexterity
-    val halfDamageOnSave: Boolean      = true
-    val spellLevel: SpellLevel         = 3
-    val requiresConcentration: Boolean = false
+    val attribute: Attribute   = Dexterity
+    val halfDamageOnSave       = true
+    val spellLevel: SpellLevel = 3
+    val requiresConcentration  = false
+    val useHigherSpellSlot     = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
   }
@@ -144,10 +144,10 @@ object WizardSpells extends LazyLogging {
         if (spellCaster.spellSlots.firstLevel.count > 0) {
 
           val reactedCreature = {
-
             val updatedSpellSlots = spellCaster.spellSlots.copy(
               firstLevel = FirstLevelSpellSlots(spellCaster.spellSlots.firstLevel.count - 1)
             )
+
             val updatedSpellCaster = SpellCaster.spellSlotsLens.set(updatedSpellSlots)(spellCaster)
 
             val updatedConditions = reactingCreature.conditions :+ ShieldBuffCondition()
@@ -166,10 +166,10 @@ object WizardSpells extends LazyLogging {
   }
 
   case class ShieldBuffCondition(turnsLeft: Int = 1) extends StartOfTurnCondition {
-    val saveDc: Int             = 0
-    val missesTurn: Boolean     = false
-    val handleOnDamage: Boolean = false
-    val name: String            = "Shield (Buff)"
+    val saveDc: Int                = 0
+    val missesTurn: Boolean        = false
+    val isHandledOnDamage: Boolean = false
+    val name: String               = "Shield (Buff)"
 
     def decrementTurnsLeft(): Condition = ShieldBuffCondition(turnsLeft = 0)
 

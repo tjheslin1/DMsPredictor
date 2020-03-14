@@ -78,8 +78,7 @@ object BaseFighterAbilities extends LazyLogging {
       case Some(w: Weapon) =>
         baseFighter.bonusActionUsed == false &&
           w.twoHanded == false &&
-          combatant.creature.baseWeapon.twoHanded == false &&
-          baseFighter.fightingStyles.contains(TwoWeaponFighting)
+          combatant.creature.baseWeapon.twoHanded == false
       case _ => false
     }
 

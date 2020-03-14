@@ -8,6 +8,7 @@ https://www.dmspredictor.com
 - [Barbarian](src/main/scala/io/github/tjheslin1/dmspredictor/classes/barbarian/README.md)
 - [Cleric](src/main/scala/io/github/tjheslin1/dmspredictor/classes/cleric/README.md)
 - [Fighter](src/main/scala/io/github/tjheslin1/dmspredictor/classes/fighter/README.md)
+- [Ranger](src/main/scala/io/github/tjheslin1/dmspredictor/classes/ranger/README.md)
 - [Rogue](src/main/scala/io/github/tjheslin1/dmspredictor/classes/rogue/README.md)
 - [Wizard](src/main/scala/io/github/tjheslin1/dmspredictor/classes/wizard/README.md)
 
@@ -16,6 +17,10 @@ https://www.dmspredictor.com
 This list only includes monsters with README's
 
 - [Vampire](src/main/scala/io/github/tjheslin1/dmspredictor/monsters/vampire/README.md)
+
+## Spellbook
+
+- [Spell discussion](src/main/scala/io/github/tjheslin1/dmspredictor/model/spellcasting/spellbook/README.md)
 
 ## Requests:
 
@@ -39,7 +44,8 @@ The simulation assumes that players have proficiency with the equipment it uses.
 ##### Ability Score Increases
 
 Ability score increases received at levels 4, 8, etc are not modelled and are assumed to be included in
- the characters stats upon submission to the simulator.
+ the characters stats upon submission to the simulator. The same is true of racial bonuses. 
+ Racial abilities are not currently implemented. These will be done after all classes.
 
 ##### No validation against a Creature's Stats are made.
 

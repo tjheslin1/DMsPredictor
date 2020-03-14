@@ -1,22 +1,25 @@
-package io.github.tjheslin1.dmspredictor.classes.fighter
+package io.github.tjheslin1.dmspredictor.classes.ranger
 
-import io.github.tjheslin1.dmspredictor.classes.Player
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
-import monocle.Lens
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 
-trait BaseFighter extends Player with Product with Serializable {
+trait BaseRanger extends Player with SpellCaster {
 
-  val fightingStyles: List[FighterFightingStyle]
-  val abilityUsages: BaseFighterAbilities
+  val fightingStyles: List[RangerFightingStyle]
+
+  override val cantrip: Option[Spell] = None
+
+  val levelSpellcastingLearned = LevelTwo
 
   def resetStartOfTurn(): Creature = this
 }
 
-object BaseFighter {
+object BaseRanger {
 
   val HitDice = D10
 
@@ -25,30 +28,13 @@ object BaseFighter {
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,
-      fightingStyles: List[FighterFightingStyle]
+      fightingStyles: List[RangerFightingStyle]
   ): Weapon =
     weapon.weaponType match {
       case Ranged if fightingStyles.contains(Archery) =>
         bonusToHitWeapon(weapon, 2)
       case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
         bonusToHitWeapon(weapon, 2)
-      case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
-        lazy val rerollingDamage = {
-          val damageRoll = weapon.damage
-          if (damageRoll <= 2)
-            weapon.damage
-          else
-            damageRoll
-        }
-        Weapon(
-          weapon.name,
-          weapon.weaponType,
-          weapon.damageType,
-          weapon.twoHanded,
-          weapon.finesse,
-          rerollingDamage,
-          weapon.hitBonus
-        )
       case _ => weapon
     }
 
@@ -56,7 +42,7 @@ object BaseFighter {
       stats: BaseStats,
       armour: Armour,
       offHand: Option[Equipment],
-      fightingStyles: List[FighterFightingStyle]
+      fightingStyles: List[RangerFightingStyle]
   ): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
 
@@ -72,15 +58,4 @@ object BaseFighter {
       case _        => baseArmourClass + shieldBonus + defenseBonus
     }
   }
-
-  val abilityUsagesLens: Lens[BaseFighter, BaseFighterAbilities] =
-    Lens[BaseFighter, BaseFighterAbilities](_.abilityUsages) { abilityUsages =>
-      {
-        case champion: Champion => Champion._abilityUsages.set(abilityUsages)(champion)
-        case fighter: Fighter   => Fighter._abilityUsages.set(abilityUsages)(fighter)
-
-        case _ => throw new NotImplementedError("Missing a case in abilityUsagesLens")
-
-      }
-    }
 }

@@ -144,7 +144,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val player = fighter.withAllAbilitiesUsed().withStrength(20).withCombatIndex(1)
+          val player = fighter.withAllAbilitiesUsed().withStrength(20).withDexterity(20).withCombatIndex(1)
 
           val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
           val enemyTwo = monsterTwo.withArmourClass(1).withHealth(1).withCombatIndex(3)

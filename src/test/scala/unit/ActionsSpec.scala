@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
@@ -15,6 +16,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardiansCondition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import util.TestData._
 import util.TestMonster
@@ -274,6 +276,7 @@ class ActionsSpec extends UnitSpecBase {
             attack(attackingGoblin, attackingGoblin.creature.weapon, wizardCombatant)
 
           updatedWizard.reactionUsed shouldBe true
+          updatedWizard.health shouldBe 50
         }
       }
     }
@@ -317,7 +320,7 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "use add a players dexterity modifier if higher than strength for a finesse weapon" in {
+    "add a players dexterity modifier if higher than strength for a finesse weapon" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext with Tracking {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -337,6 +340,26 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
+    "add a players dexterity modifier for a Ranged weapon" in {
+      forAll { (ranger: Ranger, testMonster: TestMonster) =>
+        implicit val roll: RollStrategy = _ => RollResult(19)
+
+        val rangedWeapon =
+          Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 1)
+
+        val dextrousRanger =
+          ranger.withBaseWeapon(rangedWeapon).withDexterity(14).withStrength(2).withCombatIndex(1)
+
+        val monster =
+          testMonster.withArmourClass(2).withHealth(50).withMaxHealth(50).withCombatIndex(2)
+
+        val (_, Combatant(_, updatedMonster: TestMonster), _) =
+          resolveDamage(dextrousRanger, monster, List(), rangedWeapon, Hit)
+
+        updatedMonster.health shouldBe 47
+      }
+    }
+
     "not add players modifier if addStatModifier is false" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext with Tracking {
@@ -348,7 +371,13 @@ class ActionsSpec extends UnitSpecBase {
             testMonster.withArmourClass(2).withHealth(50).withMaxHealth(50).withCombatIndex(2)
 
           val (_, Combatant(_, updatedMonster: TestMonster), _) =
-            resolveDamage(strongFighter, monster, List(), trackedSword, Hit, damageBonus = 0, addStatModifier = false)
+            resolveDamage(strongFighter,
+                          monster,
+                          List(),
+                          trackedSword,
+                          Hit,
+                          damageBonus = 0,
+                          addStatModifier = false)
 
           updatedMonster.health shouldBe 49
         }
@@ -360,16 +389,19 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val turnedFighter = fighter.withCondition(Turned(10, 10)).withCombatIndex(2)
+          val turnedFighter =
+            fighter.withDexterity(5).withNoArmour().withCondition(Turned(10, 10)).withCombatIndex(2)
+
+          val damagingMonster = monster.withStrength(18).withDexterity(18).withCombatIndex(1)
 
           val (_, Combatant(_, updatedFighter: Fighter), _) =
-            resolveDamage(monster.withCombatIndex(1),
+            resolveDamage(damagingMonster,
                           turnedFighter,
-                          List(),
+                          List.empty[Combatant],
                           monster.baseWeapon,
                           Hit)
 
-          updatedFighter.conditions shouldBe List()
+          updatedFighter.conditions shouldBe List.empty[Condition]
         }
       }
     }
@@ -390,19 +422,19 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "handle loss of concentration on spell" in {
+    "handle loss of concentration of a ConcentrationConditionSpell" in {
       forAll { (cleric: Cleric, goblin: Goblin, zombie: Zombie) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val concentratingCleric = cleric
-            .withConcentrating(spiritGuardiansConcentrationSpell.some)
+            .withConcentratingOn(spiritGuardiansConcentrationSpell)
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)
             .withCombatIndex(1)
 
-          val spiritGuardiansCondition = SpiritGuardiansCondition(10, 10, Wisdom)
+          val spiritGuardiansCondition = SpiritGuardiansCondition(3, 10, 10, Wisdom)
 
           val goblinCombatant = goblin
             .withStrength(10)
@@ -422,10 +454,39 @@ class ActionsSpec extends UnitSpecBase {
                           Hit,
                           damageBonus = 30)
 
-          updatedGoblin.conditions shouldBe List()
-          updatedZombie.conditions shouldBe List()
+          updatedGoblin.conditions shouldBe List.empty[Condition]
+          updatedZombie.conditions shouldBe List.empty[Condition]
 
           updatedCleric.concentratingSpell shouldBe none[Spell]
+        }
+      }
+    }
+
+    "handle loss of concentration of a SelfBuffSpell" in {
+      forAll { (ranger: Ranger, zombie: Zombie) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val concentratingRanger = ranger
+            .withConcentratingOn(HuntersMark)
+            .withCondition(HuntersMarkBuffCondition)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withConstitution(2)
+            .withCombatIndex(1)
+
+          val zombieCombatant = zombie.withCombatIndex(2)
+
+          val (_, Combatant(_, updatedRanger: Ranger), _) =
+            resolveDamage(zombieCombatant,
+                          concentratingRanger,
+                          List.empty[Combatant],
+                          zombie.weapon,
+                          Hit,
+                          damageBonus = 30)
+
+          updatedRanger.conditions shouldBe List.empty[Condition]
+          updatedRanger.concentratingSpell shouldBe none[Spell]
         }
       }
     }
@@ -569,7 +630,7 @@ class ActionsSpec extends UnitSpecBase {
     def weaponWithHitBonus(bonus: Int) =
       Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)
 
-    val spiritGuardiansConcentrationSpell: Spell = new ConcentrationConditionSpell() {
+    val spiritGuardiansConcentrationSpell: Spell = new ConcentrationConditionSpell {
       val name: String = "test-concentration-spell"
 
       val attribute: Attribute  = Wisdom
@@ -578,9 +639,10 @@ class ActionsSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
+      val useHigherSpellSlot       = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
-        SpiritGuardiansCondition(10, 10, Wisdom)
+        SpiritGuardiansCondition(3, 10, 10, Wisdom)
     }
   }
 }
