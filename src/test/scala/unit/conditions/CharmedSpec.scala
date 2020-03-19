@@ -21,7 +21,6 @@ class CharmedSpec extends UnitSpecBase {
 
           val updatedGoblin = charmed.handleStartOfTurn(conditionGoblin)
 
-          updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
           updatedGoblin.conditions should contain theSameElementsAs List(poisoned, VampireCharmImmunity)
         }
       }

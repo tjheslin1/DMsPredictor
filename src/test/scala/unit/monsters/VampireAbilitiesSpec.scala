@@ -5,12 +5,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{
-  Charmed,
-  Condition,
-  Grappled,
-  VampireCharmImmunity
-}
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -187,10 +182,9 @@ class VampireAbilitiesSpec extends UnitSpecBase {
   }
 
   "charm" should {
-    "be used if no enemies are already charmed" in {
-      new TestContext {
-        implicit val roll: RollStrategy = D20.naturalTwenty
-      }
+    "be triggered if no enemies are already charmed and do not have the VampireCharmImmunity condition" in new TestContext {
+      implicit val roll: RollStrategy = D20.naturalTwenty
+
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
       val cleric  = random[Cleric].withCombatIndex(3)
@@ -198,10 +192,9 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe true
     }
 
-    "not be used if an enemy is already charmed" in {
-      new TestContext {
-        implicit val roll: RollStrategy = D20.naturalTwenty
-      }
+    "not be triggered if an enemy is already charmed" in new TestContext {
+      implicit val roll: RollStrategy = D20.naturalTwenty
+
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
       val cleric  = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
@@ -209,7 +202,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe false
     }
 
-    "apply the Charmed condition" in {
+    "apply the Charmed condition if the saving throw failed" in {
       forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(15)

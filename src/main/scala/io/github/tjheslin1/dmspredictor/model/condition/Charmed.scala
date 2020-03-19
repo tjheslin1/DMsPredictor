@@ -6,6 +6,10 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
+object Charmed {
+  val name = "Charmed"
+}
+
 @Lenses("_") case class Charmed(saveDc: Int, name: String = Charmed.name)
     extends StartOfTurnCondition
     with LazyLogging {
@@ -32,8 +36,4 @@ import monocle.macros.Lenses
 
   override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
     handleStartOfTurn(creature)
-}
-
-object Charmed {
-  val name = "Charmed"
 }

@@ -137,23 +137,22 @@ object VampireAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelOne
     val abilityAction: AbilityAction = WholeAction
 
-    def charmTargets(others: List[Combatant]): List[Combatant] = others.filter(
-      _.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
-    .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
+    def charmTargets(others: List[Combatant]): List[Combatant] =
+      others
+        .filter(_.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
+        .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
 
-    def triggerMet(others: List[Combatant]): Boolean = {
-      val nonCharmImmuneOthers = others.filter(
-        _.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
-
-      nonCharmImmuneOthers.exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
-    }
+    def triggerMet(others: List[Combatant]): Boolean =
+      others
+        .filter(_.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
+        .exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
 
     def conditionMet: Boolean = true
 
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"Vampire used $name")
 
-      nextToFocus(combatant, players(others), focus) match {
+      nextToFocus(combatant, charmTargets(players(others)), focus) match {
         case None => (combatant, others)
         case Some(target) =>
           if (savingThrowPassed(CharmDC, Wisdom, target.creature))
