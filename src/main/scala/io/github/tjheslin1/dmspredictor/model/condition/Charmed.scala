@@ -6,6 +6,10 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
+object Charmed {
+  val name = "Charmed"
+}
+
 @Lenses("_") case class Charmed(saveDc: Int, name: String = Charmed.name)
     extends StartOfTurnCondition
     with LazyLogging {
@@ -14,14 +18,13 @@ import monocle.macros.Lenses
   val missesTurn: Boolean        = true
   val isHandledOnDamage: Boolean = true
 
-  def decrementTurnsLeft(): Condition =
-    // can only be removed by passing the saving throw
-    this
+  // can only be removed by passing the saving throw
+  def decrementTurnsLeft(): Condition = this
 
   def handleStartOfTurn[_: RS](creature: Creature): Creature =
     if (savingThrowPassed(saveDc, Wisdom, creature)) {
       val charmed           = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions.except(charmed)
+      val updatedConditions = creature.conditions.except(charmed) :+ VampireCharmImmunity
 
       logger.debug(s"${creature.name} is no longer $name")
 
@@ -33,8 +36,4 @@ import monocle.macros.Lenses
 
   override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
     handleStartOfTurn(creature)
-}
-
-object Charmed {
-  val name = "Charmed"
 }
