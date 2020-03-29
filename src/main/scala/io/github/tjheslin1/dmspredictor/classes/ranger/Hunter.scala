@@ -98,11 +98,11 @@ object Hunter {
     (HuntersMark.spellLevel, HuntersMark.spellEffect) -> HuntersMark
   )
 
-  implicit def rangerShow[_: RS]: Show[Ranger] = Show.show { ranger =>
-    s"Ranger: " +
-      s"Name: ${ranger.name}, " +
-      s"health: ${ranger.health}, " +
-      s"AC: ${ranger.armourClass}"
+  implicit def hunterShow[_: RS]: Show[Hunter] = Show.show { hunter =>
+    s"Hunter: " +
+      s"Name: ${hunter.name}, " +
+      s"health: ${hunter.health}, " +
+      s"AC: ${hunter.armourClass}"
   }
 
   val strengthLens: Lens[Hunter, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
@@ -113,7 +113,7 @@ object Hunter {
   val charismaLens: Lens[Hunter, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
   // format: off
-  def rangerSpellSlots(level: Level): SpellSlots = level match {
+  def hunterSpellSlots(level: Level): SpellSlots = level match {
     case LevelOne => SpellSlots(0, 0, 0)
     case LevelTwo => SpellSlots(2, 0, 0)
     case LevelThree => SpellSlots(3, 0, 0)

@@ -274,7 +274,7 @@ object TestData {
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(hunter)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
-      _spellSlots.set(rangerSpellSlots(level))(hunter)
+      _spellSlots.set(hunterSpellSlots(level))(hunter)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(hunter)
   }
