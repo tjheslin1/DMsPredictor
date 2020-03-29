@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
+import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -86,6 +86,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._health.set(hp)(c)
 
       case c: Ranger => Ranger._health.set(hp)(c)
+      case c: Hunter => Hunter._health.set(hp)(c)
 
       case c: Goblin   => Goblin._health.set(hp)(c)
       case c: Werewolf => Werewolf._health.set(hp)(c)
@@ -111,6 +112,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._maxHealth.set(hp)(c)
 
       case c: Ranger => Ranger._maxHealth.set(hp)(c)
+      case c: Hunter => Hunter._maxHealth.set(hp)(c)
 
       case c: Goblin   => Goblin._maxHealth.set(hp)(c)
       case c: Werewolf => Werewolf._maxHealth.set(hp)(c)
@@ -136,6 +138,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._stats.set(stats)(c)
 
       case c: Ranger => Ranger._stats.set(stats)(c)
+      case c: Hunter => Hunter._stats.set(stats)(c)
 
       case c: Goblin   => Goblin._stats.set(stats)(c)
       case c: Werewolf => Werewolf._stats.set(stats)(c)
@@ -162,6 +165,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard.strengthLens.set(strScore)(c)
 
         case c: Ranger => Ranger.strengthLens.set(strScore)(c)
+        case c: Hunter => Hunter.strengthLens.set(strScore)(c)
 
         case c: Goblin   => Goblin.strengthLens.set(strScore)(c)
         case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
@@ -188,6 +192,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard.dexterityLens.set(dexScore)(c)
 
         case c: Ranger => Ranger.dexterityLens.set(dexScore)(c)
+        case c: Hunter => Hunter.dexterityLens.set(dexScore)(c)
 
         case c: Goblin   => Goblin.dexterityLens.set(dexScore)(c)
         case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
@@ -214,6 +219,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard.constitutionLens.set(conScore)(c)
 
         case c: Ranger => Ranger.constitutionLens.set(conScore)(c)
+        case c: Hunter => Hunter.constitutionLens.set(conScore)(c)
 
         case c: Goblin   => Goblin.constitutionLens.set(conScore)(c)
         case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
@@ -239,6 +245,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard.wisdomLens.set(wisScore)(c)
 
       case c: Ranger => Ranger.wisdomLens.set(wisScore)(c)
+      case c: Hunter => Hunter.wisdomLens.set(wisScore)(c)
 
       case c: Goblin   => Goblin.wisdomLens.set(wisScore)(c)
       case c: Werewolf => Werewolf.wisdomLens.set(wisScore)(c)
@@ -265,6 +272,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard.intelligenceLens.set(intScore)(c)
 
         case c: Ranger => Ranger.intelligenceLens.set(intScore)(c)
+        case c: Hunter => Hunter.intelligenceLens.set(intScore)(c)
 
         case c: Goblin   => Goblin.intelligenceLens.set(intScore)(c)
         case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
@@ -291,6 +299,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard.charismaLens.set(chaScore)(c)
 
         case c: Ranger => Ranger.charismaLens.set(chaScore)(c)
+        case c: Hunter => Hunter.charismaLens.set(chaScore)(c)
 
         case c: Goblin   => Goblin.charismaLens.set(chaScore)(c)
         case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
@@ -316,6 +325,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._baseWeapon.set(wpn)(c)
 
       case c: Ranger => Ranger._baseWeapon.set(wpn)(c)
+      case c: Hunter => Hunter._baseWeapon.set(wpn)(c)
 
       case c: Goblin   => Goblin._baseWeapon.set(wpn)(c)
       case c: Werewolf => Werewolf._baseWeapon.set(wpn)(c)
@@ -341,6 +351,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._armour.set(armr)(c)
 
       case c: Ranger => Ranger._armour.set(armr)(c)
+      case c: Hunter => Hunter._armour.set(armr)(c)
 
       case c: Goblin   => Goblin._armour.set(armr)(c)
       case c: Werewolf => Werewolf._armour.set(armr)(c)
@@ -367,6 +378,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._offHand.set(offH)(c)
 
         case c: Ranger => Ranger._offHand.set(offH)(c)
+        case c: Hunter => Hunter._offHand.set(offH)(c)
 
         case c: Goblin   => Goblin._offHand.set(offH)(c)
         case c: Werewolf => Werewolf._offHand.set(offH)(c)
@@ -393,6 +405,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._resistances.set(res)(c)
 
         case c: Ranger => Ranger._resistances.set(res)(c)
+        case c: Hunter => Hunter._resistances.set(res)(c)
 
         case c: Goblin   => Goblin._resistances.set(res)(c)
         case c: Werewolf => Werewolf._resistances.set(res)(c)
@@ -419,6 +432,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._immunities.set(res)(c)
 
         case c: Ranger => Ranger._immunities.set(res)(c)
+        case c: Hunter => Hunter._immunities.set(res)(c)
 
         case c: Goblin   => Goblin._immunities.set(res)(c)
         case c: Werewolf => Werewolf._immunities.set(res)(c)
@@ -445,6 +459,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._abilities.set(res)(c)
 
         case c: Ranger => Ranger._abilities.set(res)(c)
+        case c: Hunter => Hunter._abilities.set(res)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureAbilitiesLens")
       }
@@ -466,6 +481,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._conditions.set(conditions)(c)
 
         case c: Ranger => Ranger._conditions.set(conditions)(c)
+        case c: Hunter => Hunter._conditions.set(conditions)(c)
 
         case c: Goblin   => Goblin._conditions.set(conditions)(c)
         case c: Werewolf => Werewolf._conditions.set(conditions)(c)
@@ -509,6 +525,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._reactionUsed.set(reactionUsed)(c)
 
         case c: Ranger => Ranger._reactionUsed.set(reactionUsed)(c)
+        case c: Hunter => Hunter._reactionUsed.set(reactionUsed)(c)
 
         case c: Vampire => Vampire._reactionUsed.set(reactionUsed)(c)
 
@@ -532,6 +549,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._attackStatus.set(status)(c)
 
         case c: Ranger => Ranger._attackStatus.set(status)(c)
+        case c: Hunter => Hunter._attackStatus.set(status)(c)
 
         case c: Goblin   => Goblin._attackStatus.set(status)(c)
         case c: Werewolf => Werewolf._attackStatus.set(status)(c)
@@ -558,6 +576,7 @@ object Creature extends LazyLogging {
         case c: Wizard => Wizard._defenseStatus.set(status)(c)
 
         case c: Ranger => Ranger._defenseStatus.set(status)(c)
+        case c: Hunter => Hunter._defenseStatus.set(status)(c)
 
         case c: Goblin   => Goblin._defenseStatus.set(status)(c)
         case c: Werewolf => Werewolf._defenseStatus.set(status)(c)
@@ -598,6 +617,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._skills.set(skills)(c)
 
       case c: Ranger => Ranger._skills.set(skills)(c)
+      case c: Hunter => Hunter._skills.set(skills)(c)
 
       case c: Creature => c
     }
@@ -634,6 +654,7 @@ object Creature extends LazyLogging {
       case c: Wizard => Wizard._level.set(lvl)(c)
 
       case c: Ranger => Ranger._level.set(lvl)(c)
+      case c: Hunter => Hunter._level.set(lvl)(c)
 
       case c: Creature => c
     }

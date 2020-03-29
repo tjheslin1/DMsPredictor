@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
+import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -46,6 +46,7 @@ object Player {
         case c: Wizard => Wizard._bonusActionUsed.set(bonusUsed)(c)
 
         case c: Ranger => Ranger._bonusActionUsed.set(bonusUsed)(c)
+        case c: Hunter => Hunter._bonusActionUsed.set(bonusUsed)(c)
 
         case _ =>
           throw new NotImplementedError(
@@ -70,6 +71,7 @@ object Player {
         case c: Wizard => Wizard._reactionUsed.set(reactionUsed)(c)
 
         case c: Ranger => Ranger._reactionUsed.set(reactionUsed)(c)
+        case c: Hunter => Hunter._reactionUsed.set(reactionUsed)(c)
 
         case _ =>
           throw new NotImplementedError(
@@ -94,6 +96,7 @@ object Player {
         case c: Wizard => Wizard._proficiencyBonus.set(profBonus)(c)
 
         case c: Ranger => Ranger._proficiencyBonus.set(profBonus)(c)
+        case c: Hunter => Hunter._proficiencyBonus.set(profBonus)(c)
 
         case _ =>
           throw new NotImplementedError(

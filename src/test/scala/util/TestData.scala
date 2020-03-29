@@ -261,6 +261,23 @@ object TestData {
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(ranger)
   }
+
+  implicit class HunterOps(val hunter: Hunter) extends AnyVal {
+    import Hunter._
+
+    def withFightingStyle(fightingStyle: RangerFightingStyle) =
+      _fightingStyles.set(List(fightingStyle))(hunter)
+
+    def withBonusActionUsed() = _bonusActionUsed.set(true)(hunter)
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(hunter)
+
+    def withAllSpellSlotsAvailableForLevel(level: Level) =
+      _spellSlots.set(rangerSpellSlots(level))(hunter)
+
+    def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(hunter)
+  }
 }
 
 trait TestData extends RandomDataGenerator {
@@ -822,6 +839,38 @@ trait TestData extends RandomDataGenerator {
         player.bonusActionUsed,
         player.reactionUsed,
         Ranger.standardRangerAbilities,
+        player.conditions,
+        player.attackStatus,
+        player.defenseStatus,
+        concentratingSpell = none[Spell],
+        player.name
+      )
+  }
+
+  implicit val arbHunter: Arbitrary[Hunter] = Arbitrary {
+    for {
+      player         <- arbPlayer.arbitrary
+      fightingStyles <- arbRangerFightingStyle.arbitrary
+      level          <- arbLevel.arbitrary
+    } yield
+      Hunter(
+        level,
+        player.health,
+        player.health,
+        player.stats,
+        player.baseWeapon,
+        player.skills,
+        Ranger.rangerSpellSlots(level),
+        Hunter.standardHunterSpellList,
+        player.armour,
+        player.offHand,
+        fightingStyles.toList,
+        player.proficiencyBonus,
+        player.resistances,
+        player.immunities,
+        player.bonusActionUsed,
+        player.reactionUsed,
+        Hunter.standardHunterAbilities,
         player.conditions,
         player.attackStatus,
         player.defenseStatus,

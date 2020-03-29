@@ -359,11 +359,10 @@ trait ArgParser {
   }
 
   val playerClassDecoderLookup: Map[String, Decoder[_]] = Map(
-    "barbarian" -> Decoder[Barbarian],
-    "berserker" -> Decoder[Berserker],
+    "barbarian" -> Decoder[Berserker],
     "cleric"    -> Decoder[Cleric],
-    "fighter"   -> Decoder[Fighter],
-    "champion"  -> Decoder[Champion],
+    "fighter"   -> Decoder[Champion],
+    "ranger"    -> Decoder[Ranger],
     "rogue"     -> Decoder[Rogue],
     "wizard"    -> Decoder[Wizard]
   )
@@ -394,19 +393,19 @@ trait ArgParser {
   )
 
   val fighterFightingStyleLookup: Map[String, FighterFightingStyle] = Map(
-    "archery"             -> fighter.Archery,
-    "defense"             -> fighter.Defense,
-    "dueling"             -> fighter.Dueling,
-    "greatweaponfighting" -> fighter.GreatWeaponFighting,
-    "protection"          -> fighter.Protection,
-    "twoweaponfighting"   -> fighter.TwoWeaponFighting
+    "archery"               -> fighter.Archery,
+    "defense"               -> fighter.Defense,
+    "dueling"               -> fighter.Dueling,
+    "great_weapon_fighting" -> fighter.GreatWeaponFighting,
+    "protection"            -> fighter.Protection,
+    "two_weapon_fighting"   -> fighter.TwoWeaponFighting
   )
 
   val rangerFightingStyleLookup: Map[String, RangerFightingStyle] = Map(
-    "archery"           -> ranger.Archery,
-    "defense"           -> ranger.Defense,
-    "dueling"           -> ranger.Dueling,
-    "twoweaponfighting" -> ranger.TwoWeaponFighting
+    "archery"             -> ranger.Archery,
+    "defense"             -> ranger.Defense,
+    "dueling"             -> ranger.Dueling,
+    "two_weapon_fighting" -> ranger.TwoWeaponFighting
   )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =
