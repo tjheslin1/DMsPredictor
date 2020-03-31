@@ -20,7 +20,7 @@ object BaseRangerAbilities extends LazyLogging {
     val levelRequirement = LevelTwo
     val abilityAction    = SingleAttack
 
-    def triggerMet(others: List[Combatant]): Boolean = true
+    def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>

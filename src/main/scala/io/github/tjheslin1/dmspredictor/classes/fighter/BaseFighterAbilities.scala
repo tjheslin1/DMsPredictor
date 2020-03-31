@@ -36,7 +36,7 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelTwo
     val abilityAction    = BonusAction
 
-    def triggerMet(others: List[Combatant]) =
+    def triggerMet(others: List[Combatant], focus: Focus) =
       combatant.creature.health <= combatant.creature.maxHealth / 2
 
     def conditionMet =
@@ -72,7 +72,7 @@ object BaseFighterAbilities extends LazyLogging {
     val levelRequirement = LevelOne
     val abilityAction    = SingleAttack
 
-    def triggerMet(others: List[Combatant]) = true
+    def triggerMet(others: List[Combatant], focus: Focus) = true
 
     def conditionMet: Boolean = combatant.creature.offHand match {
       case Some(w: Weapon) =>
@@ -138,19 +138,24 @@ object BaseFighterAbilities extends LazyLogging {
       val levelRequirement = LevelTwo
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean               = baseFighter.abilityUsages.actionSurgeUsed == false
+      def triggerMet(others: List[Combatant], focus: Focus) = true
+      def conditionMet: Boolean                             = baseFighter.abilityUsages.actionSurgeUsed == false
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
+        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any, focus)
           .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
             val (updatedAttacker, updatedOthers) =
               useAdditionalAbility(nextAbility, combatant, others, focus)
 
-            nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
-              .fold {
+            nextAbilityToUseInConjunction(
+              updatedAttacker,
+              updatedOthers,
+              order,
+              AbilityAction.Any,
+              focus
+            ).fold {
                 nextToFocus(updatedAttacker, updatedOthers, focus).fold(
                   (updatedAttacker, updatedOthers)
                 ) { nextTarget =>

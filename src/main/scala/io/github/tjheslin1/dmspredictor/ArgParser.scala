@@ -9,7 +9,12 @@ import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, BaseBarbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.classes.ranger.{BaseRanger, Ranger, RangerFightingStyle}
+import io.github.tjheslin1.dmspredictor.classes.ranger.{
+  BaseRanger,
+  Hunter,
+  Ranger,
+  RangerFightingStyle
+}
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -288,6 +293,39 @@ trait ArgParser {
     }
   }
 
+  implicit val hunterDecoder: Decoder[Hunter] = Decoder.instance { c =>
+    for {
+      levelInt   <- c.downField("level").as[Int]
+      level      = Level(levelInt)
+      statsStr   <- c.downField("stats").as[String]
+      stats      <- baseStatsConverter(c, statsStr)
+      weapon     <- c.downField("weapon").as[String]
+      armour     <- c.downField("armour").as[String]
+      offHand    <- c.downField("offHand").as[String]
+      skillsStr  <- c.downField("skills").as[String]
+      skills     <- skillsConverter(c, skillsStr)
+      style      <- c.downField("fightingStyle").as[String]
+      rangerName <- c.downField("name").as[String]
+    } yield {
+      val health = BaseRanger.calculateHealth(level, stats.constitution)
+      Hunter(
+        level,
+        health,
+        health,
+        stats,
+        weaponsLookup(weapon.toLowerCase),
+        skills,
+        Hunter.hunterSpellSlots(level),
+        Hunter.standardHunterSpellList,
+        armourLookup(armour.toLowerCase),
+        offHandLookup.get(offHand.toLowerCase),
+        List(rangerFightingStyleLookup(style.toLowerCase)),
+        ProficiencyBonus.fromLevel(level),
+        name = rangerName
+      )
+    }
+  }
+
   implicit val goblinDecoder: Decoder[Goblin] = Decoder.instance { c =>
     for {
       goblinName <- c.downField("name").as[String]
@@ -362,7 +400,7 @@ trait ArgParser {
     "barbarian" -> Decoder[Berserker],
     "cleric"    -> Decoder[Cleric],
     "fighter"   -> Decoder[Champion],
-    "ranger"    -> Decoder[Ranger],
+    "ranger"    -> Decoder[Hunter],
     "rogue"     -> Decoder[Rogue],
     "wizard"    -> Decoder[Wizard]
   )

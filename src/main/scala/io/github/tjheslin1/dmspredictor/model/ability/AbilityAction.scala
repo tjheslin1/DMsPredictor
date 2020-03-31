@@ -4,9 +4,10 @@ import cats.data.NonEmptyList
 
 sealed trait AbilityAction extends Product with Serializable
 
-case object WholeAction  extends AbilityAction
-case object BonusAction  extends AbilityAction
-case object SingleAttack extends AbilityAction
+case object WholeAction    extends AbilityAction
+case object BonusAction    extends AbilityAction
+case object SingleAttack   extends AbilityAction
+case object OnWeaponDamage extends AbilityAction
 
 object AbilityAction {
   val Any        = NonEmptyList.of(WholeAction, BonusAction, SingleAttack)

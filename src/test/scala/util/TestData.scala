@@ -870,6 +870,7 @@ trait TestData extends RandomDataGenerator {
         player.immunities,
         player.bonusActionUsed,
         player.reactionUsed,
+        colossusSlayerUsed = false,
         Hunter.standardHunterAbilities,
         player.conditions,
         player.attackStatus,

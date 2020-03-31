@@ -40,6 +40,7 @@ import monocle.macros.{GenLens, Lenses}
     immunities: List[DamageType] = List.empty,
     bonusActionUsed: Boolean = false,
     reactionUsed: Boolean = false,
+    colossusSlayerUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardHunterAbilities,
     conditions: List[Condition] = List.empty,
     attackStatus: AttackStatus = Regular,

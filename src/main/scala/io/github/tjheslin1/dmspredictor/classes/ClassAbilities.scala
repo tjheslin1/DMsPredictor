@@ -15,7 +15,8 @@ object ClassAbilities {
       attacker: Combatant,
       others: List[Combatant],
       currentOrder: Int,
-      suitableAction: NonEmptyList[AbilityAction]
+      suitableAction: NonEmptyList[AbilityAction],
+      focus: Focus
   ): Option[CombatantAbility] =
     attacker.creature.abilities
       .sortBy(ability => ability(attacker).order)
@@ -23,7 +24,7 @@ object ClassAbilities {
         val nextAbility = ability(attacker)
         suitableAction.toList.contains(nextAbility.abilityAction) &&
         nextAbility.order > currentOrder &&
-        nextAbility.conditionMet && nextAbility.triggerMet(others)
+        nextAbility.conditionMet && nextAbility.triggerMet(others, focus)
       }
 
   def useAttackActionTwice[_: RS](

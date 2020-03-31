@@ -6,7 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
-import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
+import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.armour.Shield
@@ -501,7 +501,11 @@ class ActionsSpec extends UnitSpecBase {
           val levelFiveRogue = rogue.withLevel(LevelFive).withHealth(50).withCombatIndex(2)
 
           val (_, Combatant(_, updatedRogue: Rogue), _) =
-            resolveDamage(attackingGoblin, levelFiveRogue, List(), sixDamageWeapon, Hit)
+            resolveDamage(attackingGoblin,
+                          levelFiveRogue,
+                          List.empty[Combatant],
+                          sixDamageWeapon,
+                          Hit)
 
           updatedRogue.reactionUsed shouldBe true
           updatedRogue.health shouldBe 47
@@ -518,10 +522,37 @@ class ActionsSpec extends UnitSpecBase {
           val levelFiveRogue  = rogue.withLevel(LevelFive).withHealth(50).withCombatIndex(2)
 
           val (_, Combatant(_, updatedRogue: Rogue), _) =
-            resolveDamage(attackingGoblin, levelFiveRogue, List(), goblin.weapon, Miss)
+            resolveDamage(attackingGoblin,
+                          levelFiveRogue,
+                          List.empty[Combatant],
+                          goblin.weapon,
+                          Miss)
 
           updatedRogue.reactionUsed shouldBe false
           updatedRogue.health shouldBe 50
+        }
+      }
+    }
+
+    "look for available OnWeaponDamage abilities to use" in {
+      forAll { (hunter: Hunter, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val onDamageAbilityHunter = hunter
+            .withAbilities(List(trackedOnWeaponDamageAbility(1)))
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val (_, Combatant(_, updatedGoblin: Goblin), _) = resolveDamage(onDamageAbilityHunter,
+                        goblinCombatant,
+                        List.empty[Combatant],
+                        onDamageAbilityHunter.creature.weapon,
+                        Hit)
+
+          trackedOnWeaponDamageUsed shouldBe true
+          trackedOnWeaponDamageUsedCount shouldBe 1
         }
       }
     }

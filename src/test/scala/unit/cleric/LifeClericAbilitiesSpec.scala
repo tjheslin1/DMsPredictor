@@ -98,7 +98,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
       val weakFighter = random[Fighter].withHealth(10).withMaxHealth(100).withCombatIndex(2)
 
-      discipleOfLife(1)(lifeCleric).triggerMet(List(weakFighter)) shouldBe true
+      discipleOfLife(1)(lifeCleric).triggerMet(List(weakFighter), LowestFirst) shouldBe true
     }
 
     "not be triggered when a healing spell is not triggered (players health is below 50%)" in new TestContext {
@@ -111,7 +111,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
       val weakFighter = random[Fighter].withHealth(90).withMaxHealth(100).withCombatIndex(2)
 
-      discipleOfLife(1)(lifeCleric).triggerMet(List(weakFighter)) shouldBe false
+      discipleOfLife(1)(lifeCleric).triggerMet(List(weakFighter), LowestFirst) shouldBe false
     }
 
     "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
@@ -185,7 +185,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val healthyFighter = random[Fighter].withHealth(20).withMaxHealth(100).withCombatIndex(2)
 
       preserveLife(Priority)(cleric)
-        .triggerMet(List(healthyFighter)) shouldBe true
+        .triggerMet(List(healthyFighter), LowestFirst) shouldBe true
     }
 
     "trigger when more than half of allies are below half health" in {
@@ -196,7 +196,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(4)
 
       preserveLife(Priority)(cleric)
-        .triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe true
+        .triggerMet(List(healthyFighter, weakBarbarian, weakChampion), LowestFirst) shouldBe true
     }
 
     "not trigger when more than half of allies are above half health" in {
@@ -207,7 +207,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val weakChampion   = random[Champion].withHealth(10).withMaxHealth(25).withCombatIndex(4)
 
       preserveLife(Priority)(cleric)
-        .triggerMet(List(healthyFighter, weakBarbarian, weakChampion)) shouldBe false
+        .triggerMet(List(healthyFighter, weakBarbarian, weakChampion), LowestFirst) shouldBe false
     }
 
     "not be used if Channel Divinity is already used" in {

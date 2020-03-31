@@ -48,7 +48,7 @@ object Move extends LazyLogging {
       }
 
       val (actedCombatant, updatedTargets) = {
-        val optAbility = availableActionAbility(conditionHandledCombatant, otherCombatants)
+        val optAbility = availableActionAbility(conditionHandledCombatant, otherCombatants, focus)
         actionAgainstTarget(
           conditionHandledCombatant,
           attackTarget,
@@ -61,7 +61,7 @@ object Move extends LazyLogging {
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
 
       val (bonusActionUsedCombatant, updatedOthers) =
-        availableBonusAction(actedCombatant, updatedOthersTargets).fold(
+        availableBonusAction(actedCombatant, updatedOthersTargets, focus).fold(
           (actedCombatant, updatedOthersTargets)
         ) { bonusActionAbility =>
           useBonusActionAbility(actedCombatant, updatedOthersTargets, bonusActionAbility, focus)
@@ -126,24 +126,30 @@ object Move extends LazyLogging {
 
   private def availableActionAbility(
       attacker: Combatant,
-      others: List[Combatant]
+      others: List[Combatant],
+      focus: Focus
   ): Option[CombatantAbility] =
-    attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
-      val ability = combatantAbility(attacker)
-      AbilityAction.MainAction.toList
-        .contains(ability.abilityAction) && ability.conditionMet && ability
-        .triggerMet(others)
+    attacker.creature.abilities.sortBy(ability => ability(attacker).order).find {
+      combatantAbility =>
+        val ability = combatantAbility(attacker)
+        AbilityAction.MainAction.toList
+          .contains(ability.abilityAction) &&
+        ability.conditionMet &&
+        ability.triggerMet(others, focus)
     }
 
   private def availableBonusAction(
       attacker: Combatant,
-      others: List[Combatant]
+      others: List[Combatant],
+      focus: Focus
   ): Option[CombatantAbility] =
     attacker.creature match {
       case player: Player if player.bonusActionUsed == false =>
-        attacker.creature.abilities.sortBy(_(attacker).order).find { combatantAbility =>
-          val ability = combatantAbility(attacker)
-          ability.abilityAction == BonusAction && ability.conditionMet && ability.triggerMet(others)
+        attacker.creature.abilities.sortBy(ability => ability(attacker).order).find {
+          combatantAbility =>
+            val ability = combatantAbility(attacker)
+            ability.abilityAction == BonusAction && ability.conditionMet && ability
+              .triggerMet(others, focus)
         }
       case _ => None
     }

@@ -25,7 +25,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
       val enemies = List(cleric, goblin, zombieOne, zombieTwo, zombieThree)
 
-      turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe true
+      turnUndead(Priority)(cleric).triggerMet(enemies, LowestFirst) shouldBe true
     }
 
     "not be triggered for non Undead creatures" in {
@@ -34,7 +34,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
       val enemies = List(cleric, goblin)
 
-      turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe false
+      turnUndead(Priority)(cleric).triggerMet(enemies, LowestFirst) shouldBe false
     }
 
     "not be used if Channel Divinity is already used" in {

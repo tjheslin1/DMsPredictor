@@ -47,7 +47,7 @@ object Actions extends LazyLogging {
 
     val roll = rollAttack(attacker, target)
 
-    logger.debug(s"D20.roll() of $roll")
+    logger.debug(s"D20.roll() to attack of $roll")
 
     if (attacker.creature.scoresCritical(roll)) (CriticalHit, target)
     else if (roll == 1) (CriticalMiss, target)
@@ -193,12 +193,6 @@ object Actions extends LazyLogging {
         val (a, t, o) = combatants
         f(a, t, o)
     }
-
-//  private def weaponModifier(weapon: Weapon, creature: Creature): Int =
-//    if (weapon.finesse) {
-//      Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
-//    } else
-//      mod(creature.stats.strength)
 
   private def weaponModifier(weapon: Weapon, creature: Creature): Int =
     weapon.weaponType match {

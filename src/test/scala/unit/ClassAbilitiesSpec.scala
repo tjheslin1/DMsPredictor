@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.AbilityAction
+import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
 import util.TestData._
 
@@ -23,7 +24,8 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
           val actual = nextAbilityToUseInConjunction(combatant,
                                                      List.empty[Combatant],
                                                      2,
-                                                     AbilityAction.Any).value.apply(combatant)
+                                                     AbilityAction.Any,
+                                                     LowestFirst).value.apply(combatant)
 
           actual.name shouldBe expected.name
           actual.order shouldBe expected.order
