@@ -545,11 +545,12 @@ class ActionsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withCombatIndex(2)
 
-          val (_, Combatant(_, updatedGoblin: Goblin), _) = resolveDamage(onDamageAbilityHunter,
-                        goblinCombatant,
-                        List.empty[Combatant],
-                        onDamageAbilityHunter.creature.weapon,
-                        Hit)
+          val (_, Combatant(_, updatedGoblin: Goblin), _) =
+            resolveDamage(onDamageAbilityHunter,
+                          goblinCombatant,
+                          List.empty[Combatant],
+                          onDamageAbilityHunter.creature.weapon,
+                          Hit)
 
           trackedOnWeaponDamageUsed shouldBe true
           trackedOnWeaponDamageUsedCount shouldBe 1
@@ -568,11 +569,12 @@ class ActionsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withCombatIndex(2)
 
-          val (_, Combatant(_, updatedGoblin: Goblin), _) = resolveDamage(onDamageAbilityHunter,
-                        goblinCombatant,
-                        List.empty[Combatant],
-                        onDamageAbilityHunter.creature.weapon,
-                        Hit)
+          val (_, Combatant(_, updatedGoblin: Goblin), _) =
+            resolveDamage(onDamageAbilityHunter,
+                          goblinCombatant,
+                          List.empty[Combatant],
+                          onDamageAbilityHunter.creature.weapon,
+                          Hit)
 
           trackedOnWeaponDamageUsed shouldBe true
           trackedOnWeaponDamageUsedCount shouldBe 1
@@ -591,14 +593,77 @@ class ActionsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withCombatIndex(2)
 
-          val (_, Combatant(_, updatedGoblin: Goblin), _) = resolveDamage(onDamageAbilityHunter,
-                        goblinCombatant,
-                        List.empty[Combatant],
-                        onDamageAbilityHunter.creature.weapon,
-                        Hit)
+          val (_, Combatant(_, updatedGoblin: Goblin), _) =
+            resolveDamage(onDamageAbilityHunter,
+                          goblinCombatant,
+                          List.empty[Combatant],
+                          onDamageAbilityHunter.creature.weapon,
+                          Hit)
 
           trackedOnWeaponDamageUsed shouldBe false
           trackedOnWeaponDamageUsedCount shouldBe 0
+        }
+      }
+    }
+
+    "roll the correct damage for the OnWeaponDamage ability on a CriticalHit" in {
+      forAll { (hunter: Hunter, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val onDamageAbilityHunter = hunter
+            .withBaseWeapon(trackedSword) // does 1 damage
+            .withStrength(10)
+            .withAbilities(List(trackedOnWeaponDamageAbility(1, dmg = 5)))
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
+
+          val (_, Combatant(_, updatedGoblin: Goblin), _) =
+            resolveDamage(onDamageAbilityHunter,
+                          goblinCombatant,
+                          List.empty[Combatant],
+                          onDamageAbilityHunter.creature.weapon,
+                          CriticalHit)
+
+          val weaponDamage  = 1 * 2
+          val abilityDamage = 5 * 2
+
+          updatedGoblin.health shouldBe 50 - abilityDamage - weaponDamage
+        }
+      }
+    }
+
+    "roll the correct damage for the OnWeaponDamage ability on a Hit" in {
+      forAll { (hunter: Hunter, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val onDamageAbilityHunter = hunter
+            .withBaseWeapon(trackedSword) // does 1 damage
+            .withStrength(10)
+            .withAbilities(List(trackedOnWeaponDamageAbility(1, dmg = 5)))
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
+
+          val (_, Combatant(_, updatedGoblin: Goblin), _) =
+            resolveDamage(onDamageAbilityHunter,
+                          goblinCombatant,
+                          List.empty[Combatant],
+                          onDamageAbilityHunter.creature.weapon,
+                          Hit)
+
+          val weaponDamage  = 1
+          val abilityDamage = 5
+
+          updatedGoblin.health shouldBe 50 - abilityDamage - weaponDamage
         }
       }
     }
