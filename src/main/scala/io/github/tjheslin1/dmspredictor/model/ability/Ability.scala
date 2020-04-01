@@ -10,6 +10,7 @@ abstract class Ability(combatant: Combatant) {
   val levelRequirement: Level
   val abilityAction: AbilityAction
 
+  // TODO: remove focus again
   def triggerMet(others: List[Combatant], focus: Focus): Boolean
   def conditionMet: Boolean
 

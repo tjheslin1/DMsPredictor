@@ -75,11 +75,10 @@ trait Tracking {
       condition: => Boolean = trackedOnWeaponDamageUsed == false,
       useAbilityTracking: => Unit = trackedOnWeaponDamageUsedCount += 1,
       `updatedTracking`: => Unit = trackedOnWeaponDamageUsed = true)(
-      combatant: Combatant): Ability = new Ability(combatant) {
+      combatant: Combatant): Ability = new OnWeaponDamageAbility(combatant) {
     val name                    = "tracked-on-weapon-damage-ability"
     val order                   = currentOrder
     val levelRequirement: Level = level
-    val abilityAction           = OnWeaponDamage
 
     def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
 

@@ -1,12 +1,15 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.eq._
+import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.ConcentrationConditionSpell
+import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 sealed trait AttackResult {
   def result: Int
@@ -106,6 +109,8 @@ object Actions extends LazyLogging {
   ): (Combatant, Combatant, List[Combatant]) = {
 
     val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
+
+    val bonusAbilityDamage = availableOnWeaponDamageAction(attacker, List(others), focus)
 
     val dmg = Math.max(
       0,
@@ -216,4 +221,23 @@ object Actions extends LazyLogging {
         .set(remainingConditions)(combatant)
     } else
       combatant
+
+  private def availableOnWeaponDamageAction(
+                                    attacker: Combatant,
+                                    others: List[Combatant],
+                                    focus: Focus
+                                  ): Option[CombatantAbility] =
+    attacker.creature match {
+      case player: Player =>
+        attacker.creature.abilities.sortBy(ability => ability(attacker).order).find {
+          combatantAbility =>
+            combatantAbility(attacker) match {
+              case ability: OnWeaponDamageAbility =>
+                ability.abilityAction == OnWeaponDamage && ability.conditionMet && ability
+                  .triggerMet(others, focus)
+              case _ => false
+            }
+        }
+      case _ => none[CombatantAbility]
+    }
 }
