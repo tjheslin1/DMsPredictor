@@ -1,7 +1,6 @@
 package io.github.tjheslin1.dmspredictor.model
 
 import cats.syntax.eq._
-import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
@@ -9,7 +8,6 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.ConcentrationConditionSpell
-import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 sealed trait AttackResult {
   def result: Int
@@ -110,18 +108,25 @@ object Actions extends LazyLogging {
 
     val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
 
-    val bonusAbilityDamage = availableOnWeaponDamageAction(attacker, List(others), focus)
+    val onWeaponDamageAbilityDamage = availableOnWeaponDamageAction(attacker, target) match {
+      case Some(ability) =>
+        val onWeaponDamageAbility = ability(attacker)
 
-    val dmg = Math.max(
-      0,
-      attackResult match {
-        case CriticalHit =>
-          (weapon.damage + weapon.damage) + modifier + damageBonus
-        case Hit          => weapon.damage + modifier + damageBonus
-        case Miss         => 0
-        case CriticalMiss => 0
-      }
-    )
+        onWeaponDamageAbility.damage()
+      case _ => 0
+    }
+
+    val dmg =
+      Math.max(
+        0,
+        attackResult match {
+          case CriticalHit =>
+            (weapon.damage + weapon.damage) + modifier + damageBonus + (onWeaponDamageAbilityDamage + onWeaponDamageAbilityDamage)
+          case Hit          => weapon.damage + modifier + damageBonus + onWeaponDamageAbilityDamage
+          case Miss         => 0
+          case CriticalMiss => 0
+        }
+      )
 
     val updatedTarget = target.creature.reactionOnDamage.fold {
       Combatant.creatureLens.set(
@@ -223,21 +228,18 @@ object Actions extends LazyLogging {
       combatant
 
   private def availableOnWeaponDamageAction(
-                                    attacker: Combatant,
-                                    others: List[Combatant],
-                                    focus: Focus
-                                  ): Option[CombatantAbility] =
-    attacker.creature match {
-      case player: Player =>
-        attacker.creature.abilities.sortBy(ability => ability(attacker).order).find {
-          combatantAbility =>
-            combatantAbility(attacker) match {
-              case ability: OnWeaponDamageAbility =>
-                ability.abilityAction == OnWeaponDamage && ability.conditionMet && ability
-                  .triggerMet(others, focus)
-              case _ => false
-            }
+      attacker: Combatant,
+      target: Combatant
+  ): Option[Combatant => OnWeaponDamageAbility] =
+    attacker.creature.abilities
+      .sortBy(ability => ability(attacker).order)
+      .find { combatantAbility =>
+        combatantAbility(attacker) match {
+          case ability: OnWeaponDamageAbility =>
+            ability.abilityAction == OnWeaponDamage && ability.conditionMet &&
+              ability.triggerOnSingleTargetMet(target)
+          case _ => false
         }
-      case _ => none[CombatantAbility]
-    }
+      }
+      .map(_.asInstanceOf[Combatant => OnWeaponDamageAbility])
 }

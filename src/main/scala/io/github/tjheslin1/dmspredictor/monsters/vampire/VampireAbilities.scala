@@ -24,7 +24,7 @@ object VampireAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelOne
     val abilityAction: AbilityAction = SingleAttack
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean =
+    def triggerMet(others: List[Combatant]): Boolean =
       others.exists(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
     def conditionMet: Boolean = vampire.biteUsed == false
@@ -84,8 +84,8 @@ object VampireAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelOne
     val abilityAction: AbilityAction = SingleAttack
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
-    def conditionMet: Boolean                                      = true
+    def triggerMet(others: List[Combatant]): Boolean = true
+    def conditionMet: Boolean                        = true
 
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"Vampire used $name")
@@ -142,7 +142,7 @@ object VampireAbilities extends LazyLogging {
         .filter(_.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
         .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean =
+    def triggerMet(others: List[Combatant]): Boolean =
       others
         .filter(_.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
         .exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false

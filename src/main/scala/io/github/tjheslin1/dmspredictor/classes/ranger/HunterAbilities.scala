@@ -4,7 +4,6 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
-import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 
 object HunterAbilities extends LazyLogging {
 
@@ -14,7 +13,7 @@ object HunterAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelThree
     val abilityAction: AbilityAction = OnWeaponDamage
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean =
+    def triggerMet(others: List[Combatant]): Boolean =
       ??? // nextToFocus(combatant, others, )
 
     def conditionMet: Boolean = ???

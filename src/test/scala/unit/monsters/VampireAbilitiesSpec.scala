@@ -189,7 +189,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       val fighter = random[Fighter].withCombatIndex(2)
       val cleric  = random[Cleric].withCombatIndex(3)
 
-      charm(1)(vampire).triggerMet(List(fighter, cleric), LowestFirst) shouldBe true
+      charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe true
     }
 
     "not be triggered if an enemy is already charmed" in new TestContext {
@@ -199,7 +199,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       val fighter = random[Fighter].withCombatIndex(2)
       val cleric  = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
 
-      charm(1)(vampire).triggerMet(List(fighter, cleric), LowestFirst) shouldBe false
+      charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe false
     }
 
     "apply the Charmed condition if the saving throw failed" in {
@@ -266,7 +266,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val charmedCleric      = cleric.withCondition(Charmed(15)).withCombatIndex(2)
           val charmImmuneFighter = fighter.withCondition(VampireCharmImmunity).withCombatIndex(3)
 
-          charm(1)(vampireCombatant).triggerMet(List(charmedCleric, charmImmuneFighter), LowestFirst) shouldBe false
+          charm(1)(vampireCombatant).triggerMet(List(charmedCleric, charmImmuneFighter)) shouldBe false
         }
       }
     }

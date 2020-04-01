@@ -37,7 +37,7 @@ trait Tracking {
       val levelRequirement = level
       val abilityAction    = action
 
-      def triggerMet(others: List[Combatant], focus: Focus) = true
+      def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean                             = condition
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
@@ -69,33 +69,26 @@ trait Tracking {
 
   var trackedOnWeaponDamageUsedCount = 0
   var trackedOnWeaponDamageUsed      = false
-  def trackedOnWeaponDamageAbility(
-      currentOrder: Int,
-      level: Level = LevelOne,
-      condition: => Boolean = trackedOnWeaponDamageUsed == false,
-      useAbilityTracking: => Unit = trackedOnWeaponDamageUsedCount += 1,
-      `updatedTracking`: => Unit = trackedOnWeaponDamageUsed = true)(
-      combatant: Combatant): Ability = new OnWeaponDamageAbility(combatant) {
-    val name                    = "tracked-on-weapon-damage-ability"
-    val order                   = currentOrder
-    val levelRequirement: Level = level
+  def trackedOnWeaponDamageAbility(currentOrder: Int,
+                                   level: Level = LevelOne,
+                                   trigger: => Boolean = trackedOnWeaponDamageUsed == false,
+                                   dmg: => Int = 1)(combatant: Combatant): Ability =
+    new OnWeaponDamageAbility(combatant) {
+      val name                    = "tracked-on-weapon-damage-ability"
+      val order                   = currentOrder
+      val levelRequirement: Level = level
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
+      def triggerMet(others: List[Combatant]): Boolean = trigger
 
-    def conditionMet: Boolean = condition
+      def conditionMet: Boolean = true
 
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      useAbilityTracking
+      def damage[_: RS](): Int = {
+        trackedOnWeaponDamageUsed = true
+        trackedOnWeaponDamageUsedCount += 1
 
-      (combatant, others)
+        dmg
+      }
     }
-
-    def update: Creature = {
-      updatedTracking
-
-      combatant.creature
-    }
-  }
 
   var meleeSpellUsedCount = 0
   def trackedMeleeSpellAttack(spellLvl: SpellLevel,
@@ -314,7 +307,7 @@ trait Tracking {
       val levelRequirement = LevelOne
       val abilityAction    = BonusAction
 
-      def triggerMet(others: List[Combatant], focus: Focus) = true
+      def triggerMet(others: List[Combatant]) = true
       def conditionMet: Boolean                             = true
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =

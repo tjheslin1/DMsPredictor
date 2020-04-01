@@ -23,7 +23,7 @@ object BaseRogueAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelOne
     val abilityAction: AbilityAction = WholeAction
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
+    def triggerMet(others: List[Combatant]): Boolean = true
     def conditionMet: Boolean =
       baseRogue.attackStatus == Advantage || baseRogue.hiddenFrom.isEmpty == false
 
@@ -83,8 +83,8 @@ object BaseRogueAbilities extends LazyLogging {
 
     val abilityAction: AbilityAction = BonusAction
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
-    def conditionMet: Boolean                                      = baseRogue.bonusActionUsed == false
+    def triggerMet(others: List[Combatant]): Boolean = true
+    def conditionMet: Boolean                        = baseRogue.bonusActionUsed == false
 
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${combatant.creature.name} used $name")

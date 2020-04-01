@@ -556,6 +556,52 @@ class ActionsSpec extends UnitSpecBase {
         }
       }
     }
+
+    "use available OnWeaponDamage abilities if trigger is met" in {
+      forAll { (hunter: Hunter, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val onDamageAbilityHunter = hunter
+            .withAbilities(List(trackedOnWeaponDamageAbility(1, trigger = true)))
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val (_, Combatant(_, updatedGoblin: Goblin), _) = resolveDamage(onDamageAbilityHunter,
+                        goblinCombatant,
+                        List.empty[Combatant],
+                        onDamageAbilityHunter.creature.weapon,
+                        Hit)
+
+          trackedOnWeaponDamageUsed shouldBe true
+          trackedOnWeaponDamageUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "not use available OnWeaponDamage abilities if trigger is not met" in {
+      forAll { (hunter: Hunter, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val onDamageAbilityHunter = hunter
+            .withAbilities(List(trackedOnWeaponDamageAbility(1, trigger = false)))
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val (_, Combatant(_, updatedGoblin: Goblin), _) = resolveDamage(onDamageAbilityHunter,
+                        goblinCombatant,
+                        List.empty[Combatant],
+                        onDamageAbilityHunter.creature.weapon,
+                        Hit)
+
+          trackedOnWeaponDamageUsed shouldBe false
+          trackedOnWeaponDamageUsedCount shouldBe 0
+        }
+      }
+    }
   }
 
   "resolveDamageMainHand" should {

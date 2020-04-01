@@ -24,8 +24,8 @@ object MonsterAbilities extends LazyLogging {
 
       val abilityAction: AbilityAction = WholeAction
 
-      def triggerMet(others: List[Combatant], focus: Focus): Boolean = true
-      def conditionMet: Boolean                                      = true
+      def triggerMet(others: List[Combatant]): Boolean = true
+      def conditionMet: Boolean                        = true
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${monster.name} used $name")
@@ -36,8 +36,7 @@ object MonsterAbilities extends LazyLogging {
               attacker,
               otherTargets,
               order,
-              NonEmptyList.of(SingleAttack),
-              focus
+              NonEmptyList.of(SingleAttack)
             ).fold {
               nextToFocus(attacker, players(otherTargets), focus).fold((attacker, otherTargets)) {
                 target =>

@@ -24,7 +24,7 @@ object BerserkerAbilities extends LazyLogging {
     val abilityAction: AbilityAction = WholeAction
     val levelRequirement: Level      = LevelThree
 
-    def triggerMet(others: List[Combatant], focus: Focus) =
+    def triggerMet(others: List[Combatant]) =
       berserker.inRage == false && berserker.inFrenzy == false
     def conditionMet: Boolean = berserker.level >= levelRequirement && berserker.rageUsages > 0
 
@@ -44,8 +44,7 @@ object BerserkerAbilities extends LazyLogging {
             ragingBarbarianCombatant,
             enemies,
             order,
-            AbilityAction.MainAction,
-            focus
+            AbilityAction.MainAction
           ).fold {
             val (updatedAttacker, updatedTarget, updatedOthers) =
               attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
@@ -88,7 +87,7 @@ object BerserkerAbilities extends LazyLogging {
     val abilityAction: AbilityAction = BonusAction
     val levelRequirement: Level      = LevelThree
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean = berserker.inFrenzy == true
+    def triggerMet(others: List[Combatant]): Boolean = berserker.inFrenzy == true
     def conditionMet: Boolean =
       berserker.level >= levelRequirement && berserker.bonusActionUsed == false
 
@@ -100,13 +99,8 @@ object BerserkerAbilities extends LazyLogging {
       target match {
         case None => (combatant, others)
         case Some(targetOfAttack) =>
-          nextAbilityToUseInConjunction(
-            combatant,
-            others,
-            order,
-            NonEmptyList.of(SingleAttack),
-            focus
-          ).fold {
+          nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
+            .fold {
               val (updatedAttacker, updatedTarget, updatedOthers) =
                 attackAndDamage(combatant, targetOfAttack, others)
 

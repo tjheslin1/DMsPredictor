@@ -27,7 +27,7 @@ object LifeClericAbilities extends LazyLogging {
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = WholeAction
 
-      def triggerMet(others: List[Combatant], focus: Focus): Boolean =
+      def triggerMet(others: List[Combatant]): Boolean =
         healingSpellTriggerMet(others)
 
       def conditionMet: Boolean = spellConditionMet(lifeCleric, HealingSpell)
@@ -82,7 +82,7 @@ object LifeClericAbilities extends LazyLogging {
     val levelRequirement: Level      = LevelTwo
     val abilityAction: AbilityAction = WholeAction
 
-    def triggerMet(others: List[Combatant], focus: Focus): Boolean = {
+    def triggerMet(others: List[Combatant]): Boolean = {
       val allies = players(others)
       val alliesBelowHalfHealth =
         allies.count(player => player.creature.health <= (player.creature.maxHealth / 2))

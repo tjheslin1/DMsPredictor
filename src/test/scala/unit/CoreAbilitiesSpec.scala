@@ -323,7 +323,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val goblin           = random[Goblin].withCombatIndex(4)
 
       castSingleTargetHealingSpell(Priority)(healingCleric)
-        .triggerMet(List(damagedFighter, healthyBarbarian, goblin), LowestFirst) shouldBe true
+        .triggerMet(List(damagedFighter, healthyBarbarian, goblin)) shouldBe true
     }
 
     "trigger when a players health is 0" in new TestContext {
@@ -336,7 +336,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val goblin = random[Goblin].withCombatIndex(4)
 
       castSingleTargetHealingSpell(Priority)(healingCleric)
-        .triggerMet(List(damagedFighter, unconsciousBarbarian, goblin), LowestFirst) shouldBe true
+        .triggerMet(List(damagedFighter, unconsciousBarbarian, goblin)) shouldBe true
     }
 
     "not trigger when no players health are below 50%" in new TestContext {
@@ -348,7 +348,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val goblin           = random[Goblin].withHealth(10).withMaxHealth(50).withCombatIndex(4)
 
       castSingleTargetHealingSpell(Priority)(healingCleric)
-        .triggerMet(List(healthyFighter, healthyBarbarian, goblin), LowestFirst) shouldBe false
+        .triggerMet(List(healthyFighter, healthyBarbarian, goblin)) shouldBe false
     }
 
     "cast a spell (healing) using the highest available spell slot" in {

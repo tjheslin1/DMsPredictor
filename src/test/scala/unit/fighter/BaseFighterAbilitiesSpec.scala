@@ -163,7 +163,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
           val lowHealthFighter =
             fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
 
-          secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant], LowestFirst) shouldBe true
+          secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
         }
       }
     }
@@ -195,7 +195,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
               .withLevel(LevelTwo)
               .withCombatIndex(1)
 
-          secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant], LowestFirst) shouldBe false
+          secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe false
         }
       }
     }

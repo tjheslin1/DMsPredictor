@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Turned
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
@@ -25,7 +25,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
       val enemies = List(cleric, goblin, zombieOne, zombieTwo, zombieThree)
 
-      turnUndead(Priority)(cleric).triggerMet(enemies, LowestFirst) shouldBe true
+      turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe true
     }
 
     "not be triggered for non Undead creatures" in {
@@ -34,7 +34,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
       val enemies = List(cleric, goblin)
 
-      turnUndead(Priority)(cleric).triggerMet(enemies, LowestFirst) shouldBe false
+      turnUndead(Priority)(cleric).triggerMet(enemies) shouldBe false
     }
 
     "not be used if Channel Divinity is already used" in {
