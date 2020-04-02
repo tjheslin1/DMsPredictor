@@ -52,16 +52,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpell
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-  def weapon[_: RS]: Weapon = {
-    val fightingStyleAppliedWeapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
-
-    if (conditions.contains(HuntersMarkBuffCondition)) {
-      lazy val extraDamage = huntersMarkDamage()
-
-      Weapon.bonusDamageWeapon(fightingStyleAppliedWeapon, extraDamage)
-    } else
-      fightingStyleAppliedWeapon
-  }
+  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
   def updateHealth[_: RS](
       dmg: Int,
