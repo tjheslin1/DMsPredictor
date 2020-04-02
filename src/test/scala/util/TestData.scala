@@ -21,7 +21,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
-import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
@@ -40,24 +40,24 @@ object TestData {
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
     import TestMonster._
 
-    def withName(creatureName: String)           = _name.set(creatureName)(testMonster)
-    def withHealth(hp: Int)                      = _health.set(hp)(testMonster)
-    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testMonster)
-    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testMonster)
-    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testMonster)
-    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testMonster)
-    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testMonster)
-    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testMonster)
-    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
-    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
+//    def withName(creatureName: String)           = _name.set(creatureName)(testMonster)
+//    def withHealth(hp: Int)                      = _health.set(hp)(testMonster)
+//    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testMonster)
+//    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testMonster)
+//    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testMonster)
+//    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testMonster)
+//    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testMonster)
+//    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testMonster)
+//    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
+//    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
     def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
-    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
-    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
-    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
-    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
-    def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
-    def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
-    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
+//    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
+//    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
+//    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
+//    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
+//    def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
+//    def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
+//    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
@@ -92,6 +92,19 @@ object TestData {
     }
 
     def withCombatIndex(index: Int) = Combatant(index, testMonster)
+  }
+
+  implicit class TestSpellCastingMonsterOps(val testSpellCastingMonster: TestSpellCastingMonster)
+      extends AnyVal {
+    import TestSpellCastingMonster._
+
+    def withSpellSlots(spellSlots: SpellSlots) =
+      _spellSlots.set(spellSlots)(testSpellCastingMonster)
+    def withSpellsKnown(spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell]) =
+      _spellsKnown.set(spellsKnown)(testSpellCastingMonster)
+
+    def withConcentratingOn(concentrationSpell: Option[Spell]) =
+      _concentratingSpell.set(concentrationSpell)(testSpellCastingMonster)
   }
 
   implicit class MonsterOps(val monster: Monster) extends AnyVal {
@@ -586,6 +599,40 @@ trait TestData extends RandomDataGenerator {
         arbSkills.perception,
         arbSkills.stealth,
         TestMonster.defaultScores,
+        creature.name
+      )
+  }
+
+  implicit val arbTestSpellCastingMonster: Arbitrary[TestSpellCastingMonster] = Arbitrary {
+    for {
+      creature     <- arbCreature.arbitrary
+      creatureType <- arbMonsterType.arbitrary
+      cr           <- arbChallengeRating.arbitrary
+      arbSkills    <- arbSkills.arbitrary
+    } yield
+      TestSpellCastingMonster(
+        creature.health,
+        creature.health,
+        creature.stats,
+        creature.armourClass,
+        creature.baseWeapon,
+        creature.armour,
+        creature.offHand,
+        creature.resistances,
+        creature.immunities,
+        List.empty, // TODO add core abilities?
+        creature.conditions,
+        reactionUsed = false,
+        creature.attackStatus,
+        creature.defenseStatus,
+        creatureType,
+        cr,
+        arbSkills.perception,
+        arbSkills.stealth,
+        TestSpellCastingMonster.defaultScores,
+        Map.empty[(SpellLevel, spellcasting.SpellEffect), Spell],
+        SpellSlots(0, 0, 0),
+        none[Spell],
         creature.name
       )
   }

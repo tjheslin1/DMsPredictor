@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import util.TestData._
-import util.TestMonster
+import util.{TestMonster, TestSpellCastingMonster}
 
 class RangerSpellsSpec extends UnitSpecBase {
 
@@ -60,15 +60,63 @@ class RangerSpellsSpec extends UnitSpecBase {
 
   "huntersMarkOnWeaponDamageAbility" should {
     "meet the condition if the Player has the HuntersMarkBuffCondition" in {
-      fail("TODO")
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val buffedRanger = ranger
+            .withCondition(HuntersMarkBuffCondition)
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe true
+        }
+      }
+    }
+
+    "not meet the condition if the Player does not meet the level requirement" in {
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val buffedRanger = ranger
+            .withCondition(HuntersMarkBuffCondition)
+            .withLevel(LevelOne)
+            .withCombatIndex(1)
+
+          huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe true
+        }
+      }
     }
 
     "meet the condition if the SpellCaster (Monster) has the HuntersMarkBuffCondition" in {
-      fail("TODO")
+      forAll { testSpellCastingMonster: TestSpellCastingMonster =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val buffedRanger = testSpellCastingMonster
+            .withCondition(HuntersMarkBuffCondition)
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe true
+        }
+      }
     }
 
     "not meet the condition if the Player is not a high enough level" in {
-      fail("TODO")
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val buffedRanger = ranger
+            .withCondition(HuntersMarkBuffCondition)
+            .withLevel(LevelOne)
+            .withCombatIndex(1)
+
+          huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe true
+        }
+      }
     }
 
     "not meet the condition if the Player does not know the HuntersMark spell" in {
