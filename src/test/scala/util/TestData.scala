@@ -40,24 +40,24 @@ object TestData {
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
     import TestMonster._
 
-//    def withName(creatureName: String)           = _name.set(creatureName)(testMonster)
-//    def withHealth(hp: Int)                      = _health.set(hp)(testMonster)
-//    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testMonster)
-//    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testMonster)
-//    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testMonster)
-//    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testMonster)
-//    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testMonster)
-//    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testMonster)
-//    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
-//    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
+    def withName(creatureName: String)           = _name.set(creatureName)(testMonster)
+    def withHealth(hp: Int)                      = _health.set(hp)(testMonster)
+    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testMonster)
+    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testMonster)
+    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testMonster)
+    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testMonster)
+    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testMonster)
+    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testMonster)
+    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
+    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
     def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
-//    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
-//    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
-//    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
-//    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
-//    def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
-//    def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
-//    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
+    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
+    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
+    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
+    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
+    def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
+    def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
+    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
@@ -97,6 +97,30 @@ object TestData {
   implicit class TestSpellCastingMonsterOps(val testSpellCastingMonster: TestSpellCastingMonster)
       extends AnyVal {
     import TestSpellCastingMonster._
+
+    def withName(creatureName: String)           = _name.set(creatureName)(testSpellCastingMonster)
+    def withHealth(hp: Int)                      = _health.set(hp)(testSpellCastingMonster)
+    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testSpellCastingMonster)
+    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testSpellCastingMonster)
+    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testSpellCastingMonster)
+    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testSpellCastingMonster)
+    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testSpellCastingMonster)
+    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testSpellCastingMonster)
+    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testSpellCastingMonster)
+    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testSpellCastingMonster)
+    def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testSpellCastingMonster)
+    def withNoArmour()                           = _armour.set(NoArmour)(testSpellCastingMonster)
+    def withNoOffHand()                          = _offHand.set(none[Equipment])(testSpellCastingMonster)
+    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testSpellCastingMonster)
+    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testSpellCastingMonster)
+    def withNoResistances()                      = _resistances.set(List.empty)(testSpellCastingMonster)
+    def withNoImmunities()                       = _immunities.set(List.empty)(testSpellCastingMonster)
+    def withNoResistancesOrImmunities()          = testSpellCastingMonster.withNoResistances().withNoImmunities()
+
+    def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testSpellCastingMonster)
+
+    def withCreatureType(creatureType: CreatureType) = _creatureType.set(creatureType)(testSpellCastingMonster)
+    def withChallengeRating(cr: Double)              = _challengeRating.set(cr)(testSpellCastingMonster)
 
     def withSpellSlots(spellSlots: SpellSlots) =
       _spellSlots.set(spellSlots)(testSpellCastingMonster)

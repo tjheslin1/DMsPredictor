@@ -25,18 +25,18 @@ class MultiTargetSavingThrowSpellSpec extends UnitSpecBase {
             .asInstanceOf[Cleric]
 
           val monsterOne = testMonsterOne
-            .withSavingThrowScores(dexterity = -4)
             .withHealth(10)
+            .withSavingThrowScores(dexterity = -4)
             .withCombatIndex(2)
 
           val monsterTwo = testMonsterTwo
-            .withSavingThrowScores(dexterity = -4)
             .withHealth(10)
+            .withSavingThrowScores(dexterity = -4)
             .withCombatIndex(2)
 
           val monsterThree = testMonsterThree
-            .withSavingThrowScores(dexterity = 28)
             .withHealth(10)
+            .withSavingThrowScores(dexterity = 28)
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonsterOne: TestMonster), Combatant(_, updatedMonsterTwo: TestMonster), Combatant(_, updatedMonsterThree: TestMonster))) =
@@ -65,18 +65,18 @@ class MultiTargetSavingThrowSpellSpec extends UnitSpecBase {
             .asInstanceOf[Cleric]
 
           val monsterOne = testMonsterOne
-            .withSavingThrowScores(dexterity = -4)
             .withHealth(10)
+            .withSavingThrowScores(dexterity = -4)
             .withCombatIndex(2)
 
           val monsterTwo = testMonsterTwo
-            .withSavingThrowScores(dexterity = -4)
             .withHealth(10)
+            .withSavingThrowScores(dexterity = -4)
             .withCombatIndex(2)
 
           val monsterThree = testMonsterThree
-            .withSavingThrowScores(dexterity = 28)
             .withHealth(10)
+            .withSavingThrowScores(dexterity = 28)
             .withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedMonsterOne: TestMonster), Combatant(_, updatedMonsterTwo: TestMonster), Combatant(_, updatedMonsterThree: TestMonster))) =
