@@ -108,11 +108,17 @@ object Actions extends LazyLogging {
 
     val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
 
-    val onWeaponDamageAbilityDamage = availableOnWeaponDamageAction(attacker, target) match {
+    def onWeaponDamageAbilityDamage(): Int = availableOnWeaponDamageAction(attacker, target) match {
       case Some(ability) =>
         val onWeaponDamageAbility = ability(attacker)
 
-        onWeaponDamageAbility.damage()
+        val onWeaponDamage = onWeaponDamageAbility.damage()
+
+        logger.debug(
+          s"${attacker.creature.name} rolls an extra $onWeaponDamage damage using ${onWeaponDamageAbility.name}"
+        )
+
+        onWeaponDamage
       case _ => 0
     }
 
@@ -121,8 +127,12 @@ object Actions extends LazyLogging {
         0,
         attackResult match {
           case CriticalHit =>
-            (weapon.damage + weapon.damage) + modifier + damageBonus + (onWeaponDamageAbilityDamage + onWeaponDamageAbilityDamage)
-          case Hit          => weapon.damage + modifier + damageBonus + onWeaponDamageAbilityDamage
+            val doubleWeaponDamage = weapon.damage + weapon.damage
+            val doubleOnWeaponAbilityDamage =
+              onWeaponDamageAbilityDamage() + onWeaponDamageAbilityDamage()
+
+            doubleWeaponDamage + doubleOnWeaponAbilityDamage + modifier + damageBonus
+          case Hit          => weapon.damage + modifier + damageBonus + onWeaponDamageAbilityDamage()
           case Miss         => 0
           case CriticalMiss => 0
         }

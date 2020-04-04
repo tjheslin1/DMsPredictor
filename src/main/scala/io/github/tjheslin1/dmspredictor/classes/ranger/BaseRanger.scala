@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 
 trait BaseRanger extends Player with SpellCaster {
 
@@ -25,6 +25,15 @@ object BaseRanger {
 
   def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
+
+  def rangerSpellSlots(level: Level): SpellSlots = level match {
+    case LevelOne    => SpellSlots(0, 0, 0)
+    case LevelTwo    => SpellSlots(2, 0, 0)
+    case LevelThree  => SpellSlots(3, 0, 0)
+    case LevelFour   => SpellSlots(3, 0, 0)
+    case LevelFive   => SpellSlots(4, 2, 0)
+    case LevelTwenty => SpellSlots(4, 3, 3)
+  }
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,

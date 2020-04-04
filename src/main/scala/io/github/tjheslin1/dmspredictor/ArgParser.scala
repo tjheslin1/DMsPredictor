@@ -8,12 +8,7 @@ import io.circe.generic.semiauto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, BaseBarbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.classes.ranger.{
-  BaseRanger,
-  Hunter,
-  Ranger,
-  RangerFightingStyle
-}
+import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
 import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
@@ -283,7 +278,7 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
-        Ranger.rangerSpellSlots(level),
+        BaseRanger.rangerSpellSlots(level),
         Ranger.standardRangerSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
@@ -316,7 +311,7 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
-        Hunter.hunterSpellSlots(level),
+        BaseRanger.rangerSpellSlots(level),
         Hunter.standardHunterSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),

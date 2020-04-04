@@ -103,13 +103,4 @@ object Ranger {
   val wisdomLens: Lens[Ranger, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Ranger, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Ranger, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
-
-  def rangerSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne    => SpellSlots(0, 0, 0)
-    case LevelTwo    => SpellSlots(2, 0, 0)
-    case LevelThree  => SpellSlots(3, 0, 0)
-    case LevelFour   => SpellSlots(3, 0, 0)
-    case LevelFive   => SpellSlots(4, 2, 0)
-    case LevelTwenty => SpellSlots(4, 3, 3)
-  }
 }

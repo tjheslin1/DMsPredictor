@@ -10,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
@@ -316,7 +317,7 @@ object TestData {
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(hunter)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
-      _spellSlots.set(hunterSpellSlots(level))(hunter)
+      _spellSlots.set(rangerSpellSlots(level))(hunter)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(hunter)
   }
@@ -975,7 +976,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
-        Ranger.rangerSpellSlots(level),
+        rangerSpellSlots(level),
         Ranger.standardRangerSpellList,
         player.armour,
         player.offHand,
@@ -1007,7 +1008,7 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
-        Ranger.rangerSpellSlots(level),
+        rangerSpellSlots(level),
         Hunter.standardHunterSpellList,
         player.armour,
         player.offHand,

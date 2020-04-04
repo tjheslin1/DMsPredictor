@@ -71,7 +71,7 @@ trait Tracking {
   var trackedOnWeaponDamageUsed      = false
   def trackedOnWeaponDamageAbility(currentOrder: Int,
                                    level: Level = LevelOne,
-                                   trigger: => Boolean = trackedOnWeaponDamageUsed == false,
+                                   trigger: => Boolean = true,
                                    dmg: => Int = 1)(combatant: Combatant): Ability =
     new OnWeaponDamageAbility(combatant) {
       val name                    = "tracked-on-weapon-damage-ability"

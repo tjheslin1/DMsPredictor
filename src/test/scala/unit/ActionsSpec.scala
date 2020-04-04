@@ -632,6 +632,7 @@ class ActionsSpec extends UnitSpecBase {
           val weaponDamage  = 1 * 2
           val abilityDamage = 5 * 2
 
+          trackedOnWeaponDamageUsedCount shouldBe 2
           updatedGoblin.health shouldBe 50 - abilityDamage - weaponDamage
         }
       }

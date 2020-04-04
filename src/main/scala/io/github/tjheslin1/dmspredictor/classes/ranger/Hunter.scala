@@ -104,13 +104,4 @@ object Hunter {
   val wisdomLens: Lens[Hunter, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Hunter, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Hunter, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
-
-  def hunterSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne    => SpellSlots(0, 0, 0)
-    case LevelTwo    => SpellSlots(2, 0, 0)
-    case LevelThree  => SpellSlots(3, 0, 0)
-    case LevelFour   => SpellSlots(3, 0, 0)
-    case LevelFive   => SpellSlots(4, 2, 0)
-    case LevelTwenty => SpellSlots(4, 3, 3)
-  }
 }
