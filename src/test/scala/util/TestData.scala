@@ -13,7 +13,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
+import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -22,6 +22,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
@@ -98,32 +99,41 @@ object TestData {
       extends AnyVal {
     import TestSpellCastingMonster._
 
-    def withName(creatureName: String)           = _name.set(creatureName)(testSpellCastingMonster)
-    def withHealth(hp: Int)                      = _health.set(hp)(testSpellCastingMonster)
-    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testSpellCastingMonster)
-    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testSpellCastingMonster)
-    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testSpellCastingMonster)
-    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testSpellCastingMonster)
-    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testSpellCastingMonster)
-    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testSpellCastingMonster)
-    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testSpellCastingMonster)
-    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testSpellCastingMonster)
-    def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testSpellCastingMonster)
-    def withNoArmour()                           = _armour.set(NoArmour)(testSpellCastingMonster)
-    def withNoOffHand()                          = _offHand.set(none[Equipment])(testSpellCastingMonster)
-    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testSpellCastingMonster)
-    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testSpellCastingMonster)
-    def withNoResistances()                      = _resistances.set(List.empty)(testSpellCastingMonster)
-    def withNoImmunities()                       = _immunities.set(List.empty)(testSpellCastingMonster)
-    def withNoResistancesOrImmunities()          = testSpellCastingMonster.withNoResistances().withNoImmunities()
+    def withName(creatureName: String)   = _name.set(creatureName)(testSpellCastingMonster)
+    def withHealth(hp: Int)              = _health.set(hp)(testSpellCastingMonster)
+    def withMaxHealth(hp: Int)           = _maxHealth.set(hp)(testSpellCastingMonster)
+    def withStrength(strScore: Stat)     = strengthLens.set(strScore)(testSpellCastingMonster)
+    def withDexterity(dexScore: Stat)    = dexterityLens.set(dexScore)(testSpellCastingMonster)
+    def withConstitution(conScore: Stat) = constitutionLens.set(conScore)(testSpellCastingMonster)
+    def withWisdom(wisScore: Stat)       = wisdomLens.set(wisScore)(testSpellCastingMonster)
+    def withIntelligence(intScore: Stat) = intelligenceLens.set(intScore)(testSpellCastingMonster)
+    def withCharisma(chaScore: Stat)     = charismaLens.set(chaScore)(testSpellCastingMonster)
+    def withBaseWeapon(weapon: Weapon)   = _baseWeapon.set(weapon)(testSpellCastingMonster)
+    def withArmourClass(ac: Int)         = _armourClass.set(ac)(testSpellCastingMonster)
+    def withNoArmour()                   = _armour.set(NoArmour)(testSpellCastingMonster)
+    def withNoOffHand()                  = _offHand.set(none[Equipment])(testSpellCastingMonster)
+    def withResistance(creatureRes: DamageType*) =
+      _resistances.set(creatureRes.toList)(testSpellCastingMonster)
+    def withImmunity(creatureImm: DamageType*) =
+      _immunities.set(creatureImm.toList)(testSpellCastingMonster)
+    def withNoResistances() = _resistances.set(List.empty)(testSpellCastingMonster)
+    def withNoImmunities()  = _immunities.set(List.empty)(testSpellCastingMonster)
+    def withNoResistancesOrImmunities() =
+      testSpellCastingMonster.withNoResistances().withNoImmunities()
 
-    def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testSpellCastingMonster)
+    def withAbilities(ablts: List[CombatantAbility]) =
+      _abilities.set(ablts)(testSpellCastingMonster)
 
-    def withCreatureType(creatureType: CreatureType) = _creatureType.set(creatureType)(testSpellCastingMonster)
-    def withChallengeRating(cr: Double)              = _challengeRating.set(cr)(testSpellCastingMonster)
+    def withCreatureType(creatureType: CreatureType) =
+      _creatureType.set(creatureType)(testSpellCastingMonster)
+    def withChallengeRating(cr: Double) = _challengeRating.set(cr)(testSpellCastingMonster)
 
     def withSpellSlots(spellSlots: SpellSlots) =
       _spellSlots.set(spellSlots)(testSpellCastingMonster)
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(testSpellCastingMonster)
+
     def withSpellsKnown(spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell]) =
       _spellsKnown.set(spellsKnown)(testSpellCastingMonster)
 
@@ -223,9 +233,7 @@ object TestData {
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(clericSpellSlots(level))(cleric)
     def withNoSpellSlotsAvailable() =
-      _spellSlots.set(
-        SpellSlots(FirstLevelSpellSlots(0), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0)))(
-        cleric)
+      _spellSlots.set(SpellSlots(0, 0, 0, 0, 0, 0, 0, 0, 0))(cleric)
     def withChannelDivinityUsed() = _channelDivinityUsed.set(true)(cleric)
   }
 
@@ -270,16 +278,13 @@ object TestData {
       _spellSlots.set(spellSlots)(wizard)
 
     def withNoSpellSlotsAvailable() =
-      _spellSlots.set(
-        SpellSlots(FirstLevelSpellSlots(0), SecondLevelSpellSlots(0), ThirdLevelSpellSlots(0)))(
-        wizard)
+      _spellSlots.set(SpellSlots(0, 0, 0, 0, 0, 0, 0, 0, 0))(wizard)
 
     def withConcentratingOn(concentrationSpell: Spell) =
       _concentratingSpell.set(concentrationSpell.some)(wizard)
 
     def withCastShieldOnReaction(willCast: Boolean) = _castShieldAsReaction.set(willCast)(wizard)
     def withMageArmourPrepared(prepared: Boolean)   = _mageArmourPrepared.set(prepared)(wizard)
-
   }
 
   implicit class RangerOps(val ranger: Ranger) extends AnyVal {
@@ -314,6 +319,13 @@ object TestData {
       _spellSlots.set(hunterSpellSlots(level))(hunter)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(hunter)
+  }
+
+  implicit class LichOps(val lich: Lich) extends AnyVal {
+    import Lich._
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(lich)
   }
 }
 
@@ -352,12 +364,65 @@ trait TestData extends RandomDataGenerator {
     } yield ThirdLevelSpellSlots(count)
   }
 
+  implicit val arbFourthLevelSpellSlot: Arbitrary[FourthLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.choose(1, 3)
+    } yield FourthLevelSpellSlots(count)
+  }
+
+  implicit val arbFifthLevelSpellSlot: Arbitrary[FifthLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.choose(1, 2)
+    } yield FifthLevelSpellSlots(count)
+  }
+
+  implicit val arbSixthLevelSpellSlot: Arbitrary[SixthLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.const(1)
+    } yield SixthLevelSpellSlots(count)
+  }
+
+  implicit val arbSeventhLevelSpellSlot: Arbitrary[SeventhLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.const(1)
+    } yield SeventhLevelSpellSlots(count)
+  }
+
+  implicit val arbEighthLevelSpellSlot: Arbitrary[EighthLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.const(1)
+    } yield EighthLevelSpellSlots(count)
+  }
+
+  implicit val arbNinthLevelSpellSlot: Arbitrary[NinthLevelSpellSlots] = Arbitrary {
+    for {
+      count <- Gen.const(1)
+    } yield NinthLevelSpellSlots(count)
+  }
+
   implicit val arbSpellSlots: Arbitrary[SpellSlots] = Arbitrary {
     for {
-      firstLevelSpellSlots  <- arbFirstLevelSpellSlot.arbitrary
-      secondLevelSpellSlots <- arbSecondLevelSpellSlot.arbitrary
-      thirdLevelSpellSlots  <- arbThirdLevelSpellSlot.arbitrary
-    } yield SpellSlots(firstLevelSpellSlots, secondLevelSpellSlots, thirdLevelSpellSlots)
+      firstLevelSpellSlots   <- arbFirstLevelSpellSlot.arbitrary
+      secondLevelSpellSlots  <- arbSecondLevelSpellSlot.arbitrary
+      thirdLevelSpellSlots   <- arbThirdLevelSpellSlot.arbitrary
+      fourthLevelSpellSlots  <- arbFourthLevelSpellSlot.arbitrary
+      fifthLevelSpellSlots   <- arbFifthLevelSpellSlot.arbitrary
+      sixthLevelSpellSlots   <- arbSixthLevelSpellSlot.arbitrary
+      seventhLevelSpellSlots <- arbSeventhLevelSpellSlot.arbitrary
+      eighthLevelSpellSlots  <- arbEighthLevelSpellSlot.arbitrary
+      ninthLevelSpellSlots   <- arbNinthLevelSpellSlot.arbitrary
+    } yield
+      SpellSlots(
+        firstLevelSpellSlots,
+        secondLevelSpellSlots,
+        thirdLevelSpellSlots,
+        fourthLevelSpellSlots,
+        fifthLevelSpellSlots,
+        sixthLevelSpellSlots,
+        seventhLevelSpellSlots,
+        eighthLevelSpellSlots,
+        ninthLevelSpellSlots
+      )
   }
 
   implicit val arbStat: Arbitrary[Stat] =
@@ -563,11 +628,11 @@ trait TestData extends RandomDataGenerator {
       )
   }
 
-  implicit val arbZombie: Arbitrary[Zombie] = Arbitrary {
+  implicit val arbLich: Arbitrary[Lich] = Arbitrary {
     for {
       creature <- arbCreature.arbitrary
     } yield
-      Zombie(
+      Lich(
         creature.health,
         creature.health,
         name = creature.name
@@ -590,6 +655,17 @@ trait TestData extends RandomDataGenerator {
       creature <- arbCreature.arbitrary
     } yield
       Werewolf(
+        creature.health,
+        creature.health,
+        name = creature.name
+      )
+  }
+
+  implicit val arbZombie: Arbitrary[Zombie] = Arbitrary {
+    for {
+      creature <- arbCreature.arbitrary
+    } yield
+      Zombie(
         creature.health,
         creature.health,
         name = creature.name

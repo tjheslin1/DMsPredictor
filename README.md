@@ -17,6 +17,7 @@ https://www.dmspredictor.com
 This list only includes monsters with README's
 
 - [Vampire](src/main/scala/io/github/tjheslin1/dmspredictor/monsters/vampire/README.md)
+- [Lich](src/main/scala/io/github/tjheslin1/dmspredictor/monsters/lich/README.md)
 
 ## Spellbook
 

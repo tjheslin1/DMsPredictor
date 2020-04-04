@@ -31,8 +31,9 @@ object RangerSpells extends LazyLogging {
     val useHigherSpellSlot     = false
   }
 
-  def huntersMarkOnWeaponDamageAbility(currentOrder: Int)(
-      combatant: Combatant): OnWeaponDamageAbility = new OnWeaponDamageAbility(combatant) {
+  def huntersMarkOnWeaponDamageAbility(
+      currentOrder: Int
+  )(combatant: Combatant): OnWeaponDamageAbility = new OnWeaponDamageAbility(combatant) {
 
     val name: String            = "Hunters Mark extra damage"
     val order: Int              = currentOrder

@@ -5,7 +5,6 @@ import eu.timepit.refined.api.Refined.unsafeApply
 import io.circe.Decoder.Result
 import io.circe._
 import io.circe.generic.semiauto._
-import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, BaseBarbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter._
@@ -17,11 +16,13 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.{
 }
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
+import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst, RandomFocus}
 
@@ -332,6 +333,15 @@ trait ArgParser {
     } yield {
       val health = Goblin.calculateHealth()
       Goblin(health, health, name = goblinName)
+    }
+  }
+
+  implicit val lichDecoder: Decoder[Lich] = Decoder.instance { c =>
+    for {
+      lichName <- c.downField("name").as[String]
+    } yield {
+      val health = Lich.calculateHealth()
+      Lich(health, health, name = lichName)
     }
   }
 

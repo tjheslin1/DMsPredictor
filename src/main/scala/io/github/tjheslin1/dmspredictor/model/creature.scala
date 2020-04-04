@@ -15,6 +15,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.monsters._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import monocle.{Lens, Optional}
 
@@ -92,6 +93,7 @@ object Creature extends LazyLogging {
       case c: Werewolf => Werewolf._health.set(hp)(c)
       case c: Zombie   => Zombie._health.set(hp)(c)
       case c: Vampire  => Vampire._health.set(hp)(c)
+      case c: Lich     => Lich._health.set(hp)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureHealthLens")
     }
@@ -118,6 +120,7 @@ object Creature extends LazyLogging {
       case c: Werewolf => Werewolf._maxHealth.set(hp)(c)
       case c: Zombie   => Zombie._maxHealth.set(hp)(c)
       case c: Vampire  => Vampire._maxHealth.set(hp)(c)
+      case c: Lich     => Lich._maxHealth.set(hp)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureMaxHealthLens")
     }
@@ -144,6 +147,7 @@ object Creature extends LazyLogging {
       case c: Werewolf => Werewolf._stats.set(stats)(c)
       case c: Zombie   => Zombie._stats.set(stats)(c)
       case c: Vampire  => Vampire._stats.set(stats)(c)
+      case c: Lich     => Lich._stats.set(stats)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureStatsLens")
     }
@@ -171,6 +175,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf.strengthLens.set(strScore)(c)
         case c: Zombie   => Zombie.strengthLens.set(strScore)(c)
         case c: Vampire  => Vampire.strengthLens.set(strScore)(c)
+        case c: Lich     => Lich.strengthLens.set(strScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureStrengthLens")
       }
@@ -198,6 +203,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf.dexterityLens.set(dexScore)(c)
         case c: Zombie   => Zombie.dexterityLens.set(dexScore)(c)
         case c: Vampire  => Vampire.dexterityLens.set(dexScore)(c)
+        case c: Lich     => Lich.dexterityLens.set(dexScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureDexterityLens")
       }
@@ -225,6 +231,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf.constitutionLens.set(conScore)(c)
         case c: Zombie   => Zombie.constitutionLens.set(conScore)(c)
         case c: Vampire  => Vampire.constitutionLens.set(conScore)(c)
+        case c: Lich     => Lich.constitutionLens.set(conScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureConstitutionLens")
       }
@@ -251,6 +258,7 @@ object Creature extends LazyLogging {
       case c: Werewolf => Werewolf.wisdomLens.set(wisScore)(c)
       case c: Zombie   => Zombie.wisdomLens.set(wisScore)(c)
       case c: Vampire  => Vampire.wisdomLens.set(wisScore)(c)
+      case c: Lich     => Lich.wisdomLens.set(wisScore)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureWisdomLens")
     }
@@ -278,6 +286,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf.intelligenceLens.set(intScore)(c)
         case c: Zombie   => Zombie.intelligenceLens.set(intScore)(c)
         case c: Vampire  => Vampire.intelligenceLens.set(intScore)(c)
+        case c: Lich     => Lich.intelligenceLens.set(intScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureIntelligenceLens")
       }
@@ -305,6 +314,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf.charismaLens.set(chaScore)(c)
         case c: Zombie   => Zombie.charismaLens.set(chaScore)(c)
         case c: Vampire  => Vampire.charismaLens.set(chaScore)(c)
+        case c: Lich     => Lich.charismaLens.set(chaScore)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureCharismaLens")
       }
@@ -331,6 +341,7 @@ object Creature extends LazyLogging {
       case c: Werewolf => Werewolf._baseWeapon.set(wpn)(c)
       case c: Zombie   => Zombie._baseWeapon.set(wpn)(c)
       case c: Vampire  => Vampire._baseWeapon.set(wpn)(c)
+      case c: Lich     => Lich._baseWeapon.set(wpn)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureBaseWeaponLens")
     }
@@ -357,6 +368,7 @@ object Creature extends LazyLogging {
       case c: Werewolf => Werewolf._armour.set(armr)(c)
       case c: Zombie   => Zombie._armour.set(armr)(c)
       case c: Vampire  => Vampire._armour.set(armr)(c)
+      case c: Lich     => Lich._armour.set(armr)(c)
 
       case _ => throw new NotImplementedError("Missing a case in creatureArmourLens")
     }
@@ -384,6 +396,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf._offHand.set(offH)(c)
         case c: Zombie   => Zombie._offHand.set(offH)(c)
         case c: Vampire  => Vampire._offHand.set(offH)(c)
+        case c: Lich     => Lich._offHand.set(offH)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureOffHandLens")
       }
@@ -411,6 +424,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf._resistances.set(res)(c)
         case c: Zombie   => Zombie._resistances.set(res)(c)
         case c: Vampire  => Vampire._resistances.set(res)(c)
+        case c: Lich     => Lich._resistances.set(res)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureResistancesLens")
       }
@@ -438,6 +452,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf._immunities.set(res)(c)
         case c: Zombie   => Zombie._immunities.set(res)(c)
         case c: Vampire  => Vampire._immunities.set(res)(c)
+        case c: Lich     => Lich._immunities.set(res)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureImmunitiesLens")
       }
@@ -487,6 +502,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf._conditions.set(conditions)(c)
         case c: Zombie   => Zombie._conditions.set(conditions)(c)
         case c: Vampire  => Vampire._conditions.set(conditions)(c)
+        case c: Lich     => Lich._conditions.set(conditions)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureConditionsLens")
       }
@@ -508,6 +524,7 @@ object Creature extends LazyLogging {
       case c: Ranger => c.reactionUsed.some
 
       case c: Vampire => c.reactionUsed.some
+      case c: Lich    => c.reactionUsed.some
 
       case _ => none[Boolean]
     } { reactionUsed =>
@@ -528,6 +545,7 @@ object Creature extends LazyLogging {
         case c: Hunter => Hunter._reactionUsed.set(reactionUsed)(c)
 
         case c: Vampire => Vampire._reactionUsed.set(reactionUsed)(c)
+        case c: Lich    => Lich._reactionUsed.set(reactionUsed)(c)
 
         case c: Creature => c
       }
@@ -555,6 +573,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf._attackStatus.set(status)(c)
         case c: Zombie   => Zombie._attackStatus.set(status)(c)
         case c: Vampire  => Vampire._attackStatus.set(status)(c)
+        case c: Lich     => Lich._attackStatus.set(status)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureAttackStatusLens")
       }
@@ -582,6 +601,7 @@ object Creature extends LazyLogging {
         case c: Werewolf => Werewolf._defenseStatus.set(status)(c)
         case c: Zombie   => Zombie._defenseStatus.set(status)(c)
         case c: Vampire  => Vampire._defenseStatus.set(status)(c)
+        case c: Lich     => Lich._defenseStatus.set(status)(c)
 
         case _ => throw new NotImplementedError("Missing a case in creatureDefenseStatusLens")
       }
