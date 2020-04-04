@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
-import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
@@ -412,6 +412,7 @@ trait ArgParser {
 
   val monsterDecoderLookup: Map[String, Decoder[_]] = Map(
     "goblin"   -> Decoder[Goblin],
+    "lich"     -> Decoder[Lich],
     "werewolf" -> Decoder[Werewolf],
     "vampire"  -> Decoder[Vampire],
     "zombie"   -> Decoder[Zombie]
