@@ -6,22 +6,22 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger._
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRangerAbilities._
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
-import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
-import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
+import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
-import Ranger._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 
 @Lenses("_") case class Ranger(
     level: Level,
@@ -79,9 +79,10 @@ object Ranger {
 
   val standardRangerAbilities: List[CombatantAbility] = List(
     castSingleTargetHealingSpell(1),
-    castSelfBuffSpell(2),
-    extraAttack(3),
-    twoWeaponFighting(4)
+    huntersMarkOnWeaponDamageAbility(2),
+    castSelfBuffSpell(3),
+    extraAttack(4),
+    twoWeaponFighting(5)
   )
 
   val standardRangerSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
@@ -103,14 +104,12 @@ object Ranger {
   val intelligenceLens: Lens[Ranger, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Ranger, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
-  // format: off
   def rangerSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne => SpellSlots(0, 0, 0)
-    case LevelTwo => SpellSlots(2, 0, 0)
-    case LevelThree => SpellSlots(3, 0, 0)
-    case LevelFour => SpellSlots(3, 0, 0)
-    case LevelFive => SpellSlots(4, 2, 0)
+    case LevelOne    => SpellSlots(0, 0, 0)
+    case LevelTwo    => SpellSlots(2, 0, 0)
+    case LevelThree  => SpellSlots(3, 0, 0)
+    case LevelFour   => SpellSlots(3, 0, 0)
+    case LevelFive   => SpellSlots(4, 2, 0)
     case LevelTwenty => SpellSlots(4, 3, 3)
   }
-  // format: on
 }

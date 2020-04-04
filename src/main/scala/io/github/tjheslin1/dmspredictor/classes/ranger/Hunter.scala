@@ -80,9 +80,10 @@ object Hunter {
 
   val standardHunterAbilities: List[CombatantAbility] = List(
     castSingleTargetHealingSpell(1),
-    castSelfBuffSpell(2),
-    extraAttack(3),
-    twoWeaponFighting(4)
+    huntersMarkOnWeaponDamageAbility(2),
+    castSelfBuffSpell(3),
+    extraAttack(4),
+    twoWeaponFighting(5)
   )
 
   val standardHunterSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
@@ -104,14 +105,12 @@ object Hunter {
   val intelligenceLens: Lens[Hunter, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Hunter, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
-  // format: off
   def hunterSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne => SpellSlots(0, 0, 0)
-    case LevelTwo => SpellSlots(2, 0, 0)
-    case LevelThree => SpellSlots(3, 0, 0)
-    case LevelFour => SpellSlots(3, 0, 0)
-    case LevelFive => SpellSlots(4, 2, 0)
+    case LevelOne    => SpellSlots(0, 0, 0)
+    case LevelTwo    => SpellSlots(2, 0, 0)
+    case LevelThree  => SpellSlots(3, 0, 0)
+    case LevelFour   => SpellSlots(3, 0, 0)
+    case LevelFive   => SpellSlots(4, 2, 0)
     case LevelTwenty => SpellSlots(4, 3, 3)
   }
-  // format: on
 }
