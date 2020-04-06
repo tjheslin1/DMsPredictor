@@ -76,6 +76,12 @@ class HunterSpec extends UnitSpecBase {
     }
   }
 
+  "resetStartOfTurn" should {
+    "set colossusSlayerUsed to false" in {
+      fail("TODO")
+    }
+  }
+
   abstract private class TestContext {
     implicit val roll: RollStrategy
   }

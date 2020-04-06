@@ -7,19 +7,16 @@ import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 object HunterAbilities extends LazyLogging {
 
-  def ColossusSlayer(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
+  def ColossusSlayer(currentOrder: Int)(combatant: Combatant): Ability = new OnWeaponDamageAbility(combatant) {
     val name: String                 = "Colossus Slayer"
     val order: Int                   = currentOrder
     val levelRequirement: Level      = LevelThree
-    val abilityAction: AbilityAction = OnWeaponDamage
 
     def triggerMet(others: List[Combatant]): Boolean =
       ??? // nextToFocus(combatant, others, )
 
     def conditionMet: Boolean = ???
 
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
-
-    def update: Creature = ???
+    def damage[_: RS](): Int = ???
   }
 }
