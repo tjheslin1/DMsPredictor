@@ -73,6 +73,8 @@ import monocle.macros.{GenLens, Lenses}
 
   val reactionOnHit: Option[OnHitReaction]       = None
   val reactionOnDamage: Option[OnDamageReaction] = None
+
+  def resetStartOfTurn(): Creature = this
 }
 
 object Ranger {

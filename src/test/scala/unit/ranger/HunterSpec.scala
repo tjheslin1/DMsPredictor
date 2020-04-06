@@ -46,39 +46,17 @@ class HunterSpec extends UnitSpecBase {
     }
   }
 
-  "weapon" should {
-
-    // TODO update
-    "roll extra damage for HuntersMark spell if active" ignore {
-      forAll { hunter: Hunter =>
-        new TestContext {
-          implicit val roll: RollStrategy = _ => RollResult(6)
-
-          val unbuffedHunter = hunter
-            .withFightingStyle(Defense)
-            .withBaseWeapon(Shortsword)
-            .withStrength(10)
-            .withDexterity(10)
-
-          val buffedHunter = hunter
-            .withFightingStyle(Defense)
-            .withConcentratingOn(HuntersMark)
-            .withCondition(HuntersMarkBuffCondition)
-            .withBaseWeapon(Shortsword)
-            .withStrength(10)
-            .withDexterity(10)
-
-          unbuffedHunter.weapon.damage shouldBe 6
-
-          buffedHunter.weapon.damage shouldBe 6 + 6 // Shortsword 1 * D6 plus HuntersMarkDamage 1 * D6
-        }
-      }
-    }
-  }
-
   "resetStartOfTurn" should {
     "set colossusSlayerUsed to false" in {
-      fail("TODO")
+      forAll { hunter: Hunter =>
+
+        val colossusSlayerUsedHunter = hunter
+          .withColossusSlayerUsed(true)
+
+        val turnResetHunter = colossusSlayerUsedHunter.resetStartOfTurn().asInstanceOf[Hunter]
+
+        turnResetHunter.colossusSlayerUsed shouldBe false
+      }
     }
   }
 

@@ -3,20 +3,27 @@ package io.github.tjheslin1.dmspredictor.classes.ranger
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 object HunterAbilities extends LazyLogging {
 
-  def ColossusSlayer(currentOrder: Int)(combatant: Combatant): Ability = new OnWeaponDamageAbility(combatant) {
-    val name: String                 = "Colossus Slayer"
-    val order: Int                   = currentOrder
-    val levelRequirement: Level      = LevelThree
+  def colossusSlayer(currentOrder: Int)(combatant: Combatant): OnWeaponDamageAbility =
+    new OnWeaponDamageAbility(combatant) {
 
-    def triggerMet(others: List[Combatant]): Boolean =
-      ??? // nextToFocus(combatant, others, )
+      val name: String            = "Colossus Slayer"
+      val order: Int              = currentOrder
+      val levelRequirement: Level = LevelThree
 
-    def conditionMet: Boolean = ???
+      def triggerMet(others: List[Combatant]): Boolean = others match {
+        case List(target) => target.creature.health < target.creature.maxHealth
+        case _ =>
+          throw new IllegalArgumentException(
+            s"Expected one combatant passed to triggerMet but found ${others.size}"
+          )
+      }
 
-    def damage[_: RS](): Int = ???
-  }
+      def conditionMet: Boolean = true
+
+      def damage[_: RS](): Int = 1 * D8
+    }
 }

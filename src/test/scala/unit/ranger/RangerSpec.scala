@@ -46,36 +46,6 @@ class RangerSpec extends UnitSpecBase {
     }
   }
 
-  "weapon" should {
-
-    // TODO update
-    "roll extra damage for HuntersMark spell if active" ignore {
-      forAll { ranger: Ranger =>
-        new TestContext {
-          implicit val roll: RollStrategy = _ => RollResult(6)
-
-          val unbuffedRanger = ranger
-            .withFightingStyle(Defense)
-            .withBaseWeapon(Shortsword)
-            .withStrength(10)
-            .withDexterity(10)
-
-          val buffedRanger = ranger
-            .withFightingStyle(Defense)
-            .withConcentratingOn(HuntersMark)
-            .withCondition(HuntersMarkBuffCondition)
-            .withBaseWeapon(Shortsword)
-            .withStrength(10)
-            .withDexterity(10)
-
-          unbuffedRanger.weapon.damage shouldBe 6
-
-          buffedRanger.weapon.damage shouldBe 6 + 6 // Shortsword 1 * D6 plus HuntersMarkDamage 1 * D6
-        }
-      }
-    }
-  }
-
   abstract private class TestContext {
     implicit val roll: RollStrategy
   }

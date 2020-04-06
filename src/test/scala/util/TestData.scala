@@ -308,6 +308,8 @@ object TestData {
   implicit class HunterOps(val hunter: Hunter) extends AnyVal {
     import Hunter._
 
+    def withColossusSlayerUsed(used: Boolean) = _colossusSlayerUsed.set(used)(hunter)
+
     def withFightingStyle(fightingStyle: RangerFightingStyle) =
       _fightingStyles.set(List(fightingStyle))(hunter)
 

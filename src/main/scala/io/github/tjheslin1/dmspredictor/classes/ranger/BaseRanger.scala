@@ -15,8 +15,6 @@ trait BaseRanger extends Player with SpellCaster {
   override val cantrip: Option[Spell] = None
 
   val levelSpellcastingLearned = LevelTwo
-
-  def resetStartOfTurn(): Creature = this
 }
 
 object BaseRanger {
