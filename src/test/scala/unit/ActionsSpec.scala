@@ -668,6 +668,10 @@ class ActionsSpec extends UnitSpecBase {
         }
       }
     }
+
+    "call update on OnWeaponDamage ability when used" in {
+      fail("TODO")
+    }
   }
 
   "resolveDamageMainHand" should {

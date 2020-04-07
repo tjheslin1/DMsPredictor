@@ -72,6 +72,7 @@ trait Tracking {
   def trackedOnWeaponDamageAbility(currentOrder: Int,
                                    level: Level = LevelOne,
                                    trigger: => Boolean = true,
+                                   updatesTracking: => Unit = trackedOnWeaponDamageUsed = true,
                                    dmg: => Int = 1)(combatant: Combatant): Ability =
     new OnWeaponDamageAbility(combatant) {
       val name                    = "tracked-on-weapon-damage-ability"
@@ -83,10 +84,15 @@ trait Tracking {
       def conditionMet: Boolean = true
 
       def damage[_: RS](): Int = {
-        trackedOnWeaponDamageUsed = true
         trackedOnWeaponDamageUsedCount += 1
 
         dmg
+      }
+
+      def update: Creature = {
+        updatesTracking
+
+        combatant.creature
       }
     }
 

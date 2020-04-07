@@ -15,6 +15,4 @@ abstract class OnWeaponDamageAbility(combatant: Combatant) extends Ability(comba
       focus: Focus
   ): (Combatant, List[Combatant]) =
     (combatant, others)
-
-  override def update: Creature = combatant.creature
 }

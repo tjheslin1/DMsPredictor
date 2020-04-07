@@ -100,16 +100,15 @@ object SpellSlots {
 
   // format: off
   def highestSpellSlotAvailable(spellSlots: SpellSlots): Option[SpellSlot] = spellSlots match {
-    case SpellSlots(_, _, _, _, _, _, _, _, ninthLevel @ NinthLevelSpellSlots(count)) if count > 0 => ninthLevel.some
-    case SpellSlots(_, _, _, _, _, _, _, eighthLevel @ EighthLevelSpellSlots(count), _) if count > 0 => eighthLevel.some
+    case SpellSlots(_, _, _, _, _, _, _, _, ninthLevel @ NinthLevelSpellSlots(count))     if count > 0 => ninthLevel.some
+    case SpellSlots(_, _, _, _, _, _, _, eighthLevel @ EighthLevelSpellSlots(count), _)   if count > 0 => eighthLevel.some
     case SpellSlots(_, _, _, _, _, _, seventhLevel @ SeventhLevelSpellSlots(count), _, _) if count > 0 => seventhLevel.some
-    case SpellSlots(_, _, _, _, _, sixthLevel @ SixthLevelSpellSlots(count), _, _, _) if count > 0 => sixthLevel.some
-    case SpellSlots(_, _, _, _, fifthLevel @ FifthLevelSpellSlots(count), _, _, _, _) if count > 0 => fifthLevel.some
-    case SpellSlots(_, _, _, fourthLevel @ FourthLevelSpellSlots(count), _, _, _, _, _) if count > 0 => fourthLevel.some
-    case SpellSlots(_, _, thirdLevel @ ThirdLevelSpellSlots(count), _, _, _, _, _, _) if count > 0 => thirdLevel.some
-    case SpellSlots(_, secondLevel @ SecondLevelSpellSlots(count), _, _, _, _, _, _, _) if count > 0 =>
-      secondLevel.some
-    case SpellSlots(firstLevel @ FirstLevelSpellSlots(count), _, _, _, _, _, _, _, _) if count > 0 => firstLevel.some
+    case SpellSlots(_, _, _, _, _, sixthLevel @ SixthLevelSpellSlots(count), _, _, _)     if count > 0 => sixthLevel.some
+    case SpellSlots(_, _, _, _, fifthLevel @ FifthLevelSpellSlots(count), _, _, _, _)     if count > 0 => fifthLevel.some
+    case SpellSlots(_, _, _, fourthLevel @ FourthLevelSpellSlots(count), _, _, _, _, _)   if count > 0 => fourthLevel.some
+    case SpellSlots(_, _, thirdLevel @ ThirdLevelSpellSlots(count), _, _, _, _, _, _)     if count > 0 => thirdLevel.some
+    case SpellSlots(_, secondLevel @ SecondLevelSpellSlots(count), _, _, _, _, _, _, _)   if count > 0 => secondLevel.some
+    case SpellSlots(firstLevel @ FirstLevelSpellSlots(count), _, _, _, _, _, _, _, _)     if count > 0 => firstLevel.some
 
     case _ => none[SpellSlot]
   }

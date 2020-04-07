@@ -9,6 +9,7 @@ object HunterAbilities extends LazyLogging {
 
   def colossusSlayer(currentOrder: Int)(combatant: Combatant): OnWeaponDamageAbility =
     new OnWeaponDamageAbility(combatant) {
+      val hunter = combatant.creature.asInstanceOf[Hunter]
 
       val name: String            = "Colossus Slayer"
       val order: Int              = currentOrder
@@ -22,8 +23,10 @@ object HunterAbilities extends LazyLogging {
           )
       }
 
-      def conditionMet: Boolean = true
+      def conditionMet: Boolean = hunter.colossusSlayerUsed == false
 
       def damage[_: RS](): Int = 1 * D8
+
+      def update: Creature = Hunter._colossusSlayerUsed.set(true)(hunter)
     }
 }

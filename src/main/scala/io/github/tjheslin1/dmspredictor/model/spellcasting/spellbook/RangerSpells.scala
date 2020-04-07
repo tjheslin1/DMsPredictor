@@ -2,6 +2,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.OnWeaponDamageAbility
@@ -34,6 +35,7 @@ object RangerSpells extends LazyLogging {
   def huntersMarkOnWeaponDamageAbility(
       currentOrder: Int
   )(combatant: Combatant): OnWeaponDamageAbility = new OnWeaponDamageAbility(combatant) {
+    val baseRanger = combatant.creature.asInstanceOf[BaseRanger]
 
     val name: String            = "Hunters Mark extra damage"
     val order: Int              = currentOrder
@@ -57,5 +59,7 @@ object RangerSpells extends LazyLogging {
           }
       case _ => false
     }
+
+    def update: Creature = baseRanger
   }
 }

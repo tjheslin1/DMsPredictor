@@ -47,6 +47,10 @@ class HunterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set colossusSlayerUsed to true" in {
+      fail("TODO")
+    }
+
     "only be used once per turn" in {
       forAll { (hunter: Hunter, testMonster: TestMonster) =>
         implicit val roll: RollStrategy = _ => RollResult(10)
@@ -65,7 +69,7 @@ class HunterAbilitiesSpec extends UnitSpecBase {
           .withMaxHealth(50)
           .withCombatIndex(2)
 
-        val Queue(_, Combatant(_, updatedTestMonster: TestMonster)) =
+        val Queue(Combatant(_, updatedTestMonster: TestMonster), _) =
           takeMove(Queue(twoWeaponFightingHunter, injuredGoblin), LowestFirst)
 
         val damageOfBothWeapons = 10 * 2
