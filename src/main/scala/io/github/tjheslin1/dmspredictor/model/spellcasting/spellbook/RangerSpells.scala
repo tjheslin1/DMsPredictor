@@ -35,7 +35,6 @@ object RangerSpells extends LazyLogging {
   def huntersMarkOnWeaponDamageAbility(
       currentOrder: Int
   )(combatant: Combatant): OnWeaponDamageAbility = new OnWeaponDamageAbility(combatant) {
-    val baseRanger = combatant.creature.asInstanceOf[BaseRanger]
 
     val name: String            = "Hunters Mark extra damage"
     val order: Int              = currentOrder
@@ -60,6 +59,6 @@ object RangerSpells extends LazyLogging {
       case _ => false
     }
 
-    def update: Creature = baseRanger
+    def update: Creature = combatant.creature
   }
 }

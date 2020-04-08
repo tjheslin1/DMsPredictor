@@ -2,6 +2,7 @@ package unit.ranger
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRangerAbilities.twoWeaponFighting
 import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
 import io.github.tjheslin1.dmspredictor.classes.ranger.HunterAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
@@ -48,7 +49,14 @@ class HunterAbilitiesSpec extends UnitSpecBase {
     }
 
     "set colossusSlayerUsed to true" in {
-      fail("TODO")
+      val hunter = random[Hunter]
+        .withColossusSlayerUsed(false)
+        .withAbilities(List(colossusSlayer(1)))
+        .withCombatIndex(1)
+
+      val updatedHunter = colossusSlayer(1)(hunter).update.asInstanceOf[Hunter]
+
+      updatedHunter.colossusSlayerUsed shouldBe true
     }
 
     "only be used once per turn" in {
@@ -56,7 +64,8 @@ class HunterAbilitiesSpec extends UnitSpecBase {
         implicit val roll: RollStrategy = _ => RollResult(10)
 
         val twoWeaponFightingHunter = hunter
-          .withAbilities(List(colossusSlayer(1)))
+          .withAbilities(List(colossusSlayer(1), twoWeaponFighting(2)))
+          .withLevel(LevelThree)
           .withStrength(10)
           .withDexterity(10)
           .withBaseWeapon(Shortsword)
@@ -72,7 +81,7 @@ class HunterAbilitiesSpec extends UnitSpecBase {
         val Queue(Combatant(_, updatedTestMonster: TestMonster), _) =
           takeMove(Queue(twoWeaponFightingHunter, injuredGoblin), LowestFirst)
 
-        val damageOfBothWeapons = 10 * 2
+        val damageOfBothWeapons  = 10 * 2
         val colossusSlayerDamage = 10
 
         updatedTestMonster.health shouldBe 45 - damageOfBothWeapons - colossusSlayerDamage

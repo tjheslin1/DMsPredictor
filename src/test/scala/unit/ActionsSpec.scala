@@ -670,7 +670,21 @@ class ActionsSpec extends UnitSpecBase {
     }
 
     "call update on OnWeaponDamage ability when used" in {
-      fail("TODO")
+      forAll { (hunter: Hunter, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val onDamageAbilityHunter = hunter
+            .withAbilities(List(trackedOnWeaponDamageAbility(1, dmg = 5)))
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          resolveDamage(onDamageAbilityHunter, goblinCombatant, List.empty[Combatant], onDamageAbilityHunter.creature.weapon, Hit)
+
+          trackedOnWeaponDamageUsed shouldBe true
+        }
+      }
     }
   }
 
