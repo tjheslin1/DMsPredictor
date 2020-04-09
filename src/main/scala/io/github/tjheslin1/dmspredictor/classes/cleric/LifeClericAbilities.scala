@@ -27,7 +27,8 @@ object LifeClericAbilities extends LazyLogging {
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
+      def triggerMet(others: List[Combatant]): Boolean =
+        healingSpellTriggerMet(others)
 
       def conditionMet: Boolean = spellConditionMet(lifeCleric, HealingSpell)
 
