@@ -2,6 +2,8 @@ package unit.ranger
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRangerAbilities.twoWeaponFighting
 import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
 import io.github.tjheslin1.dmspredictor.classes.ranger.HunterAbilities._
@@ -18,7 +20,7 @@ import scala.collection.immutable.Queue
 class HunterAbilitiesSpec extends UnitSpecBase {
 
   "Colossus Slayer" should {
-    "deal damage if the enemy is below max health" in {
+    "be triggered if the enemy is below max health" in {
       forAll { (hunter: Hunter, goblin: Goblin) =>
         implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -33,7 +35,7 @@ class HunterAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "not deal damage if the enemy is at max health" in {
+    "not be triggered if the enemy is at max health" in {
       forAll { (hunter: Hunter, goblin: Goblin) =>
         implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -59,12 +61,12 @@ class HunterAbilitiesSpec extends UnitSpecBase {
       updatedHunter.colossusSlayerUsed shouldBe true
     }
 
-    "only be used once per turn" in {
+    "only be used once per turn even if the Hunter has multiple attacks" in {
       forAll { (hunter: Hunter, testMonster: TestMonster) =>
         implicit val roll: RollStrategy = _ => RollResult(10)
 
         val twoWeaponFightingHunter = hunter
-          .withAbilities(List(colossusSlayer(1), twoWeaponFighting(2)))
+          .withAbilities(List(colossusSlayer(1), extraAttack(2), twoWeaponFighting(3)))
           .withLevel(LevelThree)
           .withStrength(10)
           .withDexterity(10)

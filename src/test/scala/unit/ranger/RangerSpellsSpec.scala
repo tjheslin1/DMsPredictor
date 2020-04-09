@@ -109,21 +109,6 @@ class RangerSpellsSpec extends UnitSpecBase {
       }
     }
 
-    "meet the condition if the SpellCaster (Monster) has the HuntersMarkBuffCondition knows the HuntersMark spell" in {
-      forAll { lich: Lich =>
-        new TestContext {
-          implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val buffedLich = lich
-            .withSpellKnown(HuntersMark)
-            .withCondition(HuntersMarkBuffCondition)
-            .withCombatIndex(1)
-
-          huntersMarkOnWeaponDamageAbility(1)(buffedLich).conditionMet shouldBe true
-        }
-      }
-    }
-
     "not meet the condition if the Player is not a high enough level" in {
       forAll { ranger: Ranger =>
         new TestContext {
@@ -152,6 +137,21 @@ class RangerSpellsSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe false
+        }
+      }
+    }
+
+    "meet the condition if the SpellCaster (Monster) has the HuntersMarkBuffCondition knows the HuntersMark spell" in {
+      forAll { lich: Lich =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val buffedLich = lich
+            .withSpellKnown(HuntersMark)
+            .withCondition(HuntersMarkBuffCondition)
+            .withCombatIndex(1)
+
+          huntersMarkOnWeaponDamageAbility(1)(buffedLich).conditionMet shouldBe true
         }
       }
     }

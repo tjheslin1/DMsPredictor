@@ -317,6 +317,7 @@ trait ArgParser {
         offHandLookup.get(offHand.toLowerCase),
         List(rangerFightingStyleLookup(style.toLowerCase)),
         ProficiencyBonus.fromLevel(level),
+        abilities = Hunter.standardHunterAbilities,
         name = rangerName
       )
     }

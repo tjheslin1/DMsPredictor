@@ -534,30 +534,6 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "look for available OnWeaponDamage abilities to use" in {
-      forAll { (hunter: Hunter, goblin: Goblin) =>
-        new TestContext with Tracking {
-          implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val onDamageAbilityHunter = hunter
-            .withAbilities(List(trackedOnWeaponDamageAbility(1)))
-            .withCombatIndex(1)
-
-          val goblinCombatant = goblin.withCombatIndex(2)
-
-          val (_, Combatant(_, updatedGoblin: Goblin), _) =
-            resolveDamage(onDamageAbilityHunter,
-                          goblinCombatant,
-                          List.empty[Combatant],
-                          onDamageAbilityHunter.creature.weapon,
-                          Hit)
-
-          trackedOnWeaponDamageUsed shouldBe true
-          trackedOnWeaponDamageUsedCount shouldBe 1
-        }
-      }
-    }
-
     "use available OnWeaponDamage abilities if trigger is met" in {
       forAll { (hunter: Hunter, goblin: Goblin) =>
         new TestContext with Tracking {
@@ -576,7 +552,6 @@ class ActionsSpec extends UnitSpecBase {
                           onDamageAbilityHunter.creature.weapon,
                           Hit)
 
-          trackedOnWeaponDamageUsed shouldBe true
           trackedOnWeaponDamageUsedCount shouldBe 1
         }
       }
@@ -600,7 +575,6 @@ class ActionsSpec extends UnitSpecBase {
                           onDamageAbilityHunter.creature.weapon,
                           Hit)
 
-          trackedOnWeaponDamageUsed shouldBe false
           trackedOnWeaponDamageUsedCount shouldBe 0
         }
       }
@@ -612,7 +586,7 @@ class ActionsSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val onDamageAbilityHunter = hunter
-            .withBaseWeapon(trackedSword) // does 1 damage
+            .withBaseWeapon(trackedSword)
             .withStrength(10)
             .withAbilities(List(trackedOnWeaponDamageAbility(1, dmg = 5)))
             .withCombatIndex(1)

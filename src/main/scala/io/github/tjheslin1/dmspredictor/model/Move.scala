@@ -61,7 +61,7 @@ object Move extends LazyLogging {
       val updatedOthersTargets = otherCombatants.replace(updatedTargets)
 
       val (bonusActionUsedCombatant, updatedOthers) =
-        availableBonusAction(actedCombatant, updatedOthersTargets, focus).fold(
+        availableBonusAction(actedCombatant, updatedOthersTargets).fold(
           (actedCombatant, updatedOthersTargets)
         ) { bonusActionAbility =>
           useBonusActionAbility(actedCombatant, updatedOthersTargets, bonusActionAbility, focus)
@@ -139,8 +139,7 @@ object Move extends LazyLogging {
 
   private def availableBonusAction(
       attacker: Combatant,
-      others: List[Combatant],
-      focus: Focus
+      others: List[Combatant]
   ): Option[CombatantAbility] =
     attacker.creature match {
       case player: Player if player.bonusActionUsed == false =>

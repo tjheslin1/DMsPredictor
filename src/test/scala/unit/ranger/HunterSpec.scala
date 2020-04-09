@@ -3,8 +3,7 @@ package unit.ranger
 import base.UnitSpecBase
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.ranger.{Defense, Hunter, Ranger}
-import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
@@ -28,7 +27,7 @@ class HunterSpec extends UnitSpecBase {
       updatedHunter.concentratingSpell shouldBe HuntersMark.some
     }
 
-    "handle loss of concentration if ranger goes unconscious" in new TestContext {
+    "handle loss of concentration if hunter goes unconscious" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(19)
 
       val concentratingHunter = random[Hunter]
@@ -49,7 +48,6 @@ class HunterSpec extends UnitSpecBase {
   "resetStartOfTurn" should {
     "set colossusSlayerUsed to false" in {
       forAll { hunter: Hunter =>
-
         val colossusSlayerUsedHunter = hunter
           .withColossusSlayerUsed(true)
 

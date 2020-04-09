@@ -112,15 +112,6 @@ object Actions extends LazyLogging {
     val onWeaponDamageAbility = availableOnWeaponDamageAction(attacker, target)
       .fold(none[OnWeaponDamageAbility])(ability => ability(attacker).some)
 
-    /*
-
-    val onWeaponDamage = onWeaponDamageAbility.damage()
-
-        logger.debug(
-          s"${attacker.creature.name} rolls an extra $onWeaponDamage damage using ${onWeaponDamageAbility.name}"
-        )
-     */
-
     val dmg =
       Math.max(
         0,
@@ -130,13 +121,25 @@ object Actions extends LazyLogging {
 
             val doubleOnWeaponAbilityDamage = onWeaponDamageAbility.fold(0) {
               onWeaponDamageAbility =>
-                onWeaponDamageAbility.damage() + onWeaponDamageAbility.damage()
+                val abilityDamage = onWeaponDamageAbility.damage() + onWeaponDamageAbility.damage()
+
+                logger.debug(
+                  s"${attacker.creature.name} rolls an extra $abilityDamage damage (critical hit) using ${onWeaponDamageAbility.name}"
+                )
+
+                abilityDamage
             }
 
             doubleWeaponDamage + doubleOnWeaponAbilityDamage + modifier + damageBonus
           case Hit =>
             val onWeaponAbilityDamage = onWeaponDamageAbility.fold(0) { onWeaponDamageAbility =>
-              onWeaponDamageAbility.damage()
+              val abilityDamage = onWeaponDamageAbility.damage()
+
+              logger.debug(
+                s"${attacker.creature.name} rolls an extra $abilityDamage damage using ${onWeaponDamageAbility.name}"
+              )
+
+              abilityDamage
             }
 
             weapon.damage + modifier + damageBonus + onWeaponAbilityDamage
