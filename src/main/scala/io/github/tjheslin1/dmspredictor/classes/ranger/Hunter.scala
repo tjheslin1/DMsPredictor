@@ -20,6 +20,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import Hunter._
+import io.github.tjheslin1.dmspredictor.classes.ranger.HunterAbilities._
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
@@ -81,11 +82,12 @@ import monocle.macros.{GenLens, Lenses}
 object Hunter {
 
   val standardHunterAbilities: List[CombatantAbility] = List(
-    castSingleTargetHealingSpell(1),
-    huntersMarkOnWeaponDamageAbility(2),
-    castSelfBuffSpell(3),
-    extraAttack(4),
-    twoWeaponFighting(5)
+    colossusSlayer(1),
+    castSingleTargetHealingSpell(2),
+    huntersMarkOnWeaponDamageAbility(3),
+    castSelfBuffSpell(4),
+    extraAttack(5),
+    twoWeaponFighting(6)
   )
 
   val standardHunterSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
