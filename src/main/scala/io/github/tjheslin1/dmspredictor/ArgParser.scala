@@ -5,18 +5,19 @@ import eu.timepit.refined.api.Refined.unsafeApply
 import io.circe.Decoder.Result
 import io.circe._
 import io.circe.generic.semiauto._
-import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, BaseBarbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.classes.ranger.{BaseRanger, Ranger, RangerFightingStyle}
+import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
+import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, LowestFirst, RandomFocus}
 
@@ -277,12 +278,46 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
-        Ranger.rangerSpellSlots(level),
+        BaseRanger.rangerSpellSlots(level),
         Ranger.standardRangerSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
         List(rangerFightingStyleLookup(style.toLowerCase)),
         ProficiencyBonus.fromLevel(level),
+        name = rangerName
+      )
+    }
+  }
+
+  implicit val hunterDecoder: Decoder[Hunter] = Decoder.instance { c =>
+    for {
+      levelInt   <- c.downField("level").as[Int]
+      level      = Level(levelInt)
+      statsStr   <- c.downField("stats").as[String]
+      stats      <- baseStatsConverter(c, statsStr)
+      weapon     <- c.downField("weapon").as[String]
+      armour     <- c.downField("armour").as[String]
+      offHand    <- c.downField("offHand").as[String]
+      skillsStr  <- c.downField("skills").as[String]
+      skills     <- skillsConverter(c, skillsStr)
+      style      <- c.downField("fightingStyle").as[String]
+      rangerName <- c.downField("name").as[String]
+    } yield {
+      val health = BaseRanger.calculateHealth(level, stats.constitution)
+      Hunter(
+        level,
+        health,
+        health,
+        stats,
+        weaponsLookup(weapon.toLowerCase),
+        skills,
+        BaseRanger.rangerSpellSlots(level),
+        Hunter.standardHunterSpellList,
+        armourLookup(armour.toLowerCase),
+        offHandLookup.get(offHand.toLowerCase),
+        List(rangerFightingStyleLookup(style.toLowerCase)),
+        ProficiencyBonus.fromLevel(level),
+        abilities = Hunter.standardHunterAbilities,
         name = rangerName
       )
     }
@@ -294,6 +329,15 @@ trait ArgParser {
     } yield {
       val health = Goblin.calculateHealth()
       Goblin(health, health, name = goblinName)
+    }
+  }
+
+  implicit val lichDecoder: Decoder[Lich] = Decoder.instance { c =>
+    for {
+      lichName <- c.downField("name").as[String]
+    } yield {
+      val health = Lich.calculateHealth()
+      Lich(health, health, name = lichName)
     }
   }
 
@@ -359,17 +403,17 @@ trait ArgParser {
   }
 
   val playerClassDecoderLookup: Map[String, Decoder[_]] = Map(
-    "barbarian" -> Decoder[Barbarian],
-    "berserker" -> Decoder[Berserker],
+    "barbarian" -> Decoder[Berserker],
     "cleric"    -> Decoder[Cleric],
-    "fighter"   -> Decoder[Fighter],
-    "champion"  -> Decoder[Champion],
+    "fighter"   -> Decoder[Champion],
+    "ranger"    -> Decoder[Hunter],
     "rogue"     -> Decoder[Rogue],
     "wizard"    -> Decoder[Wizard]
   )
 
   val monsterDecoderLookup: Map[String, Decoder[_]] = Map(
     "goblin"   -> Decoder[Goblin],
+    "lich"     -> Decoder[Lich],
     "werewolf" -> Decoder[Werewolf],
     "vampire"  -> Decoder[Vampire],
     "zombie"   -> Decoder[Zombie]
@@ -394,19 +438,19 @@ trait ArgParser {
   )
 
   val fighterFightingStyleLookup: Map[String, FighterFightingStyle] = Map(
-    "archery"             -> fighter.Archery,
-    "defense"             -> fighter.Defense,
-    "dueling"             -> fighter.Dueling,
-    "greatweaponfighting" -> fighter.GreatWeaponFighting,
-    "protection"          -> fighter.Protection,
-    "twoweaponfighting"   -> fighter.TwoWeaponFighting
+    "archery"               -> fighter.Archery,
+    "defense"               -> fighter.Defense,
+    "dueling"               -> fighter.Dueling,
+    "great_weapon_fighting" -> fighter.GreatWeaponFighting,
+    "protection"            -> fighter.Protection,
+    "two_weapon_fighting"   -> fighter.TwoWeaponFighting
   )
 
   val rangerFightingStyleLookup: Map[String, RangerFightingStyle] = Map(
-    "archery"           -> ranger.Archery,
-    "defense"           -> ranger.Defense,
-    "dueling"           -> ranger.Dueling,
-    "twoweaponfighting" -> ranger.TwoWeaponFighting
+    "archery"             -> ranger.Archery,
+    "defense"             -> ranger.Defense,
+    "dueling"             -> ranger.Dueling,
+    "two_weapon_fighting" -> ranger.TwoWeaponFighting
   )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =

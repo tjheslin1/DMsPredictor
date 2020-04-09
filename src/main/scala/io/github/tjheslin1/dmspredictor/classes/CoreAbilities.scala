@@ -159,7 +159,8 @@ object CoreAbilities extends LazyLogging {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
+      def triggerMet(others: List[Combatant]): Boolean =
+        healingSpellTriggerMet(others)
 
       def conditionMet: Boolean = spellConditionMet(spellCaster, HealingSpell)
 
@@ -402,9 +403,15 @@ object CoreAbilities extends LazyLogging {
               val updatedSpellSlotCount = spellSlotUsed.count - 1
 
               val spellSlotLens = spellSlotUsed match {
-                case FirstLevelSpellSlots(_)  => firstLevelLens
-                case SecondLevelSpellSlots(_) => secondLevelLens
-                case ThirdLevelSpellSlots(_)  => thirdLevelLens
+                case FirstLevelSpellSlots(_)   => firstLevelLens
+                case SecondLevelSpellSlots(_)  => secondLevelLens
+                case ThirdLevelSpellSlots(_)   => thirdLevelLens
+                case FourthLevelSpellSlots(_)  => fourthLevelLens
+                case FifthLevelSpellSlots(_)   => fifthLevelLens
+                case SixthLevelSpellSlots(_)   => sixthLevelLens
+                case SeventhLevelSpellSlots(_) => seventhLevelLens
+                case EighthLevelSpellSlots(_)  => eighthLevelLens
+                case NinthLevelSpellSlots(_)   => ninthLevelLens
               }
 
               (SpellCaster.spellSlotsLens composeLens spellSlotLens)

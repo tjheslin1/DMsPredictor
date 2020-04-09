@@ -266,8 +266,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val charmedCleric      = cleric.withCondition(Charmed(15)).withCombatIndex(2)
           val charmImmuneFighter = fighter.withCondition(VampireCharmImmunity).withCombatIndex(3)
 
-          charm(1)(vampireCombatant)
-            .triggerMet(List(charmedCleric, charmImmuneFighter)) shouldBe false
+          charm(1)(vampireCombatant).triggerMet(List(charmedCleric, charmImmuneFighter)) shouldBe false
         }
       }
     }
