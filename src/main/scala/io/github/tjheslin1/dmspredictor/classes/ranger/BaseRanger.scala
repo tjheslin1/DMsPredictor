@@ -11,9 +11,9 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 trait BaseRanger extends Player with SpellCaster {
 
   val fightingStyles: List[RangerFightingStyle]
-
   override val cantrip: Option[Spell] = None
 
+  val spellCastingModifier     = proficiencyBonus.value
   val levelSpellcastingLearned = LevelTwo
 }
 

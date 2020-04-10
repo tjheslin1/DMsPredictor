@@ -11,8 +11,8 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -41,8 +41,10 @@ import monocle.macros.{GenLens, Lenses}
 ) extends Monster
     with SpellCaster {
 
-  val challengeRating: Double = 21.0
-  val skills                  = Skills(perception = 9, stealth = stats.dexterity.value)
+  val spellCastingModifier = 7
+
+  val challengeRating = 21.0
+  val skills          = Skills(perception = 9, stealth = stats.dexterity.value)
 
   val savingThrowScores: Map[Attribute, Int] = Map(
     Strength     -> mod(stats.strength),

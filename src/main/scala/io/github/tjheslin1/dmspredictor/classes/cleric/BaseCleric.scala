@@ -9,7 +9,9 @@ import monocle.Lens
 
 abstract class BaseCleric extends Player with SpellCaster {
 
-  val levelSpellcastingLearned: Level = LevelOne
+  val spellCastingModifier     = proficiencyBonus.value
+  val levelSpellcastingLearned = LevelOne
+
   val channelDivinityUsed: Boolean
 
   def resetStartOfTurn(): Creature = this

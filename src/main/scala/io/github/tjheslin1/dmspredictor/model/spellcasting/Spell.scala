@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 
 import scala.annotation.tailrec
 
@@ -70,22 +71,18 @@ object Spell {
     else none[(Spell, SpellLevel)]
   }
 
-  def spellAttackBonus(spellCaster: SpellCaster): Int = spellCaster match {
-    case playerSpellcaster: Player with SpellCaster =>
-      playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
-    case spellcaster => attributeModifierForSchool(spellcaster)
-  }
+  def spellAttackBonus(spellCaster: SpellCaster): Int =
+    attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
-  def spellSaveDc(spellCaster: SpellCaster): Int = spellCaster match {
-    case playerSpellcaster: Player with SpellCaster =>
-      8 + playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
-    case spellcaster => 8 + attributeModifierForSchool(spellcaster)
-  }
+  def spellSaveDc(spellCaster: SpellCaster): Int =
+    8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
   def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
     case _: Cleric     => Wisdom
     case _: BaseCleric => Wisdom
     case _: Wizard     => Intelligence
+
+    case _: Lich => Intelligence
   }
 
   def attributeModifierForSchool(spellcaster: SpellCaster): Int =

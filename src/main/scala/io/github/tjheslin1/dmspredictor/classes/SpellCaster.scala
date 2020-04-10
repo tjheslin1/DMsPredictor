@@ -11,6 +11,7 @@ import monocle.Lens
 
 trait SpellCaster extends Creature {
 
+  val spellCastingModifier: Int
   val spellsKnown: Map[(SpellLevel, SpellEffect), Spell]
   val spellSlots: SpellSlots
   val concentratingSpell: Option[Spell]

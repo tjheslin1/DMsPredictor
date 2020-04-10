@@ -9,7 +9,8 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpell
 
 trait BaseWizard extends Player with SpellCaster {
 
-  val levelSpellcastingLearned: Level = LevelOne
+  val spellCastingModifier     = proficiencyBonus.value
+  val levelSpellcastingLearned = LevelOne
 
   val mageArmourPrepared: Boolean
 

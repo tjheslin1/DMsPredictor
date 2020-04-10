@@ -38,6 +38,7 @@ import util.TestMonster.defaultScores
     spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell] = Map.empty,
     spellSlots: SpellSlots = SpellSlots(0, 0, 0),
     concentratingSpell: Option[Spell] = none[Spell],
+    spellCastingModifier: Int = 0,
     name: String = NameGenerator.randomName)
     extends Monster
     with SpellCaster {

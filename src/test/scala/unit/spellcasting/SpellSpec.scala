@@ -7,12 +7,14 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.HuntersMarkBuffCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import util.TestData._
 import util.TestMonster
 
@@ -173,6 +175,34 @@ class SpellSpec extends UnitSpecBase {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds)
 
       spellOfLevelOrBelow(cleric, ConcentrationSpell, 2)() shouldBe none[(Spell, SpellLevel)]
+    }
+  }
+
+  "spellAttackBonus" should {
+    "combine the Players spellcasting modifier and their attribute modifier" in {
+      forAll { wizard: Wizard =>
+        spellAttackBonus(wizard) shouldBe wizard.spellCastingModifier + mod(wizard.stats.intelligence)
+      }
+    }
+
+    "combine the Monster (SpellCaster) spellcasting modifier and their attribute modifier" in {
+      forAll { lich: Lich =>
+        spellAttackBonus(lich) shouldBe lich.spellCastingModifier + mod(lich.stats.intelligence)
+      }
+    }
+  }
+
+  "spellSaveDc" should {
+    "combine the Players spellcasting modifier and their attribute modifier" in {
+      forAll { wizard: Wizard =>
+        spellSaveDc(wizard) shouldBe 8 + wizard.spellCastingModifier + mod(wizard.stats.intelligence)
+      }
+    }
+
+    "combine the Monster (SpellCaster) spellcasting modifier and their attribute modifier" in {
+      forAll { lich: Lich =>
+        spellSaveDc(lich) shouldBe 8 + lich.spellCastingModifier + mod(lich.stats.intelligence)
+      }
     }
   }
 

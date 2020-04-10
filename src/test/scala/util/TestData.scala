@@ -736,6 +736,7 @@ trait TestData extends RandomDataGenerator {
         Map.empty[(SpellLevel, spellcasting.SpellEffect), Spell],
         SpellSlots(0, 0, 0),
         none[Spell],
+        spellCastingModifier = 0,
         creature.name
       )
   }
