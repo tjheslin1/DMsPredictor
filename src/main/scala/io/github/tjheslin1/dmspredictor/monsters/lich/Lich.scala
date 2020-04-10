@@ -103,7 +103,8 @@ object Lich {
       (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
       (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
       (AcidArrow.spellLevel, AcidArrow.spellEffect)       -> AcidArrow,
-      (Fireball.spellLevel, Fireball.spellEffect)         -> Fireball
+      (Fireball.spellLevel, Fireball.spellEffect)         -> Fireball,
+      (Blight.spellLevel, Blight.spellEffect)             -> Blight
       // TODO
     )
 

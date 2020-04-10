@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
 
-  val attribute: Attribute
+  val savingThrowAttribute: Attribute
   val halfDamageOnSave: Boolean
 
   val damageType: DamageType
@@ -21,8 +21,9 @@ abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
       spellLevel: SpellLevel,
       targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
-    val target            = targets.head
-    val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
+    val target = targets.head
+    val savingThrowPassed =
+      spellSavingThrowPassed(spellCaster, savingThrowAttribute, target.creature)
 
     logger.debug(s"casting $name - Saving throw ${if (savingThrowPassed) "Passed" else "Failed"}")
 

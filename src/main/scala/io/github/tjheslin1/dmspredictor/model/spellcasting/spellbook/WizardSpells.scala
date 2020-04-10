@@ -175,4 +175,21 @@ object WizardSpells extends LazyLogging {
 
     def handleStartOfTurn[_: RS](creature: Creature): Creature = creature
   }
+
+  case object Blight extends SingleTargetSavingThrowSpell {
+    val name                     = "Blight"
+    val school                   = Necromancy
+    val castingTime: CastingTime = OneActionCast
+    val spellLevel: SpellLevel   = 4
+
+    val savingThrowAttribute   = Constitution
+    val halfDamageOnSave       = true
+    val damageType: DamageType = Necrotic
+
+    val requiresConcentration = false
+    val useHigherSpellSlot    = true
+
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      (spellLevel.value * D8) + (4 * D8)
+  }
 }

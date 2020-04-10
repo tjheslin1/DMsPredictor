@@ -9,9 +9,10 @@ import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Con
 import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 import util.TestData._
-import util.TestMonster
 
 import scala.collection.immutable.Queue
 
@@ -223,18 +224,38 @@ class WizardSpellsSpec extends UnitSpecBase {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           val ac13Wizard = wizard.withMageArmourPrepared(true).withDexterity(10)
-          val (attackResult, shieldSpellActiveWizard: Wizard) = ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
+          val (attackResult, shieldSpellActiveWizard: Wizard) =
+            ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
 
           attackResult shouldBe Miss // checking Shield was activated
 
           val goblinCombatant = goblin.withCombatIndex(2)
 
           val Queue(_, Combatant(_, updatedWizard: Wizard)) =
-            Move.takeMove(Queue(shieldSpellActiveWizard.withCombatIndex(1), goblinCombatant), LowestFirst)
+            Move.takeMove(Queue(shieldSpellActiveWizard.withCombatIndex(1), goblinCombatant),
+                          LowestFirst)
 
           updatedWizard.conditions shouldBe List.empty[Condition]
         }
       }
+    }
+  }
+
+  "blight spell" should {
+    "deal 8d8 damage at 4th level" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(8)
+
+      val lich = random[Lich]
+
+      Blight.damage(lich, 4) shouldBe 64 // 8 * 8
+    }
+
+    "deal 10d8 damage at 6th level" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(8)
+
+      val lich = random[Lich]
+
+      Blight.damage(lich, 6) shouldBe 80 // 10 * 8
     }
   }
 

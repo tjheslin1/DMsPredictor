@@ -13,8 +13,8 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 object ClericSpells extends LazyLogging {
 
   case object SacredFlame extends SingleTargetSavingThrowSpell {
-    val attribute: Attribute      = Dexterity
-    val halfDamageOnSave: Boolean = false
+    val savingThrowAttribute: Attribute = Dexterity
+    val halfDamageOnSave: Boolean       = false
 
     val damageType: DamageType   = Radiant
     val name                     = "Sacred Flame"

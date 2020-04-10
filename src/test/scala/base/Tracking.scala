@@ -163,7 +163,7 @@ trait Tracking {
                                           damageOnSave: Boolean = false,
                                           higherSpellSlot: Boolean = true): Spell =
     new SingleTargetSavingThrowSpell() {
-      val attribute: Attribute      = savingAttribute
+      val savingThrowAttribute: Attribute      = savingAttribute
       val halfDamageOnSave: Boolean = damageOnSave
 
       val damageType: DamageType   = Fire
