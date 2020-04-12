@@ -16,6 +16,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 import util.TestMonster
@@ -286,7 +287,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val wizardCombatant = wizard
-            .withSpellsKnown(trackedMultiMeleeSpellAttack(1), trackedSingleTargetSavingThrowSpell(3, Wisdom))
+            .withSpellsKnown(trackedMultiMeleeSpellAttack(1),
+                             trackedSingleTargetSavingThrowSpell(3, Wisdom))
             .withAllSpellSlotsAvailableForLevel(LevelFour)
             .withLevel(LevelFour)
             .withCombatIndex(1)
@@ -308,6 +310,33 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           castSingleTargetOffensiveSpell(Priority)(wizardCombatant).conditionMet shouldBe false
+        }
+      }
+    }
+
+    "target Player if caster is a Monster" in {
+      forAll { (lich: Lich, fighter: Fighter) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val lichCombatant = lich
+            .withSpellKnown(trackedMeleeSpellAttack(2)) // damage dealt is 4
+            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
+            .withCombatIndex(1)
+
+          val easyToHitFighter = fighter
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexterity(2)
+            .withNoArmour()
+            .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedFighter: Fighter))) =
+            castSingleTargetOffensiveSpell(Priority)(lichCombatant)
+              .useAbility(List(easyToHitFighter), LowestFirst)
+
+          meleeSpellUsedCount shouldBe 1
+          updatedFighter.health shouldBe 100 - 4
         }
       }
     }
@@ -496,6 +525,35 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
+
+    // Unignore once a monster with healing abilities is added
+    "target another Monster if caster is a Monster" ignore {
+      forAll { (lich: Lich, fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val lichCombatant = lich
+            .withSpellKnown(trackedHealingSpell(2))
+            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
+            .withIntelligence(10)
+            .withCombatIndex(1)
+
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          val damagedGoblin = goblin
+            .withHealth(50)
+            .withMaxHealth(100)
+            .withCombatIndex(3)
+
+          val (_, List(_, Combatant(_, updatedGoblin: Goblin))) =
+            castSingleTargetHealingSpell(Priority)(lichCombatant)
+              .useAbility(List(fighterCombatant, damagedGoblin), LowestFirst)
+
+          trackedHealingSpellUsedCount shouldBe 1
+          updatedGoblin.creature.health shouldBe 50 + 1
+        }
+      }
+    }
   }
 
   "castConditionSpell" should {
@@ -647,6 +705,26 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           castConcentrationSpell(Priority)(concentratingCleric).conditionMet shouldBe false
+        }
+      }
+    }
+
+    "target Player if caster is a Monster" in {
+      forAll { (lich: Lich, fighter: Fighter) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val lichCombatant = lich
+            .withSpellKnown(trackedConditionSpell(spellLvl = 2, savingThrowAttribute = Dexterity))
+            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
+            .withCombatIndex(1)
+
+          val easyToHitFighter = fighter.withDexterity(2).withCombatIndex(2)
+
+          castConcentrationSpell(Priority)(lichCombatant).useAbility(List(easyToHitFighter),
+                                                                     LowestFirst)
+
+          conditionSpellUsedCount shouldBe 1
         }
       }
     }
@@ -836,6 +914,41 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         }
       }
     }
+
+    "target Players if caster is a Monster" in {
+      forAll { (lich: Lich, fighter: Fighter, wizard: Wizard) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val lichCombatant = lich
+            .withSpellKnown(
+              trackedMultiMeleeSpellAttack(spellLvl = 2, savingThrowAttribute = Dexterity))
+            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
+            .withCombatIndex(1)
+
+          val easyToHitFighter = fighter
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexterity(2)
+            .withCombatIndex(2)
+
+          val easyToHitWizard = wizard
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexterity(2)
+            .withCombatIndex(3)
+
+          val (_,
+               List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedWizard: Wizard))) =
+            castMultiTargetOffensiveSpell(Priority)(lichCombatant)
+              .useAbility(List(easyToHitFighter, easyToHitWizard), LowestFirst)
+
+          multiMeleeSpellUsedCount shouldBe 2
+          updatedFighter.health shouldBe 96
+          updatedWizard.health shouldBe 96
+        }
+      }
+    }
   }
 
   "castSelfBuffSpell" should {
@@ -953,6 +1066,25 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe false
+    }
+
+    "target Player if caster is a Monster" in {
+      forAll { lich: Lich =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
+
+          val buffingLich = lich
+            .withSpellKnown(trackedBuffSpell)
+            .withCombatIndex(1)
+
+          val (Combatant(_, updatedLich: Lich), _) =
+            castSelfBuffSpell(Priority)(buffingLich).useAbility(List.empty[Combatant], LowestFirst)
+
+          selfBuffSpellUsedCount shouldBe 1
+        }
+      }
     }
   }
 

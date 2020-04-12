@@ -2,8 +2,8 @@ package io.github.tjheslin1.dmspredictor.monsters.lich
 
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.{castMultiTargetOffensiveSpell, castSingleTargetOffensiveSpell}
-import io.github.tjheslin1.dmspredictor.classes.{CoreAbilities, SpellCaster}
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
@@ -82,7 +82,8 @@ object Lich {
 
   val lichAbilities: List[CombatantAbility] = List(
     castMultiTargetOffensiveSpell(1),
-    castSingleTargetOffensiveSpell(2)
+    castSingleTargetOffensiveSpell(2),
+    castConcentrationSpell(3)
   )
 
   case object LichNaturalArmour extends Armour {

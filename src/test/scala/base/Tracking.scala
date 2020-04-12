@@ -117,6 +117,7 @@ trait Tracking {
 
   var multiMeleeSpellUsedCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel,
+                                   savingThrowAttribute: Attribute = Dexterity,
                                    concentration: Boolean = false,
                                    higherSpellSlot: Boolean = true): Spell =
     new MultiTargetSavingThrowSpell {
@@ -127,7 +128,7 @@ trait Tracking {
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = spellLvl
       val requiresConcentration    = concentration
-      val attribute: Attribute     = Dexterity
+      val attribute: Attribute     = savingThrowAttribute
       val halfDamageOnSave         = false
       val useHigherSpellSlot       = higherSpellSlot
 
@@ -205,12 +206,13 @@ trait Tracking {
 
   var conditionSpellUsedCount = 0
   def trackedConditionSpell(spellLvl: SpellLevel,
+                            savingThrowAttribute: Attribute = Constitution,
                             singleTargetSpell: Boolean = true,
                             higherSpellSlot: Boolean = true): ConcentrationConditionSpell =
     new ConcentrationConditionSpell {
       val name: String = s"tracked-melee-spell-${spellLvl.value}"
 
-      val attribute: Attribute  = Constitution
+      val attribute: Attribute  = savingThrowAttribute
       val singleTarget: Boolean = singleTargetSpell
 
       val school: SchoolOfMagic    = Evocation
