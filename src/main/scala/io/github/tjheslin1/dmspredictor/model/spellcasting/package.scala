@@ -10,12 +10,13 @@ package object spellcasting {
 
   sealed trait SchoolOfMagic extends Product with Serializable
 
-  case object Evocation   extends SchoolOfMagic
-  case object Abjuration  extends SchoolOfMagic
-  case object Enchantment extends SchoolOfMagic
-  case object Conjuration extends SchoolOfMagic
-  case object Divination  extends SchoolOfMagic
-  case object Necromancy  extends SchoolOfMagic
+  case object Evocation     extends SchoolOfMagic
+  case object Abjuration    extends SchoolOfMagic
+  case object Enchantment   extends SchoolOfMagic
+  case object Conjuration   extends SchoolOfMagic
+  case object Divination    extends SchoolOfMagic
+  case object Necromancy    extends SchoolOfMagic
+  case object Transmutation extends SchoolOfMagic
 
   sealed trait CastingTime extends Product with Serializable
 

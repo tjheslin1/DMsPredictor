@@ -192,4 +192,29 @@ object WizardSpells extends LazyLogging {
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (spellLevel.value * D8) + (4 * D8)
   }
+
+  case object Disintegrate extends SingleTargetSavingThrowSpell {
+    val name                     = "Disintegrate"
+    val school                   = Transmutation
+    val castingTime: CastingTime = OneActionCast
+    val spellLevel: SpellLevel   = 6
+
+    val savingThrowAttribute   = Dexterity
+    val halfDamageOnSave       = false
+    val damageType: DamageType = Force
+
+    val requiresConcentration = false
+    val useHigherSpellSlot    = true
+
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      spellLevel.value match {
+        case 6 => (10 * D6) + 40
+        case 7 => (13 * D6) + 40
+        case 8 => (16 * D6) + 40
+        case 9 => (19 * D6) + 40
+
+        case _ =>
+          throw new IllegalArgumentException("")
+      }
+  }
 }

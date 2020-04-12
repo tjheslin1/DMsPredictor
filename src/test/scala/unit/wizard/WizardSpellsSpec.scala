@@ -259,6 +259,24 @@ class WizardSpellsSpec extends UnitSpecBase {
     }
   }
 
+  "Disintegrate spell" should {
+    "deal 10d6 + 40 damage at 6th level on a hit" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(6)
+
+      val lich = random[Lich]
+
+      Disintegrate.damage(lich, 6) shouldBe 60 + 40 // (10 * 6) + 40
+    }
+
+    "deal 16d6 + 40 damage at 8th level on a hit" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(6)
+
+      val lich = random[Lich]
+
+      Disintegrate.damage(lich, 8) shouldBe 96 + 40 // (16 * 6) + 40
+    }
+  }
+
   abstract private class TestContext {
     implicit val rollStrategy: RollStrategy
   }
