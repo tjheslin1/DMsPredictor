@@ -508,26 +508,8 @@ object Creature extends LazyLogging {
       }
     }
 
-  val creatureReactionUsedOptional: Optional[Creature, Boolean] =
-    Optional[Creature, Boolean] {
-      case c: Champion => c.reactionUsed.some
-      case c: Fighter  => c.reactionUsed.some
-
-      case c: Barbarian => c.reactionUsed.some
-      case c: Berserker => c.reactionUsed.some
-
-      case c: Cleric => c.reactionUsed.some
-      case c: Rogue  => c.reactionUsed.some
-
-      case c: Wizard => c.reactionUsed.some
-
-      case c: Ranger => c.reactionUsed.some
-
-      case c: Vampire => c.reactionUsed.some
-      case c: Lich    => c.reactionUsed.some
-
-      case _ => none[Boolean]
-    } { reactionUsed =>
+  val creatureReactionUsedLens: Lens[Creature, Boolean] =
+    Lens[Creature, Boolean](_.reactionUsed) { reactionUsed =>
       {
         case c: Champion => Champion._reactionUsed.set(reactionUsed)(c)
         case c: Fighter  => Fighter._reactionUsed.set(reactionUsed)(c)
@@ -544,10 +526,13 @@ object Creature extends LazyLogging {
         case c: Ranger => Ranger._reactionUsed.set(reactionUsed)(c)
         case c: Hunter => Hunter._reactionUsed.set(reactionUsed)(c)
 
-        case c: Vampire => Vampire._reactionUsed.set(reactionUsed)(c)
-        case c: Lich    => Lich._reactionUsed.set(reactionUsed)(c)
+        case c: Goblin   => Goblin._reactionUsed.set(reactionUsed)(c)
+        case c: Werewolf => Werewolf._reactionUsed.set(reactionUsed)(c)
+        case c: Zombie   => Zombie._reactionUsed.set(reactionUsed)(c)
+        case c: Vampire  => Vampire._reactionUsed.set(reactionUsed)(c)
+        case c: Lich     => Lich._reactionUsed.set(reactionUsed)(c)
 
-        case c: Creature => c
+        case _ => throw new NotImplementedError("Missing a case in creatureReactionUsedLens")
       }
     }
 

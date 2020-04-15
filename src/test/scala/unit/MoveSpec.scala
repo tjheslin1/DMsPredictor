@@ -85,7 +85,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           val queue =
-            Queue(fighter.withReactionUsed().withCombatIndex(1), monster.withCombatIndex(2))
+            Queue(fighter.withReactionUsed(true).withCombatIndex(1), monster.withCombatIndex(2))
 
           val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 

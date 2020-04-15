@@ -180,8 +180,10 @@ object TestData {
     def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
 
     def withCondition(condition: Condition) = creatureConditionsLens.set(List(condition))(creature)
-    def withConditions(conditions: Condition*) =
-      creatureConditionsLens.set(conditions.toList)(creature)
+    def withConditions(conditions: Condition*) = creatureConditionsLens.set(conditions.toList)(creature)
+    def withNoConditions() = creatureConditionsLens.set(List.empty[Condition])(creature)
+
+    def withReactionUsed(used: Boolean) = creatureReactionUsedLens.set(used)(creature)
 
     def withAttackStatus(attackStatus: AttackStatus) =
       creatureAttackStatusLens.set(attackStatus)(creature)
@@ -211,7 +213,6 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
-    def withReactionUsed()    = _reactionUsed.set(true)(fighter)
   }
 
   implicit class ChampionOps(val champion: Champion) extends AnyVal {

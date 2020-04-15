@@ -27,6 +27,7 @@ import monocle.macros.{GenLens, Lenses}
     resistances: List[DamageType] = List.empty[DamageType],
     immunities: List[DamageType] = List(Bludgeoning, Piercing, Slashing),
     conditions: List[Condition] = List.empty,
+    reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName
@@ -39,8 +40,6 @@ import monocle.macros.{GenLens, Lenses}
   val creatureType: CreatureType = Humanoid
 
   val abilities: List[CombatantAbility] = standardWerewolfAbilities
-
-  val reactionUsed: Boolean = true
 
   def weapon[_: RS]: Weapon = baseWeapon
 

@@ -25,7 +25,6 @@ import monocle.macros.{GenLens, Lenses}
     health: Int,
     maxHealth: Int,
     stats: BaseStats = BaseStats(11, 16, 16, 20, 14, 16),
-    armourClass: Int = 12,
     baseWeapon: Weapon = ParalyzingTouch,
     armour: Armour = LichNaturalArmour,
     offHand: Option[Equipment] = None,
@@ -43,6 +42,7 @@ import monocle.macros.{GenLens, Lenses}
     with SpellCaster {
 
   val spellCastingModifier = 7
+  val armourClass: Int     = calculateArmourClass(stats, conditions)
 
   val challengeRating = 21.0
   val skills          = Skills(perception = 9, stealth = stats.dexterity.value)
@@ -77,8 +77,14 @@ import monocle.macros.{GenLens, Lenses}
 }
 
 object Lich {
-
   def calculateHealth[_: RS](): Int = (18 * D8) + 54
+
+  def calculateArmourClass(stats: BaseStats, conditions: List[Condition]): Int = {
+    val baseArmourClass = LichNaturalArmour.armourClass(stats.dexterity)
+
+    if (conditions.contains(ShieldBuffCondition())) 5 + baseArmourClass
+    else baseArmourClass
+  }
 
   val lichAbilities: List[CombatantAbility] = List(
     castMultiTargetOffensiveSpell(1),

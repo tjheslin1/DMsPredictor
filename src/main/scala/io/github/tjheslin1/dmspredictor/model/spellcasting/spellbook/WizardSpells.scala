@@ -154,7 +154,7 @@ object WizardSpells extends LazyLogging {
             val conditionUpdated =
               Creature.creatureConditionsLens.set(updatedConditions)(updatedSpellCaster)
 
-            Creature.creatureReactionUsedOptional.set(true)(conditionUpdated)
+            Creature.creatureReactionUsedLens.set(true)(conditionUpdated)
           }
 
           val attackResult = if (totalAttackRoll >= reactedCreature.armourClass) Hit else Miss

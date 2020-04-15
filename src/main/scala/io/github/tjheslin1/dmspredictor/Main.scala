@@ -13,10 +13,11 @@ import io.circe.parser.decode
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighter, Champion}
+import io.github.tjheslin1.dmspredictor.classes.wizard.{BaseWizard, Wizard}
 import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Monster
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -75,7 +76,13 @@ case class SimulationResult(sim_hash: String, sim_name: String, result: String, 
 //  val lichHp = Lich.calculateHealth()
 //  val lich = Lich(lichHp, lichHp, name = "Lich")
 //
+//  val wizardStats = BaseStats(9, 1, 13, 10, 16, 15)
+//  val wizardLevel = LevelFour
+//  val wizardHp = BaseWizard.calculateHealth(wizardLevel, wizardStats.constitution)
+//  val wizard = Wizard(wizardLevel, wizardHp, wizardHp, wizardStats, Shortsword, Skills(1, 1), Wizard.wizardSpellSlots(wizardLevel), name = "Wizard")
+//
 //  SimulationRunner.run(BasicSimulation(List(champion, cleric, lich), LowestFirst), "", 1)
+////  SimulationRunner.run(BasicSimulation(List(wizard, Goblin.withName("Goblin-1"), Goblin.withName("Goblin-2"), Goblin.withName("Goblin-3")), LowestFirst), "", 1)
 //}
 
 class Main extends RequestStreamHandler with ArgParser with LazyLogging {

@@ -24,9 +24,10 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon = Slam,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    conditions: List[Condition] = List.empty,
     resistances: List[DamageType] = List.empty,
     immunities: List[DamageType] = List(Poison),
+    conditions: List[Condition] = List.empty,
+    reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     name: String = NameGenerator.randomName
@@ -38,8 +39,6 @@ import monocle.macros.{GenLens, Lenses}
   val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
   val creatureType: CreatureType = Undead
-
-  val reactionUsed: Boolean = true
 
   def weapon[_: RS]: Weapon = baseWeapon
 

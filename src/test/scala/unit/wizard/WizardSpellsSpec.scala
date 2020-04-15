@@ -184,13 +184,30 @@ class WizardSpellsSpec extends UnitSpecBase {
           val ac13Wizard =
             wizard.withMageArmourPrepared(true).withDexterity(10).asInstanceOf[Wizard]
 
-          val (_, updatedSpellcaster: SpellCaster) =
+          val (_, updatedSpellCaster: SpellCaster) =
             ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
 
           val expectedSpellSlots = ac13Wizard.spellSlots.copy(
             firstLevel = FirstLevelSpellSlots(ac13Wizard.spellSlots.firstLevel.count - 1))
 
-          updatedSpellcaster.spellSlots shouldBe expectedSpellSlots
+          updatedSpellCaster.spellSlots shouldBe expectedSpellSlots
+        }
+      }
+    }
+
+    "update the casters reaction to be used" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val reactionNotUsedWizard = wizard
+            .withDexterity(10)
+            .withReactionUsed(false)
+
+          val (_, updatedSpellCaster: SpellCaster) =
+            ShieldSpell.updateAttackOnReaction(reactionNotUsedWizard, 15)
+
+          updatedSpellCaster.reactionUsed shouldBe true
         }
       }
     }

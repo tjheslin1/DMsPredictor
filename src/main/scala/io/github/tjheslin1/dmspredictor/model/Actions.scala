@@ -66,15 +66,18 @@ object Actions extends LazyLogging {
       }
 
       if (totalAttackRoll >= target.creature.armourClass) {
-
         target.creature.reactionOnHit.fold[(AttackResult, Combatant)]((Hit, target)) {
           onHitReaction =>
-            val (updatedAttackResult, updatedTarget) =
-              onHitReaction.updateAttackOnReaction(target.creature, totalAttackRoll)
 
-            val updatedTargetCombatant = Combatant.creatureLens.set(updatedTarget)(target)
+            if (target.creature.reactionUsed) (Hit, target)
+            else {
+              val (updatedAttackResult, updatedTarget) =
+                onHitReaction.updateAttackOnReaction(target.creature, totalAttackRoll)
 
-            (updatedAttackResult, updatedTargetCombatant)
+              val updatedTargetCombatant = Combatant.creatureLens.set(updatedTarget)(target)
+
+              (updatedAttackResult, updatedTargetCombatant)
+            }
         }
       } else (Miss, target)
     }

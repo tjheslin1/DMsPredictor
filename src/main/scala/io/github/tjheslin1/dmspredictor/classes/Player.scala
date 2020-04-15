@@ -55,31 +55,6 @@ object Player {
       }
   }
 
-  val playerReactionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.reactionUsed) {
-    reactionUsed =>
-      {
-        case c: Champion => Champion._reactionUsed.set(reactionUsed)(c)
-        case c: Fighter  => Fighter._reactionUsed.set(reactionUsed)(c)
-
-        case c: Barbarian => Barbarian._reactionUsed.set(reactionUsed)(c)
-        case c: Berserker => Berserker._reactionUsed.set(reactionUsed)(c)
-
-        case c: Cleric => Cleric._reactionUsed.set(reactionUsed)(c)
-
-        case c: Rogue => Rogue._reactionUsed.set(reactionUsed)(c)
-
-        case c: Wizard => Wizard._reactionUsed.set(reactionUsed)(c)
-
-        case c: Ranger => Ranger._reactionUsed.set(reactionUsed)(c)
-        case c: Hunter => Hunter._reactionUsed.set(reactionUsed)(c)
-
-        case _ =>
-          throw new NotImplementedError(
-            "Missing playerReactionUsedLens lens for your new implementation of Player!"
-          )
-      }
-  }
-
   val playerProficiencyBonusLens: Lens[Player, ProficiencyBonus] =
     Lens[Player, ProficiencyBonus](_.proficiencyBonus) { profBonus =>
       {

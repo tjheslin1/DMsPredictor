@@ -28,7 +28,7 @@ object Move extends LazyLogging {
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
           .set(false)(resetCombatant)
 
-      (Combatant.playerOptional composeLens Player.playerReactionUsedLens)
+      (Combatant.creatureLens composeLens Creature.creatureReactionUsedLens)
         .set(false)(bonusActionUnusedCombatant)
     }
 
