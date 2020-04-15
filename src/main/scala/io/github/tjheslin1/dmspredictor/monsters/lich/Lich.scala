@@ -82,8 +82,7 @@ object Lich {
 
   val lichAbilities: List[CombatantAbility] = List(
     castMultiTargetOffensiveSpell(1),
-    castSingleTargetOffensiveSpell(2),
-    castConcentrationSpell(3)
+    castSingleTargetOffensiveSpell(2)
   )
 
   case object LichNaturalArmour extends Armour {

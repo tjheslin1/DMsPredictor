@@ -81,7 +81,7 @@ object Move extends LazyLogging {
       combatant.creature.conditions.map(_.decrementTurnsLeft()).filter { condition =>
         if (condition.turnsLeft > 0) true
         else {
-          logger.debug(s"${condition.name} has run out on ${combatant.creature.name}")
+          logger.debug(s"${condition.name} has ended on ${combatant.creature.name}")
           false
         }
       }

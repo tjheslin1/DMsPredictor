@@ -199,9 +199,9 @@ object WizardSpells extends LazyLogging {
     val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel   = 6
 
-    val savingThrowAttribute   = Dexterity
-    val halfDamageOnSave       = false
-    val damageType: DamageType = Force
+    val savingThrowAttribute = Dexterity
+    val halfDamageOnSave     = false
+    val damageType           = Force
 
     val requiresConcentration = false
     val useHigherSpellSlot    = true
@@ -214,7 +214,9 @@ object WizardSpells extends LazyLogging {
         case 9 => (19 * D6) + 40
 
         case _ =>
-          throw new IllegalArgumentException("")
+          throw new IllegalArgumentException(
+            s"Invalid spell level. Expected 6 or higher but got: ${spellLevel.value}"
+          )
       }
   }
 }

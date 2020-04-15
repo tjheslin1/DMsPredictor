@@ -135,8 +135,9 @@ object TestData {
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(testSpellCastingMonster)
 
-    def withSpellsKnown(spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell]) =
-      _spellsKnown.set(spellsKnown)(testSpellCastingMonster)
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        testSpellCastingMonster)
 
     def withConcentratingOn(concentrationSpell: Option[Spell]) =
       _concentratingSpell.set(concentrationSpell)(testSpellCastingMonster)
@@ -329,6 +330,10 @@ object TestData {
 
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(lich)
+
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        lich)
 
     def withSpellSlots(spellSlots: SpellSlots) =
       _spellSlots.set(spellSlots)(lich

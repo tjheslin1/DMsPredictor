@@ -15,7 +15,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, PlayerHealing}
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object CoreAbilities extends LazyLogging {
@@ -191,7 +191,7 @@ object CoreAbilities extends LazyLogging {
           case _         => monsters(others)
         }
 
-        val target = nextToFocus(combatant, targets, PlayerHealing)
+        val target = nextToFocus(combatant, targets, Healing)
 
         val (updatedCombatant, optHealedAlly) = (target, optSpell) match {
           case (_, None) => (combatant, None)
@@ -428,7 +428,7 @@ object CoreAbilities extends LazyLogging {
       case None => spellCaster
       case Some(spellSlotFound) =>
         spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotFound.spellLevel)(
-          checkConcentration = newlyConcentrating == false
+          checkCasterIsConcentrating = newlyConcentrating == false
         ).fold {
           spellCaster
         } {

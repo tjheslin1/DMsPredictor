@@ -5,7 +5,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
@@ -34,7 +34,8 @@ object Spell {
 
   /**
     *
-    * @param checkConcentration is used to find the spell a caster had just used when finding the spell slot to update
+    * @param checkCasterIsConcentrating is used to find the spell a caster had just used when finding the spell slot to update.
+    *                           It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
     */
   @tailrec
   def spellOfLevelOrBelow(
@@ -43,7 +44,7 @@ object Spell {
       spellLevel: SpellLevel
   )(
       originalSpellLevel: SpellLevel = spellLevel,
-      checkConcentration: Boolean = true,
+      checkCasterIsConcentrating: Boolean = true,
       multiAttackOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
@@ -54,20 +55,33 @@ object Spell {
       val spell = spellLookup.get
 
       if (multiAttackOnly && spell.isInstanceOf[MultiTargetSavingThrowSpell] == false)
-        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
-      else if (checkConcentration && spellCaster.isConcentrating && spell.requiresConcentration)
-        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+          originalSpellLevel,
+          checkCasterIsConcentrating,
+          multiAttackOnly
+        )
+      else if (checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+          originalSpellLevel,
+          checkCasterIsConcentrating,
+          multiAttackOnly
+        )
       else
         spellLookup match {
           case Some(foundSpell) if foundSpell.spellLevel.value == 0 =>
             (foundSpell, foundSpell.spellLevel).some
           case Some(foundSpell) if foundSpell.useHigherSpellSlot =>
             (foundSpell, originalSpellLevel).some
-          case Some(foundSpell) => (foundSpell, foundSpell.spellLevel).some
-          case _                => none[(Spell, SpellLevel)]
+          case Some(foundSpell) =>
+            (foundSpell, foundSpell.spellLevel).some
+          case _ => none[(Spell, SpellLevel)]
         }
     } else if (spellLevelBelow >= 0)
-      spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
+      spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+        originalSpellLevel,
+        checkCasterIsConcentrating,
+        multiAttackOnly
+      )
     else none[(Spell, SpellLevel)]
   }
 

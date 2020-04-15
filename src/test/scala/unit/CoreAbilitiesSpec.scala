@@ -526,8 +526,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    // Unignore once a monster with healing abilities is added
-    "target another Monster if caster is a Monster" ignore {
+    "target another Monster if caster is a Monster" in {
       forAll { (lich: Lich, fighter: Fighter, goblin: Goblin) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
