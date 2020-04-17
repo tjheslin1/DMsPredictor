@@ -94,14 +94,26 @@ object Wizard {
   val intelligenceLens: Lens[Wizard, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Wizard, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
-  // format: off
   def wizardSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne => SpellSlots(2, 0, 0)
-    case LevelTwo => SpellSlots(3, 0, 0)
-    case LevelThree => SpellSlots(4, 2, 0)
-    case LevelFour => SpellSlots(4, 3, 0)
-    case LevelFive => SpellSlots(4, 3, 2)
-    case LevelTwenty => SpellSlots(4, 3, 3)
+    case LevelOne       => SpellSlots(2, 0, 0)
+    case LevelTwo       => SpellSlots(3, 0, 0)
+    case LevelThree     => SpellSlots(4, 2, 0)
+    case LevelFour      => SpellSlots(4, 3, 0)
+    case LevelFive      => SpellSlots(4, 3, 2)
+    case LevelSix       => SpellSlots(4, 3, 3)
+    case LevelSeven     => SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0)
+    case LevelEight     => SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0)
+    case LevelNine      => SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0)
+    case LevelTen       => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
+    case LevelEleven    => SpellSlots(4, 3, 3, 3, 2, 1, 0, 0, 0)
+    case LevelTwelve    => SpellSlots(4, 3, 3, 3, 2, 1, 0, 0, 0)
+    case LevelThirteen  => SpellSlots(4, 3, 3, 3, 2, 1, 1, 0, 0)
+    case LevelFourteen  => SpellSlots(4, 3, 3, 3, 2, 1, 1, 0, 0)
+    case LevelFifteen   => SpellSlots(4, 3, 3, 3, 2, 1, 1, 1, 0)
+    case LevelSixteen   => SpellSlots(4, 3, 3, 3, 2, 1, 1, 1, 0)
+    case LevelSeventeen => SpellSlots(4, 3, 3, 3, 2, 1, 1, 1, 1)
+    case LevelEighteen  => SpellSlots(4, 3, 3, 3, 3, 1, 1, 1, 1)
+    case LevelNineteen  => SpellSlots(4, 3, 3, 3, 3, 2, 1, 1, 1)
+    case LevelTwenty    => SpellSlots(4, 3, 3, 3, 3, 2, 2, 1, 1)
   }
-  // format: on
 }

@@ -16,6 +16,7 @@ trait SpellCaster extends Creature {
   val spellSlots: SpellSlots
   val concentratingSpell: Option[Spell]
 
+  val spellCastingLevel: Level
   val levelSpellcastingLearned: Level
 
   def isConcentrating: Boolean = concentratingSpell.isDefined

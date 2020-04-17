@@ -3,6 +3,7 @@ package unit.wizard
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
+import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition}
@@ -13,10 +14,79 @@ import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import util.TestData._
+import util.TestMonster
 
 import scala.collection.immutable.Queue
 
 class WizardSpellsSpec extends UnitSpecBase {
+
+  "Fire Bolt" should {
+    "deal 1d10 damage for a first level spellCaster" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withSpellKnown(FireBolt)
+        .withLevel(LevelOne)
+        .asInstanceOf[Wizard]
+
+      FireBolt.damage(wizard, FireBolt.spellLevel) shouldBe 10
+    }
+
+    "deal 1d10 damage for a second level spellCaster" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withSpellKnown(FireBolt)
+        .withLevel(LevelTwo)
+        .asInstanceOf[Wizard]
+
+      FireBolt.damage(wizard, FireBolt.spellLevel) shouldBe 10
+    }
+
+    "deal 2d10 damage for a fifth level spellCaster" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withSpellKnown(FireBolt)
+        .withLevel(LevelFive)
+        .asInstanceOf[Wizard]
+
+      FireBolt.damage(wizard, FireBolt.spellLevel) shouldBe 20
+    }
+
+    "deal 3d10 damage for a eleventh level spellCaster" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withSpellKnown(FireBolt)
+        .withLevel(LevelEleven)
+        .asInstanceOf[Wizard]
+
+      FireBolt.damage(wizard, FireBolt.spellLevel) shouldBe 30
+    }
+
+    "deal 4d10 damage for a seventeenth level spellCaster" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withSpellKnown(FireBolt)
+        .withLevel(LevelSeventeen)
+        .asInstanceOf[Wizard]
+
+      FireBolt.damage(wizard, FireBolt.spellLevel) shouldBe 40
+    }
+
+    "deal 4d10 damage for a twenty level spellCaster" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+      val wizard = random[Wizard]
+        .withSpellKnown(FireBolt)
+        .withLevel(LevelTwenty)
+        .asInstanceOf[Wizard]
+
+      FireBolt.damage(wizard, FireBolt.spellLevel) shouldBe 40
+    }
+  }
 
   "acid arrow" should {
 
@@ -294,10 +364,70 @@ class WizardSpellsSpec extends UnitSpecBase {
     }
 
     "kill the creature outright if it drops their health to 0" in new TestContext {
-      implicit val rollStrategy: RollStrategy = _ => RollResult(6)
+      implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
       val lich = random[Lich]
-//      Disintegrate.effect()
+
+      val lowDexFighter = random[Fighter]
+        .withHealth(10)
+        .withMaxHealth(10)
+        .withDexterity(2)
+        .withCombatIndex(1)
+
+      val (_, List(Combatant(_, updatedFighter: Fighter))) =
+        Disintegrate.effect(lich, Disintegrate.spellLevel, List(lowDexFighter))
+
+      updatedFighter.health shouldBe 0
+      updatedFighter.isAlive shouldBe false
+    }
+
+    // copy of SingleTargetSavingThrowSpellSpec
+    "deal full damage if saving throw failed" in {
+      forAll { (lich: Lich, testMonster: TestMonster) =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val trackedLich = lich
+            .withSpellKnown(Disintegrate)
+            .asInstanceOf[Lich]
+
+          val monster = testMonster
+            .withHealth(500)
+            .withMaxHealth(500)
+            .withSavingThrowScores(dexterity = -4)
+            .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            Disintegrate.effect(trackedLich, Disintegrate.spellLevel, List(monster))
+
+          updatedMonster.health shouldBe monster.creature.health - 140 // 10d10 + 40 - using RollResult(10)
+        }
+      }
+    }
+
+    // copy of SingleTargetSavingThrowSpellSpec
+    "deal no damage if saving throw passed and half damage on save is false" in {
+      forAll { (lich: Lich, testMonster: TestMonster) =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val trackedLich = lich
+            .withSpellKnown(Disintegrate)
+            .withIntelligence(10)
+            .asInstanceOf[Lich]
+
+          val monster = testMonster
+            .withDexteritySavingThrowScore(10)
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
+            Disintegrate.effect(trackedLich, Disintegrate.spellLevel, List(monster))
+
+          updatedMonster.health shouldBe monster.creature.health
+        }
+      }
     }
   }
 

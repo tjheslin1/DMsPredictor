@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellAttack
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -24,10 +24,13 @@ object WizardSpells extends LazyLogging {
     val requiresConcentration  = false
     val useHigherSpellSlot     = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
-      case p: Player if p.level == LevelFive => 2 * D10
-      case _                                 => 1 * D10
-    }
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      spellCaster.spellCastingLevel.value match {
+        case lvl if lvl >= 17 => 4 * D10
+        case lvl if lvl >= 11 => 3 * D10
+        case lvl if lvl >= 5  => 2 * D10
+        case _                => 1 * D10
+      }
   }
 
   case object MagicMissile extends SingleTargetAttackSpell {
@@ -218,5 +221,38 @@ object WizardSpells extends LazyLogging {
             s"Invalid spell level. Expected 6 or higher but got: ${spellLevel.value}"
           )
       }
+
+    override def effect[_: RS](
+        spellCaster: SpellCaster,
+        spellLevel: SpellLevel,
+        targets: List[Combatant]
+    ): (SpellCaster, List[Combatant]) = {
+      val target = targets.head
+      val savingThrowPassed =
+        spellSavingThrowPassed(spellCaster, savingThrowAttribute, target.creature)
+
+      logger.debug(
+        s"${spellCaster.name} is casting $name  on ${target.creature.name} " +
+          s"- Saving throw ${if (savingThrowPassed) "Passed" else "Failed"}"
+      )
+
+      val dmg =
+        if (savingThrowPassed == false) damage(spellCaster, spellLevel)
+        else if (savingThrowPassed && halfDamageOnSave)
+          Math.floor(damage(spellCaster, spellLevel) / 2).toInt
+        else 0
+
+      val attackResult = if (savingThrowPassed) Miss else Hit
+
+      val damagedTarget =
+        target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
+
+      if (damagedTarget.creature.health <= 0) {
+        val deadTarget = (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+          .set(false)(damagedTarget)
+
+        (spellCaster, targets.replace(deadTarget))
+      } else (spellCaster, targets.replace(damagedTarget))
+    }
   }
 }

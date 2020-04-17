@@ -24,10 +24,13 @@ object ClericSpells extends LazyLogging {
     val requiresConcentration    = false
     val useHigherSpellSlot       = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
-      case p: Player if p.level == LevelFive => 2 * D8
-      case _                                 => 1 * D8
-    }
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      spellCaster.spellCastingLevel.value match {
+        case lvl if lvl >= 17 => 4 * D8
+        case lvl if lvl >= 11 => 3 * D8
+        case lvl if lvl >= 5  => 2 * D8
+        case _                => 1 * D8
+      }
   }
 
   case object GuidingBolt extends SingleTargetAttackSpell {

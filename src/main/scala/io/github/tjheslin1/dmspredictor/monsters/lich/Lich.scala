@@ -42,8 +42,9 @@ import monocle.macros.{GenLens, Lenses}
 ) extends Monster
     with SpellCaster {
 
-  val spellCastingModifier = 7
-  val armourClass: Int     = calculateArmourClass(stats, conditions)
+  val spellCastingLevel: Level = LevelEighteen
+  val spellCastingModifier     = 7
+  val armourClass: Int         = calculateArmourClass(stats, conditions)
 
   val challengeRating = 21.0
   val skills          = Skills(perception = 9, stealth = stats.dexterity.value)
