@@ -77,8 +77,11 @@ object BaseClericAbilities extends LazyLogging {
             else if (undead.creature.asInstanceOf[Monster].challengeRating <= 0.5) {
               logger.debug(s"${undead.creature.name} has been Destroyed")
 
-              (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+              val zeroHpUndead = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
                 .set(0)(undead)
+
+              (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+                .set(false)(zeroHpUndead)
             } else {
               logger.debug(s"${undead.creature.name} has been Turned")
 
