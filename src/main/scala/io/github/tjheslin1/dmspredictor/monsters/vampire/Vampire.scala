@@ -35,6 +35,7 @@ import monocle.macros.{GenLens, Lenses}
     radiantDamageTaken: Boolean = false,
     firstAttack: Boolean = true,
     biteUsed: Boolean = false,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster
     with LazyLogging {

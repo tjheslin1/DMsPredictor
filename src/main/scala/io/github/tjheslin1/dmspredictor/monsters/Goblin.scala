@@ -29,6 +29,7 @@ import monocle.macros.{GenLens, Lenses}
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster {
 

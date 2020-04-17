@@ -30,6 +30,25 @@ object Player {
       constitutionScore
     )))
 
+  val playerLevelLens: Lens[Player, Level] = Lens[Player, Level](_.level) { lvl =>
+    {
+      case c: Champion => Champion._level.set(lvl)(c)
+      case c: Fighter  => Fighter._level.set(lvl)(c)
+
+      case c: Barbarian => Barbarian._level.set(lvl)(c)
+      case c: Berserker => Berserker._level.set(lvl)(c)
+
+      case c: Cleric => Cleric._level.set(lvl)(c)
+
+      case c: Rogue => Rogue._level.set(lvl)(c)
+
+      case c: Wizard => Wizard._level.set(lvl)(c)
+
+      case c: Ranger => Ranger._level.set(lvl)(c)
+      case c: Hunter => Hunter._level.set(lvl)(c)
+    }
+  }
+
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>
       {

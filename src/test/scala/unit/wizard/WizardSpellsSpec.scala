@@ -292,6 +292,13 @@ class WizardSpellsSpec extends UnitSpecBase {
 
       Disintegrate.damage(lich, 8) shouldBe 96 + 40 // (16 * 6) + 40
     }
+
+    "kill the creature outright if it drops their health to 0" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(6)
+
+      val lich = random[Lich]
+//      Disintegrate.effect()
+    }
   }
 
   abstract private class TestContext {

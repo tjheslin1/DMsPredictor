@@ -190,7 +190,8 @@ object TestData {
     def withDefenseStatus(defenseStatus: AttackStatus) =
       creatureDefenseStatusLens.set(defenseStatus)(creature)
 
-    def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
+    def withIsAlive(isAlive: Boolean) = creatureIsAliveLens.set(isAlive)(creature)
+
     def withCombatIndex(index: Int) = Combatant(index, creature)
 
     def withSkills(perception: Int, stealth: Int) =
@@ -199,6 +200,8 @@ object TestData {
 
   implicit class PlayerOps(val player: Player) extends AnyVal {
     import Player._
+
+    def withLevel(level: Level) = playerLevelLens.set(level)(player)
 
     def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
       playerProficiencyBonusLens.set(proficiencyBonus)(player)
@@ -563,6 +566,8 @@ trait TestData extends RandomDataGenerator {
         val reactionOnHit: Option[OnHitReaction]       = None
         val reactionOnDamage: Option[OnDamageReaction] = None
 
+        val isAlive: Boolean = true
+
         def scoresCritical(roll: Int): Boolean = roll == 20
 
         def updateHealth[_: RS](dmg: Int,
@@ -612,6 +617,8 @@ trait TestData extends RandomDataGenerator {
         val defenseStatus: AttackStatus        = creature.defenseStatus
 
         val skills: Skills = creature.skills
+
+        val isAlive: Boolean = creature.isAlive
 
         val reactionOnHit: Option[OnHitReaction]       = creature.reactionOnHit
         val reactionOnDamage: Option[OnDamageReaction] = creature.reactionOnDamage
@@ -712,6 +719,7 @@ trait TestData extends RandomDataGenerator {
         arbSkills.perception,
         arbSkills.stealth,
         TestMonster.defaultScores,
+        creature.isAlive,
         creature.name
       )
   }
@@ -746,7 +754,8 @@ trait TestData extends RandomDataGenerator {
         Map.empty[(SpellLevel, spellcasting.SpellEffect), Spell],
         SpellSlots(0, 0, 0),
         none[Spell],
-        spellCastingModifier = 0,
+        0,
+        creature.isAlive,
         creature.name
       )
   }
@@ -786,6 +795,7 @@ trait TestData extends RandomDataGenerator {
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
+        player.isAlive,
         player.name
       )
   }
@@ -818,6 +828,7 @@ trait TestData extends RandomDataGenerator {
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
+        player.isAlive,
         player.name
       )
   }
@@ -844,11 +855,12 @@ trait TestData extends RandomDataGenerator {
         player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
-        inRage = false,
-        rageTurnsLeft = 10,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
+        player.attackStatus,
+        player.defenseStatus,
+        false,
+        10,
+        player.isAlive,
+        player.name
       )
   }
 
@@ -874,11 +886,13 @@ trait TestData extends RandomDataGenerator {
         player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
-        inRage = false,
-        rageTurnsLeft = 10,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
+        player.attackStatus,
+        player.defenseStatus,
+        false,
+        false,
+        10,
+        player.isAlive,
+        player.name
       )
   }
 
@@ -909,7 +923,8 @@ trait TestData extends RandomDataGenerator {
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
-        name = player.name
+        player.isAlive,
+        player.name
       )
   }
 
@@ -933,10 +948,12 @@ trait TestData extends RandomDataGenerator {
         player.bonusActionUsed,
         player.reactionUsed,
         Rogue.standardRogueAbilities,
-        conditions = player.conditions,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
+        List.empty[Combatant],
+        player.conditions,
+        player.attackStatus,
+        player.defenseStatus,
+        player.isAlive,
+        player.name
       )
   }
 
@@ -968,7 +985,8 @@ trait TestData extends RandomDataGenerator {
         player.attackStatus,
         player.defenseStatus,
         concentratingSpell = none[Spell],
-        name = player.name
+        player.isAlive,
+        player.name
       )
   }
 
@@ -1004,6 +1022,7 @@ trait TestData extends RandomDataGenerator {
         player.attackStatus,
         player.defenseStatus,
         concentratingSpell = none[Spell],
+        player.isAlive,
         player.name
       )
   }
@@ -1036,7 +1055,8 @@ trait TestData extends RandomDataGenerator {
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
-        concentratingSpell = none[Spell],
+        none[Spell],
+        player.isAlive,
         player.name
       )
   }

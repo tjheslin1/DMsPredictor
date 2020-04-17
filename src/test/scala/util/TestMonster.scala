@@ -32,6 +32,7 @@ import util.TestMonster.defaultScores
                                     perceptionScore: Int = 0,
                                     stealthScore: Int = 0,
                                     savingThrowScores: Map[Attribute, Int] = defaultScores,
+                                    isAlive: Boolean = true,
                                     name: String = NameGenerator.randomName)
     extends Monster {
 

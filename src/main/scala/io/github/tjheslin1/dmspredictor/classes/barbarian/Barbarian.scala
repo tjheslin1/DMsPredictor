@@ -42,6 +42,7 @@ import monocle.macros.{GenLens, Lenses}
     defenseStatus: AttackStatus = Regular,
     inRage: Boolean = false,
     rageTurnsLeft: Int = 10,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseBarbarian {
 

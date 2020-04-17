@@ -32,9 +32,9 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val swordedFighter = fighter
+            .withLevel(LevelFive)
             .withBaseWeapon(trackedSword)
             .withAbilities(List(extraAttack(Priority)))
-            .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -53,11 +53,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedAbilityFighter = fighter
+            .withLevel(LevelFive)
             .withAbilities(
               List(extraAttack(Priority),
                    trackedAbility(2, action = WholeAction),
                    otherTrackedAbility(3, action = SingleAttack, updatedTracking = ())))
-            .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -76,11 +76,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedAbilityFighter = fighter
+            .withLevel(LevelFive)
             .withAbilities(
               List(extraAttack(Priority),
                    trackedAbility(2, action = WholeAction),
                    otherTrackedAbility(3, action = SingleAttack)))
-            .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -390,7 +390,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .withWisdom(12)
-            .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
@@ -415,7 +414,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .withWisdom(12)
-            .withLevel(LevelFive)
             .withCombatIndex(1)
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)

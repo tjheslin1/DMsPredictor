@@ -76,7 +76,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
   }
 
   "destroyUndead" should {
-    "destroy (set health to 0) undead enemies who fail their save and are CR 1/2 or lower" in {
+    "destroy undead enemies who fail their save and are CR 1/2 or lower" in {
       forAll {
         (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, vampire: Vampire, goblin: Goblin) =>
           new TestContext {
@@ -105,6 +105,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
             updatedToughUndead.health shouldBe zombieOne.health
             updatedWeakUndead.health shouldBe 0
+            updatedWeakUndead.isAlive shouldBe false
 
             updatedVampire.health shouldBe weakVampire.creature.health
             updatedVampire.conditions should contain theSameElementsAs List(Turned(14, 10))

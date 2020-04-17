@@ -45,6 +45,7 @@ import monocle.macros.{GenLens, Lenses}
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     concentratingSpell: Option[spellcasting.Spell] = None,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseRanger {
 

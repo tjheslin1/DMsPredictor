@@ -43,6 +43,7 @@ import monocle.macros.{GenLens, Lenses}
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     concentratingSpell: Option[Spell] = None,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseWizard {
 

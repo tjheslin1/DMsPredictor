@@ -37,6 +37,7 @@ import monocle.macros.{GenLens, Lenses}
     spellSlots: SpellSlots = SpellSlots(4, 3, 3, 3, 3, 1, 1, 1, 1),
     spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardLichSpellList,
     concentratingSpell: Option[Spell] = none[Spell],
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster
     with SpellCaster {

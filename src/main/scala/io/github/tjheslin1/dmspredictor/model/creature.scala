@@ -53,6 +53,7 @@ trait Creature {
   val reactionOnDamage: Option[OnDamageReaction]
 
   val isConscious = health > 0
+  val isAlive: Boolean
 
   def scoresCritical(roll: Int): Boolean
 
@@ -60,7 +61,7 @@ trait Creature {
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature
 
-  def passivePerception = 10 + skills.perception
+  def passivePerception: Int = 10 + skills.perception
 }
 
 object Creature extends LazyLogging {
@@ -592,6 +593,33 @@ object Creature extends LazyLogging {
       }
     }
 
+  val creatureIsAliveLens: Lens[Creature, Boolean] = Lens[Creature, Boolean](_.isAlive) { isAlive =>
+    {
+      case c: Champion => Champion._isAlive.set(isAlive)(c)
+      case c: Fighter  => Fighter._isAlive.set(isAlive)(c)
+
+      case c: Barbarian => Barbarian._isAlive.set(isAlive)(c)
+      case c: Berserker => Berserker._isAlive.set(isAlive)(c)
+
+      case c: Cleric => Cleric._isAlive.set(isAlive)(c)
+
+      case c: Rogue => Rogue._isAlive.set(isAlive)(c)
+
+      case c: Wizard => Wizard._isAlive.set(isAlive)(c)
+
+      case c: Ranger => Ranger._isAlive.set(isAlive)(c)
+      case c: Hunter => Hunter._isAlive.set(isAlive)(c)
+
+      case c: Goblin   => Goblin._isAlive.set(isAlive)(c)
+      case c: Werewolf => Werewolf._isAlive.set(isAlive)(c)
+      case c: Zombie   => Zombie._isAlive.set(isAlive)(c)
+      case c: Vampire  => Vampire._isAlive.set(isAlive)(c)
+      case c: Lich     => Lich._isAlive.set(isAlive)(c)
+
+      case _ => throw new NotImplementedError("Missing a case in creatureIsAliveLens")
+    }
+  }
+
   val creatureSkillsOptional: Optional[Creature, Skills] = Optional[Creature, Skills] {
     case c: Champion => c.skills.some
     case c: Fighter  => c.skills.some
@@ -623,43 +651,6 @@ object Creature extends LazyLogging {
 
       case c: Ranger => Ranger._skills.set(skills)(c)
       case c: Hunter => Hunter._skills.set(skills)(c)
-
-      case c: Creature => c
-    }
-  }
-
-  val creatureLevelOptional: Optional[Creature, Level] = Optional[Creature, Level] {
-    case c: Champion => val lvl: Level = c.level; lvl.some
-    case c: Fighter  => val lvl: Level = c.level; lvl.some
-
-    case c: Barbarian => val lvl: Level = c.level; lvl.some
-    case c: Berserker => val lvl: Level = c.level; lvl.some
-
-    case c: Cleric => val lvl: Level = c.level; lvl.some
-
-    case c: Rogue => val lvl: Level = c.level; lvl.some
-
-    case c: Wizard => val lvl: Level = c.level; lvl.some
-
-    case c: Ranger => val lvl: Level = c.level; lvl.some
-
-    case _ => none[Level]
-  } { lvl =>
-    {
-      case c: Champion => Champion._level.set(lvl)(c)
-      case c: Fighter  => Fighter._level.set(lvl)(c)
-
-      case c: Barbarian => Barbarian._level.set(lvl)(c)
-      case c: Berserker => Berserker._level.set(lvl)(c)
-
-      case c: Cleric => Cleric._level.set(lvl)(c)
-
-      case c: Rogue => Rogue._level.set(lvl)(c)
-
-      case c: Wizard => Wizard._level.set(lvl)(c)
-
-      case c: Ranger => Ranger._level.set(lvl)(c)
-      case c: Hunter => Hunter._level.set(lvl)(c)
 
       case c: Creature => c
     }

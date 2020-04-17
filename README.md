@@ -40,7 +40,7 @@ class and will be used starting from the highest spell slot to the lowest as wel
 (e.g. a Sorceror's twinned spell).
 
 ##### Proficiency with used weapons and armour:
-The simulation assumes that players have proficiency with the equipment it uses.
+The simulation assumes that players have proficiency with the equipment they use.
 
 ##### Ability Score Increases
 

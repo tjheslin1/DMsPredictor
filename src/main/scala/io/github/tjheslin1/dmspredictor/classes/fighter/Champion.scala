@@ -38,6 +38,7 @@ import monocle.macros.{GenLens, Lenses}
     conditions: List[Condition] = List.empty,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseFighter {
 
