@@ -19,14 +19,19 @@ object SavingThrow {
         D20.roll() + m.savingThrowScores(attribute) >= dc
     }
 
-  def savingThrowWithAdvantagePassed[_: RS](dc: Int,
-                                            attribute: Attribute,
-                                            target: Creature): Boolean =
+  def savingThrowWithAdvantagePassed[_: RS](
+      dc: Int,
+      attribute: Attribute,
+      target: Creature
+  ): Boolean =
     if (savingThrowPassed(dc, attribute, target)) true
     else savingThrowPassed(dc, attribute, target)
 
-  def savingThrowWithDisadvantagePassed[_: RS](dc: Int,
-                                            attribute: Attribute,
-                                            target: Creature): Boolean =
-    savingThrowPassed(dc, attribute, target)
+  def savingThrowWithDisadvantagePassed[_: RS](
+      dc: Int,
+      attribute: Attribute,
+      target: Creature
+  ): Boolean =
+    if (savingThrowPassed(dc, attribute, target)) savingThrowPassed(dc, attribute, target)
+    else false
 }

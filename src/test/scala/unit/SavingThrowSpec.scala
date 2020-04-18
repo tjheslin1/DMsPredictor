@@ -12,7 +12,7 @@ import util.TestMonster
 class SavingThrowSpec extends UnitSpecBase {
 
   "savingThrowPassed" should {
-    "return true if the targets roll equals the caster's spell save DC" in {
+    "return true if the target's roll equals the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -24,7 +24,7 @@ class SavingThrowSpec extends UnitSpecBase {
       }
     }
 
-    "return true if the targets roll exceeds the caster's spell save DC" in {
+    "return true if the target's roll exceeds the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -36,7 +36,7 @@ class SavingThrowSpec extends UnitSpecBase {
       }
     }
 
-    "return false if the targets roll is less than the caster's spell save DC" in {
+    "return false if the target's roll is less than the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
@@ -76,7 +76,7 @@ class SavingThrowSpec extends UnitSpecBase {
   }
 
   "savingThrowWithAdvantagePassed" should {
-    "return true if the targets roll equals the caster's spell save DC" in {
+    "return true if the target's roll equals the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           val iterator = Iterator(1, 10)
@@ -89,7 +89,7 @@ class SavingThrowSpec extends UnitSpecBase {
       }
     }
 
-    "return true if the targets roll exceeds the caster's spell save DC" in {
+    "return true if the target's roll exceeds the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           val iterator = Iterator(1, 10)
@@ -102,7 +102,7 @@ class SavingThrowSpec extends UnitSpecBase {
       }
     }
 
-    "return false if the targets roll is less than the caster's spell save DC" in {
+    "return false if the target's roll is less than the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           val iterator = Iterator(1, 2)
@@ -117,7 +117,7 @@ class SavingThrowSpec extends UnitSpecBase {
   }
 
   "savingThrowWithDisadvantagePassed" should {
-    "return true if the targets roll equals the caster's spell save DC" in {
+    "return true if the target's roll equals the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           val iterator = Iterator(15, 10)
@@ -125,12 +125,12 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val monster = testMonster.withDexterity(10)
 
-          savingThrowWithAdvantagePassed(10, Dexterity, monster) shouldBe true
+          savingThrowWithDisadvantagePassed(10, Dexterity, monster) shouldBe true
         }
       }
     }
 
-    "return true if the targets roll exceeds the caster's spell save DC" in {
+    "return true if the target's roll exceeds the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
           val iterator = Iterator(15, 10)
@@ -138,20 +138,20 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val monster = testMonster.withDexterity(14)
 
-          savingThrowWithAdvantagePassed(10, Dexterity, monster) shouldBe true
+          savingThrowWithDisadvantagePassed(10, Dexterity, monster) shouldBe true
         }
       }
     }
 
-    "return false if the targets roll is less than the caster's spell save DC" in {
+    "return false if the target's roll is less than the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(1, 20)
+          val iterator = Iterator(20, 1)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(10)
 
-          savingThrowWithAdvantagePassed(20, Dexterity, monster) shouldBe false
+          savingThrowWithDisadvantagePassed(20, Dexterity, monster) shouldBe false
         }
       }
     }
