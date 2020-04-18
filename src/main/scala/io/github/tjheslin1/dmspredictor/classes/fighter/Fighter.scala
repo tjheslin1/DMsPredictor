@@ -65,21 +65,6 @@ object Fighter {
 
   import BaseFighterAbilities._
 
-  def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
-    val health    = calculateHealth(LevelOne, 14)
-    val profBonus = ProficiencyBonus.fromLevel(LevelOne)
-
-    Fighter(
-      LevelOne,
-      health,
-      health,
-      BaseStats(15, 13, 14, 12, 8, 10),
-      weapon,
-      Skills(perception = mod(12) + profBonus, stealth = mod(13)),
-      armour
-    )
-  }
-
   val standardFighterAbilities: List[CombatantAbility] = List(
     actionSurge(1),
     secondWind(2),
