@@ -55,10 +55,12 @@ object TestData {
     def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
     def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
     def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
-    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
-    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
-    def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
-    def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
+    def withDamageResistance(creatureRes: DamageType*) = _damageResistances.set(creatureRes.toList)(testMonster)
+    def withDamageImmunity(creatureImm: DamageType*)   = _damageImmunities.set(creatureImm.toList)(testMonster)
+    def withConditionResistance(creatureRes: Condition*) = _conditionResistances.set(creatureRes.toList)(testMonster)
+    def withConditionImmunity(creatureImm: Condition*)   = _conditionImmunities.set(creatureImm.toList)(testMonster)
+    def withNoResistances()                      = _damageResistances.set(List.empty)(testMonster)
+    def withNoImmunities()                       = _damageImmunities.set(List.empty)(testMonster)
     def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
@@ -113,12 +115,15 @@ object TestData {
     def withArmourClass(ac: Int)         = _armourClass.set(ac)(testSpellCastingMonster)
     def withNoArmour()                   = _armour.set(NoArmour)(testSpellCastingMonster)
     def withNoOffHand()                  = _offHand.set(none[Equipment])(testSpellCastingMonster)
+
     def withResistance(creatureRes: DamageType*) =
-      _resistances.set(creatureRes.toList)(testSpellCastingMonster)
+      _damageResistances.set(creatureRes.toList)(testSpellCastingMonster)
+
     def withImmunity(creatureImm: DamageType*) =
-      _immunities.set(creatureImm.toList)(testSpellCastingMonster)
-    def withNoResistances() = _resistances.set(List.empty)(testSpellCastingMonster)
-    def withNoImmunities()  = _immunities.set(List.empty)(testSpellCastingMonster)
+      _damageImmunities.set(creatureImm.toList)(testSpellCastingMonster)
+
+    def withNoResistances() = _damageResistances.set(List.empty)(testSpellCastingMonster)
+    def withNoImmunities()  = _damageImmunities.set(List.empty)(testSpellCastingMonster)
     def withNoResistancesOrImmunities() =
       testSpellCastingMonster.withNoResistances().withNoImmunities()
 
@@ -171,13 +176,19 @@ object TestData {
     def withNoArmour()  = creatureArmourLens.set(NoArmour)(creature)
     def withNoOffHand() = creatureOffHandLens.set(none[Equipment])(creature)
 
-    def withResistance(creatureRes: DamageType*) =
-      creatureResistancesLens.set(creatureRes.toList)(creature)
-    def withImmunity(creatureImm: DamageType*) =
-      creatureImmunitiesLens.set(creatureImm.toList)(creature)
-    def withNoResistances()             = creatureResistancesLens.set(List.empty)(creature)
-    def withNoImmunities()              = creatureImmunitiesLens.set(List.empty)(creature)
-    def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
+    def withDamageResistance(creatureRes: DamageType*) =
+      creatureDamageResistancesLens.set(creatureRes.toList)(creature)
+    def withDamageImmunity(creatureImm: DamageType*) =
+      creatureDamageImmunitiesLens.set(creatureImm.toList)(creature)
+
+    def withConditionResistance(creatureRes: Condition*) =
+      creatureConditionResistancesLens.set(creatureRes.toList)(creature)
+    def withConditionImmunity(creatureImm: Condition*) =
+      creatureConditionImmunitiesLens.set(creatureImm.toList)(creature)
+
+    def withNoDamageResistances()             = creatureDamageResistancesLens.set(List.empty)(creature)
+    def withNoDamageImmunities()              = creatureDamageImmunitiesLens.set(List.empty)(creature)
+    def withNoDamageResistancesOrImmunities() = creature.withNoDamageResistances().withNoDamageImmunities()
 
     def withCondition(condition: Condition) = creatureConditionsLens.set(List(condition))(creature)
     def withConditions(conditions: Condition*) = creatureConditionsLens.set(conditions.toList)(creature)
@@ -551,8 +562,11 @@ trait TestData extends RandomDataGenerator {
 
         val armourClass: Int = armour.armourClass(baseStats.dexterity)
 
-        val resistances: List[DamageType]     = List.empty
-        val immunities: List[DamageType]      = List.empty
+        val damageVulnerabilities: List[DamageType]     = List.empty[DamageType]
+        val damageResistances: List[DamageType]     = List.empty[DamageType]
+        val damageImmunities: List[DamageType]      = List.empty[DamageType]
+        val conditionResistances: List[Condition] = List.empty[Condition]
+        val conditionImmunities: List[Condition] = List.empty[Condition]
         val bonusActionUsed: Boolean          = false
         val reactionUsed: Boolean             = false
         val name: String                      = n
@@ -608,8 +622,11 @@ trait TestData extends RandomDataGenerator {
         val offHand: Option[Equipment]         = creature.offHand
         val armourClass: Int                   = creature.armourClass
         val proficiencyBonus: ProficiencyBonus = profBonus
-        val resistances: List[DamageType]      = creature.resistances
-        val immunities: List[DamageType]       = creature.immunities
+        val damageVulnerabilities: List[DamageType]      = creature.damageResistances
+        val damageResistances: List[DamageType]      = creature.damageResistances
+        val damageImmunities: List[DamageType]       = creature.damageImmunities
+        val conditionResistances: List[Condition] = creature.conditionResistances
+        val conditionImmunities: List[Condition] = creature.conditionImmunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
         val conditions: List[Condition]        = List.empty
@@ -707,9 +724,12 @@ trait TestData extends RandomDataGenerator {
         creature.baseWeapon,
         creature.armour,
         creature.offHand,
-        creature.resistances,
-        creature.immunities,
-        List.empty, // TODO add core abilities?
+        creature.damageVulnerabilities,
+        creature.damageResistances,
+        creature.damageImmunities,
+        creature.conditionResistances,
+        creature.conditionImmunities,
+        List.empty[CombatantAbility], // TODO add core abilities?
         creature.conditions,
         reactionUsed = false,
         creature.attackStatus,
@@ -739,9 +759,12 @@ trait TestData extends RandomDataGenerator {
         creature.baseWeapon,
         creature.armour,
         creature.offHand,
-        creature.resistances,
-        creature.immunities,
-        List.empty, // TODO add core abilities?
+        creature.damageVulnerabilities,
+        creature.damageResistances,
+        creature.damageImmunities,
+        creature.conditionResistances,
+        creature.conditionImmunities,
+        List.empty[CombatantAbility], // TODO add core abilities?
         creature.conditions,
         reactionUsed = false,
         creature.attackStatus,
@@ -788,8 +811,11 @@ trait TestData extends RandomDataGenerator {
         fightingStyles.toList,
         BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Fighter.standardFighterAbilities,
@@ -821,8 +847,11 @@ trait TestData extends RandomDataGenerator {
         fightingStyles.toList,
         BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Champion.standardChampionAbilities,
@@ -850,8 +879,11 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
@@ -881,8 +913,11 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
@@ -914,13 +949,16 @@ trait TestData extends RandomDataGenerator {
         channelDivinityUsed = false,
         player.armour,
         player.offHand,
-        Cleric.standardClericAbilities,
-        player.conditions,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         bonusActionUsed = player.bonusActionUsed,
         reactionUsed = player.reactionUsed,
+        Cleric.standardClericAbilities,
+        player.conditions,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
@@ -944,8 +982,11 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         none[Equipment],
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Rogue.standardRogueAbilities,
@@ -976,13 +1017,16 @@ trait TestData extends RandomDataGenerator {
         mageArmourPrepared = true,
         NoArmour,
         none[Equipment],
-        Wizard.standardWizardAbilities,
-        player.conditions,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
+        Wizard.standardWizardAbilities,
+        player.conditions,
         player.attackStatus,
         player.defenseStatus,
         concentratingSpell = none[Spell],
@@ -1014,8 +1058,11 @@ trait TestData extends RandomDataGenerator {
         player.offHand,
         fightingStyles.toList,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Ranger.standardRangerAbilities,
@@ -1047,8 +1094,11 @@ trait TestData extends RandomDataGenerator {
         player.offHand,
         fightingStyles.toList,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         colossusSlayerUsed = false,

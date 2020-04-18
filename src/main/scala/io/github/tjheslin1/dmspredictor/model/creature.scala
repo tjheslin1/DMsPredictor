@@ -37,8 +37,11 @@ trait Creature {
   val armour: Armour
   val offHand: Option[Equipment]
   val armourClass: Int
-  val resistances: List[DamageType]
-  val immunities: List[DamageType]
+  val damageVulnerabilities: List[DamageType]
+  val damageResistances: List[DamageType]
+  val damageImmunities: List[DamageType]
+  val conditionResistances: List[Condition]
+  val conditionImmunities: List[Condition]
   val attackStatus: AttackStatus
   val defenseStatus: AttackStatus
   val skills: Skills
@@ -403,59 +406,144 @@ object Creature extends LazyLogging {
       }
     }
 
-  val creatureResistancesLens: Lens[Creature, List[DamageType]] =
-    Lens[Creature, List[DamageType]](_.resistances) { res =>
+  val creatureDamageVulnerabilitiesLens: Lens[Creature, List[DamageType]] =
+    Lens[Creature, List[DamageType]](_.damageVulnerabilities) { res =>
       {
-        case c: Champion => Champion._resistances.set(res)(c)
-        case c: Fighter  => Fighter._resistances.set(res)(c)
+        case c: Champion => Champion._damageVulnerabilities.set(res)(c)
+        case c: Fighter  => Fighter._damageVulnerabilities.set(res)(c)
 
-        case c: Barbarian => Barbarian._resistances.set(res)(c)
-        case c: Berserker => Berserker._resistances.set(res)(c)
+        case c: Barbarian => Barbarian._damageVulnerabilities.set(res)(c)
+        case c: Berserker => Berserker._damageVulnerabilities.set(res)(c)
 
-        case c: Cleric => Cleric._resistances.set(res)(c)
+        case c: Cleric => Cleric._damageVulnerabilities.set(res)(c)
 
-        case c: Rogue => Rogue._resistances.set(res)(c)
+        case c: Rogue => Rogue._damageVulnerabilities.set(res)(c)
 
-        case c: Wizard => Wizard._resistances.set(res)(c)
+        case c: Wizard => Wizard._damageVulnerabilities.set(res)(c)
 
-        case c: Ranger => Ranger._resistances.set(res)(c)
-        case c: Hunter => Hunter._resistances.set(res)(c)
+        case c: Ranger => Ranger._damageVulnerabilities.set(res)(c)
+        case c: Hunter => Hunter._damageVulnerabilities.set(res)(c)
 
-        case c: Goblin   => Goblin._resistances.set(res)(c)
-        case c: Werewolf => Werewolf._resistances.set(res)(c)
-        case c: Zombie   => Zombie._resistances.set(res)(c)
-        case c: Vampire  => Vampire._resistances.set(res)(c)
-        case c: Lich     => Lich._resistances.set(res)(c)
+        case c: Goblin   => Goblin._damageVulnerabilities.set(res)(c)
+        case c: Werewolf => Werewolf._damageVulnerabilities.set(res)(c)
+        case c: Zombie   => Zombie._damageVulnerabilities.set(res)(c)
+        case c: Vampire  => Vampire._damageVulnerabilities.set(res)(c)
+        case c: Lich     => Lich._damageVulnerabilities.set(res)(c)
 
-        case _ => throw new NotImplementedError("Missing a case in creatureResistancesLens")
+        case _ => throw new NotImplementedError("Missing a case in creatureDamageResistancesLens")
       }
     }
 
-  val creatureImmunitiesLens: Lens[Creature, List[DamageType]] =
-    Lens[Creature, List[DamageType]](_.immunities) { res =>
+  val creatureDamageResistancesLens: Lens[Creature, List[DamageType]] =
+    Lens[Creature, List[DamageType]](_.damageResistances) { res =>
       {
-        case c: Champion => Champion._immunities.set(res)(c)
-        case c: Fighter  => Fighter._immunities.set(res)(c)
+        case c: Champion => Champion._damageResistances.set(res)(c)
+        case c: Fighter  => Fighter._damageResistances.set(res)(c)
 
-        case c: Barbarian => Barbarian._immunities.set(res)(c)
-        case c: Berserker => Berserker._immunities.set(res)(c)
+        case c: Barbarian => Barbarian._damageResistances.set(res)(c)
+        case c: Berserker => Berserker._damageResistances.set(res)(c)
 
-        case c: Cleric => Cleric._immunities.set(res)(c)
+        case c: Cleric => Cleric._damageResistances.set(res)(c)
 
-        case c: Rogue => Rogue._immunities.set(res)(c)
+        case c: Rogue => Rogue._damageResistances.set(res)(c)
 
-        case c: Wizard => Wizard._immunities.set(res)(c)
+        case c: Wizard => Wizard._damageResistances.set(res)(c)
 
-        case c: Ranger => Ranger._immunities.set(res)(c)
-        case c: Hunter => Hunter._immunities.set(res)(c)
+        case c: Ranger => Ranger._damageResistances.set(res)(c)
+        case c: Hunter => Hunter._damageResistances.set(res)(c)
 
-        case c: Goblin   => Goblin._immunities.set(res)(c)
-        case c: Werewolf => Werewolf._immunities.set(res)(c)
-        case c: Zombie   => Zombie._immunities.set(res)(c)
-        case c: Vampire  => Vampire._immunities.set(res)(c)
-        case c: Lich     => Lich._immunities.set(res)(c)
+        case c: Goblin   => Goblin._damageResistances.set(res)(c)
+        case c: Werewolf => Werewolf._damageResistances.set(res)(c)
+        case c: Zombie   => Zombie._damageResistances.set(res)(c)
+        case c: Vampire  => Vampire._damageResistances.set(res)(c)
+        case c: Lich     => Lich._damageResistances.set(res)(c)
 
-        case _ => throw new NotImplementedError("Missing a case in creatureImmunitiesLens")
+        case _ => throw new NotImplementedError("Missing a case in creatureDamageResistancesLens")
+      }
+    }
+
+  val creatureDamageImmunitiesLens: Lens[Creature, List[DamageType]] =
+    Lens[Creature, List[DamageType]](_.damageImmunities) { res =>
+      {
+        case c: Champion => Champion._damageImmunities.set(res)(c)
+        case c: Fighter  => Fighter._damageImmunities.set(res)(c)
+
+        case c: Barbarian => Barbarian._damageImmunities.set(res)(c)
+        case c: Berserker => Berserker._damageImmunities.set(res)(c)
+
+        case c: Cleric => Cleric._damageImmunities.set(res)(c)
+
+        case c: Rogue => Rogue._damageImmunities.set(res)(c)
+
+        case c: Wizard => Wizard._damageImmunities.set(res)(c)
+
+        case c: Ranger => Ranger._damageImmunities.set(res)(c)
+        case c: Hunter => Hunter._damageImmunities.set(res)(c)
+
+        case c: Goblin   => Goblin._damageImmunities.set(res)(c)
+        case c: Werewolf => Werewolf._damageImmunities.set(res)(c)
+        case c: Zombie   => Zombie._damageImmunities.set(res)(c)
+        case c: Vampire  => Vampire._damageImmunities.set(res)(c)
+        case c: Lich     => Lich._damageImmunities.set(res)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureDamageImmunitiesLens")
+      }
+    }
+
+  val creatureConditionResistancesLens: Lens[Creature, List[Condition]] =
+    Lens[Creature, List[Condition]](_.conditionResistances) { res =>
+      {
+        case c: Champion => Champion._conditionResistances.set(res)(c)
+        case c: Fighter  => Fighter._conditionResistances.set(res)(c)
+
+        case c: Barbarian => Barbarian._conditionResistances.set(res)(c)
+        case c: Berserker => Berserker._conditionResistances.set(res)(c)
+
+        case c: Cleric => Cleric._conditionResistances.set(res)(c)
+
+        case c: Rogue => Rogue._conditionResistances.set(res)(c)
+
+        case c: Wizard => Wizard._conditionResistances.set(res)(c)
+
+        case c: Ranger => Ranger._conditionResistances.set(res)(c)
+        case c: Hunter => Hunter._conditionResistances.set(res)(c)
+
+        case c: Goblin   => Goblin._conditionResistances.set(res)(c)
+        case c: Werewolf => Werewolf._conditionResistances.set(res)(c)
+        case c: Zombie   => Zombie._conditionResistances.set(res)(c)
+        case c: Vampire  => Vampire._conditionResistances.set(res)(c)
+        case c: Lich     => Lich._conditionResistances.set(res)(c)
+
+        case _ =>
+          throw new NotImplementedError("Missing a case in creatureConditionResistancesLens")
+      }
+    }
+
+  val creatureConditionImmunitiesLens: Lens[Creature, List[Condition]] =
+    Lens[Creature, List[Condition]](_.conditionImmunities) { res =>
+      {
+        case c: Champion => Champion._conditionImmunities.set(res)(c)
+        case c: Fighter  => Fighter._conditionImmunities.set(res)(c)
+
+        case c: Barbarian => Barbarian._conditionImmunities.set(res)(c)
+        case c: Berserker => Berserker._conditionImmunities.set(res)(c)
+
+        case c: Cleric => Cleric._conditionImmunities.set(res)(c)
+
+        case c: Rogue => Rogue._conditionImmunities.set(res)(c)
+
+        case c: Wizard => Wizard._conditionImmunities.set(res)(c)
+
+        case c: Ranger => Ranger._conditionImmunities.set(res)(c)
+        case c: Hunter => Hunter._conditionImmunities.set(res)(c)
+
+        case c: Goblin   => Goblin._conditionImmunities.set(res)(c)
+        case c: Werewolf => Werewolf._conditionImmunities.set(res)(c)
+        case c: Zombie   => Zombie._conditionImmunities.set(res)(c)
+        case c: Vampire  => Vampire._conditionImmunities.set(res)(c)
+        case c: Lich     => Lich._conditionImmunities.set(res)(c)
+
+        case _ => throw new NotImplementedError("Missing a case in creatureConditionImmunitiesLens")
       }
     }
 

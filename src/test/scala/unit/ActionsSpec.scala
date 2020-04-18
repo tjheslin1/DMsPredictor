@@ -751,7 +751,7 @@ class ActionsSpec extends UnitSpecBase {
 
           val playerCombatant =
             fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
-          val modifiedMonster = monster.withResistance(Slashing).withHealth(100)
+          val modifiedMonster = monster.withDamageResistance(Slashing).withHealth(100)
 
           val monsterCombatant = modifiedMonster
             .withCombatIndex(2)

@@ -26,7 +26,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
 
           val monster = testMonster
             .withHealth(10)
-            .withResistance(Fire)
+            .withDamageResistance(Fire)
             .withArmourClass(10)
             .withCombatIndex(2)
 
@@ -54,7 +54,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
 
           val monster = testMonster
             .withHealth(10)
-            .withResistance(Fire)
+            .withDamageResistance(Fire)
             .withArmourClass(10)
             .withCombatIndex(2)
 
@@ -108,7 +108,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
 
           val monster = testMonster
             .withHealth(10)
-            .withResistance(Fire)
+            .withDamageResistance(Fire)
             .withArmourClass(10)
             .withCombatIndex(2)
 
@@ -135,7 +135,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
 
           val monster = testMonster
             .withHealth(10)
-            .withResistance(Fire)
+            .withDamageResistance(Fire)
             .withArmourClass(10)
             .withCombatIndex(2)
 
@@ -163,7 +163,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
 
           val monster = testMonster
             .withHealth(10)
-            .withImmunity(Fire)
+            .withDamageImmunity(Fire)
             .withArmourClass(10)
             .withCombatIndex(2)
 

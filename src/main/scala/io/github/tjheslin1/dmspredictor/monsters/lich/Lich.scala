@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
@@ -28,9 +28,12 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon = ParalyzingTouch,
     armour: Armour = LichNaturalArmour,
     offHand: Option[Equipment] = None,
-    resistances: List[DamageType] = List(Cold, Lightning, Necrotic),
-    immunities: List[DamageType] = List(Poison, Bludgeoning, Piercing, Slashing),
-    conditions: List[Condition] = List.empty,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List(Cold, Lightning, Necrotic),
+    damageImmunities: List[DamageType] = List(Poison, Bludgeoning, Piercing, Slashing),
+    conditionResistances: List[Condition] = List.empty[Condition], // TODO add Turned,
+    conditionImmunities: List[Condition] = List.empty[Condition],
+    conditions: List[Condition] = List.empty[Condition],
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,

@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
-import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
+import io.github.tjheslin1.dmspredictor.model.Creature.creatureDamageResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
@@ -68,8 +68,10 @@ object BerserkerAbilities extends LazyLogging {
       val updatedBerserker       = rageUsagesLens.set(updatedRageUsages)(frenzyBerserkser)
       val rageTurnsLeftBerserker = rageTurnsLeftLens.set(10)(updatedBerserker)
 
-      val resistantBerserker = creatureResistancesLens
-        .set(berserker.resistances ++ List(Bludgeoning, Piercing, Slashing))(rageTurnsLeftBerserker)
+      val resistantBerserker = creatureDamageResistancesLens
+        .set(berserker.damageResistances ++ List(Bludgeoning, Piercing, Slashing))(
+          rageTurnsLeftBerserker
+        )
         .asInstanceOf[BaseBarbarian]
 
       val bonusActionUsedBerserker =

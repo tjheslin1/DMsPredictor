@@ -72,12 +72,12 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
     "add resistance to Bludgeoning, Piercing and Slashing damage" in new TestContext {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-      val barbarian = random[Barbarian].withResistance(Fire, Slashing).withCombatIndex(1)
+      val barbarian = random[Barbarian].withDamageResistance(Fire, Slashing).withCombatIndex(1)
 
       val (Combatant(_, ragingBarbarian: Barbarian), _) =
         rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
 
-      ragingBarbarian.resistances shouldBe List(Fire, Slashing, Bludgeoning, Piercing, Slashing)
+      ragingBarbarian.damageResistances shouldBe List(Fire, Slashing, Bludgeoning, Piercing, Slashing)
     }
 
     "use the Barbarian's bonus action" in new TestContext {
