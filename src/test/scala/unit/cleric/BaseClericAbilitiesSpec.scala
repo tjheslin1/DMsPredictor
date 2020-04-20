@@ -5,7 +5,8 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Turned, TurnedCondition}
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned, TurnedCondition}
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -94,11 +95,12 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val (_,
                List(Combatant(_, updatedZombieOne: Zombie),
                     Combatant(_, updatedZombieTwo: Zombie),
-                    _)) =
+                  Combatant(_, updatedGoblin: Goblin))) =
             turnUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
           updatedZombieOne.conditions shouldBe List(Turned(17, 10))
           updatedZombieTwo.conditions shouldBe List(Turned(17, 10))
+          updatedGoblin.conditions shouldBe List.empty[Condition]
         }
       }
     }
@@ -117,10 +119,12 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val (_,
           List(Combatant(_, updatedZombieOne: Zombie),
           Combatant(_, updatedZombieTwo: Zombie),
-          _)) =
+          Combatant(_, updatedGoblin: Goblin))) =
             turnUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
           updatedZombieOne.conditions shouldBe List(Turned(17, 10))
+          updatedZombieTwo.conditions shouldBe List.empty[Condition]
+          updatedGoblin.conditions shouldBe List.empty[Condition]
         }
       }
     }
@@ -132,8 +136,8 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
         (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, vampire: Vampire, goblin: Goblin) =>
           new TestContext {
             val iterator = Iterator(
-              10, // toughUndead saving throw
-              10, // weakUndead saving throw
+              10, // zombieOne saving throw
+              10, // zombieTwo saving throw
               6 // weak vampire saving throw
             )
 
@@ -161,6 +165,92 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
             updatedVampire.health shouldBe weakVampire.creature.health
             updatedVampire.conditions should contain theSameElementsAs List(Turned(14, 10))
           }
+      }
+    }
+
+    "turn undead enemies who fail their save and are above CR 1/2" in {
+      forAll {
+        (cleric: Cleric, zombieOne: Zombie, lich: Lich) =>
+          new TestContext {
+            val iterator = Iterator(
+              10, // toughUndead saving throw
+              1, 1 // weak lich saving throw with advantage
+            )
+
+            implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
+
+            val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(18).withCombatIndex(1)
+
+            val toughZombie = zombieOne.withWisdom(20).withCombatIndex(2)
+            val lowWisdomLich = lich.withWisdom(1).withCombatIndex(4)
+
+            val enemies = List(toughZombie, lowWisdomLich)
+
+            val (_,
+                 List(Combatant(_, updatedToughZombie: Zombie),
+                      Combatant(_, updatedLich: Lich))) =
+              destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
+
+            updatedToughZombie.health shouldBe zombieOne.health
+            updatedToughZombie.isAlive shouldBe true
+
+            updatedLich.health shouldBe lowWisdomLich.creature.health
+            updatedLich.conditions should contain theSameElementsAs List(Turned(14, 10))
+          }
+      }
+    }
+
+    "apply the Turned condition to Undead targets if they fail their saving throws with advantage" in {
+      forAll { (cleric: Cleric, vampireOne: Vampire, vampireTwo: Vampire, vampireThree: Vampire) =>
+        new TestContext {
+          val iterator = Iterator(
+            5, // vampireOne saving throw roll
+            1, 2, // vampireTwo saving throw rolls with advantage
+            1, 20 // vampireThree saving throw rolls with advantage
+          )
+
+          implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
+
+          val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
+
+          val enemies = List(vampireOne.withCombatIndex(2),
+            vampireTwo.withConditionResistance(TurnedCondition).withCombatIndex(3),
+            vampireThree.withConditionResistance(TurnedCondition).withCombatIndex(4))
+
+          val (_,
+          List(Combatant(_, updatedVampireOne: Vampire),
+          Combatant(_, updatedVampireTwo: Vampire),
+          Combatant(_, updatedVampireThree: Vampire))) =
+            destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
+
+          updatedVampireOne.conditions shouldBe List(Turned(17, 10))
+          updatedVampireTwo.conditions shouldBe List(Turned(17, 10))
+          updatedVampireThree.conditions shouldBe List.empty[Condition]
+        }
+      }
+    }
+
+    "not apply the Turned condition to Undead targets if they have immunity to the Turned condition" in {
+      forAll { (cleric: Cleric, vampireOne: Vampire, vampireTwo: Vampire, vampireThree: Vampire) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(5)
+
+          val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
+
+          val enemies = List(vampireOne.withWisdom(2).withCombatIndex(2),
+            vampireTwo.withWisdom(2).withConditionImmunity(TurnedCondition).withCombatIndex(3),
+            vampireThree.withWisdom(2).withConditionImmunity(TurnedCondition).withCombatIndex(4))
+
+          val (_,
+          List(Combatant(_, updatedVampireOne: Vampire),
+          Combatant(_, updatedVampireTwo: Vampire),
+          Combatant(_, updatedVampireThree: Vampire))) =
+            destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
+
+          updatedVampireOne.conditions shouldBe List(Turned(17, 10))
+          updatedVampireTwo.conditions shouldBe List.empty[Condition]
+          updatedVampireThree.conditions shouldBe List.empty[Condition]
+        }
       }
     }
   }

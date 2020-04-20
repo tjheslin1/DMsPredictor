@@ -4,7 +4,7 @@ import cats.Eq
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
-trait ConditionType
+sealed trait ConditionType extends Product with Serializable
 
 case object TurnedCondition   extends ConditionType
 case object PoisonedCondition extends ConditionType

@@ -2,10 +2,10 @@ package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
+import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
-import io.github.tjheslin1.dmspredictor.model.condition.Turned
+import io.github.tjheslin1.dmspredictor.model.condition.{Turned, TurnedCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy.Focus
@@ -37,7 +37,13 @@ object BaseClericAbilities extends LazyLogging {
           val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
 
           val updatedUndead = undeadTargets.map { undead =>
-            if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
+            if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
+            else if (undead.creature.conditionResistances.contains(TurnedCondition)) {
+              if (savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)) undead
+              else
+                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+                  .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
+            } else if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
             else
               (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
                 .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
@@ -73,7 +79,13 @@ object BaseClericAbilities extends LazyLogging {
           val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
 
           val updatedUndead = undeadTargets.map { undead =>
-            if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
+            if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
+            else if (undead.creature.conditionResistances.contains(TurnedCondition)) {
+              if (savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)) undead
+              else
+                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+                  .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
+            } else if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
             else if (undead.creature.asInstanceOf[Monster].challengeRating <= 0.5) {
               logger.debug(s"${undead.creature.name} has been Destroyed")
 
