@@ -4,6 +4,11 @@ import cats.Eq
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
+trait ConditionType
+
+case object TurnedCondition   extends ConditionType
+case object PoisonedCondition extends ConditionType
+
 trait Condition {
   val name: String
   val saveDc: Int
@@ -37,8 +42,6 @@ abstract class StartOfTurnCondition extends Condition {
 
 abstract class EndOfTurnCondition extends Condition {
 
-  val isHandledOnDamage = false
-
   def handleStartOfTurn[_: RS](creature: Creature): Creature           = creature
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = creature
 }
@@ -53,14 +56,4 @@ object Condition {
 
   implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>
     x.name == y.name && x.saveDc == y.saveDc
-
-  val conditionTurnsLeftLens: Lens[Condition, Int] = Lens[Condition, Int](_.turnsLeft) {
-    updatedTurnsLeft =>
-      {
-        case c: Turned   => Turned._turnsLeft.set(updatedTurnsLeft)(c)
-        case c: Poisoned => Poisoned._turnsLeft.set(updatedTurnsLeft)(c)
-
-        case _ => throw new NotImplementedError("Missing a case in conditionTurnsLeftLens")
-      }
-  }
 }

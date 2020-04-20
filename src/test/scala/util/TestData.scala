@@ -14,13 +14,13 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlo
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
@@ -57,8 +57,8 @@ object TestData {
     def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
     def withDamageResistance(creatureRes: DamageType*) = _damageResistances.set(creatureRes.toList)(testMonster)
     def withDamageImmunity(creatureImm: DamageType*)   = _damageImmunities.set(creatureImm.toList)(testMonster)
-    def withConditionResistance(creatureRes: Condition*) = _conditionResistances.set(creatureRes.toList)(testMonster)
-    def withConditionImmunity(creatureImm: Condition*)   = _conditionImmunities.set(creatureImm.toList)(testMonster)
+    def withConditionResistance(creatureRes: ConditionType*) = _conditionResistances.set(creatureRes.toList)(testMonster)
+    def withConditionImmunity(creatureImm: ConditionType*)   = _conditionImmunities.set(creatureImm.toList)(testMonster)
     def withNoResistances()                      = _damageResistances.set(List.empty)(testMonster)
     def withNoImmunities()                       = _damageImmunities.set(List.empty)(testMonster)
     def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
@@ -181,9 +181,9 @@ object TestData {
     def withDamageImmunity(creatureImm: DamageType*) =
       creatureDamageImmunitiesLens.set(creatureImm.toList)(creature)
 
-    def withConditionResistance(creatureRes: Condition*) =
+    def withConditionResistance(creatureRes: ConditionType*) =
       creatureConditionResistancesLens.set(creatureRes.toList)(creature)
-    def withConditionImmunity(creatureImm: Condition*) =
+    def withConditionImmunity(creatureImm: ConditionType*) =
       creatureConditionImmunitiesLens.set(creatureImm.toList)(creature)
 
     def withNoDamageResistances()             = creatureDamageResistancesLens.set(List.empty)(creature)
@@ -565,8 +565,8 @@ trait TestData extends RandomDataGenerator {
         val damageVulnerabilities: List[DamageType]     = List.empty[DamageType]
         val damageResistances: List[DamageType]     = List.empty[DamageType]
         val damageImmunities: List[DamageType]      = List.empty[DamageType]
-        val conditionResistances: List[Condition] = List.empty[Condition]
-        val conditionImmunities: List[Condition] = List.empty[Condition]
+        val conditionResistances: List[ConditionType] = List.empty[ConditionType]
+        val conditionImmunities: List[ConditionType] = List.empty[ConditionType]
         val bonusActionUsed: Boolean          = false
         val reactionUsed: Boolean             = false
         val name: String                      = n
@@ -625,8 +625,8 @@ trait TestData extends RandomDataGenerator {
         val damageVulnerabilities: List[DamageType]      = creature.damageResistances
         val damageResistances: List[DamageType]      = creature.damageResistances
         val damageImmunities: List[DamageType]       = creature.damageImmunities
-        val conditionResistances: List[Condition] = creature.conditionResistances
-        val conditionImmunities: List[Condition] = creature.conditionImmunities
+        val conditionResistances: List[ConditionType] = creature.conditionResistances
+        val conditionImmunities: List[ConditionType] = creature.conditionImmunities
         val name: String                       = creature.name
         val abilities: List[CombatantAbility]  = creature.abilities
         val conditions: List[Condition]        = List.empty

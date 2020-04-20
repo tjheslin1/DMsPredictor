@@ -12,7 +12,7 @@ import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.monsters._
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
@@ -40,8 +40,8 @@ trait Creature {
   val damageVulnerabilities: List[DamageType]
   val damageResistances: List[DamageType]
   val damageImmunities: List[DamageType]
-  val conditionResistances: List[Condition]
-  val conditionImmunities: List[Condition]
+  val conditionResistances: List[ConditionType]
+  val conditionImmunities: List[ConditionType]
   val attackStatus: AttackStatus
   val defenseStatus: AttackStatus
   val skills: Skills
@@ -490,8 +490,8 @@ object Creature extends LazyLogging {
       }
     }
 
-  val creatureConditionResistancesLens: Lens[Creature, List[Condition]] =
-    Lens[Creature, List[Condition]](_.conditionResistances) { res =>
+  val creatureConditionResistancesLens: Lens[Creature, List[ConditionType]] =
+    Lens[Creature, List[ConditionType]](_.conditionResistances) { res =>
       {
         case c: Champion => Champion._conditionResistances.set(res)(c)
         case c: Fighter  => Fighter._conditionResistances.set(res)(c)
@@ -519,8 +519,8 @@ object Creature extends LazyLogging {
       }
     }
 
-  val creatureConditionImmunitiesLens: Lens[Creature, List[Condition]] =
-    Lens[Creature, List[Condition]](_.conditionImmunities) { res =>
+  val creatureConditionImmunitiesLens: Lens[Creature, List[ConditionType]] =
+    Lens[Creature, List[ConditionType]](_.conditionImmunities) { res =>
       {
         case c: Champion => Champion._conditionImmunities.set(res)(c)
         case c: Fighter  => Fighter._conditionImmunities.set(res)(c)

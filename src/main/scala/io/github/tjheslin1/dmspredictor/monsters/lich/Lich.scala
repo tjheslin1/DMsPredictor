@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
@@ -31,8 +31,8 @@ import monocle.macros.{GenLens, Lenses}
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List(Cold, Lightning, Necrotic),
     damageImmunities: List[DamageType] = List(Poison, Bludgeoning, Piercing, Slashing),
-    conditionResistances: List[Condition] = List.empty[Condition], // TODO add Turned,
-    conditionImmunities: List[Condition] = List.empty[Condition],
+    conditionResistances: List[ConditionType] = List(TurnedCondition),
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     conditions: List[Condition] = List.empty[Condition],
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,

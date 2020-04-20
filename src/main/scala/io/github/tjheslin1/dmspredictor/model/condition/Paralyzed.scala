@@ -13,7 +13,9 @@ import monocle.macros.Lenses
     name: String = "Paralyzed"
 ) extends EndOfTurnCondition
     with LazyLogging {
-  val missesTurn: Boolean = true
+
+  val missesTurn        = true
+  val isHandledOnDamage = false
 
   def decrementTurnsLeft(): Condition = Paralyzed(saveDc, turnsLeft - 1, attribute, name)
 

@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.monsters.Zombie._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -27,8 +27,8 @@ import monocle.macros.{GenLens, Lenses}
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List.empty[DamageType],
     damageImmunities: List[DamageType] = List(Poison),
-    conditionResistances: List[Condition] = List.empty[Condition],
-    conditionImmunities: List[Condition] = List.empty[Condition], // TODO add Poisoned
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List(PoisonedCondition),
     conditions: List[Condition] = List.empty[Condition],
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,

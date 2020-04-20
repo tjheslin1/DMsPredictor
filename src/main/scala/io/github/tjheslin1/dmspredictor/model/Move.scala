@@ -37,7 +37,9 @@ object Move extends LazyLogging {
 
     val otherCombatants = others.toList
 
-    if (conditionHandledCombatant.creature.isConscious && missesTurn == false) {
+    if (conditionHandledCombatant.creature.isAlive &&
+        conditionHandledCombatant.creature.isConscious &&
+        missesTurn == false) {
 
       val mobToFocus = nextToFocus(conditionHandledCombatant, mobs.toList, focus)
       val pcToFocus  = nextToFocus(conditionHandledCombatant, pcs.toList, focus)

@@ -38,7 +38,7 @@ trait Tracking {
       val abilityAction    = action
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean                             = condition
+      def conditionMet: Boolean               = condition
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         useAbilityTracking
@@ -164,8 +164,8 @@ trait Tracking {
                                           damageOnSave: Boolean = false,
                                           higherSpellSlot: Boolean = true): Spell =
     new SingleTargetSavingThrowSpell() {
-      val savingThrowAttribute: Attribute      = savingAttribute
-      val halfDamageOnSave: Boolean = damageOnSave
+      val savingThrowAttribute: Attribute = savingAttribute
+      val halfDamageOnSave: Boolean       = damageOnSave
 
       val damageType: DamageType   = Fire
       val name: String             = "tracked-single-target-saving-throw-spell-test"
@@ -291,10 +291,13 @@ trait Tracking {
     }
 
   var trackedEndOfTurnConditionHandledCount = 0
-  def trackedEndOfTurnCondition(dc: Int, turnMissed: Boolean = false): Condition =
+  def trackedEndOfTurnCondition(dc: Int,
+                                turnMissed: Boolean = false,
+                                handledOnDamage: Boolean = false): Condition =
     new EndOfTurnCondition {
-      val name       = "tracked-end-of-turn-condition"
-      val missesTurn = turnMissed
+      val name              = "tracked-end-of-turn-condition"
+      val missesTurn        = turnMissed
+      val isHandledOnDamage = handledOnDamage
 
       val saveDc: Int    = dc
       val turnsLeft: Int = 10
@@ -305,6 +308,7 @@ trait Tracking {
         trackedEndOfTurnConditionHandledCount += 1
         creature
       }
+
     }
 
   var trackedBonusActionUsed = false
@@ -316,7 +320,7 @@ trait Tracking {
       val abilityAction    = BonusAction
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean                             = true
+      def conditionMet: Boolean               = true
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
         (combatant, others)

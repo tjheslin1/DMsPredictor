@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -26,8 +26,8 @@ import util.TestMonster.defaultScores
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List.empty[DamageType],
     damageImmunities: List[DamageType] = List.empty[DamageType],
-    conditionResistances: List[Condition] = List.empty[Condition],
-    conditionImmunities: List[Condition] = List.empty[Condition],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     abilities: List[CombatantAbility] = List.empty[CombatantAbility],
     conditions: List[Condition] = List.empty[Condition],
     reactionUsed: Boolean = false,

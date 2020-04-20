@@ -91,7 +91,7 @@ object Spell {
   def spellSaveDc(spellCaster: SpellCaster): Int =
     8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
-  def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
+  def schoolAttribute(spellCaster: SpellCaster): Attribute = spellCaster match {
     case _: Cleric     => Wisdom
     case _: BaseCleric => Wisdom
     case _: Wizard     => Intelligence
@@ -99,8 +99,8 @@ object Spell {
     case _: Lich => Intelligence
   }
 
-  def attributeModifierForSchool(spellcaster: SpellCaster): Int =
-    attributeModifier(spellcaster, schoolAttribute(spellcaster))
+  def attributeModifierForSchool(spellCaster: SpellCaster): Int =
+    attributeModifier(spellCaster, schoolAttribute(spellCaster))
 
   def spellSavingThrowPassed[_: RS](
       caster: SpellCaster,

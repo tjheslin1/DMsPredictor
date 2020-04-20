@@ -15,7 +15,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -37,8 +37,8 @@ import monocle.macros.{GenLens, Lenses}
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List.empty[DamageType],
     damageImmunities: List[DamageType] = List.empty[DamageType],
-    conditionResistances: List[Condition] = List.empty[Condition],
-    conditionImmunities: List[Condition] = List.empty[Condition],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     bonusActionUsed: Boolean = false,
     reactionUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardFighterAbilities,
