@@ -50,7 +50,7 @@ object VampireAbilities extends LazyLogging {
             case CriticalMiss => 0
           }
 
-          logger.debug(s"$name deals $necroticDamage necrotic damage")
+          if (necroticDamage > 0) logger.debug(s"$name deals $necroticDamage necrotic damage")
 
           val updatedVampire = updatedVampireCombatant.creature.asInstanceOf[Vampire]
 

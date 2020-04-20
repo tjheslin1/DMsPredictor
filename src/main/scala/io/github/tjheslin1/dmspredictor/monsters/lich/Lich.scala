@@ -45,9 +45,9 @@ import monocle.macros.{GenLens, Lenses}
 ) extends Monster
     with SpellCaster {
 
-  val spellCastingLevel: Level = LevelEighteen
-  val spellCastingModifier     = 7
-  val armourClass: Int         = calculateArmourClass(stats, conditions)
+  val spellCastingLevel    = LevelEighteen
+  val spellCastingModifier = 7
+  val armourClass          = calculateArmourClass(stats, conditions)
 
   val challengeRating = 21.0
   val skills          = Skills(perception = 9, stealth = stats.dexterity.value)
@@ -102,15 +102,18 @@ object Lich {
     def armourClass(dexterity: Stat): Int = 17
   }
 
-  // TODO Paralyzing effect
   case object ParalyzingTouch extends Weapon {
-    val name                   = "Lich Natural Armour"
-    val weaponType: WeaponType = Melee
-    val damageType: DamageType = Cold
-    val twoHanded              = false
-    val finesse: Boolean       = false
+    val name       = "Paralyzing Touch (Lich)"
+    val weaponType = Melee
+    val damageType = Cold
+    val twoHanded  = false
+    val finesse    = false
+
+    override val hitBonus: Int = 12
 
     def damage(implicit rollStrategy: RollStrategy): Int = 3 * D6
+
+    val ParalyzingSaveDC = 18
   }
 
   val standardLichSpellList: Map[(SpellLevel, SpellEffect), Spell] =
