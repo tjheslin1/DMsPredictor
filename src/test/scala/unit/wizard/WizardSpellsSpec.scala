@@ -431,6 +431,16 @@ class WizardSpellsSpec extends UnitSpecBase {
     }
   }
 
+  "Finger of Death spell" should {
+    "deal 7d8 + 30 damage" in new TestContext {
+      implicit val rollStrategy: RollStrategy = _ => RollResult(8)
+
+      val lich = random[Lich]
+
+      FingerOfDeath.damage(lich, 7) shouldBe 86
+    }
+  }
+
   abstract private class TestContext {
     implicit val rollStrategy: RollStrategy
   }

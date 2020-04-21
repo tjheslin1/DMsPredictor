@@ -42,8 +42,13 @@ object ClericSpells extends LazyLogging {
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
     val useHigherSpellSlot                 = true
+    val halfDamageOnMiss                   = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
+
+    // TODO Apply advantage effect
+    override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+      target
   }
 
   case object CureWounds extends SingleTargetHealingSpell {

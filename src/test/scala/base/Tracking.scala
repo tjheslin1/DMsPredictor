@@ -99,20 +99,28 @@ trait Tracking {
   var meleeSpellUsedCount = 0
   def trackedMeleeSpellAttack(spellLvl: SpellLevel,
                               concentration: Boolean = false,
-                              higherSpellSlot: Boolean = true): Spell =
+                              higherSpellSlot: Boolean = true,
+                              dmg: Int = 4,
+                              halfDamageOnAMiss: Boolean = false,
+                              additionalTargetEffect: Combatant => Combatant = c => c): Spell =
     new SingleTargetAttackSpell() {
       val damageType: DamageType         = Fire
       val name: String                   = s"tracked-melee-spell-${spellLvl.value}"
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
-      val requiresConcentration: Boolean = concentration
+      val requiresConcentration = concentration
       val useHigherSpellSlot             = higherSpellSlot
+      val halfDamageOnMiss = halfDamageOnAMiss
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         meleeSpellUsedCount += 1
-        4
+
+        dmg
       }
+
+      override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+        additionalTargetEffect(target)
     }
 
   var multiMeleeSpellUsedCount = 0
@@ -162,7 +170,8 @@ trait Tracking {
   def trackedSingleTargetSavingThrowSpell(spellLvl: SpellLevel,
                                           savingAttribute: Attribute,
                                           damageOnSave: Boolean = false,
-                                          higherSpellSlot: Boolean = true): Spell =
+                                          higherSpellSlot: Boolean = true,
+                                          additionalTargetEffect: Combatant => Combatant = c => c): Spell =
     new SingleTargetSavingThrowSpell() {
       val savingThrowAttribute: Attribute = savingAttribute
       val halfDamageOnSave: Boolean       = damageOnSave
@@ -179,6 +188,10 @@ trait Tracking {
         singleSavingThrowSpellUsedCount += 1
         4
       }
+
+      override def additionalEffect(target: Combatant, savingThrowPassed: Boolean): Combatant =
+        additionalTargetEffect(target)
+
     }
 
   var multiSavingThrowSpellUsedCount = 0

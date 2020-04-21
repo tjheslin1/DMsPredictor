@@ -144,13 +144,17 @@ object BaseFighterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
+        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.MainAction)
           .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
             val (updatedAttacker, updatedOthers) =
               useAdditionalAbility(nextAbility, combatant, others, focus)
 
-            nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
-              .fold {
+            nextAbilityToUseInConjunction(
+              updatedAttacker,
+              updatedOthers,
+              order,
+              AbilityAction.MainAction
+            ).fold {
                 nextToFocus(updatedAttacker, updatedOthers, focus).fold(
                   (updatedAttacker, updatedOthers)
                 ) { nextTarget =>

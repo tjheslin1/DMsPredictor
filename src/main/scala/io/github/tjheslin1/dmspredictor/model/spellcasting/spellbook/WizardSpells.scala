@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
@@ -14,8 +14,8 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 object WizardSpells extends LazyLogging {
 
   case object FireBolt extends SingleTargetAttackSpell {
-    val name                   = "Fire Bolt"
-    val damageType: DamageType = Fire
+    val name       = "Fire Bolt"
+    val damageType = Fire
 
     val school                 = Evocation
     val castingTime            = OneActionCast
@@ -23,6 +23,7 @@ object WizardSpells extends LazyLogging {
     val spellLevel: SpellLevel = 0
     val requiresConcentration  = false
     val useHigherSpellSlot     = false
+    val halfDamageOnMiss       = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellCaster.spellCastingLevel.value match {
@@ -43,6 +44,7 @@ object WizardSpells extends LazyLogging {
     val spellLevel: SpellLevel = 1
     val requiresConcentration  = false
     val useHigherSpellSlot     = true
+    val halfDamageOnMiss       = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
       val numberOfDarts = 2 + spellLevel
@@ -79,41 +81,20 @@ object WizardSpells extends LazyLogging {
     val spellLevel: SpellLevel = 2
     val requiresConcentration  = false
     val useHigherSpellSlot     = true
+    val halfDamageOnMiss       = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (spellLevel + 2) * D4
 
-    override def effect[_: RS](
-        spellCaster: SpellCaster,
-        spellLevel: SpellLevel,
-        targets: List[Combatant]
-    ): (SpellCaster, List[Combatant]) = {
-      val target       = targets.head
-      val attackResult = spellAttack(spellCaster, target.creature)
-
-      logger.debug(s"casting $name - $attackResult")
-
-      val dmg = attackResult match {
-        case CriticalHit  => damage(spellCaster, spellLevel) + damage(spellCaster, spellLevel)
-        case Hit          => damage(spellCaster, spellLevel)
-        case Miss         => Math.floor(damage(spellCaster, spellLevel) / 2).toInt
-        case CriticalMiss => 0
-      }
-
-      val damagedTarget =
-        target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
-
-      val udpdatedTarget = attackResult match {
+    override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+      attackResult match {
         case CriticalHit | Hit =>
+          val currentConditions = target.creature.conditions
           val acidArrowCondition = AcidArrowCondition(spellLevel)
 
-          val currentConditions = damagedTarget.creature.conditions
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-            .set(currentConditions ++ List(acidArrowCondition))(damagedTarget)
-        case CriticalMiss | Miss => damagedTarget
+            .set(currentConditions :+ acidArrowCondition)(target)
+        case CriticalMiss | Miss => target
       }
-
-      (spellCaster, targets.replace(udpdatedTarget))
-    }
   }
 
   case object Fireball extends MultiTargetSavingThrowSpell {
@@ -197,10 +178,10 @@ object WizardSpells extends LazyLogging {
   }
 
   case object Disintegrate extends SingleTargetSavingThrowSpell {
-    val name                     = "Disintegrate"
-    val school                   = Transmutation
-    val castingTime: CastingTime = OneActionCast
-    val spellLevel: SpellLevel   = 6
+    val name        = "Disintegrate"
+    val school      = Transmutation
+    val castingTime = OneActionCast
+    val spellLevel  = 6
 
     val savingThrowAttribute = Dexterity
     val halfDamageOnSave     = false
@@ -222,37 +203,27 @@ object WizardSpells extends LazyLogging {
           )
       }
 
-    override def effect[_: RS](
-        spellCaster: SpellCaster,
-        spellLevel: SpellLevel,
-        targets: List[Combatant]
-    ): (SpellCaster, List[Combatant]) = {
-      val target = targets.head
-      val savingThrowPassed =
-        spellSavingThrowPassed(spellCaster, savingThrowAttribute, target.creature)
+    override def additionalEffect(target: Combatant, savingThrowPassed: Boolean): Combatant =
+      if (target.creature.health <= 0)
+        (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+          .set(false)(target)
+      else
+        target
+  }
 
-      logger.debug(
-        s"${spellCaster.name} is casting $name  on ${target.creature.name} " +
-          s"- Saving throw ${if (savingThrowPassed) "Passed" else "Failed"}"
-      )
+  case object FingerOfDeath extends SingleTargetSavingThrowSpell {
+    val name        = "Finger of Death"
+    val school      = Necromancy
+    val castingTime = OneActionCast
+    val spellLevel  = 6
 
-      val dmg =
-        if (savingThrowPassed == false) damage(spellCaster, spellLevel)
-        else if (savingThrowPassed && halfDamageOnSave)
-          Math.floor(damage(spellCaster, spellLevel) / 2).toInt
-        else 0
+    val savingThrowAttribute = Constitution
+    val halfDamageOnSave     = true
+    val damageType           = Necrotic
 
-      val attackResult = if (savingThrowPassed) Miss else Hit
+    val requiresConcentration = false
+    val useHigherSpellSlot    = false
 
-      val damagedTarget =
-        target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
-
-      if (damagedTarget.creature.health <= 0) {
-        val deadTarget = (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
-          .set(false)(damagedTarget)
-
-        (spellCaster, targets.replace(deadTarget))
-      } else (spellCaster, targets.replace(damagedTarget))
-    }
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = ???
   }
 }

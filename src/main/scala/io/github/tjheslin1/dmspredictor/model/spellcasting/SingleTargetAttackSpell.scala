@@ -8,10 +8,14 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
 
+  val halfDamageOnMiss: Boolean
+
   val damageType: DamageType
-  val spellEffect: SpellEffect = DamageSpell
+  val spellEffect = DamageSpell
 
   def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
+
+  def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant = target
 
   def effect[_: RS](
       spellCaster: SpellCaster,
@@ -24,15 +28,18 @@ abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
     logger.debug(s"${spellCaster.name} is casting $name - $attackResult")
 
     val dmg = attackResult match {
-      case CriticalHit  => damage(spellCaster, spellLevel) + damage(spellCaster, spellLevel)
-      case Hit          => damage(spellCaster, spellLevel)
-      case Miss         => 0
+      case CriticalHit => damage(spellCaster, spellLevel) + damage(spellCaster, spellLevel)
+      case Hit         => damage(spellCaster, spellLevel)
+      case Miss =>
+        if (halfDamageOnMiss) Math.floor(damage(spellCaster, spellLevel) / 2).toInt else 0
       case CriticalMiss => 0
     }
 
     val damagedTarget =
       target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
 
-    (spellCaster, targets.replace(damagedTarget))
+    val additionalEffectedTarget = additionalEffect(damagedTarget, attackResult)
+
+    (spellCaster, targets.replace(additionalEffectedTarget))
   }
 }
