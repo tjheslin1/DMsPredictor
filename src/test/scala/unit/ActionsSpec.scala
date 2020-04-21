@@ -799,7 +799,7 @@ class ActionsSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
-      val useHigherSpellSlot       = true
+      val benefitsFromHigherSpellSlot       = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
         SpiritGuardiansCondition(3, 10, 10, Wisdom)

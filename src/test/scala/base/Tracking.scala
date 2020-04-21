@@ -110,7 +110,7 @@ trait Tracking {
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration = concentration
-      val useHigherSpellSlot             = higherSpellSlot
+      val benefitsFromHigherSpellSlot             = higherSpellSlot
       val halfDamageOnMiss = halfDamageOnAMiss
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
@@ -138,7 +138,7 @@ trait Tracking {
       val requiresConcentration    = concentration
       val attribute: Attribute     = savingThrowAttribute
       val halfDamageOnSave         = false
-      val useHigherSpellSlot       = higherSpellSlot
+      val benefitsFromHigherSpellSlot       = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         multiMeleeSpellUsedCount += 1
@@ -157,7 +157,7 @@ trait Tracking {
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
       val requiresConcentration: Boolean = false
-      val useHigherSpellSlot             = higherSpellSlot
+      val benefitsFromHigherSpellSlot             = higherSpellSlot
 
       def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         trackedHealingSpellUsed = true
@@ -182,7 +182,7 @@ trait Tracking {
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = spellLvl
       val requiresConcentration    = false
-      val useHigherSpellSlot       = higherSpellSlot
+      val benefitsFromHigherSpellSlot       = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         singleSavingThrowSpellUsedCount += 1
@@ -209,7 +209,7 @@ trait Tracking {
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = spellLvl
       val requiresConcentration    = false
-      val useHigherSpellSlot       = higherSpellSlot
+      val benefitsFromHigherSpellSlot       = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         multiSavingThrowSpellUsedCount += 1
@@ -231,7 +231,7 @@ trait Tracking {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = spellLvl
-      val useHigherSpellSlot       = higherSpellSlot
+      val benefitsFromHigherSpellSlot       = higherSpellSlot
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
         Paralyzed(10, 10, attribute, "tracked-condition-spell")
@@ -260,7 +260,7 @@ trait Tracking {
     val castingTime: CastingTime = castionAction
     val spellLevel: SpellLevel   = spellLvl
     val requiresConcentration    = concentration
-    val useHigherSpellSlot       = higherSpellSlot
+    val benefitsFromHigherSpellSlot       = higherSpellSlot
 
     override def effect[_: RS](spellCaster: SpellCaster,
                                spellLevel: SpellLevel,

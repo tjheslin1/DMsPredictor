@@ -17,13 +17,13 @@ object WizardSpells extends LazyLogging {
     val name       = "Fire Bolt"
     val damageType = Fire
 
-    val school                 = Evocation
-    val castingTime            = OneActionCast
-    val spellTargetStyle       = RangedSpellAttack
-    val spellLevel: SpellLevel = 0
-    val requiresConcentration  = false
-    val useHigherSpellSlot     = false
-    val halfDamageOnMiss       = false
+    val school                      = Evocation
+    val castingTime                 = OneActionCast
+    val spellTargetStyle            = RangedSpellAttack
+    val spellLevel: SpellLevel      = 0
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = false
+    val halfDamageOnMiss            = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellCaster.spellCastingLevel.value match {
@@ -38,13 +38,13 @@ object WizardSpells extends LazyLogging {
     val name                   = "Magic Missile"
     val damageType: DamageType = Force
 
-    val school                 = Evocation
-    val castingTime            = OneActionCast
-    val spellTargetStyle       = RangedSpellAttack
-    val spellLevel: SpellLevel = 1
-    val requiresConcentration  = false
-    val useHigherSpellSlot     = true
-    val halfDamageOnMiss       = false
+    val school                      = Evocation
+    val castingTime                 = OneActionCast
+    val spellTargetStyle            = RangedSpellAttack
+    val spellLevel: SpellLevel      = 1
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = true
+    val halfDamageOnMiss            = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
       val numberOfDarts = 2 + spellLevel
@@ -76,19 +76,19 @@ object WizardSpells extends LazyLogging {
     val name: String = "Acid Arrow"
     val damageType   = Acid
 
-    val school                 = Evocation
-    val castingTime            = OneActionCast
-    val spellLevel: SpellLevel = 2
-    val requiresConcentration  = false
-    val useHigherSpellSlot     = true
-    val halfDamageOnMiss       = true
+    val school                      = Evocation
+    val castingTime                 = OneActionCast
+    val spellLevel: SpellLevel      = 2
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = true
+    val halfDamageOnMiss            = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (spellLevel + 2) * D4
 
     override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
       attackResult match {
         case CriticalHit | Hit =>
-          val currentConditions = target.creature.conditions
+          val currentConditions  = target.creature.conditions
           val acidArrowCondition = AcidArrowCondition(spellLevel)
 
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
@@ -104,11 +104,11 @@ object WizardSpells extends LazyLogging {
     val school: SchoolOfMagic    = Evocation
     val castingTime: CastingTime = OneActionCast
 
-    val attribute: Attribute   = Dexterity
-    val halfDamageOnSave       = true
-    val spellLevel: SpellLevel = 3
-    val requiresConcentration  = false
-    val useHigherSpellSlot     = true
+    val attribute: Attribute        = Dexterity
+    val halfDamageOnSave            = true
+    val spellLevel: SpellLevel      = 3
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
   }
@@ -170,8 +170,8 @@ object WizardSpells extends LazyLogging {
     val halfDamageOnSave       = true
     val damageType: DamageType = Necrotic
 
-    val requiresConcentration = false
-    val useHigherSpellSlot    = true
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (spellLevel.value * D8) + (4 * D8)
@@ -187,8 +187,8 @@ object WizardSpells extends LazyLogging {
     val halfDamageOnSave     = false
     val damageType           = Force
 
-    val requiresConcentration = false
-    val useHigherSpellSlot    = true
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellLevel.value match {
@@ -221,8 +221,8 @@ object WizardSpells extends LazyLogging {
     val halfDamageOnSave     = true
     val damageType           = Necrotic
 
-    val requiresConcentration = false
-    val useHigherSpellSlot    = false
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = ???
   }

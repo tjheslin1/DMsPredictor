@@ -21,7 +21,7 @@ trait Spell {
   val spellEffect: SpellEffect
   val spellLevel: SpellLevel
   val requiresConcentration: Boolean
-  val useHigherSpellSlot: Boolean
+  val benefitsFromHigherSpellSlot: Boolean
 
   def effect[_: RS](
       spellCaster: SpellCaster,
@@ -70,7 +70,7 @@ object Spell {
         spellLookup match {
           case Some(foundSpell) if foundSpell.spellLevel.value == 0 =>
             (foundSpell, foundSpell.spellLevel).some
-          case Some(foundSpell) if foundSpell.useHigherSpellSlot =>
+          case Some(foundSpell) if foundSpell.benefitsFromHigherSpellSlot =>
             (foundSpell, originalSpellLevel).some
           case Some(foundSpell) =>
             (foundSpell, foundSpell.spellLevel).some
