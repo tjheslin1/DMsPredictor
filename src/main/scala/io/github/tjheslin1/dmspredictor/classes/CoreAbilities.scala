@@ -342,7 +342,7 @@ object CoreAbilities extends LazyLogging {
         (combatant, others.replace(updatedTargets))
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpell)
+      def update: Creature = updateSpellSlot(spellCaster, DamageSpell, multiAttackSpellUsed = true)
     }
 
   def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(
@@ -387,6 +387,22 @@ object CoreAbilities extends LazyLogging {
       def update: Creature = updateSpellSlot(spellCaster, BuffSpell)
     }
 
+//  def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =
+//    new Ability(combatant) {
+//      val name: String = _
+//      val order: Int = _
+//      val levelRequirement: Level = _
+//      val abilityAction: AbilityAction = _
+//
+//      def triggerMet(others: List[Combatant]): Boolean = ???
+//
+//      def conditionMet: Boolean = ???
+//
+//      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
+//
+//      def update: Creature = ???
+//    }
+
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 
@@ -422,13 +438,15 @@ object CoreAbilities extends LazyLogging {
   private def updateSpellSlot(
       spellCaster: SpellCaster,
       spellEffect: SpellEffect,
-      newlyConcentrating: Boolean = false
+      newlyConcentrating: Boolean = false,
+      multiAttackSpellUsed: Boolean = false
   ): Creature =
     highestSpellSlotAvailable(spellCaster.spellSlots) match {
       case None => spellCaster
       case Some(spellSlotFound) =>
         spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotFound.spellLevel)(
-          checkCasterIsConcentrating = newlyConcentrating == false
+          checkCasterIsConcentrating = newlyConcentrating == false,
+          multiAttackOnly = multiAttackSpellUsed
         ).fold {
           spellCaster
         } {

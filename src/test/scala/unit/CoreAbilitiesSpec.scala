@@ -830,7 +830,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedWizard = wizard
-            .withSpellKnown(trackedMultiMeleeSpellAttack(1))
+            .withSpellKnown(trackedMultiMeleeSpellAttack(1, higherSpellSlot = true))
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .asInstanceOf[Wizard]
@@ -863,6 +863,28 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.thirdLevel.count shouldBe trackedWizard.spellSlots.thirdLevel.count
+        }
+      }
+    }
+
+    "update the spell slot for a multi target spell" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val trackedWizard = wizard
+            .withSpellsKnown(trackedMultiMeleeSpellAttack(1, higherSpellSlot = false), trackedMeleeSpellAttack(2))
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
+
+          val wizardCombatant = trackedWizard.withCombatIndex(1)
+
+          val updatedWizard: Wizard =
+            castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
+
+          updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
         }
       }
     }

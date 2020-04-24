@@ -251,4 +251,20 @@ object WizardSpells extends LazyLogging {
       } else
         (spellCaster, target, others)
   }
+
+//  case object PowerWordStun extends SingleTargetAttackSpell {
+//    val name: String = "Power Word Stun"
+//    val damageType   = Acid
+//
+//    val school                      = Evocation
+//    val castingTime                 = OneActionCast
+//    val spellLevel: SpellLevel      = 2
+//    val requiresConcentration       = false
+//    val benefitsFromHigherSpellSlot = true
+//    val halfDamageOnMiss            = true
+//
+//    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (spellLevel + 2) * D4
+//
+//    override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant = ???
+//  }
 }
