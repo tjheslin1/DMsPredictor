@@ -2,7 +2,7 @@ package unit.monsters
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Archery, Fighter}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
 import io.github.tjheslin1.dmspredictor.monsters.lich.LichAbilities.paralyzingTouch
@@ -20,6 +20,9 @@ class LichAbilitiesSpec extends UnitSpecBase {
       val lich = random[Lich].withCombatIndex(1)
 
       val fighter = random[Fighter]
+        .withFightingStyle(Archery)
+        .withNoOffHand()
+        .withDexterity(10)
         .withHealth(50)
         .withMaxHealth(50)
         .withCombatIndex(2)

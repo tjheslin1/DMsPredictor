@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -63,7 +63,7 @@ import monocle.macros.{GenLens, Lenses}
       attackResult: AttackResult
   ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
-    val updatedCleric = copy(health = Math.max(0, health - damageTaken))
+    val updatedCleric = applyDamage(this, damageTaken).asInstanceOf[Cleric]
 
     if (updatedCleric.isConscious == false && isConcentrating)
       handleConcentration(updatedCleric, updatedCleric.concentratingSpell.get, Integer.MAX_VALUE)

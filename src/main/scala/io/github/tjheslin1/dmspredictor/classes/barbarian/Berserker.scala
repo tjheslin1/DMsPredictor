@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Berserker.standardBerserkerAbilities
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -55,7 +55,7 @@ import monocle.macros.{GenLens, Lenses}
   val armourClass: Int = calculateArmourClass(stats, armour, offHand)
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+    applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   val reactionOnHit: Option[OnHitReaction]       = None
   val reactionOnDamage: Option[OnDamageReaction] = None

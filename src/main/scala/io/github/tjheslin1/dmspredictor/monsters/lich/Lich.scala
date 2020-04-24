@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
@@ -68,8 +68,8 @@ import monocle.macros.{GenLens, Lenses}
   def weapon[_: RS]: Weapon = baseWeapon
 
   // TODO Legendary resistances
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Lich =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
+    applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 

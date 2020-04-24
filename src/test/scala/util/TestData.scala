@@ -14,7 +14,7 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlo
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
+import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -42,26 +42,30 @@ object TestData {
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
     import TestMonster._
 
-    def withName(creatureName: String)           = _name.set(creatureName)(testMonster)
-    def withHealth(hp: Int)                      = _health.set(hp)(testMonster)
-    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testMonster)
-    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testMonster)
-    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testMonster)
-    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testMonster)
-    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testMonster)
-    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testMonster)
-    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
-    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
-    def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
-    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
-    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
-    def withDamageResistance(creatureRes: DamageType*) = _damageResistances.set(creatureRes.toList)(testMonster)
-    def withDamageImmunity(creatureImm: DamageType*)   = _damageImmunities.set(creatureImm.toList)(testMonster)
-    def withConditionResistance(creatureRes: ConditionType*) = _conditionResistances.set(creatureRes.toList)(testMonster)
-    def withConditionImmunity(creatureImm: ConditionType*)   = _conditionImmunities.set(creatureImm.toList)(testMonster)
-    def withNoResistances()                      = _damageResistances.set(List.empty)(testMonster)
-    def withNoImmunities()                       = _damageImmunities.set(List.empty)(testMonster)
-    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
+    def withName(creatureName: String)   = _name.set(creatureName)(testMonster)
+    def withHealth(hp: Int)              = _health.set(hp)(testMonster)
+    def withMaxHealth(hp: Int)           = _maxHealth.set(hp)(testMonster)
+    def withStrength(strScore: Stat)     = strengthLens.set(strScore)(testMonster)
+    def withDexterity(dexScore: Stat)    = dexterityLens.set(dexScore)(testMonster)
+    def withConstitution(conScore: Stat) = constitutionLens.set(conScore)(testMonster)
+    def withWisdom(wisScore: Stat)       = wisdomLens.set(wisScore)(testMonster)
+    def withIntelligence(intScore: Stat) = intelligenceLens.set(intScore)(testMonster)
+    def withCharisma(chaScore: Stat)     = charismaLens.set(chaScore)(testMonster)
+    def withBaseWeapon(weapon: Weapon)   = _baseWeapon.set(weapon)(testMonster)
+    def withArmourClass(ac: Int)         = _armourClass.set(ac)(testMonster)
+    def withNoArmour()                   = _armour.set(NoArmour)(testMonster)
+    def withNoOffHand()                  = _offHand.set(none[Equipment])(testMonster)
+    def withDamageResistance(creatureRes: DamageType*) =
+      _damageResistances.set(creatureRes.toList)(testMonster)
+    def withDamageImmunity(creatureImm: DamageType*) =
+      _damageImmunities.set(creatureImm.toList)(testMonster)
+    def withConditionResistance(creatureRes: ConditionType*) =
+      _conditionResistances.set(creatureRes.toList)(testMonster)
+    def withConditionImmunity(creatureImm: ConditionType*) =
+      _conditionImmunities.set(creatureImm.toList)(testMonster)
+    def withNoResistances()             = _damageResistances.set(List.empty)(testMonster)
+    def withNoImmunities()              = _damageImmunities.set(List.empty)(testMonster)
+    def withNoResistancesOrImmunities() = testMonster.withNoResistances().withNoImmunities()
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
@@ -186,12 +190,14 @@ object TestData {
     def withConditionImmunity(creatureImm: ConditionType*) =
       creatureConditionImmunitiesLens.set(creatureImm.toList)(creature)
 
-    def withNoDamageResistances()             = creatureDamageResistancesLens.set(List.empty)(creature)
-    def withNoDamageImmunities()              = creatureDamageImmunitiesLens.set(List.empty)(creature)
-    def withNoDamageResistancesOrImmunities() = creature.withNoDamageResistances().withNoDamageImmunities()
+    def withNoDamageResistances() = creatureDamageResistancesLens.set(List.empty)(creature)
+    def withNoDamageImmunities()  = creatureDamageImmunitiesLens.set(List.empty)(creature)
+    def withNoDamageResistancesOrImmunities() =
+      creature.withNoDamageResistances().withNoDamageImmunities()
 
     def withCondition(condition: Condition) = creatureConditionsLens.set(List(condition))(creature)
-    def withConditions(conditions: Condition*) = creatureConditionsLens.set(conditions.toList)(creature)
+    def withConditions(conditions: Condition*) =
+      creatureConditionsLens.set(conditions.toList)(creature)
     def withNoConditions() = creatureConditionsLens.set(List.empty[Condition])(creature)
 
     def withReactionUsed(used: Boolean) = creatureReactionUsedLens.set(used)(creature)
@@ -351,8 +357,9 @@ object TestData {
         lich)
 
     def withSpellSlots(spellSlots: SpellSlots) =
-      _spellSlots.set(spellSlots)(lich
-      )
+      _spellSlots.set(spellSlots)(lich)
+
+    def withNoSpellSlots() = _spellSlots.set(SpellSlots(0, 0, 0, 0, 0, 0, 0, 0, 0))(lich)
   }
 }
 
@@ -562,18 +569,18 @@ trait TestData extends RandomDataGenerator {
 
         val armourClass: Int = armour.armourClass(baseStats.dexterity)
 
-        val damageVulnerabilities: List[DamageType]     = List.empty[DamageType]
-        val damageResistances: List[DamageType]     = List.empty[DamageType]
-        val damageImmunities: List[DamageType]      = List.empty[DamageType]
+        val damageVulnerabilities: List[DamageType]   = List.empty[DamageType]
+        val damageResistances: List[DamageType]       = List.empty[DamageType]
+        val damageImmunities: List[DamageType]        = List.empty[DamageType]
         val conditionResistances: List[ConditionType] = List.empty[ConditionType]
-        val conditionImmunities: List[ConditionType] = List.empty[ConditionType]
-        val bonusActionUsed: Boolean          = false
-        val reactionUsed: Boolean             = false
-        val name: String                      = n
-        val abilities: List[CombatantAbility] = standardCoreAbilities
-        val conditions: List[Condition]       = List.empty
-        val attackStatus: AttackStatus        = Regular
-        val defenseStatus: AttackStatus       = Regular
+        val conditionImmunities: List[ConditionType]  = List.empty[ConditionType]
+        val bonusActionUsed: Boolean                  = false
+        val reactionUsed: Boolean                     = false
+        val name: String                              = n
+        val abilities: List[CombatantAbility]         = standardCoreAbilities
+        val conditions: List[Condition]               = List.empty
+        val attackStatus: AttackStatus                = Regular
+        val defenseStatus: AttackStatus               = Regular
 
         val skills: Skills = creatureSkills
 
@@ -618,20 +625,20 @@ trait TestData extends RandomDataGenerator {
 
         def weapon[_: RS]: Weapon = creature.weapon
 
-        val armour: Armour                     = creature.armour
-        val offHand: Option[Equipment]         = creature.offHand
-        val armourClass: Int                   = creature.armourClass
-        val proficiencyBonus: ProficiencyBonus = profBonus
-        val damageVulnerabilities: List[DamageType]      = creature.damageResistances
-        val damageResistances: List[DamageType]      = creature.damageResistances
-        val damageImmunities: List[DamageType]       = creature.damageImmunities
+        val armour: Armour                            = creature.armour
+        val offHand: Option[Equipment]                = creature.offHand
+        val armourClass: Int                          = creature.armourClass
+        val proficiencyBonus: ProficiencyBonus        = profBonus
+        val damageVulnerabilities: List[DamageType]   = creature.damageResistances
+        val damageResistances: List[DamageType]       = creature.damageResistances
+        val damageImmunities: List[DamageType]        = creature.damageImmunities
         val conditionResistances: List[ConditionType] = creature.conditionResistances
-        val conditionImmunities: List[ConditionType] = creature.conditionImmunities
-        val name: String                       = creature.name
-        val abilities: List[CombatantAbility]  = creature.abilities
-        val conditions: List[Condition]        = List.empty
-        val attackStatus: AttackStatus         = creature.attackStatus
-        val defenseStatus: AttackStatus        = creature.defenseStatus
+        val conditionImmunities: List[ConditionType]  = creature.conditionImmunities
+        val name: String                              = creature.name
+        val abilities: List[CombatantAbility]         = creature.abilities
+        val conditions: List[Condition]               = List.empty
+        val attackStatus: AttackStatus                = creature.attackStatus
+        val defenseStatus: AttackStatus               = creature.defenseStatus
 
         val skills: Skills = creature.skills
 

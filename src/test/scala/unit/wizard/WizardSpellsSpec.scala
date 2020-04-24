@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -438,6 +438,67 @@ class WizardSpellsSpec extends UnitSpecBase {
       val lich = random[Lich]
 
       FingerOfDeath.damage(lich, 7) shouldBe 86
+    }
+
+    "spawn a Zombie if target is outright killed" in {
+      forAll { (lich: Lich, fighter: Fighter) =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val fingerOfDeathLich = lich
+            .withSpellKnown(FingerOfDeath)
+
+          val lowHealthFighter =
+            fighter
+              .withConstitution(2)
+              .withHealth(2)
+              .withMaxHealth(10)
+              .withCombatIndex(2)
+
+          val (_, others) =
+            FingerOfDeath.effect(fingerOfDeathLich,
+                                 FingerOfDeath.spellLevel,
+                                 List(lowHealthFighter))
+
+          others.size shouldBe 2
+
+          val List(zombie, Combatant(_, updatedFighter: Fighter)) = others
+
+          updatedFighter.isAlive shouldBe false
+
+          zombie.index shouldBe 3
+        }
+      }
+    }
+
+    "not spawn a Zombie if target is made unconscious but not killed" in {
+      forAll { (lich: Lich, fighter: Fighter) =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val fingerOfDeathLich = lich
+            .withSpellKnown(FingerOfDeath)
+
+          val lowConstitutionFighter =
+            fighter
+              .withConstitution(2)
+              .withHealth(20)
+              .withMaxHealth(200)
+              .withCombatIndex(2)
+
+          val (_, others) =
+            FingerOfDeath.effect(fingerOfDeathLich,
+                                 FingerOfDeath.spellLevel,
+                                 List(lowConstitutionFighter))
+
+          others.size shouldBe 1
+
+          val List(Combatant(_, updatedFighter: Fighter)) = others
+
+          updatedFighter.isAlive shouldBe true
+          updatedFighter.health shouldBe 0
+        }
+      }
     }
   }
 

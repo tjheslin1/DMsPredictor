@@ -6,8 +6,8 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.monsters.Zombie
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
@@ -203,12 +203,18 @@ object WizardSpells extends LazyLogging {
           )
       }
 
-    override def additionalEffect(target: Combatant, savingThrowPassed: Boolean): Combatant =
-      if (target.creature.health <= 0)
-        (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+    override def additionalEffect[_: RS](
+        spellCaster: SpellCaster,
+        target: Combatant,
+        others: List[Combatant],
+        savingThrowPassed: Boolean
+    ): (SpellCaster, Combatant, List[Combatant]) =
+      if (target.creature.health <= 0) {
+        val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
           .set(false)(target)
-      else
-        target
+
+        (spellCaster, updatedTarget, others)
+      } else (spellCaster, target, others)
   }
 
   case object FingerOfDeath extends SingleTargetSavingThrowSpell {
@@ -224,6 +230,25 @@ object WizardSpells extends LazyLogging {
     val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = ???
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (7 * D8) + 30
+
+    override def additionalEffect[_: RS](
+        spellCaster: SpellCaster,
+        target: Combatant,
+        others: List[Combatant],
+        savingThrowPassed: Boolean
+    ): (SpellCaster, Combatant, List[Combatant]) =
+      if (savingThrowPassed == false && target.creature.isAlive == false) {
+        val countOfSpellCasterAndTarget = 2
+        val zombiesCombatIndex          = others.size + countOfSpellCasterAndTarget + 1
+
+        val risenZombie = Combatant(
+          zombiesCombatIndex,
+          Zombie.withName(s"Lich's Zombie (formerly ${target.creature.name})")
+        )
+
+        (spellCaster, target, others :+ risenZombie)
+      } else
+        (spellCaster, target, others)
   }
 }

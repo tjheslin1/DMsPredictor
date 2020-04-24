@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -62,7 +62,7 @@ import monocle.macros.{GenLens, Lenses}
       attackResult: AttackResult
   ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
-    val updatedWizard = copy(health = Math.max(0, health - damageTaken))
+    val updatedWizard = applyDamage(this, damageTaken).asInstanceOf[Wizard]
 
     if (updatedWizard.isConscious == false && isConcentrating)
       handleConcentration(updatedWizard, updatedWizard.concentratingSpell.get, Integer.MAX_VALUE)

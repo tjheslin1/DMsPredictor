@@ -79,6 +79,18 @@ class ZombieSpec extends UnitSpecBase {
         }
       }
     }
+
+    "set the Zombie to dead if the damage brings health below negative max health and Undead Fortitude can't help" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val zombie = random[Zombie]
+        .withHealth(50)
+        .withMaxHealth(50)
+
+      val updatedZombie = zombie.updateHealth(110, Radiant, Hit).asInstanceOf[Zombie]
+
+      updatedZombie.isAlive shouldBe false
+    }
   }
 
   abstract private class TestContext {

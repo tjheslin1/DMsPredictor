@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
@@ -58,8 +58,8 @@ import monocle.macros.{GenLens, Lenses}
       if (savingThrowPassed(dc, Constitution, this)) {
         logger.debug("Zombie used Undead Fortitude to remain at 1 hp")
         _health.set(1)(this)
-      } else _health.set(Math.max(0, health - adjustedDmg))(this)
-    } else _health.set(Math.max(0, health - adjustedDmg))(this)
+      } else applyDamage(this, adjustedDmg)
+    } else applyDamage(this, adjustedDmg)
   }
 
   def scoresCritical(roll: Int): Boolean = roll == 20
@@ -76,6 +76,11 @@ object Zombie {
   def apply[_: RS](): Zombie = {
     val hp = calculateHealth()
     Zombie(hp, hp)
+  }
+
+  def withName[_: RS](zombieName: String): Zombie = {
+    val hp = calculateHealth()
+    Zombie(hp, hp, name = zombieName)
   }
 
   case object Slam extends Weapon {

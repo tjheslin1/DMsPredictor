@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
@@ -64,12 +64,11 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     damageType match {
       case Radiant =>
-        val updatedVampire = copy(
-          health = Math.max(0, health - adjustedDamage(dmg, damageType, this))
-        )
-        if (dmg > 0) updatedVampire.copy(radiantDamageTaken = true)
-        else updatedVampire.copy(radiantDamageTaken = false)
-      case _ => copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+        val updatedVampire = applyDamage(this, dmg).asInstanceOf[Vampire]
+
+        if (dmg > 0) _radiantDamageTaken.set(true)(updatedVampire)
+        else _radiantDamageTaken.set(false)(updatedVampire)
+      case _ => applyDamage(this, adjustedDamage(dmg, damageType, this))
     }
 
   def restoreHealth(healing: Int): Creature = copy(health = Math.min(maxHealth, health + healing))

@@ -2,6 +2,7 @@ package unit.spellcasting
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Paralyzed
@@ -101,8 +102,12 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val applyParalysis: Combatant => Combatant =
-            c => (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set(List(Paralyzed(10, 10, Strength)))(c)
+          val applyParalysis: (SpellCaster, Combatant, List[Combatant], Boolean) => (SpellCaster, Combatant, List[Combatant]) =
+            (spellCaster, target, others, _) => {
+              val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set(List(Paralyzed(10, 10, Strength)))(target )
+
+              (spellCaster, updatedTarget, others)
+            }
 
           val savingThrowSpell = trackedSingleTargetSavingThrowSpell(1, Dexterity, additionalTargetEffect = applyParalysis)
 

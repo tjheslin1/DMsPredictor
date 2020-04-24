@@ -1,12 +1,13 @@
 package unit
 
 import base.UnitSpecBase
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model._
 import util.TestData._
 import util.TestMonster
 
-class AdjustedDamageSpec extends UnitSpecBase {
+class HandleDamageSpec extends UnitSpecBase {
 
   "adjustedDamage" should {
 
@@ -41,5 +42,28 @@ class AdjustedDamageSpec extends UnitSpecBase {
         adjustedDamage(10, Slashing, immuneMonster) shouldBe 0
       }
     }
+  }
+
+  "applyDamage" should {
+    "update the targets health" in {
+      val cleric = random[Cleric].withHealth(50).withMaxHealth(50)
+
+      val updatedCleric = applyDamage(cleric, 7).asInstanceOf[Cleric]
+
+      updatedCleric.health shouldBe 50 - 7
+    }
+
+    "set the Cleric to dead if the damage takes it below max health" in {
+      val cleric = random[Cleric].withHealth(50).withMaxHealth(50)
+
+      val updatedCleric = applyDamage(cleric, 110).asInstanceOf[Cleric]
+
+      updatedCleric.health shouldBe 0
+      updatedCleric.isAlive shouldBe false
+    }
+  }
+
+  abstract private class TestContext {
+    implicit val rollStrategy: RollStrategy
   }
 }

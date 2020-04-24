@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRangerAbilities._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -64,7 +64,7 @@ import monocle.macros.{GenLens, Lenses}
       attackResult: AttackResult
   ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
-    val updatedRanger = copy(health = Math.max(0, health - damageTaken))
+    val updatedRanger = applyDamage(this, damageTaken).asInstanceOf[Ranger]
 
     if (updatedRanger.isConscious == false && isConcentrating)
       handleConcentration(updatedRanger, updatedRanger.concentratingSpell.get, Integer.MAX_VALUE)

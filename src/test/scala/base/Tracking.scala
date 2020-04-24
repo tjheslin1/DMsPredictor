@@ -171,7 +171,7 @@ trait Tracking {
                                           savingAttribute: Attribute,
                                           damageOnSave: Boolean = false,
                                           higherSpellSlot: Boolean = true,
-                                          additionalTargetEffect: Combatant => Combatant = c => c): Spell =
+                                          additionalTargetEffect: (SpellCaster, Combatant, List[Combatant], Boolean) => (SpellCaster, Combatant, List[Combatant]) = (c, t, o, s) => (c, t, o)): Spell =
     new SingleTargetSavingThrowSpell() {
       val savingThrowAttribute: Attribute = savingAttribute
       val halfDamageOnSave: Boolean       = damageOnSave
@@ -189,9 +189,8 @@ trait Tracking {
         4
       }
 
-      override def additionalEffect(target: Combatant, savingThrowPassed: Boolean): Combatant =
-        additionalTargetEffect(target)
-
+      override def additionalEffect[_: RS](spellCaster: SpellCaster, target: Combatant, others: List[Combatant], savingThrowPassed: Boolean): (SpellCaster, Combatant, List[Combatant]) =
+        additionalTargetEffect(spellCaster, target, others, savingThrowPassed)
     }
 
   var multiSavingThrowSpellUsedCount = 0
