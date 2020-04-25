@@ -155,17 +155,17 @@ object BaseFighterAbilities extends LazyLogging {
               order,
               AbilityAction.MainAction
             ).fold {
-                nextToFocus(updatedAttacker, updatedOthers, focus).fold(
-                  (updatedAttacker, updatedOthers)
-                ) { nextTarget =>
-                  val (updatedAttacker2, updatedTarget2, updatedOthers2) =
-                    attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+              nextToFocus(updatedAttacker, updatedOthers, focus).fold(
+                (updatedAttacker, updatedOthers)
+              ) { nextTarget =>
+                val (updatedAttacker2, updatedTarget2, updatedOthers2) =
+                  attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
 
-                  (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
-                }
-              } { nextAbility2 =>
-                useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
+                (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
               }
+            } { nextAbility2 =>
+              useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
+            }
           }
       }
 
