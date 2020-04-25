@@ -15,7 +15,7 @@ class SingleTargetInstantEffectSpellSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToTenMinusSpellLevelEffect)
+          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect)
 
           val instantEffectCastingWizard = wizard
             .withSpellKnown(trackedInstantSpell)
@@ -28,7 +28,7 @@ class SingleTargetInstantEffectSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             trackedInstantSpell.effect(wizard, trackedInstantSpell.spellLevel, List(goblinCombatant))
 
-          updatedGoblin.health shouldBe 9
+          updatedGoblin.health shouldBe 1
         }
       }
     }

@@ -1114,7 +1114,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToTenMinusSpellLevelEffect, higherSpellSlot = true)
+          val trackedInstantSpell = trackedInstantEffectSpell(1, higherSpellSlot = true)
 
           val instantEffectWizard = wizard
             .withSpellKnown(trackedInstantSpell)
@@ -1127,10 +1127,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withMaxHealth(50)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
-          updatedGoblin.health shouldBe 7 // 10 minus spellLevel of 3
+          trackedInstantEffectUsed shouldBe true
+          trackedInstantEffectSpellLevelUsed = 3
         }
       }
     }
@@ -1140,7 +1140,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToTenMinusSpellLevelEffect, higherSpellSlot = false)
+          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect, higherSpellSlot = false)
 
           val instantEffectWizard = wizard
             .withSpellKnown(trackedInstantSpell)
@@ -1156,7 +1156,74 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
-          updatedGoblin.health shouldBe 9 // 10 minus spellLevel of 1
+          trackedInstantEffectUsed shouldBe true
+          trackedInstantEffectSpellLevelUsed = 3
+        }
+      }
+    }
+
+    "spend the highest available spell slot" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect, higherSpellSlot = true)
+
+          val instantEffectWizard = wizard
+            .withSpellKnown(trackedInstantSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
+
+          val updatedWizard =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
+
+          updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count
+          updatedWizard.spellSlots.thirdLevel.count shouldBe instantEffectWizard.spellSlots.thirdLevel.count - 1
+        }
+      }
+    }
+
+    "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect, higherSpellSlot = false)
+
+          val instantEffectWizard = wizard
+            .withSpellKnown(trackedInstantSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
+
+          val updatedWizard =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
+
+          updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count - 1
+          updatedWizard.spellSlots.thirdLevel.count shouldBe instantEffectWizard.spellSlots.thirdLevel.count
+        }
+      }
+    }
+
+    "not spend a spell slot if cantrip was found and used" in {
+      forAll { wizard: Wizard =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedInstantSpell = trackedInstantEffectSpell(0, setHealthToOneEffect, higherSpellSlot = true)
+
+          val instantEffectWizard = wizard
+            .withSpellKnown(trackedInstantSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Wizard]
+
+          val updatedWizard =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
+
+          updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count
+          updatedWizard.spellSlots.thirdLevel.count shouldBe instantEffectWizard.spellSlots.thirdLevel.count
         }
       }
     }
@@ -1195,7 +1262,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       override implicit val roll: RollStrategy = _ => RollResult(10)
 
       val noSpellsWizard = random[Wizard]
-        .withSpellsKnown(trackedMeleeSpellAttack(1), trackedInstantEffectSpell(2, setHealthToTenMinusSpellLevelEffect))
+        .withSpellsKnown(trackedMeleeSpellAttack(1), trackedInstantEffectSpell(2, setHealthToOneEffect))
         .withAllSpellSlotsAvailableForLevel(LevelOne)
         .withLevel(LevelOne)
         .withCombatIndex(1)
@@ -1208,7 +1275,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToTenMinusSpellLevelEffect)
+          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect)
 
           val instantEffectWizard = wizard
             .withSpellKnown(trackedInstantSpell)
@@ -1226,7 +1293,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val (_, List(_, Combatant(_, updatedGoblin: Goblin))) =
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(fighterCombatant, goblinCombatant), LowestFirst)
 
-          updatedGoblin.health shouldBe 9 // 10 minus spellLevel of 1
+          updatedGoblin.health shouldBe 1
         }
       }
     }

@@ -400,10 +400,47 @@ object CoreAbilities extends LazyLogging {
 
       def conditionMet: Boolean = spellConditionMet(spellCaster, InstantEffectSpell)
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-        ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
 
-      def update: Creature = ???
+        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
+
+        val instantEffectCantrip: Option[Spell] =
+          spellCaster.spellsKnown.get((0, InstantEffectSpell))
+
+        val (optSpell, spellLevelToUse) =
+          highestSpellSlot match {
+            case None =>
+              (instantEffectCantrip, 0)
+            case Some(spellSlot) =>
+              spellOfLevelOrBelow(spellCaster, InstantEffectSpell, spellSlot.spellLevel)()
+                .fold((instantEffectCantrip, 0)) {
+                  case (foundSpell, foundSpellLevel) =>
+                    (foundSpell.some, foundSpellLevel)
+                }
+          }
+
+        val targets = spellCaster match {
+          case _: Player => monsters(others)
+          case _         => players(others)
+        }
+
+        val target = nextToFocus(combatant, targets, focus)
+
+        (target, optSpell) match {
+          case (_, None) => (combatant, others)
+          case (None, _) => (combatant, others)
+          case (Some(spellTarget), Some(spell)) =>
+            val (updatedSpellCaster, List(updatedTarget)) =
+              spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), List(spellTarget))
+
+            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+
+            (updatedCombatant, others.replace(updatedTarget))
+        }
+      }
+
+      def update: Creature = updateSpellSlot(spellCaster, InstantEffectSpell)
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =

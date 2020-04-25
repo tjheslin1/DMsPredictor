@@ -287,22 +287,19 @@ trait Tracking {
     }
   }
 
-  def setHealthToTenMinusSpellLevelEffect(spellCaster: SpellCaster,
-                                          spellLevel: SpellLevel,
-                                          target: Combatant): (SpellCaster, Combatant) = {
-    val oneHpTarget =
-      (Combatant.creatureLens composeLens Creature.creatureHealthLens)
-        .set(10 - spellLevel.value)(target)
+  def setHealthToOneEffect(spellCaster: SpellCaster,
+                           target: Combatant): (SpellCaster, Combatant) = {
+    val oneHpTarget = (Combatant.creatureLens composeLens Creature.creatureHealthLens) .set(1)(target)
 
     (spellCaster, oneHpTarget)
   }
 
   var trackedInstantEffectUsed = false
-  def trackedInstantEffectSpell(
-      spellLvl: SpellLevel,
-      trackedEffect: (SpellCaster, SpellLevel, Combatant) => (SpellCaster, Combatant) =
-        setHealthToTenMinusSpellLevelEffect,
-      higherSpellSlot: Boolean = false): SingleTargetInstantEffectSpell =
+  var trackedInstantEffectSpellLevelUsed = -1
+  def trackedInstantEffectSpell(spellLvl: SpellLevel,
+                                 trackedEffect: (SpellCaster, Combatant) => (SpellCaster, Combatant) =
+        setHealthToOneEffect,
+                                 higherSpellSlot: Boolean = false): SingleTargetInstantEffectSpell =
     new SingleTargetInstantEffectSpell {
       val name                        = s"tracked-instant-effect-spell-${spellLvl.value}"
       val school                      = Enchantment
@@ -311,10 +308,11 @@ trait Tracking {
       val requiresConcentration       = false
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
-      def instantEffect(spellCaster: SpellCaster, target: Combatant): (SpellCaster, Combatant) = {
+      def instantEffect(spellCaster: SpellCaster, spellLevel: SpellLevel, target: Combatant): (SpellCaster, Combatant) = {
         trackedInstantEffectUsed = true
+        trackedInstantEffectSpellLevelUsed = spellLevel.value
 
-        trackedEffect(spellCaster, spellLevel, target)
+        trackedEffect(spellCaster, target)
       }
     }
 

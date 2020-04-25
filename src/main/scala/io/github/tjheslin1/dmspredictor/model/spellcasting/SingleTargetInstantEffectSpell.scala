@@ -9,7 +9,11 @@ abstract class SingleTargetInstantEffectSpell extends Spell with LazyLogging {
 
   val spellEffect = InstantEffectSpell
 
-  def instantEffect(spellCaster: SpellCaster, target: Combatant): (SpellCaster, Combatant)
+  def instantEffect(
+      spellCaster: SpellCaster,
+      spellLevel: SpellLevel,
+      target: Combatant
+  ): (SpellCaster, Combatant)
 
   def effect[_: RS](
       spellCaster: SpellCaster,
@@ -21,7 +25,8 @@ abstract class SingleTargetInstantEffectSpell extends Spell with LazyLogging {
 
     val target = targets.head
 
-    val (updatesSpellCaster, instantEffectAppliedTarget) = instantEffect(spellCaster, target)
+    val (updatesSpellCaster, instantEffectAppliedTarget) =
+      instantEffect(spellCaster, spellLevel, target)
 
     (updatesSpellCaster, targets.replace(instantEffectAppliedTarget))
   }

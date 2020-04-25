@@ -502,6 +502,16 @@ class WizardSpellsSpec extends UnitSpecBase {
     }
   }
 
+  "Power Word Stun spell" should {
+    "apply the Stunned condition if the target has 150 hit points or fewer" in {
+      fail("TODO")
+    }
+
+    "not apply the Stunned condition if the target has more than 150 hit points" in {
+      fail("TODO")
+    }
+  }
+
   abstract private class TestContext {
     implicit val rollStrategy: RollStrategy
   }
