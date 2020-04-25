@@ -233,7 +233,7 @@ object CoreAbilities extends LazyLogging {
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name             = "Cast Spell (Condition)"
+      val name             = "Cast Spell (Concentration)"
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
@@ -277,7 +277,7 @@ object CoreAbilities extends LazyLogging {
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name             = "Cast Spell (Offensive)"
+      val name             = "Cast Spell (Multi Target Offensive)"
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
@@ -351,10 +351,10 @@ object CoreAbilities extends LazyLogging {
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name: String                 = "Cast Spell (self buff)"
-      val order: Int                   = currentOrder
-      val levelRequirement: Level      = LevelOne
-      val abilityAction: AbilityAction = buffAction
+      val name             = "Cast Spell (self buff)"
+      val order            = currentOrder
+      val levelRequirement = LevelOne
+      val abilityAction    = buffAction
 
       def triggerMet(others: List[Combatant]): Boolean = true
 
@@ -387,21 +387,24 @@ object CoreAbilities extends LazyLogging {
       def update: Creature = updateSpellSlot(spellCaster, BuffSpell)
     }
 
-//  def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =
-//    new Ability(combatant) {
-//      val name: String = _
-//      val order: Int = _
-//      val levelRequirement: Level = _
-//      val abilityAction: AbilityAction = _
-//
-//      def triggerMet(others: List[Combatant]): Boolean = ???
-//
-//      def conditionMet: Boolean = ???
-//
-//      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
-//
-//      def update: Creature = ???
-//    }
+  def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
+
+      val name                         = "Cast Spell (Instant Effect)"
+      val order                        = currentOrder
+      val levelRequirement             = LevelOne
+      val abilityAction: AbilityAction = WholeAction
+
+      def triggerMet(others: List[Combatant]): Boolean = ???
+
+      def conditionMet: Boolean = spellConditionMet(spellCaster, InstantEffectSpell)
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
+        ???
+
+      def update: Creature = ???
+    }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
@@ -421,15 +424,15 @@ object CoreAbilities extends LazyLogging {
       spellCaster.spellsKnown.exists {
         case ((spellLvl, spellEffect), spell) if spellLvl <= maxSpellLevel =>
           spellEffect match {
-            case `effect` if canCastConcentrationSpell(spellCaster, spell) => true
-            case _                                                         => false
+            case `effect` if canCastSpell(spellCaster, spell) => true
+            case _                                            => false
           }
         case _ => false
       }
     }
   }
 
-  private def canCastConcentrationSpell(spellCaster: SpellCaster, spell: Spell): Boolean =
+  private def canCastSpell(spellCaster: SpellCaster, spell: Spell): Boolean =
     if (spell.requiresConcentration)
       spellCaster.isConcentrating == false
     else
