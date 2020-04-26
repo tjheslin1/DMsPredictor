@@ -32,27 +32,27 @@ object Move extends LazyLogging {
         .set(false)(bonusActionUnusedCombatant)
     }
 
-    val (conditionHandledCombatant, missesTurn) =
+    val (turnStartConditionHandledCombatant, missesTurn) =
       handleStartOfTurnConditions(decrementConditionsTurnsLeft(resetUnactedCombatant))
 
     val otherCombatants = others.toList
 
-    if (conditionHandledCombatant.creature.isAlive &&
-        conditionHandledCombatant.creature.isConscious &&
+    if (turnStartConditionHandledCombatant.creature.isAlive &&
+        turnStartConditionHandledCombatant.creature.isConscious &&
         missesTurn == false) {
 
-      val mobToFocus = nextToFocus(conditionHandledCombatant, mobs.toList, focus)
-      val pcToFocus  = nextToFocus(conditionHandledCombatant, pcs.toList, focus)
+      val mobToFocus = nextToFocus(turnStartConditionHandledCombatant, mobs.toList, focus)
+      val pcToFocus  = nextToFocus(turnStartConditionHandledCombatant, pcs.toList, focus)
 
-      val attackTarget = conditionHandledCombatant.creature.creatureType match {
+      val attackTarget = turnStartConditionHandledCombatant.creature.creatureType match {
         case PlayerCharacter => mobToFocus
         case _               => pcToFocus
       }
 
       val (actedCombatant, updatedTargets) = {
-        val optAbility = availableActionAbility(conditionHandledCombatant, otherCombatants)
+        val optAbility = availableActionAbility(turnStartConditionHandledCombatant, otherCombatants)
         actionAgainstTarget(
-          conditionHandledCombatant,
+          turnStartConditionHandledCombatant,
           attackTarget,
           otherCombatants,
           optAbility,
@@ -74,7 +74,9 @@ object Move extends LazyLogging {
 
       Queue(updatedOthers: _*).append(endOfTurnConditionHandledCombatant)
     } else {
-      others.append(conditionHandledCombatant)
+      val endOfTurnConditionHandledCombatant = handleEndOfTurnConditions(turnStartConditionHandledCombatant)
+
+      others.append(turnStartConditionHandledCombatant)
     }
   }
 

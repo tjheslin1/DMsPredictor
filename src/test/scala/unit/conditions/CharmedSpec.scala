@@ -13,8 +13,7 @@ class CharmedSpec extends UnitSpecBase {
     "sustain Charmed condition if saving throw failed" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          override implic
-          it val roll = _ => RollResult(2)
+          override implicit val roll = _ => RollResult(2)
 
           val charmed         = Charmed(15)
           val poisoned        = Poisoned(10, 10)

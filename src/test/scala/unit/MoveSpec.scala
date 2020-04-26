@@ -197,6 +197,28 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       }
     }
 
+    "handle conditions if the creature misses their turn" in {
+      forAll { (fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll = _ => RollResult(10)
+
+          val trackedGoblin =
+            goblin
+              .withConditions(trackedStartOfTurnCondition(100),
+                              trackedStartOfTurnCondition(50),
+                              trackedEndOfTurnCondition(100, turnMissed = true))
+              .withCombatIndex(1)
+
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
+
+          trackedStartOfTurnConditionHandledCount shouldBe 2
+          trackedEndOfTurnConditionHandledCount shouldBe 1
+        }
+      }
+    }
+
     "miss the combatants turn if a condition saving throw is failed" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
