@@ -4,10 +4,12 @@ import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.FirstLevelSpellSlots
+import io.github.tjheslin1.dmspredictor.model.condition.{AcidArrowCondition, Condition, Stunned}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSaveDc
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{FirstLevelSpellSlots, Spell}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
@@ -504,11 +506,34 @@ class WizardSpellsSpec extends UnitSpecBase {
 
   "Power Word Stun spell" should {
     "apply the Stunned condition if the target has 150 hit points or fewer" in {
-      fail("TODO")
+      new TestContext {
+        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+        val lich = random[Lich].withSpellKnown(PowerWordStun)
+
+        val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
+
+        val (_, List(Combatant(_, updatedRogue: Rogue))) =
+          PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
+
+        val saveDC = spellSaveDc(lich)
+        updatedRogue.conditions should contain theSameElementsAs List(Stunned(saveDC))
+      }
     }
 
     "not apply the Stunned condition if the target has more than 150 hit points" in {
-      fail("TODO")
+      new TestContext {
+        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+        val lich = random[Lich].withSpellKnown(PowerWordStun)
+
+        val rogue = random[Rogue].withHealth(170).withMaxHealth(200).withCombatIndex(2)
+
+        val (_, List(Combatant(_, updatedRogue: Rogue))) =
+          PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
+
+        updatedRogue.conditions should contain theSameElementsAs List.empty[Condition]
+      }
     }
   }
 

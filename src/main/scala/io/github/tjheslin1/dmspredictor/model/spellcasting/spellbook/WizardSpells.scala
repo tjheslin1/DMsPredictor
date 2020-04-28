@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSaveDc
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.monsters.Zombie
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -266,6 +267,16 @@ object WizardSpells extends LazyLogging {
         spellCaster: SpellCaster,
         spellLevel: SpellLevel,
         target: Combatant
-    ): (SpellCaster, Combatant) = ???
+    ): (SpellCaster, Combatant) =
+      if (target.creature.health <= 150) {
+
+        val updatedConditions = target.creature.conditions :+ Stunned(spellSaveDc(spellCaster))
+
+        val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+          .set(updatedConditions)(target)
+
+        (spellCaster, updatedTarget)
+      } else
+        (spellCaster, target)
   }
 }
