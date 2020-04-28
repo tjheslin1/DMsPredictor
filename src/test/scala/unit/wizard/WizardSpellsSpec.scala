@@ -505,7 +505,23 @@ class WizardSpellsSpec extends UnitSpecBase {
   }
 
   "Power Word Stun spell" should {
-    "apply the Stunned condition if the target has 150 hit points or fewer" in {
+    "apply the Stunned condition if the target has 150 hit points" in {
+      new TestContext {
+        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+        val lich = random[Lich].withSpellKnown(PowerWordStun)
+
+        val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
+
+        val (_, List(Combatant(_, updatedRogue: Rogue))) =
+          PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
+
+        val saveDC = spellSaveDc(lich)
+        updatedRogue.conditions should contain theSameElementsAs List(Stunned(saveDC))
+      }
+    }
+
+    "apply the Stunned condition if the target has fewer than 150 hit points" in {
       new TestContext {
         override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
@@ -533,6 +549,56 @@ class WizardSpellsSpec extends UnitSpecBase {
           PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
 
         updatedRogue.conditions should contain theSameElementsAs List.empty[Condition]
+      }
+    }
+  }
+
+  "Power Word Kill" should {
+    "kill the creature if it has 100 hit points" in {
+      new TestContext {
+        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+        val lich = random[Lich].withSpellKnown(PowerWordKill)
+
+        val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
+
+        val (_, List(Combatant(_, updatedRogue: Rogue))) =
+          PowerWordKill.effect(lich, PowerWordKill.spellLevel, List(rogue))
+
+        updatedRogue.isAlive shouldBe false
+        updatedRogue.health shouldBe 0
+      }
+    }
+
+    "kill the creature if it has fewer than 100 hit points" in {
+      new TestContext {
+        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+        val lich = random[Lich].withSpellKnown(PowerWordKill)
+
+        val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
+
+        val (_, List(Combatant(_, updatedRogue: Rogue))) =
+          PowerWordKill.effect(lich, PowerWordKill.spellLevel, List(rogue))
+
+        updatedRogue.isAlive shouldBe false
+        updatedRogue.health shouldBe 0
+      }
+    }
+
+    "not kill the creature if it has more than 100 hit points" in {
+      new TestContext {
+        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+        val lich = random[Lich].withSpellKnown(PowerWordKill)
+
+        val rogue = random[Rogue].withHealth(110).withMaxHealth(200).withCombatIndex(2)
+
+        val (_, List(Combatant(_, updatedRogue: Rogue))) =
+          PowerWordKill.effect(lich, PowerWordKill.spellLevel, List(rogue))
+
+        updatedRogue.isAlive shouldBe true
+        updatedRogue.health shouldBe rogue.creature.health
       }
     }
   }

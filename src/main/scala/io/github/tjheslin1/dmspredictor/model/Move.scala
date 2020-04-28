@@ -18,8 +18,6 @@ object Move extends LazyLogging {
     val (unactedCombatant, others) = queue.dequeue
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
-    logger.debug(s"${unactedCombatant.creature.name} starts their turn")
-
     val resetUnactedCombatant = {
       val resetCombatant =
         Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
@@ -40,6 +38,8 @@ object Move extends LazyLogging {
     if (turnStartConditionHandledCombatant.creature.isAlive &&
         turnStartConditionHandledCombatant.creature.isConscious &&
         missesTurn == false) {
+
+      logger.debug(s"${unactedCombatant.creature.name} starts their turn")
 
       val mobToFocus = nextToFocus(turnStartConditionHandledCombatant, mobs.toList, focus)
       val pcToFocus  = nextToFocus(turnStartConditionHandledCombatant, pcs.toList, focus)

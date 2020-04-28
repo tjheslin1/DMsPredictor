@@ -92,8 +92,9 @@ object Lich {
   }
 
   val lichAbilities: List[CombatantAbility] = List(
-    castMultiTargetOffensiveSpell(1),
-    castSingleTargetOffensiveSpell(2)
+    castSingleTargetInstantEffectSpell(1),
+    castMultiTargetOffensiveSpell(2),
+    castSingleTargetOffensiveSpell(3)
   )
 
   case object LichNaturalArmour extends Armour {
@@ -118,13 +119,15 @@ object Lich {
 
   val standardLichSpellList: Map[(SpellLevel, SpellEffect), Spell] =
     Map(
-      (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
-      (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
-      (AcidArrow.spellLevel, AcidArrow.spellEffect)       -> AcidArrow,
-      (Fireball.spellLevel, Fireball.spellEffect)         -> Fireball,
-      (Blight.spellLevel, Blight.spellEffect)             -> Blight,
-      (Disintegrate.spellLevel, Disintegrate.spellEffect) -> Disintegrate
-      // TODO
+      (FireBolt.spellLevel, FireBolt.spellEffect)           -> FireBolt,
+      (MagicMissile.spellLevel, MagicMissile.spellEffect)   -> MagicMissile,
+      (AcidArrow.spellLevel, AcidArrow.spellEffect)         -> AcidArrow,
+      (Fireball.spellLevel, Fireball.spellEffect)           -> Fireball,
+      (Blight.spellLevel, Blight.spellEffect)               -> Blight,
+      (Disintegrate.spellLevel, Disintegrate.spellEffect)   -> Disintegrate,
+      (FingerOfDeath.spellLevel, FingerOfDeath.spellEffect) -> FingerOfDeath,
+      (PowerWordStun.spellLevel, PowerWordStun.spellEffect) -> PowerWordStun,
+      (PowerWordKill.spellLevel, PowerWordKill.spellEffect) -> PowerWordKill
     )
 
   val strengthLens: Lens[Lich, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

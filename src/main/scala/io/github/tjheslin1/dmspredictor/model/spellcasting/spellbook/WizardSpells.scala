@@ -254,8 +254,7 @@ object WizardSpells extends LazyLogging {
   }
 
   case object PowerWordStun extends SingleTargetInstantEffectSpell {
-    val name: String = "Power Word Stun"
-    val damageType   = Acid
+    val name = "Power Word Stun"
 
     val school                      = Enchantment
     val castingTime                 = OneActionCast
@@ -275,7 +274,39 @@ object WizardSpells extends LazyLogging {
         val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
           .set(updatedConditions)(target)
 
+        logger.debug(s"${updatedTarget.creature.name} is stunned")
+
         (spellCaster, updatedTarget)
+      } else
+        (spellCaster, target)
+  }
+
+  case object PowerWordKill extends SingleTargetInstantEffectSpell {
+    val name = "Power Word Kill"
+
+    val school                      = Enchantment
+    val castingTime                 = OneActionCast
+    val spellLevel                  = 9
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = false
+
+    def instantEffect(
+        spellCaster: SpellCaster,
+        spellLevel: SpellLevel,
+        target: Combatant
+    ): (SpellCaster, Combatant) =
+      if (target.creature.health <= 100) {
+
+        val zeroHealthTarget =
+          (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+            .set(0)(target)
+
+        val deadTarget = (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+          .set(false)(zeroHealthTarget)
+
+        logger.debug(s"${deadTarget.creature.name} is dead")
+
+        (spellCaster, deadTarget)
       } else
         (spellCaster, target)
   }
