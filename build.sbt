@@ -22,7 +22,7 @@ lazy val dmspredictor = (project in file("."))
 
       "com.amazonaws"               % "aws-java-sdk-dynamodb"             % "1.11.688",
       "com.amazonaws"               % "aws-java-sdk-lambda"               % "1.11.693",
-      "com.amazonaws"               % "aws-lambda-java-core"              % "1.2.0",
+      "com.amazonaws"               % "aws-lambda-java-core"              % "1.2.1",
       
       "com.gu"                      %% "scanamo"                          % "1.0.0-M8",
 
