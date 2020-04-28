@@ -6,6 +6,8 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Stunned
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 import util.TestMonster
 
@@ -70,6 +72,48 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val dc = 12
           savingThrowPassed(dc, Strength, monster) shouldBe true
+        }
+      }
+    }
+
+    "automatically fail a Strength saving throw for a Stunned creature" in {
+      forAll { goblin: Goblin =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val stunnedGoblin = goblin.withStrength(10).withCondition(Stunned(20))
+
+          val dc = 5
+          savingThrowPassed(dc, Strength, stunnedGoblin) shouldBe false
+        }
+      }
+    }
+
+    "automatically fail a Dexterity saving throw for a Stunned creature" in {
+      forAll { goblin: Goblin =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val stunnedGoblin = goblin.withDexterity(10).withCondition(Stunned(20))
+
+          val dc = 5
+          savingThrowPassed(dc, Dexterity, stunnedGoblin) shouldBe false
+        }
+      }
+    }
+
+    "make regular saving throws whilst Stunned for Constitution, Intelligence, Wisdom, Charisma" in {
+      forAll { goblin: Goblin =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val stunnedGoblin = goblin.withStats(BaseStats(10, 10, 10, 10, 10, 10)).withCondition(Stunned(20))
+
+          val dc = 5
+          savingThrowPassed(dc, Constitution, stunnedGoblin) shouldBe true
+          savingThrowPassed(dc, Intelligence, stunnedGoblin) shouldBe true
+          savingThrowPassed(dc, Wisdom, stunnedGoblin) shouldBe true
+          savingThrowPassed(dc, Charisma, stunnedGoblin) shouldBe true
         }
       }
     }

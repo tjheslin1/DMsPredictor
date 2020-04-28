@@ -6,11 +6,12 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.Champion
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
+import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Poisoned, Stunned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
 
@@ -52,7 +53,7 @@ class StunnedSpec extends UnitSpecBase {
       }
     }
 
-    "remove Charmed condition if saving throw passed" in {
+    "remove Stunned condition if saving throw passed" in {
       forAll { rogue: Rogue =>
         new TestContext {
           implicit override val roll: RollStrategy = D20.naturalTwenty
@@ -86,6 +87,30 @@ class StunnedSpec extends UnitSpecBase {
   }
 
   "Stunned condition" should {
+
+    "automatically fail Strength saving throws" in {
+      forAll { champion: Champion =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val stunnedChampion = champion.withCondition(Stunned(10))
+
+          savingThrowPassed(2, Strength, stunnedChampion) shouldBe false
+        }
+      }
+    }
+
+    "automatically fail Dexterity saving throws" in {
+      forAll { champion: Champion =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val stunnedChampion = champion.withCondition(Stunned(10))
+
+          savingThrowPassed(2, Dexterity, stunnedChampion) shouldBe false
+        }
+      }
+    }
 
     "prevent the creature from taking actions and reactions" in {
       // format: off
@@ -122,8 +147,6 @@ class StunnedSpec extends UnitSpecBase {
           }
 
           swordUsedCount shouldBe 0
-
-          fail("not failing when it should")
         }
       }
     }

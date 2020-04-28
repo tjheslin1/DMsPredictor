@@ -3,20 +3,24 @@ package io.github.tjheslin1.dmspredictor.model
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
+import io.github.tjheslin1.dmspredictor.model.condition.Stunned
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 
 object SavingThrow {
 
   def savingThrowPassed[_: RS](dc: Int, attribute: Attribute, target: Creature): Boolean =
-    target match {
-      case p: Player =>
-        if (p.savingThrowProficiencies.exists(_ == attribute)) {
-          (D20.roll() + attributeModifier(p, attribute) + p.proficiencyBonus) >= dc
+    (attribute, target) match {
+      case (Strength | Dexterity, creature)
+          if creature.conditions.map(_.name).contains(Stunned.name) =>
+        false
+      case (attr, p: Player) =>
+        if (p.savingThrowProficiencies.exists(_ == attr)) {
+          (D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus) >= dc
         } else {
-          (D20.roll() + attributeModifier(p, attribute)) >= dc
+          (D20.roll() + attributeModifier(p, attr)) >= dc
         }
-      case m: Monster =>
-        D20.roll() + m.savingThrowScores(attribute) >= dc
+      case (attr, m: Monster) =>
+        D20.roll() + m.savingThrowScores(attr) >= dc
     }
 
   def savingThrowWithAdvantagePassed[_: RS](

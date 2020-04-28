@@ -90,6 +90,15 @@ object TestData {
       _savingThrowScores.set(savingThrowScores)(testMonster)
     }
 
+    def withStrengthSavingThrowScore(strScore: Int) = {
+      val savingThrowScores = testMonster.savingThrowScores.map {
+        case (Strength, _)     => Strength -> strScore
+        case (attribute, score) => attribute -> score
+      }
+
+      _savingThrowScores.set(savingThrowScores)(testMonster)
+    }
+
     def withDexteritySavingThrowScore(dexScore: Int) = {
       val savingThrowScores = testMonster.savingThrowScores.map {
         case (Dexterity, _)     => Dexterity -> dexScore
