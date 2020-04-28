@@ -6,7 +6,6 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.Champion
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Poisoned, Stunned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
@@ -74,9 +73,13 @@ class StunnedSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = D20.naturalTwenty
 
-          val stunned      = Stunned(10)
-          val poisoned     = Poisoned(10, 10)
-          val stunnedRogue = rogue.withConstitution(10).withConditions(stunned, poisoned)
+          val stunned  = Stunned(10)
+          val poisoned = Poisoned(10, 10)
+
+          val stunnedRogue = rogue
+            .withConstitution(10)
+            .withConditions(stunned, poisoned)
+            .withDefenseStatus(Disadvantage)
 
           val updatedRogue = stunned.handleEndOfTurn(stunnedRogue)
 
@@ -88,36 +91,8 @@ class StunnedSpec extends UnitSpecBase {
 
   "Stunned condition" should {
 
-    "automatically fail Strength saving throws" in {
-      forAll { champion: Champion =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val stunnedChampion = champion.withCondition(Stunned(10))
-
-          savingThrowPassed(2, Strength, stunnedChampion) shouldBe false
-        }
-      }
-    }
-
-    "automatically fail Dexterity saving throws" in {
-      forAll { champion: Champion =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val stunnedChampion = champion.withCondition(Stunned(10))
-
-          savingThrowPassed(2, Dexterity, stunnedChampion) shouldBe false
-        }
-      }
-    }
-
     "prevent the creature from taking actions and reactions" in {
-      // format: off
-//      forAll { (champion: Champion, rogue: Rogue, wizard: Wizard, goblin: Goblin,
-//                lich: Lich, ranger: Ranger, zombie: Zombie) =>
       forAll { (champion: Champion, rogue: Rogue, wizard: Wizard, goblin: Goblin, lich: Lich) =>
-        // format: on
         new TestContext with Tracking {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 

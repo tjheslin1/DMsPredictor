@@ -74,11 +74,10 @@ object Move extends LazyLogging {
 
       Queue(updatedOthers: _*).append(endOfTurnConditionHandledCombatant)
     } else {
-      val endOfTurnConditionHandledCombatant = handleEndOfTurnConditions(
-        turnStartConditionHandledCombatant
-      )
+      val endOfTurnConditionHandledCombatant =
+        handleEndOfTurnConditions(turnStartConditionHandledCombatant)
 
-      others.append(turnStartConditionHandledCombatant)
+      others.append(endOfTurnConditionHandledCombatant)
     }
   }
 

@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model.{condition, _}
-import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Turned}
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed, Stunned, Turned}
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
@@ -251,7 +251,27 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           val Queue(Combatant(_, updatedFighter: Fighter)) =
             takeMove(Queue(turnedFighter), LowestFirst)
 
-          updatedFighter.conditions shouldBe List()
+          updatedFighter.conditions shouldBe List.empty[Condition]
+        }
+      }
+    }
+
+    "handle condition at end of turn" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val trackedCondition = trackedEndOfTurnCondition(2, turnMissed = true)
+          val stunned = Stunned(2)
+
+          val trackedFighter   = fighter.withConditions(trackedCondition, stunned).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(trackedFighter), LowestFirst)
+
+          trackedEndOfTurnConditionHandledCount shouldBe 1
+
+          updatedFighter.conditions shouldBe List(trackedCondition)
         }
       }
     }
@@ -267,7 +287,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           val Queue(Combatant(_, updatedFighter: Fighter)) =
             takeMove(Queue(paralyzedFighter), LowestFirst)
 
-          updatedFighter.conditions shouldBe List()
+          updatedFighter.conditions shouldBe List.empty[Condition]
         }
       }
     }

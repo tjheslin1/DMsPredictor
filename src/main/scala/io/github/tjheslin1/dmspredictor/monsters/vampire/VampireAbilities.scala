@@ -161,7 +161,7 @@ object VampireAbilities extends LazyLogging {
             logger.debug(s"${target.creature.name} has been Charmed")
 
             val charmedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-              .set(target.creature.conditions ++ List(Charmed(CharmDC)))(target)
+              .set(target.creature.conditions :+ Charmed(CharmDC))(target)
 
             (combatant, others.replace(charmedTarget))
           }
