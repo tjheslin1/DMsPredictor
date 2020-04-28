@@ -14,7 +14,7 @@ import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
-import io.github.tjheslin1.dmspredictor.monsters.Monster
+import io.github.tjheslin1.dmspredictor.monsters.{Legendary, Monster}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -43,7 +43,9 @@ import monocle.macros.{GenLens, Lenses}
     isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster
-    with SpellCaster {
+    with SpellCaster with Legendary {
+
+  val legendaryResistances = 3
 
   val spellCastingLevel    = LevelEighteen
   val spellCastingModifier = 7

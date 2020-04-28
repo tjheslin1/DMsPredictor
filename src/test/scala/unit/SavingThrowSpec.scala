@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Stunned
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import util.TestData._
 import util.TestMonster
 
@@ -21,7 +22,9 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val monster = testMonster.withDexterity(10)
 
-          savingThrowPassed(10, Dexterity, monster) shouldBe true
+          val (result, _) = savingThrowPassed(10, Dexterity, monster)
+
+          result shouldBe true
         }
       }
     }
@@ -114,6 +117,17 @@ class SavingThrowSpec extends UnitSpecBase {
           savingThrowPassed(dc, Intelligence, stunnedGoblin) shouldBe true
           savingThrowPassed(dc, Wisdom, stunnedGoblin) shouldBe true
           savingThrowPassed(dc, Charisma, stunnedGoblin) shouldBe true
+        }
+      }
+    }
+
+    "pass despite a failed save for a legendary creature using Legendary Resistance" in {
+      forAll { lich: Lich =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(2)
+
+          val dc = 20
+          savingThrowPassed(dc, Constitution, lich) should
         }
       }
     }

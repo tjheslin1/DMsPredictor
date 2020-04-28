@@ -15,9 +15,8 @@ import monocle.macros.Lenses
   val missesTurn: Boolean        = false
   val isHandledOnDamage: Boolean = false
 
-  def decrementTurnsLeft(): Condition =
-    // can only be removed by passing the saving throw
-    this
+  // can only be removed by passing the saving throw
+  def decrementTurnsLeft(): Condition = this
 
   def handleStartOfTurn[_: RS](creature: Creature): Creature = {
     val attribute = if (creature.stats.strength > creature.stats.dexterity) Strength else Dexterity

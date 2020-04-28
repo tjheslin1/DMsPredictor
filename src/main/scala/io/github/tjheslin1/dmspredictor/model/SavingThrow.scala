@@ -8,34 +8,47 @@ import io.github.tjheslin1.dmspredictor.monsters.Monster
 
 object SavingThrow {
 
-  def savingThrowPassed[_: RS](dc: Int, attribute: Attribute, target: Creature): Boolean =
+  def savingThrowPassed[_: RS](dc: Int, attribute: Attribute, target: Creature): (Boolean, Creature) =
     (attribute, target) match {
       case (Strength | Dexterity, creature)
           if creature.conditions.map(_.name).contains(Stunned.name) =>
-        false
+
+        (false, creature)
       case (attr, p: Player) =>
         if (p.savingThrowProficiencies.exists(_ == attr)) {
-          (D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus) >= dc
+          val passed = (D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus) >= dc
+
+          (passed, p)
         } else {
-          (D20.roll() + attributeModifier(p, attr)) >= dc
+          val passed = (D20.roll() + attributeModifier(p, attr)) >= dc
+
+          (passed, p)
         }
       case (attr, m: Monster) =>
-        D20.roll() + m.savingThrowScores(attr) >= dc
+        val passed = D20.roll() + m.savingThrowScores(attr) >= dc
+
+        (passed, m)
     }
 
   def savingThrowWithAdvantagePassed[_: RS](
       dc: Int,
       attribute: Attribute,
       target: Creature
-  ): Boolean =
-    if (savingThrowPassed(dc, attribute, target)) true
+  ): (Boolean, Creature) = {
+    val (passed, updatedCreature) = savingThrowPassed(dc, attribute, target)
+
+    if (passed) (true, updatedCreature)
     else savingThrowPassed(dc, attribute, target)
+  }
 
   def savingThrowWithDisadvantagePassed[_: RS](
       dc: Int,
       attribute: Attribute,
       target: Creature
-  ): Boolean =
-    if (savingThrowPassed(dc, attribute, target)) savingThrowPassed(dc, attribute, target)
-    else false
+   ): (Boolean, Creature) = {
+    val (passed, updatedCreature) = savingThrowPassed(dc, attribute, target)
+
+    if (passed == false) (false, updatedCreature)
+    else savingThrowPassed(dc, attribute, target)
+  }
 }
