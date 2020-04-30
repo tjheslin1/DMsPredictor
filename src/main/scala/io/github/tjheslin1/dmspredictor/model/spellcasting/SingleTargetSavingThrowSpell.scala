@@ -29,27 +29,30 @@ abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
       targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
     val (List(target), others) = targets.splitAt(1)
-    val savingThrowPassed =
+    val (passed, updatedCreature) =
       spellSavingThrowPassed(spellCaster, savingThrowAttribute, target.creature)
 
+    val updatedTarget = Combatant.creatureLens.set(updatedCreature)(target)
+
     logger.debug(
-      s"${spellCaster.name} is casting $name  on ${target.creature.name} " +
-        s"- Saving throw ${if (savingThrowPassed) "Passed" else "Failed"}"
+      s"${spellCaster.name} is casting $name  on ${updatedCreature.name} " +
+        s"- Saving throw ${if (passed) "Passed" else "Failed"}"
     )
 
     val dmg =
-      if (savingThrowPassed == false) damage(spellCaster, spellLevel)
-      else if (savingThrowPassed && halfDamageOnSave)
+      if (passed == false) damage(spellCaster, spellLevel)
+      else if (passed && halfDamageOnSave)
         Math.floor(damage(spellCaster, spellLevel) / 2).toInt
       else 0
 
-    val attackResult = if (savingThrowPassed) Miss else Hit
+    val attackResult = if (passed) Miss else Hit
 
-    val damagedTarget =
-      target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
+    val damagedTarget = Combatant.creatureLens.set {
+      updatedCreature.updateHealth(dmg, damageType, attackResult)
+    }(updatedTarget)
 
     val (updatedSpellCaster, additionalEffectedTarget, updatedOthers) =
-      additionalEffect(spellCaster, damagedTarget, others, savingThrowPassed)
+      additionalEffect(spellCaster, damagedTarget, others, passed)
 
     (updatedSpellCaster, updatedOthers.replace(additionalEffectedTarget))
   }

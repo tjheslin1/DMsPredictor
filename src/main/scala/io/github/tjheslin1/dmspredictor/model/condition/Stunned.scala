@@ -22,20 +22,23 @@ case class Stunned(
   // can only be removed by passing the saving throw
   def decrementTurnsLeft(): Condition = this
 
-  def handleEndOfTurn[_: RS](creature: Creature): Creature =
-    if (savingThrowPassed(saveDc, savingThrowAttribute, creature)) {
-      val stunned           = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions.except(stunned)
+  def handleEndOfTurn[_: RS](creature: Creature): Creature = {
+    val (passed, updatedCreature) = savingThrowPassed(saveDc, savingThrowAttribute, creature)
 
-      logger.debug(s"${creature.name} is no longer $name")
+    if (passed) {
+      val stunned           = updatedCreature.conditions.find(_.name == name).get
+      val updatedConditions = updatedCreature.conditions.except(stunned)
+
+      logger.debug(s"${updatedCreature.name} is no longer $name")
 
       val conditionUpdatedCreature =
-        Creature.creatureConditionsLens.set(updatedConditions)(creature)
+        Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
 
       Creature.creatureDefenseStatusLens.set(Regular)(conditionUpdatedCreature)
     } else {
-      logger.debug(s"${creature.name} is still $name")
+      logger.debug(s"${updatedCreature.name} is still $name")
 
-      Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
+      Creature.creatureDefenseStatusLens.set(Disadvantage)(updatedCreature)
     }
+  }
 }

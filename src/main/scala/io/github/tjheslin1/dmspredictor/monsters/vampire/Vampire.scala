@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
-import io.github.tjheslin1.dmspredictor.monsters.Monster
+import io.github.tjheslin1.dmspredictor.monsters.{Legendary, Monster}
 import io.github.tjheslin1.dmspredictor.monsters.MonsterAbilities.multiAttack
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
@@ -39,8 +39,10 @@ import monocle.macros.{GenLens, Lenses}
     firstAttack: Boolean = true,
     biteUsed: Boolean = false,
     isAlive: Boolean = true,
+    legendaryResistances: Int = 3,
     name: String = NameGenerator.randomName
 ) extends Monster
+    with Legendary
     with LazyLogging {
 
   val challengeRating: Double = 13.0

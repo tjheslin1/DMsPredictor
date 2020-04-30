@@ -19,16 +19,19 @@ import monocle.macros.Lenses
 
   def decrementTurnsLeft(): Condition = Paralyzed(saveDc, turnsLeft - 1, attribute, name)
 
-  def handleEndOfTurn[_: RS](creature: Creature): Creature =
-    if (savingThrowPassed(saveDc, attribute, creature)) {
-      val paralyzed         = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions.except(paralyzed)
+  def handleEndOfTurn[_: RS](creature: Creature): Creature = {
+    val (passed, updatedCreature) = savingThrowPassed(saveDc, attribute, creature)
 
-      logger.debug(s"${creature.name} is no longer $name")
+    if (passed) {
+      val paralyzed         = updatedCreature.conditions.find(_.name == name).get
+      val updatedConditions = updatedCreature.conditions.except(paralyzed)
 
-      Creature.creatureConditionsLens.set(updatedConditions)(creature)
+      logger.debug(s"${updatedCreature.name} is no longer $name")
+
+      Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
     } else {
-      logger.debug(s"${creature.name} is still $name")
-      creature
+      logger.debug(s"${updatedCreature.name} is still $name")
+      updatedCreature
     }
+  }
 }

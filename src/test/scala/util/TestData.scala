@@ -25,7 +25,7 @@ import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitR
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Legendary, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -92,7 +92,7 @@ object TestData {
 
     def withStrengthSavingThrowScore(strScore: Int) = {
       val savingThrowScores = testMonster.savingThrowScores.map {
-        case (Strength, _)     => Strength -> strScore
+        case (Strength, _)      => Strength  -> strScore
         case (attribute, score) => attribute -> score
       }
 
@@ -165,6 +165,16 @@ object TestData {
     import Monster._
 
     def withArmourClass(ac: Int) = monsterArmourClassLens.set(ac)(monster)
+  }
+
+  implicit class LegendaryOps(val legendaryCreature: Legendary) extends AnyVal {
+    import Legendary._
+
+    def withNoLegendaryResistancesLeft() =
+      legendaryResistancesLens.set(0)(legendaryCreature)
+
+    def withLegendaryResistanceCount(count: Int) =
+      legendaryResistancesLens.set(count)(legendaryCreature)
   }
 
   implicit class CreatureOps(val creature: Creature) extends AnyVal {

@@ -39,14 +39,26 @@ object BaseClericAbilities extends LazyLogging {
           val updatedUndead = undeadTargets.map { undead =>
             if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
             else if (undead.creature.conditionResistances.contains(TurnedCondition)) {
-              if (savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)) undead
+              val (passed, updatedCreature) =
+                savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)
+
+              val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
+
+              if (passed) updatedUndead
               else
                 (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                  .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
-            } else if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
-            else
-              (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
+                  .set(updatedCreature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
+            } else {
+              val (passed, updatedCreature) =
+                savingThrowPassed(dc, Wisdom, undead.creature)
+
+              val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
+
+              if (passed) updatedUndead
+              else
+                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+                  .set(updatedCreature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
+            }
           }
 
           (combatant, others.replace(updatedUndead))
@@ -73,6 +85,8 @@ object BaseClericAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${baseCleric.name} used $name")
 
+      // TODO handle challenge rating <= 0.5 earlier
+
       monsters(others).filter(_.creature.creatureType == Undead) match {
         case List() => (combatant, others)
         case undeadTargets: List[Combatant] =>
@@ -81,24 +95,35 @@ object BaseClericAbilities extends LazyLogging {
           val updatedUndead = undeadTargets.map { undead =>
             if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
             else if (undead.creature.conditionResistances.contains(TurnedCondition)) {
-              if (savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)) undead
+              val (passed, updatedCreature) =
+                savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)
+
+              val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
+
+              if (passed) updatedUndead
               else
                 (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                  .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
-            } else if (savingThrowPassed(dc, Wisdom, undead.creature)) undead
-            else if (undead.creature.asInstanceOf[Monster].challengeRating <= 0.5) {
-              logger.debug(s"${undead.creature.name} has been Destroyed")
-
-              val zeroHpUndead = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
-                .set(0)(undead)
-
-              (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
-                .set(false)(zeroHpUndead)
+                  .set(updatedCreature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
             } else {
-              logger.debug(s"${undead.creature.name} has been Turned")
+              val (passed, updatedCreature) = savingThrowPassed(dc, Wisdom, undead.creature)
 
-              (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                .set(undead.creature.conditions ++ List(Turned(dc, 10)))(undead)
+              val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
+
+              if (passed) updatedUndead
+              else if (updatedCreature.asInstanceOf[Monster].challengeRating <= 0.5) {
+                logger.debug(s"${updatedCreature.name} has been Destroyed")
+
+                val zeroHpUndead = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+                  .set(0)(updatedUndead)
+
+                (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+                  .set(false)(zeroHpUndead)
+              } else {
+                logger.debug(s"${updatedCreature.name} has been Turned")
+
+                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+                  .set(undead.creature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
+              }
             }
           }
 

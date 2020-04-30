@@ -41,11 +41,11 @@ import monocle.macros.{GenLens, Lenses}
     spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardLichSpellList,
     concentratingSpell: Option[Spell] = none[Spell],
     isAlive: Boolean = true,
+    legendaryResistances: Int = 3,
     name: String = NameGenerator.randomName
 ) extends Monster
-    with SpellCaster with Legendary {
-
-  val legendaryResistances = 3
+    with SpellCaster
+    with Legendary {
 
   val spellCastingLevel    = LevelEighteen
   val spellCastingModifier = 7

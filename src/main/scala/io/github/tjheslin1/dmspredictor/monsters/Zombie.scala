@@ -54,11 +54,13 @@ import monocle.macros.{GenLens, Lenses}
     val adjustedDmg = adjustedDamage(dmg, damageType, this)
     if ((health - adjustedDmg) <= 0 && attackResult == Hit && damageType != Radiant) {
 
-      val dc = 5 + adjustedDmg
-      if (savingThrowPassed(dc, Constitution, this)) {
+      val dc                              = 5 + adjustedDmg
+      val (passed, updatedZombie: Zombie) = savingThrowPassed(dc, Constitution, this)
+
+      if (passed) {
         logger.debug("Zombie used Undead Fortitude to remain at 1 hp")
-        _health.set(1)(this)
-      } else applyDamage(this, adjustedDmg)
+        _health.set(1)(updatedZombie)
+      } else applyDamage(updatedZombie, adjustedDmg)
     } else applyDamage(this, adjustedDmg)
   }
 

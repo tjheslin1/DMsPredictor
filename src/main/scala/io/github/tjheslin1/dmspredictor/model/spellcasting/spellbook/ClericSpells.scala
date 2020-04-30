@@ -111,10 +111,12 @@ object ClericSpells extends LazyLogging {
 
       logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
 
-      if (savingThrowPassed(saveDc, Wisdom, creature))
-        creature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)
+      val (passed, updatedCreature) = savingThrowPassed(saveDc, Wisdom, creature)
+
+      if (passed)
+        updatedCreature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)
       else
-        creature.updateHealth(damage, Radiant, Hit)
+        updatedCreature.updateHealth(damage, Radiant, Hit)
     }
   }
 }

@@ -106,7 +106,7 @@ object Spell {
       caster: SpellCaster,
       attribute: Attribute,
       target: Creature
-  ): Boolean =
+  ): (Boolean, Creature) =
     savingThrowPassed(spellSaveDc(caster), attribute, target)
 
   def spellAttack[_: RS](spellCaster: SpellCaster, target: Creature): AttackResult =

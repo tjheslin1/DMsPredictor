@@ -233,7 +233,9 @@ class SpellSpec extends UnitSpecBase {
           val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
 
-          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe true
+          val (passed, _) = spellSavingThrowPassed(caster, Dexterity, monster)
+
+          passed shouldBe true
         }
       }
     }
@@ -246,7 +248,9 @@ class SpellSpec extends UnitSpecBase {
           val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(14)
 
-          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe true
+          val (passed, _) = spellSavingThrowPassed(caster, Dexterity, monster)
+
+          passed shouldBe true
         }
       }
     }
@@ -259,7 +263,9 @@ class SpellSpec extends UnitSpecBase {
           val caster  = cleric.withProficiencyBonus(2).withWisdom(14).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
 
-          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe false
+          val (passed, _) = spellSavingThrowPassed(caster, Dexterity, monster)
+
+          passed shouldBe false
         }
       }
     }

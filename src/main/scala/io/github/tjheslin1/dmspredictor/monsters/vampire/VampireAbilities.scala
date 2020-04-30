@@ -155,13 +155,17 @@ object VampireAbilities extends LazyLogging {
       nextToFocus(combatant, charmTargets(players(others)), focus) match {
         case None => (combatant, others)
         case Some(target) =>
-          if (savingThrowPassed(CharmDC, Wisdom, target.creature))
-            (combatant, others)
+          val (passed, updatedCreature) = savingThrowPassed(CharmDC, Wisdom, target.creature)
+
+          val updatedTarget = Combatant.creatureLens.set(updatedCreature)(target)
+
+          if (passed)
+            (combatant, others.replace(updatedTarget))
           else {
-            logger.debug(s"${target.creature.name} has been Charmed")
+            logger.debug(s"${updatedTarget.creature.name} has been Charmed")
 
             val charmedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-              .set(target.creature.conditions :+ Charmed(CharmDC))(target)
+              .set(updatedTarget.creature.conditions :+ Charmed(CharmDC))(updatedTarget)
 
             (combatant, others.replace(charmedTarget))
           }

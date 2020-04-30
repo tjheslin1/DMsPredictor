@@ -21,18 +21,22 @@ object Charmed {
   // can only be removed by passing the saving throw
   def decrementTurnsLeft(): Condition = this
 
-  def handleStartOfTurn[_: RS](creature: Creature): Creature =
-    if (savingThrowPassed(saveDc, Wisdom, creature)) {
-      val charmed           = creature.conditions.find(_.name == name).get
-      val updatedConditions = creature.conditions.except(charmed) :+ VampireCharmImmunity
+  def handleStartOfTurn[_: RS](creature: Creature): Creature = {
+    val (passed, updatedCreature) = savingThrowPassed(saveDc, Wisdom, creature)
 
-      logger.debug(s"${creature.name} is no longer $name")
+    if (passed) {
+      val charmed           = updatedCreature.conditions.find(_.name == name).get
+      val updatedConditions = updatedCreature.conditions.except(charmed) :+ VampireCharmImmunity
 
-      Creature.creatureConditionsLens.set(updatedConditions)(creature)
+      logger.debug(s"${updatedCreature.name} is no longer $name")
+
+      Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
     } else {
-      logger.debug(s"${creature.name} is still $name")
-      creature
+      logger.debug(s"${updatedCreature.name} is still $name")
+
+      updatedCreature
     }
+  }
 
   override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
     handleStartOfTurn(creature)
