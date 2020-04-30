@@ -11,16 +11,9 @@ import com.typesafe.scalalogging.LazyLogging
 import io.circe._
 import io.circe.parser.decode
 import io.github.tjheslin1.dmspredictor.classes.Player
-import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
-import io.github.tjheslin1.dmspredictor.classes.fighter.{BaseFighter, Champion}
-import io.github.tjheslin1.dmspredictor.classes.wizard.{BaseWizard, Wizard}
-import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
-import io.github.tjheslin1.dmspredictor.equipment.weapons.{Greatsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster}
-import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
+import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
-import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 
 case class SQSMessage(Records: Seq[SQSRecord])
 
@@ -41,49 +34,6 @@ case class SimulationConfig(
 case class SimulationNameField(simulationName: String)
 
 case class SimulationResult(sim_hash: String, sim_name: String, result: String, config: String)
-
-//object Main extends App with LazyLogging {
-//
-//  implicit val rollStrategy = Dice.defaultRandomiser
-//
-//  import eu.timepit.refined.auto._
-//
-//  val championStats = BaseStats(16, 15, 13, 12, 10, 9)
-//  val championLevel = LevelFive
-//  val championHp    = BaseFighter.calculateHealth(championLevel, championStats.constitution)
-//  val champion = Champion(championLevel,
-//                          championHp,
-//                          championHp,
-//                          championStats,
-//                          Greatsword,
-//                          Skills(1, 2),
-//                          ChainShirt,
-//                          name = "Champion")
-//
-//  val clericStats = BaseStats(9, 10, 13, 16, 10, 15)
-//  val clericLevel = LevelFive
-//  val clericHp    = BaseCleric.calculateHealth(clericLevel, clericStats.constitution)
-//  val cleric = Cleric(clericLevel,
-//                      clericHp,
-//                      clericHp,
-//                      clericStats,
-//                      Shortsword,
-//                      Skills(2, 1),
-//                      Cleric.clericSpellSlots(clericLevel),
-//                      armour = ChainShirt,
-//                      name = "Cleric")
-//
-//  val lichHp = Lich.calculateHealth()
-//  val lich = Lich(lichHp, lichHp, name = "Lich")
-//
-//  val wizardStats = BaseStats(9, 1, 13, 10, 16, 15)
-//  val wizardLevel = LevelFour
-//  val wizardHp = BaseWizard.calculateHealth(wizardLevel, wizardStats.constitution)
-//  val wizard = Wizard(wizardLevel, wizardHp, wizardHp, wizardStats, Shortsword, Skills(1, 1), Wizard.wizardSpellSlots(wizardLevel), name = "Wizard")
-//
-//  SimulationRunner.run(BasicSimulation(List(champion, cleric, lich), LowestFirst), "", 1)
-////  SimulationRunner.run(BasicSimulation(List(wizard, Goblin.withName("Goblin-1"), Goblin.withName("Goblin-2"), Goblin.withName("Goblin-3")), LowestFirst), "", 1)
-//}
 
 class Main extends RequestStreamHandler with ArgParser with LazyLogging {
 

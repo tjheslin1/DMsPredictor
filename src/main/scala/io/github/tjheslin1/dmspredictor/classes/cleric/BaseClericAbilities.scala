@@ -6,7 +6,8 @@ import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.{Turned, TurnedCondition}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.attributeModifierForSchool
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.{attributeModifierForSchool, spellSaveDc}
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
@@ -34,7 +35,7 @@ object BaseClericAbilities extends LazyLogging {
       monsters(others).filter(_.creature.creatureType == Undead) match {
         case List() => (combatant, others)
         case undeadTargets: List[Combatant] =>
-          val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
+          val dc = spellSaveDc(baseCleric)
 
           val updatedUndead = undeadTargets.map { undead =>
             if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
@@ -85,12 +86,10 @@ object BaseClericAbilities extends LazyLogging {
     def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
       logger.debug(s"${baseCleric.name} used $name")
 
-      // TODO handle challenge rating <= 0.5 earlier
-
       monsters(others).filter(_.creature.creatureType == Undead) match {
         case List() => (combatant, others)
         case undeadTargets: List[Combatant] =>
-          val dc = 8 + baseCleric.proficiencyBonus + attributeModifierForSchool(baseCleric)
+          val dc = spellSaveDc(baseCleric)
 
           val updatedUndead = undeadTargets.map { undead =>
             if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
