@@ -36,7 +36,7 @@ import monocle.macros.{GenLens, Lenses}
     name: String = NameGenerator.randomName
 ) extends Monster {
 
-  val challengeRating: Double                = 0.25
+  val challengeRating                        = 0.25
   val skills                                 = Skills(perception = 0, stealth = 6)
   val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 

@@ -1,13 +1,11 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import com.typesafe.scalalogging.LazyLogging
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.{Turned, TurnedCondition}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.{attributeModifierForSchool, spellSaveDc}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.monsters
@@ -100,7 +98,15 @@ object BaseClericAbilities extends LazyLogging {
               val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
 
               if (passed) updatedUndead
-              else
+              else if (updatedCreature.asInstanceOf[Monster].challengeRating <= 0.5) {
+                logger.debug(s"${updatedCreature.name} has been Destroyed")
+
+                val zeroHpUndead = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+                  .set(0)(updatedUndead)
+
+                (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+                  .set(false)(zeroHpUndead)
+              } else
                 (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
                   .set(updatedCreature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
             } else {

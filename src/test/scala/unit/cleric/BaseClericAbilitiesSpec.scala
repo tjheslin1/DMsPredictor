@@ -152,15 +152,14 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
           val toughUndead = zombieOne.withWisdom(20).withCombatIndex(2)
           val weakUndead  = zombieTwo.withWisdom(1).withCombatIndex(3)
-          val weakGoblin  = goblin.withWisdom(1).withCombatIndex(4)
+          val goblinCombatant  = goblin.withCombatIndex(4)
 
-          val enemies = List(toughUndead, weakUndead, weakGoblin, goblin.withCombatIndex(5))
+          val enemies = List(toughUndead, weakUndead, goblinCombatant)
 
           val (_,
                List(Combatant(_, updatedToughUndead: Zombie),
                     Combatant(_, updatedWeakUndead: Zombie),
-                    Combatant(_, updatedGoblin: Goblin),
-                    _)) =
+                    Combatant(_, updatedGoblin: Goblin))) =
             destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
           updatedToughUndead.health shouldBe zombieOne.health
@@ -168,8 +167,8 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           updatedWeakUndead.health shouldBe 0
           updatedWeakUndead.isAlive shouldBe false
 
-          updatedGoblin.health shouldBe 0
-          updatedGoblin.isAlive shouldBe false
+          updatedGoblin.health shouldBe goblinCombatant.creature.health
+          updatedGoblin.isAlive shouldBe true
         }
       }
     }
@@ -179,10 +178,9 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           //format: off
           val iterator = Iterator(
-            18, // strong vampire saving throw
-            1, // weak vampire saving throw
-            1,
-            1 // weak lich saving throw with advantage
+            18,     // strong vampire saving throw
+            1,      // weak vampire saving throw
+            1, 1    // weak lich saving throw with advantage
           )
           // format: on
 
@@ -191,7 +189,7 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(18).withCombatIndex(1)
 
           val toughVampire = vampireOne.withNoLegendaryResistancesLeft().withWisdom(20).withCombatIndex(2)
-          val weakVampire  = vampireTwo.withNoLegendaryResistancesLeft().withWisdom(1).withCombatIndex(2)
+          val weakVampire  = vampireTwo.withNoLegendaryResistancesLeft().withWisdom(1).withCombatIndex(3)
           val weakLich     = lich.withNoLegendaryResistancesLeft().withWisdom(1).withCombatIndex(4)
 
           val enemies = List(toughVampire, weakVampire, weakLich)
@@ -212,13 +210,12 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "destroy Undead targets of CR 1/2 or below if they fail their saving throws with advantage" in {
-      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, zombieThree: Zombie) =>
+      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie) =>
         new TestContext {
           // format: off
           val iterator = Iterator(
-            5, // zombieOne saving throw roll
+            1, 20, // zombieOne saving throw rolls with advantage
             1, 2, // zombieTwo saving throw rolls with advantage
-            1, 20 // zombieThree saving throw rolls with advantage
           )
           // format: on
 
@@ -226,27 +223,26 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
 
           val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
 
-          val zombieCombatantOne = zombieOne.withCombatIndex(2)
+          val zombieCombatantOne = zombieOne.withConditionResistance(TurnedCondition).withCombatIndex(2)
 
           val zombieCombatantTwo = zombieTwo
             .withConditionResistance(TurnedCondition)
             .withCombatIndex(3)
 
-          val zombieCombatantThree = zombieThree
-            .withConditionResistance(TurnedCondition)
-            .withCombatIndex(4)
-
-          val enemies = List(zombieCombatantOne, zombieCombatantTwo, zombieCombatantThree)
+          val enemies = List(zombieCombatantOne, zombieCombatantTwo)
 
           val (_,
                List(Combatant(_, updatedZombieOne: Zombie),
-                    Combatant(_, updatedZombieTwo: Zombie),
-                    Combatant(_, updatedZombieThree: Zombie))) =
+                    Combatant(_, updatedZombieTwo: Zombie))) =
             destroyUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
-          updatedZombieOne.conditions shouldBe List(Turned(17, 10))
-          updatedZombieTwo.conditions shouldBe List(Turned(17, 10))
-          updatedZombieThree.conditions shouldBe List.empty[Condition]
+          updatedZombieOne.conditions shouldBe List.empty[Condition]
+          updatedZombieOne.health shouldBe zombieOne.health
+          updatedZombieOne.isAlive shouldBe true
+
+          updatedZombieTwo.conditions shouldBe List.empty[Condition]
+          updatedZombieTwo.health shouldBe 0
+          updatedZombieTwo.isAlive shouldBe false
         }
       }
     }
@@ -256,9 +252,9 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           // format: off
           val iterator = Iterator(
-            5, // vampireOne saving throw roll
-            1, 2, // vampireTwo saving throw rolls with advantage
-            1, 20 // vampireThree saving throw rolls with advantage
+            5,      // vampireOne saving throw roll
+            1, 2,   // vampireTwo saving throw rolls with advantage
+            1, 20   // vampireThree saving throw rolls with advantage
           )
           // format: on
 
