@@ -8,7 +8,7 @@ import util.TestData._
 
 class ClericSpellsSpec extends UnitSpecBase {
 
-  "Fire Bolt" should {
+  "Sacred Flame" should {
     "deal 1d8 damage for a first level spellCaster" in new TestContext {
       implicit val rollStrategy: RollStrategy = _ => RollResult(8)
 

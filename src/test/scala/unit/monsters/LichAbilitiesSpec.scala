@@ -19,7 +19,7 @@ class LichAbilitiesSpec extends UnitSpecBase {
 
       val lich = random[Lich].withCombatIndex(1)
 
-      val fighter = random[Fighter]
+      val lowDefenseFighter = random[Fighter]
         .withFightingStyle(Archery)
         .withNoOffHand()
         .withDexterity(10)
@@ -28,7 +28,7 @@ class LichAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(2)
 
       val (_, List(Combatant(_, updatedFighter: Fighter))) =
-        paralyzingTouch(1)(lich).useAbility(List(fighter), LowestFirst)
+        paralyzingTouch(1)(lich).useAbility(List(lowDefenseFighter), LowestFirst)
 
       updatedFighter.health shouldBe 32 // 50 - 3d6
     }

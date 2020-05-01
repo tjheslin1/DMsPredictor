@@ -76,13 +76,12 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "apply the Turned condition to Undead targets if they fail their saving throws with advantage" in {
-      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, goblin: Goblin) =>
+      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie) =>
         new TestContext {
           // format: off
           val iterator = Iterator(
-            5, // zombieOne saving throw roll
+            1, 20, // zombieOne saving throw roll
             1, 2, // zombieTwo saving throw rolls with advantage
-            1, 20 // goblin saving throw rolls with advantage
           )
           // format: on
 
@@ -91,26 +90,23 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val clericCombatant = cleric.withProficiencyBonus(2).withWisdom(24).withCombatIndex(1)
 
           val enemies = List(
-            zombieOne.withCombatIndex(2),
-            zombieTwo.withConditionResistance(TurnedCondition).withCombatIndex(3),
-            goblin.withConditionResistance(TurnedCondition).withCombatIndex(4)
+            zombieOne.withWisdom(10).withConditionResistance(TurnedCondition).withCombatIndex(2),
+            zombieTwo.withWisdom(10).withConditionResistance(TurnedCondition).withCombatIndex(3)
           )
 
           val (_,
                List(Combatant(_, updatedZombieOne: Zombie),
-                    Combatant(_, updatedZombieTwo: Zombie),
-                    Combatant(_, updatedGoblin: Goblin))) =
+                    Combatant(_, updatedZombieTwo: Zombie))) =
             turnUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
-          updatedZombieOne.conditions shouldBe List(Turned(17, 10))
+          updatedZombieOne.conditions shouldBe List.empty[Condition]
           updatedZombieTwo.conditions shouldBe List(Turned(17, 10))
-          updatedGoblin.conditions shouldBe List.empty[Condition]
         }
       }
     }
 
     "not apply the Turned condition to Undead targets if they have immunity to the Turned condition" in {
-      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie, goblin: Goblin) =>
+      forAll { (cleric: Cleric, zombieOne: Zombie, zombieTwo: Zombie) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(5)
 
@@ -119,18 +115,15 @@ class BaseClericAbilitiesSpec extends UnitSpecBase {
           val enemies = List(
             zombieOne.withWisdom(2).withCombatIndex(2),
             zombieTwo.withWisdom(2).withConditionImmunity(TurnedCondition).withCombatIndex(3),
-            goblin.withWisdom(2).withConditionImmunity(TurnedCondition).withCombatIndex(4)
           )
 
           val (_,
                List(Combatant(_, updatedZombieOne: Zombie),
-                    Combatant(_, updatedZombieTwo: Zombie),
-                    Combatant(_, updatedGoblin: Goblin))) =
+                    Combatant(_, updatedZombieTwo: Zombie))) =
             turnUndead(Priority)(clericCombatant).useAbility(enemies, LowestFirst)
 
           updatedZombieOne.conditions shouldBe List(Turned(17, 10))
           updatedZombieTwo.conditions shouldBe List.empty[Condition]
-          updatedGoblin.conditions shouldBe List.empty[Condition]
         }
       }
     }

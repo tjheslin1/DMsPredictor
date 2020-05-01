@@ -18,7 +18,7 @@ import scala.collection.immutable.Queue
 
 class StunnedSpec extends UnitSpecBase {
 
-  "handle" should {
+  "handleEndOfTurn" should {
 
     "sustain Stunned condition if saving throw failed" in {
       forAll { rogue: Rogue =>
