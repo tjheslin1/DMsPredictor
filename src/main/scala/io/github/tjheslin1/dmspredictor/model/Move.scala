@@ -157,10 +157,6 @@ object Move extends LazyLogging {
       case _ => None
     }
 
-  /*
-  checking order of combatant if they come back out of order aahh it's 9:04
-   */
-
   private def actionAgainstTarget[_: RS](
       combatant: Combatant,
       target: Option[Combatant],

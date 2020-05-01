@@ -31,6 +31,7 @@ import monocle.macros.Lenses
       Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
+
       updatedCreature
     }
   }

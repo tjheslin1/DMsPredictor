@@ -2,7 +2,8 @@ package unit.monsters
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.fighter.{Archery, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Archery, Defense, Fighter}
+import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
 import io.github.tjheslin1.dmspredictor.monsters.lich.LichAbilities.paralyzingTouch
@@ -49,6 +50,27 @@ class LichAbilitiesSpec extends UnitSpecBase {
             paralyzingTouch(1)(lich.withCombatIndex(1)).useAbility(List(lowConstitutionFighter), LowestFirst)
 
           updatedFighter.conditions should contain theSameElementsAs List(Paralyzed(18, 10, Constitution))
+        }
+      }
+    }
+
+    "not paralyze target if attack missed" in {
+      forAll { (lich: Lich, fighter: Fighter) =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(5)
+
+          val highACLowConFighter = fighter
+            .withFightingStyle(Defense)
+            .withArmour(ChainShirt)
+            .withDexterity(16)
+            .withConstitution(1)
+            .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedFighter: Fighter))) =
+            paralyzingTouch(1)(lich.withCombatIndex(1)).useAbility(List(highACLowConFighter), LowestFirst)
+
+          updatedFighter.health shouldBe highACLowConFighter.creature.health
+          updatedFighter.conditions should contain theSameElementsAs List.empty[Condition]
         }
       }
     }

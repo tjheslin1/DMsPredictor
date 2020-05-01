@@ -69,13 +69,11 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = baseWeapon
 
-  // TODO Legendary resistances
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
-  // TODO Legendary resistances
   def resetStartOfTurn(): Creature = this
 
   val levelSpellcastingLearned = LevelOne
