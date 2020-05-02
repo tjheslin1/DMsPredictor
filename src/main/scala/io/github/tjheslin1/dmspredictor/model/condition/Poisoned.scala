@@ -15,4 +15,6 @@ import monocle.macros.Lenses
   def handleStartOfTurn[_: RS](creature: Creature): Creature           = creature
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature             = creature
+
+  def onConditionApplied[_: RS](creature: Creature): Creature = creature
 }

@@ -35,4 +35,6 @@ import monocle.macros.Lenses
       updatedCreature
     }
   }
+
+  override def onConditionApplied[_: RS](creature: Creature): Creature = ???
 }

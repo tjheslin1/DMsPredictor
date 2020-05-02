@@ -28,4 +28,6 @@ object Turned
       creature
     }
   }
+
+  override def onConditionApplied[_: RS](creature: Creature): Creature = ???
 }

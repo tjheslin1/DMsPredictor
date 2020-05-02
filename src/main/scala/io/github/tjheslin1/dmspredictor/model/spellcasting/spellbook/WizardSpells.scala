@@ -150,15 +150,11 @@ object WizardSpells extends LazyLogging {
     }
   }
 
-  case class ShieldBuffCondition(turnsLeft: Int = 1) extends StartOfTurnCondition {
-    val saveDc: Int                = 0
-    val missesTurn: Boolean        = false
-    val isHandledOnDamage: Boolean = false
-    val name: String               = "Shield (Buff)"
+  case class ShieldBuffCondition(override val turnsLeft: Int = 1) extends PassiveCondition {
+    val missesTurn = false
+    val name       = "Shield (Buff)"
 
     def decrementTurnsLeft(): Condition = ShieldBuffCondition(turnsLeft = 0)
-
-    def handleStartOfTurn[_: RS](creature: Creature): Creature = creature
   }
 
   case object Blight extends SingleTargetSavingThrowSpell {

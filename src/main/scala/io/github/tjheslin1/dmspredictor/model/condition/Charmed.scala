@@ -40,4 +40,6 @@ object Charmed {
 
   override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
     handleStartOfTurn(creature)
+
+  def onConditionApplied[_: RS](creature: Creature): Creature = creature
 }

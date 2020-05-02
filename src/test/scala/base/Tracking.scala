@@ -338,6 +338,8 @@ trait Tracking {
         trackedStartOfTurnConditionHandledCount += 1
         creature
       }
+
+      def onConditionApplied[_: RS](creature: Creature): Creature = creature
     }
 
   var trackedEndOfTurnConditionHandledCount = 0
@@ -359,6 +361,7 @@ trait Tracking {
         creature
       }
 
+      def onConditionApplied[_: RS](creature: Creature): Creature = creature
     }
 
   var trackedBonusActionUsed = false

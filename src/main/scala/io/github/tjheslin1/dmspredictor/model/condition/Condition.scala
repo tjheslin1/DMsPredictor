@@ -21,6 +21,8 @@ trait Condition {
   def handleStartOfTurn[_: RS](creature: Creature): Creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature
+
+  def onConditionApplied[_: RS](creature: Creature): Creature
 }
 
 abstract class PassiveCondition extends Condition {
@@ -32,6 +34,8 @@ abstract class PassiveCondition extends Condition {
   def handleStartOfTurn[_: RS](creature: Creature): Creature           = creature
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature             = creature
+
+  def onConditionApplied[_: RS](creature: Creature): Creature = creature
 }
 
 abstract class StartOfTurnCondition extends Condition {
