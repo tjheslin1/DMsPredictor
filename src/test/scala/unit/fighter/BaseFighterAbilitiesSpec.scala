@@ -161,7 +161,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           val lowHealthFighter =
-            fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
+            fighter.withLevel(LevelTwo).withHealth(1).withMaxHealth(5).withCombatIndex(1)
 
           secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
         }
@@ -174,7 +174,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           val lowHealthFighter =
-            fighter.withHealth(1).withMaxHealth(5).withLevel(LevelTwo).withCombatIndex(1)
+            fighter.withLevel(LevelTwo).withHealth(1).withMaxHealth(5).withCombatIndex(1)
 
           val updatedFighter = secondWind(Priority)(lowHealthFighter).update.asInstanceOf[Fighter]
 
@@ -190,9 +190,9 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val lowHealthFighter =
             fighter
+              .withLevel(LevelTwo)
               .withHealth(4)
               .withMaxHealth(5)
-              .withLevel(LevelTwo)
               .withCombatIndex(1)
 
           secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe false

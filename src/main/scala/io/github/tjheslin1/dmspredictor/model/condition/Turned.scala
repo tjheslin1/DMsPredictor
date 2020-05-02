@@ -5,8 +5,10 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
+object Turned
+
 @Lenses("_") case class Turned(saveDc: Int, turnsLeft: Int, name: String = "Turned")
-    extends StartOfTurnCondition
+    extends OnDamageCondition
     with LazyLogging {
 
   val attribute: Attribute       = Wisdom
@@ -15,27 +17,12 @@ import monocle.macros.Lenses
 
   def decrementTurnsLeft(): Condition = Turned(saveDc, turnsLeft - 1, name)
 
-  def handleStartOfTurn[_: RS](creature: Creature): Creature = {
-    val turned            = creature.conditions.find(_.name == name).get
-    val decrementedTurned = Condition.conditionTurnsLeftLens.set(turned.turnsLeft - 1)(turned)
-
-    val updatedCondition = creature.conditions.map {
-      case _: Turned => decrementedTurned
-      case c         => c
-    }
-
-    logger.debug(s"${creature.name} is still Turned (${decrementedTurned.turnsLeft} turns left)")
-
-    Creature.creatureConditionsLens.set(updatedCondition)(creature)
-  }
-
   override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = {
     val turned            = creature.conditions.find(_.name == name).get
     val updatedConditions = creature.conditions.except(turned)
 
-    logger.debug(s"${creature.name} is no longer Turned")
-
     if (damage > 0) {
+      logger.debug(s"${creature.name} is no longer Turned")
       Creature.creatureConditionsLens.set(updatedConditions)(creature)
     } else {
       creature

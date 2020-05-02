@@ -119,14 +119,14 @@ class ActionsSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val (attackResult, _) = attack(fighterCombatant,
-                                         plusTwoWeapon,
-                                         testMonster.withArmourClass(19).withCombatIndex(2))
+            plusTwoWeapon,
+            testMonster.withArmourClass(19).withCombatIndex(2))
 
           attackResult shouldBe Miss
 
           val (attackResult2, _) = attack(fighterCombatant,
-                                          plusTwoWeapon,
-                                          testMonster.withArmourClass(18).withCombatIndex(2))
+            plusTwoWeapon,
+            testMonster.withArmourClass(18).withCombatIndex(2))
 
           attackResult2 shouldBe Hit
         }
@@ -140,12 +140,12 @@ class ActionsSpec extends UnitSpecBase {
 
           val plusTwoFinesseWeapon =
             Weapon("test-weapon",
-                   Melee,
-                   Slashing,
-                   isTwoHanded = true,
-                   isFinesse = true,
-                   1,
-                   wpnHitBonus = 2)
+              Melee,
+              Slashing,
+              isTwoHanded = true,
+              isFinesse = true,
+              1,
+              wpnHitBonus = 2)
 
           val fighterCombatant = fighter
             .withProficiencyBonus(4) // + 4
@@ -155,14 +155,14 @@ class ActionsSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val (attackResult, _) = attack(fighterCombatant,
-                                         plusTwoFinesseWeapon,
-                                         testMonster.withArmourClass(19).withCombatIndex(2))
+            plusTwoFinesseWeapon,
+            testMonster.withArmourClass(19).withCombatIndex(2))
 
           attackResult shouldBe Miss
 
           val (attackResult2, _) = attack(fighterCombatant,
-                                          plusTwoFinesseWeapon,
-                                          testMonster.withArmourClass(18).withCombatIndex(2))
+            plusTwoFinesseWeapon,
+            testMonster.withArmourClass(18).withCombatIndex(2))
 
           attackResult2 shouldBe Hit
         }
@@ -212,7 +212,7 @@ class ActionsSpec extends UnitSpecBase {
       forAll { (fighter: Fighter, monster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(2)
-          val ac20Monster                          = monster.withArmourClass(30)
+          val ac20Monster = monster.withArmourClass(30)
 
           val (attackResult, _) =
             attack(fighter.withCombatIndex(1), fighter.weapon, ac20Monster.withCombatIndex(2))
@@ -243,8 +243,8 @@ class ActionsSpec extends UnitSpecBase {
           val levelThreeChampion = champion.withLevel(LevelThree)
 
           val (attackResult, _) = attack(levelThreeChampion.withCombatIndex(1),
-                                         levelThreeChampion.weapon,
-                                         monster.withCombatIndex(2))
+            levelThreeChampion.weapon,
+            monster.withCombatIndex(2))
 
           attackResult shouldBe CriticalHit
         }
@@ -253,12 +253,12 @@ class ActionsSpec extends UnitSpecBase {
 
     "handle available reaction on hit" in {
       val bonusHitWeapon = Weapon("bonus-hit",
-                                  Melee,
-                                  Slashing,
-                                  isTwoHanded = false,
-                                  isFinesse = false,
-                                  4,
-                                  wpnHitBonus = 5)
+        Melee,
+        Slashing,
+        isTwoHanded = false,
+        isFinesse = false,
+        4,
+        wpnHitBonus = 5)
 
       forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
@@ -297,6 +297,32 @@ class ActionsSpec extends UnitSpecBase {
             attack(attackingGoblin, attackingGoblin.creature.weapon, highAcWizard)
 
           updatedWizard.reactionUsed shouldBe false
+        }
+      }
+    }
+
+    "not use available reaction on hit if target has already used their reaction" in {
+      forAll { (wizard: Wizard, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val attackingGoblin = goblin
+            .withStrength(12)
+            .withBaseWeapon(trackedSword)
+            .withCombatIndex(1)
+
+          val reactionUsedWizard = wizard
+            .withMageArmourPrepared(false)
+            .withCastShieldOnReaction(true)
+            .withReactionUsed(true)
+            .withDexterity(10)
+            .withNoArmour()
+            .withCombatIndex(2)
+
+          val (attackResult, _) =
+            attack(attackingGoblin, attackingGoblin.creature.weapon, reactionUsedWizard)
+
+          attackResult shouldBe Hit
         }
       }
     }
@@ -726,7 +752,7 @@ class ActionsSpec extends UnitSpecBase {
 
           val playerCombatant =
             fighter.withStrength(10).withBaseWeapon(tenDamageWeapon).withCombatIndex(1)
-          val modifiedMonster = monster.withResistance(Slashing).withHealth(100)
+          val modifiedMonster = monster.withDamageResistance(Slashing).withHealth(100)
 
           val monsterCombatant = modifiedMonster
             .withCombatIndex(2)
@@ -774,7 +800,7 @@ class ActionsSpec extends UnitSpecBase {
       val school: SchoolOfMagic    = Evocation
       val castingTime: CastingTime = OneActionCast
       val spellLevel: SpellLevel   = 1
-      val useHigherSpellSlot       = true
+      val benefitsFromHigherSpellSlot       = true
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
         SpiritGuardiansCondition(3, 10, 10, Wisdom)

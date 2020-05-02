@@ -15,10 +15,35 @@ import util.TestData._
 class VampireSpec extends UnitSpecBase {
 
   "updateHealth" should {
+
+    "set the Vampire to dead if the damage brings health below negative max health" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val vampire = random[Vampire]
+        .withHealth(50)
+        .withMaxHealth(50)
+
+      val updatedVampire = vampire.updateHealth(110, Fire, Hit).asInstanceOf[Vampire]
+
+      updatedVampire.isAlive shouldBe false
+    }
+
+    "set the Vampire to dead if the damage brings health below negative max health after taking Radiant damage" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
+
+      val vampire = random[Vampire]
+        .withHealth(50)
+        .withMaxHealth(50)
+
+      val updatedVampire = vampire.updateHealth(110, Radiant, Hit).asInstanceOf[Vampire]
+
+      updatedVampire.isAlive shouldBe false
+    }
+
     "set radiantDamageTaken to true if Radiant damage taken" in
       forAll { vampire: Vampire =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val healthyVampire = vampire.withHealth(50).withMaxHealth(100)
 
@@ -31,7 +56,7 @@ class VampireSpec extends UnitSpecBase {
     "set radiantDamageTaken to false if Radiant damage taken but the adjustedDamage was 0" in
       forAll { vampire: Vampire =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val healthyVampire = vampire.withHealth(50).withMaxHealth(100)
 
@@ -110,13 +135,14 @@ class VampireSpec extends UnitSpecBase {
     "make one unarmed strike to grapple and one Bite attack when using MultiAttack" in {
       forAll { (vampire: Vampire, fighter: Fighter) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
 
           val (Combatant(_, updatedVampire: Vampire), List(Combatant(_, updatedFighter: Fighter))) =
-            multiAttack(1, numberOfAttacks = 2)(vampireCombatant).useAbility(List(fighterCombatant), LowestFirst)
+            multiAttack(1, numberOfAttacks = 2)(vampireCombatant).useAbility(List(fighterCombatant),
+                                                                             LowestFirst)
 
           updatedVampire.biteUsed shouldBe true
           updatedVampire.firstAttack shouldBe false
@@ -131,7 +157,7 @@ class VampireSpec extends UnitSpecBase {
         new TestContext {
           val (firstAttack, secondAttack, secondAttackDamage) = (1, 5, 2)
           val rolls                                           = Iterator(firstAttack, secondAttack, secondAttackDamage)
-          override implicit val roll: RollStrategy            = _ => RollResult(rolls.next())
+          implicit override val roll: RollStrategy            = _ => RollResult(rolls.next())
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)

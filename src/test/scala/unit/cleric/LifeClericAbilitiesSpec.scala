@@ -25,8 +25,8 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           val lifeCleric = cleric
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withSpellKnown(trackedHealingSpell(2))
-            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withLevel(LevelThree)
+            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withCombatIndex(1)
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
@@ -48,8 +48,8 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           val lifeCleric = cleric
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withSpellKnown(trackedLevelTwoHealingSpell)
-            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withLevel(LevelThree)
+            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withCombatIndex(1)
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
@@ -74,8 +74,8 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           val lifeCleric = cleric
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withSpellKnown(trackedHealingSpell(2))
-            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .withLevel(LevelThree)
+            .withAbilities(List(discipleOfLife(1), castSingleTargetHealingSpell(2)))
             .asInstanceOf[Cleric]
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)

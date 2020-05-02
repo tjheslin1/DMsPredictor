@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
 
-  val attribute: Attribute
+  val savingThrowAttribute: Attribute
   val halfDamageOnSave: Boolean
 
   val damageType: DamageType
@@ -16,27 +16,44 @@ abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
 
   def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 
+  def additionalEffect[_: RS](
+      spellCaster: SpellCaster,
+      target: Combatant,
+      others: List[Combatant],
+      savingThrowPassed: Boolean
+  ): (SpellCaster, Combatant, List[Combatant]) = (spellCaster, target, others)
+
   def effect[_: RS](
       spellCaster: SpellCaster,
       spellLevel: SpellLevel,
       targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
-    val target            = targets.head
-    val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
+    val (List(target), others) = targets.splitAt(1)
+    val (passed, updatedCreature) =
+      spellSavingThrowPassed(spellCaster, savingThrowAttribute, target.creature)
 
-    logger.debug(s"casting $name - Saving throw ${if (savingThrowPassed) "Passed" else "Failed"}")
+    val updatedTarget = Combatant.creatureLens.set(updatedCreature)(target)
+
+    logger.debug(
+      s"${spellCaster.name} is casting $name  on ${updatedCreature.name} " +
+        s"- Saving throw ${if (passed) "Passed" else "Failed"}"
+    )
 
     val dmg =
-      if (savingThrowPassed == false) damage(spellCaster, spellLevel)
-      else if (savingThrowPassed && halfDamageOnSave)
+      if (passed == false) damage(spellCaster, spellLevel)
+      else if (passed && halfDamageOnSave)
         Math.floor(damage(spellCaster, spellLevel) / 2).toInt
       else 0
 
-    val attackResult = if (savingThrowPassed) Miss else Hit
+    val attackResult = if (passed) Miss else Hit
 
-    val damagedTarget =
-      target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
+    val damagedTarget = Combatant.creatureLens.set {
+      updatedCreature.updateHealth(dmg, damageType, attackResult)
+    }(updatedTarget)
 
-    (spellCaster, targets.replace(damagedTarget))
+    val (updatedSpellCaster, additionalEffectedTarget, updatedOthers) =
+      additionalEffect(spellCaster, damagedTarget, others, passed)
+
+    (updatedSpellCaster, updatedOthers.replace(additionalEffectedTarget))
   }
 }

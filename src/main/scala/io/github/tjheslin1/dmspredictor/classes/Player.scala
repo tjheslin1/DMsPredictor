@@ -30,6 +30,25 @@ object Player {
       constitutionScore
     )))
 
+  val playerLevelLens: Lens[Player, Level] = Lens[Player, Level](_.level) { lvl =>
+    {
+      case c: Champion => Champion._level.set(lvl)(c)
+      case c: Fighter  => Fighter._level.set(lvl)(c)
+
+      case c: Barbarian => Barbarian._level.set(lvl)(c)
+      case c: Berserker => Berserker._level.set(lvl)(c)
+
+      case c: Cleric => Cleric._level.set(lvl)(c)
+
+      case c: Rogue => Rogue._level.set(lvl)(c)
+
+      case c: Wizard => Wizard._level.set(lvl)(c)
+
+      case c: Ranger => Ranger._level.set(lvl)(c)
+      case c: Hunter => Hunter._level.set(lvl)(c)
+    }
+  }
+
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>
       {
@@ -51,31 +70,6 @@ object Player {
         case _ =>
           throw new NotImplementedError(
             "Missing playerBonusActionUsedLens lens for your new implementation of Player!"
-          )
-      }
-  }
-
-  val playerReactionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.reactionUsed) {
-    reactionUsed =>
-      {
-        case c: Champion => Champion._reactionUsed.set(reactionUsed)(c)
-        case c: Fighter  => Fighter._reactionUsed.set(reactionUsed)(c)
-
-        case c: Barbarian => Barbarian._reactionUsed.set(reactionUsed)(c)
-        case c: Berserker => Berserker._reactionUsed.set(reactionUsed)(c)
-
-        case c: Cleric => Cleric._reactionUsed.set(reactionUsed)(c)
-
-        case c: Rogue => Rogue._reactionUsed.set(reactionUsed)(c)
-
-        case c: Wizard => Wizard._reactionUsed.set(reactionUsed)(c)
-
-        case c: Ranger => Ranger._reactionUsed.set(reactionUsed)(c)
-        case c: Hunter => Hunter._reactionUsed.set(reactionUsed)(c)
-
-        case _ =>
-          throw new NotImplementedError(
-            "Missing playerReactionUsedLens lens for your new implementation of Player!"
           )
       }
   }

@@ -7,11 +7,11 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -33,16 +33,20 @@ import monocle.macros.{GenLens, Lenses}
     mageArmourPrepared: Boolean = true,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    abilities: List[CombatantAbility] = Wizard.standardWizardAbilities,
-    conditions: List[Condition] = List.empty,
     proficiencyBonus: ProficiencyBonus = 0,
-    resistances: List[DamageType] = List.empty,
-    immunities: List[DamageType] = List.empty,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     bonusActionUsed: Boolean = false,
     reactionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = Wizard.standardWizardAbilities,
+    conditions: List[Condition] = List.empty[Condition],
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     concentratingSpell: Option[Spell] = None,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseWizard {
 
@@ -58,7 +62,7 @@ import monocle.macros.{GenLens, Lenses}
       attackResult: AttackResult
   ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
-    val updatedWizard = copy(health = Math.max(0, health - damageTaken))
+    val updatedWizard = applyDamage(this, damageTaken).asInstanceOf[Wizard]
 
     if (updatedWizard.isConscious == false && isConcentrating)
       handleConcentration(updatedWizard, updatedWizard.concentratingSpell.get, Integer.MAX_VALUE)
@@ -93,14 +97,26 @@ object Wizard {
   val intelligenceLens: Lens[Wizard, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val charismaLens: Lens[Wizard, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
-  // format: off
   def wizardSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne => SpellSlots(2, 0, 0)
-    case LevelTwo => SpellSlots(3, 0, 0)
-    case LevelThree => SpellSlots(4, 2, 0)
-    case LevelFour => SpellSlots(4, 3, 0)
-    case LevelFive => SpellSlots(4, 3, 2)
-    case LevelTwenty => SpellSlots(4, 3, 3)
+    case LevelOne       => SpellSlots(2, 0, 0)
+    case LevelTwo       => SpellSlots(3, 0, 0)
+    case LevelThree     => SpellSlots(4, 2, 0)
+    case LevelFour      => SpellSlots(4, 3, 0)
+    case LevelFive      => SpellSlots(4, 3, 2)
+    case LevelSix       => SpellSlots(4, 3, 3)
+    case LevelSeven     => SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0)
+    case LevelEight     => SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0)
+    case LevelNine      => SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0)
+    case LevelTen       => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
+    case LevelEleven    => SpellSlots(4, 3, 3, 3, 2, 1, 0, 0, 0)
+    case LevelTwelve    => SpellSlots(4, 3, 3, 3, 2, 1, 0, 0, 0)
+    case LevelThirteen  => SpellSlots(4, 3, 3, 3, 2, 1, 1, 0, 0)
+    case LevelFourteen  => SpellSlots(4, 3, 3, 3, 2, 1, 1, 0, 0)
+    case LevelFifteen   => SpellSlots(4, 3, 3, 3, 2, 1, 1, 1, 0)
+    case LevelSixteen   => SpellSlots(4, 3, 3, 3, 2, 1, 1, 1, 0)
+    case LevelSeventeen => SpellSlots(4, 3, 3, 3, 2, 1, 1, 1, 1)
+    case LevelEighteen  => SpellSlots(4, 3, 3, 3, 3, 1, 1, 1, 1)
+    case LevelNineteen  => SpellSlots(4, 3, 3, 3, 3, 2, 1, 1, 1)
+    case LevelTwenty    => SpellSlots(4, 3, 3, 3, 3, 2, 2, 1, 1)
   }
-  // format: on
 }

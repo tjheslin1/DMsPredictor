@@ -4,12 +4,12 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.monsters.Monster
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
+import io.github.tjheslin1.dmspredictor.monsters.{Legendary, Monster}
 import io.github.tjheslin1.dmspredictor.monsters.MonsterAbilities.multiAttack
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.VampireAbilities._
@@ -26,8 +26,11 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon = UnarmedStrike,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    resistances: List[DamageType] = List(Necrotic, Bludgeoning, Piercing, Slashing),
-    immunities: List[DamageType] = List.empty[DamageType],
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List(Necrotic, Bludgeoning, Piercing, Slashing),
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     conditions: List[Condition] = List.empty,
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
@@ -35,12 +38,15 @@ import monocle.macros.{GenLens, Lenses}
     radiantDamageTaken: Boolean = false,
     firstAttack: Boolean = true,
     biteUsed: Boolean = false,
+    isAlive: Boolean = true,
+    legendaryResistances: Int = 3,
     name: String = NameGenerator.randomName
 ) extends Monster
+    with Legendary
     with LazyLogging {
 
-  val challengeRating: Double = 13.0
-  val skills                  = Skills(perception = 7, stealth = 9)
+  val challengeRating = 13.0
+  val skills          = Skills(perception = 7, stealth = 9)
 
   val savingThrowScores: Map[Attribute, Int] = Map(
     Strength     -> mod(stats.strength),
@@ -60,12 +66,11 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     damageType match {
       case Radiant =>
-        val updatedVampire = copy(
-          health = Math.max(0, health - adjustedDamage(dmg, damageType, this))
-        )
-        if (dmg > 0) updatedVampire.copy(radiantDamageTaken = true)
-        else updatedVampire.copy(radiantDamageTaken = false)
-      case _ => copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+        val updatedVampire = applyDamage(this, dmg).asInstanceOf[Vampire]
+
+        if (dmg > 0) _radiantDamageTaken.set(true)(updatedVampire)
+        else _radiantDamageTaken.set(false)(updatedVampire)
+      case _ => applyDamage(this, adjustedDamage(dmg, damageType, this))
     }
 
   def restoreHealth(healing: Int): Creature = copy(health = Math.min(maxHealth, health + healing))

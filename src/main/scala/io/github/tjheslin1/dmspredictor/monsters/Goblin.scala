@@ -5,10 +5,10 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -23,15 +23,20 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon = Shortsword,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    resistances: List[DamageType] = List(),
-    immunities: List[DamageType] = List(),
-    conditions: List[Condition] = List.empty,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
+    conditions: List[Condition] = List.empty[Condition],
+    reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster {
 
-  val challengeRating: Double                = 0.25
+  val challengeRating                        = 0.25
   val skills                                 = Skills(perception = 0, stealth = 6)
   val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
@@ -39,12 +44,10 @@ import monocle.macros.{GenLens, Lenses}
 
   val abilities: List[CombatantAbility] = List.empty
 
-  val reactionUsed: Boolean = true
-
   def weapon[_: RS]: Weapon = baseWeapon
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Goblin =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
+    applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 

@@ -8,11 +8,11 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger._
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRangerAbilities.twoWeaponFighting
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
@@ -37,16 +37,20 @@ import monocle.macros.{GenLens, Lenses}
     offHand: Option[Equipment] = None,
     fightingStyles: List[RangerFightingStyle] = List.empty[RangerFightingStyle],
     proficiencyBonus: ProficiencyBonus = 2,
-    resistances: List[DamageType] = List.empty,
-    immunities: List[DamageType] = List.empty,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     bonusActionUsed: Boolean = false,
     reactionUsed: Boolean = false,
     colossusSlayerUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardHunterAbilities,
-    conditions: List[Condition] = List.empty,
+    conditions: List[Condition] = List.empty[Condition],
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     concentratingSpell: Option[spellcasting.Spell] = None,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseRanger {
 
@@ -62,7 +66,7 @@ import monocle.macros.{GenLens, Lenses}
       attackResult: AttackResult
   ): Creature = {
     val damageTaken   = adjustedDamage(dmg, damageType, this)
-    val updatedHunter = copy(health = Math.max(0, health - damageTaken))
+    val updatedHunter = applyDamage(this, damageTaken).asInstanceOf[Hunter]
 
     if (updatedHunter.isConscious == false && isConcentrating)
       handleConcentration(updatedHunter, updatedHunter.concentratingSpell.get, Integer.MAX_VALUE)

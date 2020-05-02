@@ -8,14 +8,12 @@ import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighterAbilities._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter.standardFighterAbilities
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
-import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, ChainShirt, NoArmour}
-import io.github.tjheslin1.dmspredictor.equipment.weapons.Greatsword
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.Modifier.mod
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -34,14 +32,18 @@ import monocle.macros.{GenLens, Lenses}
     fightingStyles: List[FighterFightingStyle] = List.empty,
     abilityUsages: BaseFighterAbilities = allUnused,
     proficiencyBonus: ProficiencyBonus = 0,
-    resistances: List[DamageType] = List.empty,
-    immunities: List[DamageType] = List.empty,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     bonusActionUsed: Boolean = false,
     reactionUsed: Boolean = false,
     abilities: List[CombatantAbility] = standardFighterAbilities,
-    conditions: List[Condition] = List.empty,
+    conditions: List[Condition] = List.empty[Condition],
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends BaseFighter {
 
@@ -51,8 +53,8 @@ import monocle.macros.{GenLens, Lenses}
 
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
-  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Fighter =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+  def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
+    applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 
@@ -63,21 +65,6 @@ import monocle.macros.{GenLens, Lenses}
 object Fighter {
 
   import BaseFighterAbilities._
-
-  def levelOneFighter[_: RS](weapon: Weapon = Greatsword, armour: Armour = ChainShirt): Fighter = {
-    val health    = calculateHealth(LevelOne, 14)
-    val profBonus = ProficiencyBonus.fromLevel(LevelOne)
-
-    Fighter(
-      LevelOne,
-      health,
-      health,
-      BaseStats(15, 13, 14, 12, 8, 10),
-      weapon,
-      Skills(perception = mod(12) + profBonus, stealth = mod(13)),
-      armour
-    )
-  }
 
   val standardFighterAbilities: List[CombatantAbility] = List(
     actionSurge(1),

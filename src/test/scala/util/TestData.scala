@@ -20,12 +20,12 @@ import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shie
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Monster, Werewolf, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Legendary, Monster, Werewolf, Zombie}
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 
@@ -42,24 +42,30 @@ object TestData {
   implicit class TestMonsterOps(val testMonster: TestMonster) extends AnyVal {
     import TestMonster._
 
-    def withName(creatureName: String)           = _name.set(creatureName)(testMonster)
-    def withHealth(hp: Int)                      = _health.set(hp)(testMonster)
-    def withMaxHealth(hp: Int)                   = _maxHealth.set(hp)(testMonster)
-    def withStrength(strScore: Stat)             = strengthLens.set(strScore)(testMonster)
-    def withDexterity(dexScore: Stat)            = dexterityLens.set(dexScore)(testMonster)
-    def withConstitution(conScore: Stat)         = constitutionLens.set(conScore)(testMonster)
-    def withWisdom(wisScore: Stat)               = wisdomLens.set(wisScore)(testMonster)
-    def withIntelligence(intScore: Stat)         = intelligenceLens.set(intScore)(testMonster)
-    def withCharisma(chaScore: Stat)             = charismaLens.set(chaScore)(testMonster)
-    def withBaseWeapon(weapon: Weapon)           = _baseWeapon.set(weapon)(testMonster)
-    def withArmourClass(ac: Int)                 = _armourClass.set(ac)(testMonster)
-    def withNoArmour()                           = _armour.set(NoArmour)(testMonster)
-    def withNoOffHand()                          = _offHand.set(none[Equipment])(testMonster)
-    def withResistance(creatureRes: DamageType*) = _resistances.set(creatureRes.toList)(testMonster)
-    def withImmunity(creatureImm: DamageType*)   = _immunities.set(creatureImm.toList)(testMonster)
-    def withNoResistances()                      = _resistances.set(List.empty)(testMonster)
-    def withNoImmunities()                       = _immunities.set(List.empty)(testMonster)
-    def withNoResistancesOrImmunities()          = testMonster.withNoResistances().withNoImmunities()
+    def withName(creatureName: String)   = _name.set(creatureName)(testMonster)
+    def withHealth(hp: Int)              = _health.set(hp)(testMonster)
+    def withMaxHealth(hp: Int)           = _maxHealth.set(hp)(testMonster)
+    def withStrength(strScore: Stat)     = strengthLens.set(strScore)(testMonster)
+    def withDexterity(dexScore: Stat)    = dexterityLens.set(dexScore)(testMonster)
+    def withConstitution(conScore: Stat) = constitutionLens.set(conScore)(testMonster)
+    def withWisdom(wisScore: Stat)       = wisdomLens.set(wisScore)(testMonster)
+    def withIntelligence(intScore: Stat) = intelligenceLens.set(intScore)(testMonster)
+    def withCharisma(chaScore: Stat)     = charismaLens.set(chaScore)(testMonster)
+    def withBaseWeapon(weapon: Weapon)   = _baseWeapon.set(weapon)(testMonster)
+    def withArmourClass(ac: Int)         = _armourClass.set(ac)(testMonster)
+    def withNoArmour()                   = _armour.set(NoArmour)(testMonster)
+    def withNoOffHand()                  = _offHand.set(none[Equipment])(testMonster)
+    def withDamageResistance(creatureRes: DamageType*) =
+      _damageResistances.set(creatureRes.toList)(testMonster)
+    def withDamageImmunity(creatureImm: DamageType*) =
+      _damageImmunities.set(creatureImm.toList)(testMonster)
+    def withConditionResistance(creatureRes: ConditionType*) =
+      _conditionResistances.set(creatureRes.toList)(testMonster)
+    def withConditionImmunity(creatureImm: ConditionType*) =
+      _conditionImmunities.set(creatureImm.toList)(testMonster)
+    def withNoResistances()             = _damageResistances.set(List.empty)(testMonster)
+    def withNoImmunities()              = _damageImmunities.set(List.empty)(testMonster)
+    def withNoResistancesOrImmunities() = testMonster.withNoResistances().withNoImmunities()
 
     def withAbilities(ablts: List[CombatantAbility]) = _abilities.set(ablts)(testMonster)
 
@@ -80,6 +86,15 @@ object TestData {
         Intelligence -> intelligence,
         Charisma     -> charisma
       )
+
+      _savingThrowScores.set(savingThrowScores)(testMonster)
+    }
+
+    def withStrengthSavingThrowScore(strScore: Int) = {
+      val savingThrowScores = testMonster.savingThrowScores.map {
+        case (Strength, _)      => Strength  -> strScore
+        case (attribute, score) => attribute -> score
+      }
 
       _savingThrowScores.set(savingThrowScores)(testMonster)
     }
@@ -113,12 +128,15 @@ object TestData {
     def withArmourClass(ac: Int)         = _armourClass.set(ac)(testSpellCastingMonster)
     def withNoArmour()                   = _armour.set(NoArmour)(testSpellCastingMonster)
     def withNoOffHand()                  = _offHand.set(none[Equipment])(testSpellCastingMonster)
+
     def withResistance(creatureRes: DamageType*) =
-      _resistances.set(creatureRes.toList)(testSpellCastingMonster)
+      _damageResistances.set(creatureRes.toList)(testSpellCastingMonster)
+
     def withImmunity(creatureImm: DamageType*) =
-      _immunities.set(creatureImm.toList)(testSpellCastingMonster)
-    def withNoResistances() = _resistances.set(List.empty)(testSpellCastingMonster)
-    def withNoImmunities()  = _immunities.set(List.empty)(testSpellCastingMonster)
+      _damageImmunities.set(creatureImm.toList)(testSpellCastingMonster)
+
+    def withNoResistances() = _damageResistances.set(List.empty)(testSpellCastingMonster)
+    def withNoImmunities()  = _damageImmunities.set(List.empty)(testSpellCastingMonster)
     def withNoResistancesOrImmunities() =
       testSpellCastingMonster.withNoResistances().withNoImmunities()
 
@@ -135,8 +153,9 @@ object TestData {
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(testSpellCastingMonster)
 
-    def withSpellsKnown(spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell]) =
-      _spellsKnown.set(spellsKnown)(testSpellCastingMonster)
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        testSpellCastingMonster)
 
     def withConcentratingOn(concentrationSpell: Option[Spell]) =
       _concentratingSpell.set(concentrationSpell)(testSpellCastingMonster)
@@ -146,6 +165,16 @@ object TestData {
     import Monster._
 
     def withArmourClass(ac: Int) = monsterArmourClassLens.set(ac)(monster)
+  }
+
+  implicit class LegendaryOps(val legendaryCreature: Legendary) extends AnyVal {
+    import Legendary._
+
+    def withNoLegendaryResistancesLeft() =
+      legendaryResistancesLens.set(0)(legendaryCreature)
+
+    def withLegendaryResistanceCount(count: Int) =
+      legendaryResistancesLens.set(count)(legendaryCreature)
   }
 
   implicit class CreatureOps(val creature: Creature) extends AnyVal {
@@ -170,24 +199,35 @@ object TestData {
     def withNoArmour()  = creatureArmourLens.set(NoArmour)(creature)
     def withNoOffHand() = creatureOffHandLens.set(none[Equipment])(creature)
 
-    def withResistance(creatureRes: DamageType*) =
-      creatureResistancesLens.set(creatureRes.toList)(creature)
-    def withImmunity(creatureImm: DamageType*) =
-      creatureImmunitiesLens.set(creatureImm.toList)(creature)
-    def withNoResistances()             = creatureResistancesLens.set(List.empty)(creature)
-    def withNoImmunities()              = creatureImmunitiesLens.set(List.empty)(creature)
-    def withNoResistancesOrImmunities() = creature.withNoResistances().withNoImmunities()
+    def withDamageResistance(creatureRes: DamageType*) =
+      creatureDamageResistancesLens.set(creatureRes.toList)(creature)
+    def withDamageImmunity(creatureImm: DamageType*) =
+      creatureDamageImmunitiesLens.set(creatureImm.toList)(creature)
+
+    def withConditionResistance(creatureRes: ConditionType*) =
+      creatureConditionResistancesLens.set(creatureRes.toList)(creature)
+    def withConditionImmunity(creatureImm: ConditionType*) =
+      creatureConditionImmunitiesLens.set(creatureImm.toList)(creature)
+
+    def withNoDamageResistances() = creatureDamageResistancesLens.set(List.empty)(creature)
+    def withNoDamageImmunities()  = creatureDamageImmunitiesLens.set(List.empty)(creature)
+    def withNoDamageResistancesOrImmunities() =
+      creature.withNoDamageResistances().withNoDamageImmunities()
 
     def withCondition(condition: Condition) = creatureConditionsLens.set(List(condition))(creature)
     def withConditions(conditions: Condition*) =
       creatureConditionsLens.set(conditions.toList)(creature)
+    def withNoConditions() = creatureConditionsLens.set(List.empty[Condition])(creature)
+
+    def withReactionUsed(used: Boolean) = creatureReactionUsedLens.set(used)(creature)
 
     def withAttackStatus(attackStatus: AttackStatus) =
       creatureAttackStatusLens.set(attackStatus)(creature)
     def withDefenseStatus(defenseStatus: AttackStatus) =
       creatureDefenseStatusLens.set(defenseStatus)(creature)
 
-    def withLevel(level: Level)     = creatureLevelOptional.set(level)(creature)
+    def withIsAlive(isAlive: Boolean) = creatureIsAliveLens.set(isAlive)(creature)
+
     def withCombatIndex(index: Int) = Combatant(index, creature)
 
     def withSkills(perception: Int, stealth: Int) =
@@ -196,6 +236,8 @@ object TestData {
 
   implicit class PlayerOps(val player: Player) extends AnyVal {
     import Player._
+
+    def withLevel(level: Level) = playerLevelLens.set(level)(player)
 
     def withProficiencyBonus(proficiencyBonus: ProficiencyBonus) =
       playerProficiencyBonusLens.set(proficiencyBonus)(player)
@@ -210,7 +252,6 @@ object TestData {
     def withAllAbilitiesUsed()   = _abilityUsages.set(BaseFighterAbilities(true, true))(fighter)
 
     def withBonusActionUsed() = _bonusActionUsed.set(true)(fighter)
-    def withReactionUsed()    = _reactionUsed.set(true)(fighter)
   }
 
   implicit class ChampionOps(val champion: Champion) extends AnyVal {
@@ -329,6 +370,15 @@ object TestData {
 
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(lich)
+
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        lich)
+
+    def withSpellSlots(spellSlots: SpellSlots) =
+      _spellSlots.set(spellSlots)(lich)
+
+    def withNoSpellSlots() = _spellSlots.set(SpellSlots(0, 0, 0, 0, 0, 0, 0, 0, 0))(lich)
   }
 }
 
@@ -538,20 +588,25 @@ trait TestData extends RandomDataGenerator {
 
         val armourClass: Int = armour.armourClass(baseStats.dexterity)
 
-        val resistances: List[DamageType]     = List.empty
-        val immunities: List[DamageType]      = List.empty
-        val bonusActionUsed: Boolean          = false
-        val reactionUsed: Boolean             = false
-        val name: String                      = n
-        val abilities: List[CombatantAbility] = standardCoreAbilities
-        val conditions: List[Condition]       = List.empty
-        val attackStatus: AttackStatus        = Regular
-        val defenseStatus: AttackStatus       = Regular
+        val damageVulnerabilities: List[DamageType]   = List.empty[DamageType]
+        val damageResistances: List[DamageType]       = List.empty[DamageType]
+        val damageImmunities: List[DamageType]        = List.empty[DamageType]
+        val conditionResistances: List[ConditionType] = List.empty[ConditionType]
+        val conditionImmunities: List[ConditionType]  = List.empty[ConditionType]
+        val bonusActionUsed: Boolean                  = false
+        val reactionUsed: Boolean                     = false
+        val name: String                              = n
+        val abilities: List[CombatantAbility]         = standardCoreAbilities
+        val conditions: List[Condition]               = List.empty
+        val attackStatus: AttackStatus                = Regular
+        val defenseStatus: AttackStatus               = Regular
 
         val skills: Skills = creatureSkills
 
         val reactionOnHit: Option[OnHitReaction]       = None
         val reactionOnDamage: Option[OnDamageReaction] = None
+
+        val isAlive: Boolean = true
 
         def scoresCritical(roll: Int): Boolean = roll == 20
 
@@ -589,19 +644,24 @@ trait TestData extends RandomDataGenerator {
 
         def weapon[_: RS]: Weapon = creature.weapon
 
-        val armour: Armour                     = creature.armour
-        val offHand: Option[Equipment]         = creature.offHand
-        val armourClass: Int                   = creature.armourClass
-        val proficiencyBonus: ProficiencyBonus = profBonus
-        val resistances: List[DamageType]      = creature.resistances
-        val immunities: List[DamageType]       = creature.immunities
-        val name: String                       = creature.name
-        val abilities: List[CombatantAbility]  = creature.abilities
-        val conditions: List[Condition]        = List.empty
-        val attackStatus: AttackStatus         = creature.attackStatus
-        val defenseStatus: AttackStatus        = creature.defenseStatus
+        val armour: Armour                            = creature.armour
+        val offHand: Option[Equipment]                = creature.offHand
+        val armourClass: Int                          = creature.armourClass
+        val proficiencyBonus: ProficiencyBonus        = profBonus
+        val damageVulnerabilities: List[DamageType]   = creature.damageResistances
+        val damageResistances: List[DamageType]       = creature.damageResistances
+        val damageImmunities: List[DamageType]        = creature.damageImmunities
+        val conditionResistances: List[ConditionType] = creature.conditionResistances
+        val conditionImmunities: List[ConditionType]  = creature.conditionImmunities
+        val name: String                              = creature.name
+        val abilities: List[CombatantAbility]         = creature.abilities
+        val conditions: List[Condition]               = List.empty
+        val attackStatus: AttackStatus                = creature.attackStatus
+        val defenseStatus: AttackStatus               = creature.defenseStatus
 
         val skills: Skills = creature.skills
+
+        val isAlive: Boolean = creature.isAlive
 
         val reactionOnHit: Option[OnHitReaction]       = creature.reactionOnHit
         val reactionOnDamage: Option[OnDamageReaction] = creature.reactionOnDamage
@@ -690,9 +750,12 @@ trait TestData extends RandomDataGenerator {
         creature.baseWeapon,
         creature.armour,
         creature.offHand,
-        creature.resistances,
-        creature.immunities,
-        List.empty, // TODO add core abilities?
+        creature.damageVulnerabilities,
+        creature.damageResistances,
+        creature.damageImmunities,
+        creature.conditionResistances,
+        creature.conditionImmunities,
+        List.empty[CombatantAbility], // TODO add core abilities?
         creature.conditions,
         reactionUsed = false,
         creature.attackStatus,
@@ -702,6 +765,7 @@ trait TestData extends RandomDataGenerator {
         arbSkills.perception,
         arbSkills.stealth,
         TestMonster.defaultScores,
+        creature.isAlive,
         creature.name
       )
   }
@@ -721,9 +785,12 @@ trait TestData extends RandomDataGenerator {
         creature.baseWeapon,
         creature.armour,
         creature.offHand,
-        creature.resistances,
-        creature.immunities,
-        List.empty, // TODO add core abilities?
+        creature.damageVulnerabilities,
+        creature.damageResistances,
+        creature.damageImmunities,
+        creature.conditionResistances,
+        creature.conditionImmunities,
+        List.empty[CombatantAbility], // TODO add core abilities?
         creature.conditions,
         reactionUsed = false,
         creature.attackStatus,
@@ -736,6 +803,9 @@ trait TestData extends RandomDataGenerator {
         Map.empty[(SpellLevel, spellcasting.SpellEffect), Spell],
         SpellSlots(0, 0, 0),
         none[Spell],
+        0,
+        LevelOne,
+        creature.isAlive,
         creature.name
       )
   }
@@ -767,14 +837,18 @@ trait TestData extends RandomDataGenerator {
         fightingStyles.toList,
         BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Fighter.standardFighterAbilities,
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
+        player.isAlive,
         player.name
       )
   }
@@ -799,14 +873,18 @@ trait TestData extends RandomDataGenerator {
         fightingStyles.toList,
         BaseFighterAbilities.allUnused,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Champion.standardChampionAbilities,
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
+        player.isAlive,
         player.name
       )
   }
@@ -827,17 +905,21 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
-        inRage = false,
-        rageTurnsLeft = 10,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
+        player.attackStatus,
+        player.defenseStatus,
+        false,
+        10,
+        player.isAlive,
+        player.name
       )
   }
 
@@ -857,17 +939,22 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         player.offHand,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Barbarian.standardBarbarianAbilities,
         player.conditions,
-        inRage = false,
-        rageTurnsLeft = 10,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
+        player.attackStatus,
+        player.defenseStatus,
+        false,
+        false,
+        10,
+        player.isAlive,
+        player.name
       )
   }
 
@@ -888,17 +975,21 @@ trait TestData extends RandomDataGenerator {
         channelDivinityUsed = false,
         player.armour,
         player.offHand,
-        Cleric.standardClericAbilities,
-        player.conditions,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         bonusActionUsed = player.bonusActionUsed,
         reactionUsed = player.reactionUsed,
+        Cleric.standardClericAbilities,
+        player.conditions,
         attackStatus = player.attackStatus,
         defenseStatus = player.defenseStatus,
         concentratingSpell = None,
-        name = player.name
+        player.isAlive,
+        player.name
       )
   }
 
@@ -917,15 +1008,20 @@ trait TestData extends RandomDataGenerator {
         player.armour,
         none[Equipment],
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Rogue.standardRogueAbilities,
-        conditions = player.conditions,
-        attackStatus = player.attackStatus,
-        defenseStatus = player.defenseStatus,
-        name = player.name
+        List.empty[Combatant],
+        player.conditions,
+        player.attackStatus,
+        player.defenseStatus,
+        player.isAlive,
+        player.name
       )
   }
 
@@ -947,17 +1043,21 @@ trait TestData extends RandomDataGenerator {
         mageArmourPrepared = true,
         NoArmour,
         none[Equipment],
-        Wizard.standardWizardAbilities,
-        player.conditions,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
+        Wizard.standardWizardAbilities,
+        player.conditions,
         player.attackStatus,
         player.defenseStatus,
         concentratingSpell = none[Spell],
-        name = player.name
+        player.isAlive,
+        player.name
       )
   }
 
@@ -984,8 +1084,11 @@ trait TestData extends RandomDataGenerator {
         player.offHand,
         fightingStyles.toList,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         Ranger.standardRangerAbilities,
@@ -993,6 +1096,7 @@ trait TestData extends RandomDataGenerator {
         player.attackStatus,
         player.defenseStatus,
         concentratingSpell = none[Spell],
+        player.isAlive,
         player.name
       )
   }
@@ -1016,8 +1120,11 @@ trait TestData extends RandomDataGenerator {
         player.offHand,
         fightingStyles.toList,
         player.proficiencyBonus,
-        player.resistances,
-        player.immunities,
+        player.damageVulnerabilities,
+        player.damageResistances,
+        player.damageImmunities,
+        player.conditionResistances,
+        player.conditionImmunities,
         player.bonusActionUsed,
         player.reactionUsed,
         colossusSlayerUsed = false,
@@ -1025,7 +1132,8 @@ trait TestData extends RandomDataGenerator {
         player.conditions,
         player.attackStatus,
         player.defenseStatus,
-        concentratingSpell = none[Spell],
+        none[Spell],
+        player.isAlive,
         player.name
       )
   }

@@ -1,0 +1,27 @@
+package unit.barbarian
+
+import base.UnitSpecBase
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
+import io.github.tjheslin1.dmspredictor.model._
+import util.TestData._
+
+class BarbarianSpec extends UnitSpecBase {
+
+  "updateHealth" should {
+    "set the Barbarian to dead if the damage brings health below negative max health" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val barbarian = random[Barbarian]
+        .withHealth(50)
+        .withMaxHealth(50)
+
+      val updatedBarbarian = barbarian.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Barbarian]
+
+      updatedBarbarian.isAlive shouldBe false
+    }
+  }
+
+  abstract private class TestContext {
+    implicit val roll: RollStrategy
+  }
+}

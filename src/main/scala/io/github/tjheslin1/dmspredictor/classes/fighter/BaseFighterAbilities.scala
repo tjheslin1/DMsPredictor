@@ -144,24 +144,28 @@ object BaseFighterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Action Surge")
 
-        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.Any)
+        nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.MainAction)
           .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
             val (updatedAttacker, updatedOthers) =
               useAdditionalAbility(nextAbility, combatant, others, focus)
 
-            nextAbilityToUseInConjunction(updatedAttacker, updatedOthers, order, AbilityAction.Any)
-              .fold {
-                nextToFocus(updatedAttacker, updatedOthers, focus).fold(
-                  (updatedAttacker, updatedOthers)
-                ) { nextTarget =>
-                  val (updatedAttacker2, updatedTarget2, updatedOthers2) =
-                    attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+            nextAbilityToUseInConjunction(
+              updatedAttacker,
+              updatedOthers,
+              order,
+              AbilityAction.MainAction
+            ).fold {
+              nextToFocus(updatedAttacker, updatedOthers, focus).fold(
+                (updatedAttacker, updatedOthers)
+              ) { nextTarget =>
+                val (updatedAttacker2, updatedTarget2, updatedOthers2) =
+                  attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
 
-                  (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
-                }
-              } { nextAbility2 =>
-                useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
+                (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
               }
+            } { nextAbility2 =>
+              useAdditionalAbility(nextAbility2, updatedAttacker, updatedOthers, focus)
+            }
           }
       }
 

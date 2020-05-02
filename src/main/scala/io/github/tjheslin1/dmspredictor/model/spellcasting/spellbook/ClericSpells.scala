@@ -13,21 +13,24 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 object ClericSpells extends LazyLogging {
 
   case object SacredFlame extends SingleTargetSavingThrowSpell {
-    val attribute: Attribute      = Dexterity
-    val halfDamageOnSave: Boolean = false
+    val savingThrowAttribute: Attribute = Dexterity
+    val halfDamageOnSave: Boolean       = false
 
-    val damageType: DamageType   = Radiant
-    val name                     = "Sacred Flame"
-    val school: SchoolOfMagic    = Evocation
-    val castingTime: CastingTime = OneActionCast
-    val spellLevel: SpellLevel   = 0
-    val requiresConcentration    = false
-    val useHigherSpellSlot       = false
+    val damageType: DamageType      = Radiant
+    val name                        = "Sacred Flame"
+    val school: SchoolOfMagic       = Evocation
+    val castingTime: CastingTime    = OneActionCast
+    val spellLevel: SpellLevel      = 0
+    val requiresConcentration       = false
+    val benefitsFromHigherSpellSlot = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = spellCaster match {
-      case p: Player if p.level == LevelFive => 2 * D8
-      case _                                 => 1 * D8
-    }
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      spellCaster.spellCastingLevel.value match {
+        case lvl if lvl >= 17 => 4 * D8
+        case lvl if lvl >= 11 => 3 * D8
+        case lvl if lvl >= 5  => 2 * D8
+        case _                => 1 * D8
+      }
   }
 
   case object GuidingBolt extends SingleTargetAttackSpell {
@@ -38,9 +41,14 @@ object ClericSpells extends LazyLogging {
     val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
-    val useHigherSpellSlot                 = true
+    val benefitsFromHigherSpellSlot        = true
+    val halfDamageOnMiss                   = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
+
+    // TODO Apply advantage effect
+    override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+      target
   }
 
   case object CureWounds extends SingleTargetHealingSpell {
@@ -50,7 +58,7 @@ object ClericSpells extends LazyLogging {
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
     val spellLevel: SpellLevel             = 1
     val requiresConcentration: Boolean     = false
-    val useHigherSpellSlot                 = true
+    val benefitsFromHigherSpellSlot        = true
 
     def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
@@ -62,10 +70,10 @@ object ClericSpells extends LazyLogging {
     val singleTarget: Boolean = true
     val attribute: Attribute  = Wisdom
 
-    val school: SchoolOfMagic    = Enchantment
-    val castingTime: CastingTime = OneActionCast
-    val spellLevel: SpellLevel   = 2
-    val useHigherSpellSlot       = false
+    val school: SchoolOfMagic       = Enchantment
+    val castingTime: CastingTime    = OneActionCast
+    val spellLevel: SpellLevel      = 2
+    val benefitsFromHigherSpellSlot = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
@@ -77,10 +85,10 @@ object ClericSpells extends LazyLogging {
     val singleTarget: Boolean = false
     val attribute: Attribute  = Wisdom
 
-    val school: SchoolOfMagic    = Conjuration
-    val castingTime: CastingTime = OneActionCast
-    val spellLevel: SpellLevel   = 3
-    val useHigherSpellSlot       = false
+    val school: SchoolOfMagic       = Conjuration
+    val castingTime: CastingTime    = OneActionCast
+    val spellLevel: SpellLevel      = 3
+    val benefitsFromHigherSpellSlot = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =
       SpiritGuardiansCondition(spellLevel, spellSaveDc(spellCaster), 100, Wisdom)
@@ -103,10 +111,12 @@ object ClericSpells extends LazyLogging {
 
       logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
 
-      if (savingThrowPassed(saveDc, Wisdom, creature))
-        creature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)
+      val (passed, updatedCreature) = savingThrowPassed(saveDc, Wisdom, creature)
+
+      if (passed)
+        updatedCreature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)
       else
-        creature.updateHealth(damage, Radiant, Hit)
+        updatedCreature.updateHealth(damage, Radiant, Hit)
     }
   }
 }

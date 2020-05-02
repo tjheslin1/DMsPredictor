@@ -4,11 +4,11 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.monsters.Zombie._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -24,22 +24,25 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon = Slam,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    conditions: List[Condition] = List.empty,
-    resistances: List[DamageType] = List.empty,
-    immunities: List[DamageType] = List(Poison),
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List(Poison),
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List(PoisonedCondition),
+    conditions: List[Condition] = List.empty[Condition],
+    reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster
     with LazyLogging {
 
-  val challengeRating: Double                = 0.25
+  val challengeRating                        = 0.25
   val skills                                 = Skills(perception = 0, stealth = 0)
   val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
   val creatureType: CreatureType = Undead
-
-  val reactionUsed: Boolean = true
 
   def weapon[_: RS]: Weapon = baseWeapon
 
@@ -51,12 +54,14 @@ import monocle.macros.{GenLens, Lenses}
     val adjustedDmg = adjustedDamage(dmg, damageType, this)
     if ((health - adjustedDmg) <= 0 && attackResult == Hit && damageType != Radiant) {
 
-      val dc = 5 + adjustedDmg
-      if (savingThrowPassed(dc, Constitution, this)) {
+      val dc                              = 5 + adjustedDmg
+      val (passed, updatedZombie: Zombie) = savingThrowPassed(dc, Constitution, this)
+
+      if (passed) {
         logger.debug("Zombie used Undead Fortitude to remain at 1 hp")
-        _health.set(1)(this)
-      } else _health.set(Math.max(0, health - adjustedDmg))(this)
-    } else _health.set(Math.max(0, health - adjustedDmg))(this)
+        _health.set(1)(updatedZombie)
+      } else applyDamage(updatedZombie, adjustedDmg)
+    } else applyDamage(this, adjustedDmg)
   }
 
   def scoresCritical(roll: Int): Boolean = roll == 20
@@ -73,6 +78,11 @@ object Zombie {
   def apply[_: RS](): Zombie = {
     val hp = calculateHealth()
     Zombie(hp, hp)
+  }
+
+  def withName[_: RS](zombieName: String): Zombie = {
+    val hp = calculateHealth()
+    Zombie(hp, hp, name = zombieName)
   }
 
   case object Slam extends Weapon {

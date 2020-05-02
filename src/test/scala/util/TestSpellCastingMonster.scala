@@ -4,10 +4,10 @@ import cats.syntax.option.none
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
@@ -23,10 +23,13 @@ import util.TestMonster.defaultScores
     baseWeapon: Weapon,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = none[Equipment],
-    resistances: List[DamageType] = List.empty,
-    immunities: List[DamageType] = List.empty,
-    abilities: List[CombatantAbility] = List.empty,
-    conditions: List[Condition] = List.empty,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
+    abilities: List[CombatantAbility] = List.empty[CombatantAbility],
+    conditions: List[Condition] = List.empty[Condition],
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
@@ -38,6 +41,9 @@ import util.TestMonster.defaultScores
     spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell] = Map.empty,
     spellSlots: SpellSlots = SpellSlots(0, 0, 0),
     concentratingSpell: Option[Spell] = none[Spell],
+    spellCastingModifier: Int = 0,
+    spellCastingLevel: Level = LevelOne,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName)
     extends Monster
     with SpellCaster {

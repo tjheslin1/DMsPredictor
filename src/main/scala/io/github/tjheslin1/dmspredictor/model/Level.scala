@@ -35,6 +35,62 @@ object LevelFive extends Level {
   val value = 5
 }
 
+object LevelSix extends Level {
+  val value = 6
+}
+
+object LevelSeven extends Level {
+  val value = 7
+}
+
+object LevelEight extends Level {
+  val value = 8
+}
+
+object LevelNine extends Level {
+  val value = 9
+}
+
+object LevelTen extends Level {
+  val value = 10
+}
+
+object LevelEleven extends Level {
+  val value = 11
+}
+
+object LevelTwelve extends Level {
+  val value = 12
+}
+
+object LevelThirteen extends Level {
+  val value = 13
+}
+
+object LevelFourteen extends Level {
+  val value = 14
+}
+
+object LevelFifteen extends Level {
+  val value = 15
+}
+
+object LevelSixteen extends Level {
+  val value = 16
+}
+
+object LevelSeventeen extends Level {
+  val value = 17
+}
+
+object LevelEighteen extends Level {
+  val value = 18
+}
+
+object LevelNineteen extends Level {
+  val value = 19
+}
+
 object LevelTwenty extends Level {
   val value = 20
 }

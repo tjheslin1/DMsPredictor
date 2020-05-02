@@ -3,7 +3,7 @@ Combat results predictor for DMs for Dungeons & Dragons 5th Edition.
 
 https://www.dmspredictor.com
 
-## Classes:
+## Classes
 
 - [Barbarian](src/main/scala/io/github/tjheslin1/dmspredictor/classes/barbarian/README.md)
 - [Cleric](src/main/scala/io/github/tjheslin1/dmspredictor/classes/cleric/README.md)
@@ -23,7 +23,7 @@ This list only includes monsters with README's
 
 - [Spell discussion](src/main/scala/io/github/tjheslin1/dmspredictor/model/spellcasting/spellbook/README.md)
 
-## Requests:
+## Requests
 
 This simulator implements what is available in the
 [Systems Reference Document (SRD)](http://dnd.wizards.com/articles/features/systems-reference-document-srd)
@@ -34,13 +34,13 @@ or contribute yourself via a _Pull Request_!
 
 Assumptions:
 
-##### Resources will be exhausted:
+##### Resources will be exhausted
 The simulation is designed around a single encounter, therefore abilities such as spellcasting are prioritised per 
 class and will be used starting from the highest spell slot to the lowest as well as using other abilities 
 (e.g. a Sorceror's twinned spell).
 
-##### Proficiency with used weapons and armour:
-The simulation assumes that players have proficiency with the equipment it uses.
+##### Proficiency with used weapons and armour
+The simulation assumes that players have proficiency with the equipment they use.
 
 ##### Ability Score Increases
 
@@ -91,7 +91,7 @@ NOTE: that the maximum number of simulations is currently set to 10,000.
 
 Otherwise you can create your players and monsters in the Main class to save having to fiddle with JSON.
 
-##### Example debug logs:
+##### Example debug logs
 
 ```
 

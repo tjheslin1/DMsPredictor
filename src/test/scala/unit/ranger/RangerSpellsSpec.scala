@@ -69,8 +69,8 @@ class RangerSpellsSpec extends UnitSpecBase {
 
           val buffedRanger = ranger
             .withSpellKnown(HuntersMark)
-            .withCondition(HuntersMarkBuffCondition)
             .withLevel(LevelTwo)
+            .withCondition(HuntersMarkBuffCondition)
             .withCombatIndex(1)
 
           huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe true
@@ -85,8 +85,8 @@ class RangerSpellsSpec extends UnitSpecBase {
 
           val buffedRanger = ranger
             .withSpellKnown(HuntersMark)
-            .withCondition(HuntersMarkBuffCondition)
             .withLevel(LevelOne)
+            .withCondition(HuntersMarkBuffCondition)
             .withCombatIndex(1)
 
           huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe false
@@ -116,8 +116,8 @@ class RangerSpellsSpec extends UnitSpecBase {
 
           val buffedRanger = ranger
             .withSpellKnown(HuntersMark)
-            .withCondition(HuntersMarkBuffCondition)
             .withLevel(LevelOne)
+            .withCondition(HuntersMarkBuffCondition)
             .withCombatIndex(1)
 
           huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe false
@@ -132,8 +132,8 @@ class RangerSpellsSpec extends UnitSpecBase {
 
           val buffedRanger = ranger
             .withSpellKnown(CureWounds)
-            .withCondition(HuntersMarkBuffCondition)
             .withLevel(LevelTwo)
+            .withCondition(HuntersMarkBuffCondition)
             .withCombatIndex(1)
 
           huntersMarkOnWeaponDamageAbility(1)(buffedRanger).conditionMet shouldBe false
@@ -191,8 +191,8 @@ class RangerSpellsSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val buffedFighter = fighter
-            .withCondition(HuntersMarkBuffCondition)
             .withLevel(LevelTwo)
+            .withCondition(HuntersMarkBuffCondition)
             .withCombatIndex(1)
 
           huntersMarkOnWeaponDamageAbility(1)(buffedFighter).conditionMet shouldBe false
