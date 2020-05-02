@@ -26,7 +26,7 @@ class CharmedSpec extends UnitSpecBase {
       }
     }
 
-    "remove Charmed condition if saving throw passed and apply VampireCharmImmunity" in {
+    "remove Charmed condition if saving throw passed and apply CharmImmunity" in {
       forAll { goblin: Goblin =>
         new TestContext {
           override implicit val roll = D20.naturalTwenty
@@ -37,7 +37,7 @@ class CharmedSpec extends UnitSpecBase {
 
           val updatedGoblin = charmed.handleStartOfTurn(conditionGoblin)
 
-          updatedGoblin.conditions should contain theSameElementsAs List(poisoned, VampireCharmImmunity)
+          updatedGoblin.conditions should contain theSameElementsAs List(poisoned, CharmImmunity)
         }
       }
     }

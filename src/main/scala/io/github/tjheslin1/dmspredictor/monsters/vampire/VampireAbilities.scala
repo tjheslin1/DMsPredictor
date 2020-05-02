@@ -139,12 +139,12 @@ object VampireAbilities extends LazyLogging {
 
     def charmTargets(others: List[Combatant]): List[Combatant] =
       others
-        .filter(_.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
+        .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
         .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
 
     def triggerMet(others: List[Combatant]): Boolean =
       others
-        .filter(_.creature.conditions.map(_.name).contains(VampireCharmImmunity.name) == false)
+        .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
         .exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
 
     def conditionMet: Boolean = true

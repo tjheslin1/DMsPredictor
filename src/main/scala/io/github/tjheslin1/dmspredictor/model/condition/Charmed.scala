@@ -26,7 +26,7 @@ object Charmed {
 
     if (passed) {
       val charmed           = updatedCreature.conditions.find(_.name == name).get
-      val updatedConditions = updatedCreature.conditions.except(charmed) :+ VampireCharmImmunity
+      val updatedConditions = updatedCreature.conditions.except(charmed) :+ CharmImmunity
 
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
