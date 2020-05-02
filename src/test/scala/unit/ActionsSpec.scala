@@ -307,14 +307,15 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val attackingGoblin = goblin
-            .withStrength(10)
+            .withStrength(12)
             .withBaseWeapon(trackedSword)
             .withCombatIndex(1)
 
           val reactionUsedWizard = wizard
+            .withMageArmourPrepared(false)
             .withCastShieldOnReaction(true)
             .withReactionUsed(true)
-            .withDexterity(1)
+            .withDexterity(10)
             .withNoArmour()
             .withCombatIndex(2)
 

@@ -1130,7 +1130,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
           trackedInstantEffectUsed shouldBe true
-          trackedInstantEffectSpellLevelUsed = 3
+          trackedInstantEffectSpellLevelUsed shouldBe 3
         }
       }
     }
@@ -1157,7 +1157,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
           trackedInstantEffectUsed shouldBe true
-          trackedInstantEffectSpellLevelUsed = 3
+          trackedInstantEffectSpellLevelUsed shouldBe 1
         }
       }
     }
