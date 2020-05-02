@@ -3,7 +3,7 @@ package unit.monsters
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Archery, Defense, Fighter}
-import io.github.tjheslin1.dmspredictor.equipment.armour.ChainShirt
+import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, Shield}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed}
 import io.github.tjheslin1.dmspredictor.monsters.lich.LichAbilities.paralyzingTouch
@@ -54,15 +54,16 @@ class LichAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "not paralyze target if attack missed" in {
+    "not attempt to paralyze target if attack missed" in {
       forAll { (lich: Lich, fighter: Fighter) =>
         new TestContext {
-          implicit val rollStrategy: RollStrategy = _ => RollResult(5)
+          implicit val rollStrategy: RollStrategy = _ => RollResult(2)
 
           val highACLowConFighter = fighter
             .withFightingStyle(Defense)
             .withArmour(ChainShirt)
-            .withDexterity(16)
+            .withOffHand(Shield)
+            .withDexterity(20)
             .withConstitution(1)
             .withCombatIndex(2)
 

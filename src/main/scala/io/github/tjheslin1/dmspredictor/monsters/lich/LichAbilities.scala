@@ -38,14 +38,14 @@ object LichAbilities extends LazyLogging {
           val (updatedLich, updatedTarget, updatedOthers) =
             resolveDamage(combatant, hitTarget, others, ParalyzingTouch, attackResult)
 
-          val (passed, updatedSavingThrowCreature) =
+          val (passedSave, updatedSavingThrowCreature) =
             savingThrowPassed(ParalyzingSaveDC, Constitution, updatedTarget.creature)
 
           val updatedSavingThrowTarget =
             Combatant.creatureLens.set(updatedSavingThrowCreature)(updatedTarget)
 
           val conditionUpdatedTarget = attackResult match {
-            case CriticalHit | Hit if passed == false =>
+            case CriticalHit | Hit if passedSave == false =>
               val currentConditions = updatedSavingThrowTarget.creature.conditions
               val updatedConditions =
                 currentConditions :+ Paralyzed(ParalyzingSaveDC, 10, Constitution)
