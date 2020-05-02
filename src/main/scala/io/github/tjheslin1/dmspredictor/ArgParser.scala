@@ -459,13 +459,13 @@ trait ArgParser {
                .catchNonFatal(statsCsv.split(",").map(_.toInt))
                .leftMap(e => DecodingFailure(e.getMessage, c.history))
       baseStats <- ints match {
-                    case Array(str, dex, con, wis, int, cha) =>
+                    case Array(str, dex, con, int, wis, cha) =>
                       BaseStats(
                         unsafeApply(str),
                         unsafeApply(dex),
                         unsafeApply(con),
-                        unsafeApply(wis),
                         unsafeApply(int),
+                        unsafeApply(wis),
                         unsafeApply(cha)
                       ).asRight
                     case _ =>

@@ -11,23 +11,17 @@ class TurnedSpec extends UnitSpecBase {
 
   "handle" should {
     "decrement turnsLeft" in {
-      forAll { goblin: Goblin =>
-        new TestContext {
-          override implicit val roll = D20.naturalTwenty
+      val turned = Turned(20, 10)
 
-          val turned = Turned(20, 10)
+      val updatedTurnedCondition = turned.decrementTurnsLeft()
 
-          val updatedGoblin = turned.handleStartOfTurn(goblin.withCondition(turned).withWisdom(1))
-
-          updatedGoblin.conditions should contain theSameElementsAs List(Turned(20, 9))
-        }
-      }
+      updatedTurnedCondition shouldBe Turned(20, 9)
     }
 
     "remove Turned condition if damage taken" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          override implicit val roll = D20.naturalTwenty
+          implicit override val roll = D20.naturalTwenty
 
           val turned          = Turned(1, 10)
           val poisoned        = Poisoned(10, 10)
@@ -43,7 +37,7 @@ class TurnedSpec extends UnitSpecBase {
     "not remove Turned condition if no damage was taken" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          override implicit val roll = D20.naturalTwenty
+          implicit override val roll = D20.naturalTwenty
 
           val turned          = Turned(1, 10)
           val poisoned        = Poisoned(10, 10)
@@ -57,7 +51,7 @@ class TurnedSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
   }
 }

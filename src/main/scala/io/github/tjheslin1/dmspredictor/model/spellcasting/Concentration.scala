@@ -14,17 +14,19 @@ object Concentration extends LazyLogging {
   ): SpellCaster = {
     val dc = concentrationDifficultyClass(damageTaken)
 
-    if (savingThrowPassed(dc, Constitution, spellCaster)) spellCaster
+    val (passed, updatedSpellCaster: SpellCaster) = savingThrowPassed(dc, Constitution, spellCaster)
+
+    if (passed) updatedSpellCaster
     else {
-      logger.debug(s"${spellCaster.name} loses concentration")
+      logger.debug(s"${updatedSpellCaster.name} loses concentration")
 
       concentrationSpell match {
         case selfBuffSpell: SelfBuffSpell =>
-          val selfBuffHandledCaster = selfBuffSpell.onLossOfConcentration(spellCaster)
+          val selfBuffHandledCaster = selfBuffSpell.onLossOfConcentration(updatedSpellCaster)
 
           SpellCaster.concentratingLens.set(None)(selfBuffHandledCaster)
         case _ =>
-          SpellCaster.concentratingLens.set(None)(spellCaster)
+          SpellCaster.concentratingLens.set(None)(updatedSpellCaster)
       }
     }
   }

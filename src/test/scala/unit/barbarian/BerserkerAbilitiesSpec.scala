@@ -73,12 +73,12 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
     "add resistance to Bludgeoning, Piercing and Slashing damage" in new TestContext {
       implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-      val berserker = random[Berserker].withResistance(Fire).withCombatIndex(1)
+      val berserker = random[Berserker].withDamageResistance(Fire).withCombatIndex(1)
 
       val (Combatant(_, frenzyingBerserker: Berserker), _) =
         frenzy(Priority)(berserker).useAbility(List.empty[Combatant], LowestFirst)
 
-      frenzyingBerserker.resistances shouldBe List(Fire, Bludgeoning, Piercing, Slashing)
+      frenzyingBerserker.damageResistances shouldBe List(Fire, Bludgeoning, Piercing, Slashing)
     }
 
     "use the Barbarian's bonus action" in new TestContext {

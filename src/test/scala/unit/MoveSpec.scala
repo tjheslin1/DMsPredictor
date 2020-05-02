@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.Move._
 import io.github.tjheslin1.dmspredictor.model.{condition, _}
-import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Turned}
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed, Stunned, Turned}
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import org.scalatest.OptionValues
@@ -85,7 +85,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           val queue =
-            Queue(fighter.withReactionUsed().withCombatIndex(1), monster.withCombatIndex(2))
+            Queue(fighter.withReactionUsed(true).withCombatIndex(1), monster.withCombatIndex(2))
 
           val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
@@ -197,6 +197,28 @@ class MoveSpec extends UnitSpecBase with OptionValues {
       }
     }
 
+    "handle conditions if the creature misses their turn" in {
+      forAll { (fighter: Fighter, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll = _ => RollResult(10)
+
+          val trackedGoblin =
+            goblin
+              .withConditions(trackedStartOfTurnCondition(100),
+                              trackedStartOfTurnCondition(50),
+                              trackedEndOfTurnCondition(100, turnMissed = true))
+              .withCombatIndex(1)
+
+          val fighterCombatant = fighter.withCombatIndex(2)
+
+          takeMove(Queue(trackedGoblin, fighterCombatant), LowestFirst)
+
+          trackedStartOfTurnConditionHandledCount shouldBe 2
+          trackedEndOfTurnConditionHandledCount shouldBe 1
+        }
+      }
+    }
+
     "miss the combatants turn if a condition saving throw is failed" in {
       forAll { (fighter: Fighter, goblin: Goblin) =>
         new TestContext {
@@ -229,7 +251,27 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           val Queue(Combatant(_, updatedFighter: Fighter)) =
             takeMove(Queue(turnedFighter), LowestFirst)
 
-          updatedFighter.conditions shouldBe List()
+          updatedFighter.conditions shouldBe List.empty[Condition]
+        }
+      }
+    }
+
+    "handle condition at end of turn" in {
+      forAll { fighter: Fighter =>
+        new TestContext {
+          implicit override val roll = D20.naturalTwenty
+
+          val trackedCondition = trackedEndOfTurnCondition(2, turnMissed = true)
+          val stunned = Stunned(2)
+
+          val trackedFighter   = fighter.withConditions(trackedCondition, stunned).withCombatIndex(1)
+
+          val Queue(Combatant(_, updatedFighter: Fighter)) =
+            takeMove(Queue(trackedFighter), LowestFirst)
+
+          trackedEndOfTurnConditionHandledCount shouldBe 1
+
+          updatedFighter.conditions shouldBe List(trackedCondition)
         }
       }
     }
@@ -245,7 +287,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           val Queue(Combatant(_, updatedFighter: Fighter)) =
             takeMove(Queue(paralyzedFighter), LowestFirst)
 
-          updatedFighter.conditions shouldBe List()
+          updatedFighter.conditions shouldBe List.empty[Condition]
         }
       }
     }

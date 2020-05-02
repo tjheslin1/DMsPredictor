@@ -5,7 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.classes.Player.playerBonusActionUsedLens
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.model.Actions.attackAndDamage
-import io.github.tjheslin1.dmspredictor.model.Creature.creatureResistancesLens
+import io.github.tjheslin1.dmspredictor.model.Creature.creatureDamageResistancesLens
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
@@ -67,8 +67,8 @@ object BaseBarbarianAbilities extends LazyLogging {
       val updatedBarbarian       = rageUsagesLens.set(updatedRageUsages)(unragedBarbarian)
       val rageTurnsLeftBarbarian = rageTurnsLeftLens.set(10)(updatedBarbarian)
 
-      val resistantBarbarian = creatureResistancesLens
-        .set(barbarian.resistances ++ rageResistances)(rageTurnsLeftBarbarian)
+      val resistantBarbarian = creatureDamageResistancesLens
+        .set(barbarian.damageResistances ++ rageResistances)(rageTurnsLeftBarbarian)
         .asInstanceOf[BaseBarbarian]
 
       val bonusActionUsedBarbarian =

@@ -9,8 +9,8 @@ case class BaseStats(
     strength: Stat,
     dexterity: Stat,
     constitution: Stat,
-    wisdom: Stat,
     intelligence: Stat,
+    wisdom: Stat,
     charisma: Stat
 )
 

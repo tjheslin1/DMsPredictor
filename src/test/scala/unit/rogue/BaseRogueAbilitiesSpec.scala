@@ -31,11 +31,11 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
 
           val sneakingRogue = rogue
             .isHiddenFrom(List(healthyGoblin))
+            .withLevel(LevelTwo)
             .withDexterity(12)
             .withStrength(10)
             .withBaseWeapon(
               Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 1))
-            .withLevel(LevelTwo)
             .withCombatIndex(1)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
@@ -62,11 +62,11 @@ class BaseRogueAbilitiesSpec extends UnitSpecBase {
 
           val sneakingRogue = rogue
             .isHiddenFrom(List(healthyGoblin))
+            .withLevel(LevelTwo)
             .withDexterity(12)
             .withStrength(10)
             .withBaseWeapon(
               Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = true, dmg = 2))
-            .withLevel(LevelTwo)
             .withCombatIndex(1)
 
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =

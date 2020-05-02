@@ -18,8 +18,6 @@ object Move extends LazyLogging {
     val (unactedCombatant, others) = queue.dequeue
     val (pcs, mobs)                = others.partition(_.creature.creatureType == PlayerCharacter)
 
-    logger.debug(s"${unactedCombatant.creature.name} starts their turn")
-
     val resetUnactedCombatant = {
       val resetCombatant =
         Combatant.creatureLens.set(unactedCombatant.creature.resetStartOfTurn())(unactedCombatant)
@@ -28,29 +26,33 @@ object Move extends LazyLogging {
         (Combatant.playerOptional composeLens Player.playerBonusActionUsedLens)
           .set(false)(resetCombatant)
 
-      (Combatant.playerOptional composeLens Player.playerReactionUsedLens)
+      (Combatant.creatureLens composeLens Creature.creatureReactionUsedLens)
         .set(false)(bonusActionUnusedCombatant)
     }
 
-    val (conditionHandledCombatant, missesTurn) =
+    val (turnStartConditionHandledCombatant, missesTurn) =
       handleStartOfTurnConditions(decrementConditionsTurnsLeft(resetUnactedCombatant))
 
     val otherCombatants = others.toList
 
-    if (conditionHandledCombatant.creature.isConscious && missesTurn == false) {
+    if (turnStartConditionHandledCombatant.creature.isAlive &&
+        turnStartConditionHandledCombatant.creature.isConscious &&
+        missesTurn == false) {
 
-      val mobToFocus = nextToFocus(conditionHandledCombatant, mobs.toList, focus)
-      val pcToFocus  = nextToFocus(conditionHandledCombatant, pcs.toList, focus)
+      logger.debug(s"${unactedCombatant.creature.name} starts their turn")
 
-      val attackTarget = conditionHandledCombatant.creature.creatureType match {
+      val mobToFocus = nextToFocus(turnStartConditionHandledCombatant, mobs.toList, focus)
+      val pcToFocus  = nextToFocus(turnStartConditionHandledCombatant, pcs.toList, focus)
+
+      val attackTarget = turnStartConditionHandledCombatant.creature.creatureType match {
         case PlayerCharacter => mobToFocus
         case _               => pcToFocus
       }
 
       val (actedCombatant, updatedTargets) = {
-        val optAbility = availableActionAbility(conditionHandledCombatant, otherCombatants)
+        val optAbility = availableActionAbility(turnStartConditionHandledCombatant, otherCombatants)
         actionAgainstTarget(
-          conditionHandledCombatant,
+          turnStartConditionHandledCombatant,
           attackTarget,
           otherCombatants,
           optAbility,
@@ -72,7 +74,10 @@ object Move extends LazyLogging {
 
       Queue(updatedOthers: _*).append(endOfTurnConditionHandledCombatant)
     } else {
-      others.append(conditionHandledCombatant)
+      val endOfTurnConditionHandledCombatant =
+        handleEndOfTurnConditions(turnStartConditionHandledCombatant)
+
+      others.append(endOfTurnConditionHandledCombatant)
     }
   }
 
@@ -81,7 +86,7 @@ object Move extends LazyLogging {
       combatant.creature.conditions.map(_.decrementTurnsLeft()).filter { condition =>
         if (condition.turnsLeft > 0) true
         else {
-          logger.debug(s"${condition.name} has run out on ${combatant.creature.name}")
+          logger.debug(s"${condition.name} has ended on ${combatant.creature.name}")
           false
         }
       }

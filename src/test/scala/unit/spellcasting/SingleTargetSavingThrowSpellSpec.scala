@@ -2,8 +2,11 @@ package unit.spellcasting
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Paralyzed
+import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 import util.TestMonster
 
@@ -90,6 +93,40 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
 
           singleSavingThrowSpellUsedCount shouldBe 0
           updatedMonster.health shouldBe monster.creature.health
+        }
+      }
+    }
+
+    "apply additional effect" in {
+      forAll { (cleric: Cleric, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val applyParalysis: (SpellCaster, Combatant, List[Combatant], Boolean) => (SpellCaster, Combatant, List[Combatant]) =
+            (spellCaster, target, others, _) => {
+              val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set(List(Paralyzed(10, 10, Strength)))(target )
+
+              (spellCaster, updatedTarget, others)
+            }
+
+          val savingThrowSpell = trackedSingleTargetSavingThrowSpell(1, Dexterity, additionalTargetEffect = applyParalysis)
+
+          val trackedCleric = cleric
+            .withSpellKnown(savingThrowSpell)
+            .withAllSpellSlotsAvailableForLevel(cleric.level)
+            .withChannelDivinityUsed()
+            .withWisdom(15)
+            .asInstanceOf[Cleric]
+
+          val monster = goblin
+            .withStrength(1)
+            .withHealth(10)
+            .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
+            savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
+
+          updatedGoblin.conditions should contain theSameElementsAs List(Paralyzed(10, 10, Strength))
         }
       }
     }

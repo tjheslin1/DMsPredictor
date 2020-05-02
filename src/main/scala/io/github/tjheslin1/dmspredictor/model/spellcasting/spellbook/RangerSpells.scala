@@ -13,9 +13,9 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 object RangerSpells extends LazyLogging {
 
   case object HuntersMarkBuffCondition extends PassiveCondition {
-    val name               = "Hunter's Mark (bonus damage)"
-    val missesTurn         = false
-    val useHigherSpellSlot = false
+    val name                        = "Hunter's Mark (bonus damage)"
+    val missesTurn                  = false
+    val benefitsFromHigherSpellSlot = false
 
     def decrementTurnsLeft(): Condition = this
   }
@@ -27,9 +27,9 @@ object RangerSpells extends LazyLogging {
     val school: SchoolOfMagic    = Divination
     val castingTime: CastingTime = BonusActionCast
 
-    val spellLevel: SpellLevel = 1
-    val requiresConcentration  = true
-    val useHigherSpellSlot     = false
+    val spellLevel: SpellLevel      = 1
+    val requiresConcentration       = true
+    val benefitsFromHigherSpellSlot = false
   }
 
   def huntersMarkOnWeaponDamageAbility(

@@ -66,8 +66,8 @@ class HunterAbilitiesSpec extends UnitSpecBase {
         implicit val roll: RollStrategy = _ => RollResult(10)
 
         val twoWeaponFightingHunter = hunter
-          .withAbilities(List(colossusSlayer(1), extraAttack(2), twoWeaponFighting(3)))
           .withLevel(LevelThree)
+          .withAbilities(List(colossusSlayer(1), extraAttack(2), twoWeaponFighting(3)))
           .withStrength(10)
           .withDexterity(10)
           .withBaseWeapon(Shortsword)

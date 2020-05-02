@@ -12,6 +12,19 @@ import util.TestData._
 class HunterSpec extends UnitSpecBase {
 
   "updateHealth" should {
+
+      "set the Hunter to dead if the damage brings health below negative max health" in new TestContext {
+        override implicit val roll: RollStrategy = _ => RollResult(10)
+
+        val hunter = random[Hunter]
+          .withHealth(50)
+          .withMaxHealth(50)
+
+        val updatedHunter = hunter.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Hunter]
+
+        updatedHunter.isAlive shouldBe false
+      }
+
     "not handle concentration if damage taken was 0" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(19)
 

@@ -2,23 +2,24 @@ package unit.spellcasting
 
 import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
-import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
+import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.HuntersMarkBuffCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import util.TestData._
 import util.TestMonster
 
 class SpellSpec extends UnitSpecBase {
 
-  "spellOfTypeBelowLevel" should {
+  "spellOfLevelOrBelow" should {
     "return a spell of a specific SpellEffect equal to the level given" in {
       val cleric = random[Cleric].withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
@@ -29,6 +30,21 @@ class SpellSpec extends UnitSpecBase {
       val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, AcidArrow, Fireball)
 
       spellOfLevelOrBelow(wizard, DamageSpell, 3)(multiAttackOnly = true).get shouldBe (Fireball, Fireball.spellLevel)
+    }
+
+    "return a multi attack spell when looking down the spell list" in new Tracking {
+      val trackedThirdLevelMultiTargetSpell = trackedMultiTargetSavingThrowSpell(3, Dexterity, higherSpellSlot = true)
+      val trackedSixthLevelSingleTargetSpell = trackedSingleTargetSavingThrowSpell(6, Dexterity, higherSpellSlot = true)
+
+      val lich = random[Lich].withSpellsKnown(
+        trackedThirdLevelMultiTargetSpell,
+        trackedSixthLevelSingleTargetSpell
+      )
+
+      val (foundSpell, foundSpellLevel) = spellOfLevelOrBelow(lich, DamageSpell, 9)(multiAttackOnly = true).get
+
+      foundSpell.name shouldBe trackedThirdLevelMultiTargetSpell.name
+      foundSpellLevel.value shouldBe 9
     }
 
     "return a spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
@@ -91,24 +107,28 @@ class SpellSpec extends UnitSpecBase {
       actualSpellLevel.value shouldBe 3
     }
 
-    "not return a concentration spell if already concentrating when checkConcentration is set to false" in new TestContext {
+    "return a concentration spell if already concentrating when checkCasterIsConcentrating is set to false" in new TestContext {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
-        .withConcentratingOn(trackedConditionSpell(1))
+        .withConcentratingOn(HoldPerson)
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3)(checkConcentration = false) shouldBe none[(Spell, SpellLevel)]
+      val (actualSpell, actualSpellLevel) =
+        spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3)(checkCasterIsConcentrating = false).get
+
+      actualSpell shouldBe HoldPerson
+      actualSpellLevel shouldBe HoldPerson.spellLevel
     }
 
-    "not return a concentration spell if already concentrating when checkConcentration is set to true" in new TestContext {
+    "not return a concentration spell if already concentrating when checkCasterIsConcentrating is set to true" in new TestContext {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
-        .withConcentratingOn(trackedConditionSpell(1))
+        .withConcentratingOn(HoldPerson)
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3)() shouldBe none[(Spell, SpellLevel)]
+      spellOfLevelOrBelow(concentratingCleric, ConcentrationSpell, 3)(checkCasterIsConcentrating = true) shouldBe none[(Spell, SpellLevel)]
     }
 
     "return the highest spell slot for a spell which benefits from a higher slot" in new TestContext {
@@ -176,6 +196,34 @@ class SpellSpec extends UnitSpecBase {
     }
   }
 
+  "spellAttackBonus" should {
+    "combine the Players spellcasting modifier and their attribute modifier" in {
+      forAll { wizard: Wizard =>
+        spellAttackBonus(wizard) shouldBe wizard.spellCastingModifier + mod(wizard.stats.intelligence)
+      }
+    }
+
+    "combine the Monster (SpellCaster) spellcasting modifier and their attribute modifier" in {
+      forAll { lich: Lich =>
+        spellAttackBonus(lich) shouldBe lich.spellCastingModifier + mod(lich.stats.intelligence)
+      }
+    }
+  }
+
+  "spellSaveDc" should {
+    "combine the Players spellcasting modifier and their attribute modifier" in {
+      forAll { wizard: Wizard =>
+        spellSaveDc(wizard) shouldBe 8 + wizard.spellCastingModifier + mod(wizard.stats.intelligence)
+      }
+    }
+
+    "combine the Monster (SpellCaster) spellcasting modifier and their attribute modifier" in {
+      forAll { lich: Lich =>
+        spellSaveDc(lich) shouldBe 8 + lich.spellCastingModifier + mod(lich.stats.intelligence)
+      }
+    }
+  }
+
   "spellSavingThrowPassed" should {
     "return true if the targets roll equals the caster's spell save DC" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
@@ -185,7 +233,9 @@ class SpellSpec extends UnitSpecBase {
           val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
 
-          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe true
+          val (passed, _) = spellSavingThrowPassed(caster, Dexterity, monster)
+
+          passed shouldBe true
         }
       }
     }
@@ -198,7 +248,9 @@ class SpellSpec extends UnitSpecBase {
           val caster  = cleric.withProficiencyBonus(2).withWisdom(10).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(14)
 
-          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe true
+          val (passed, _) = spellSavingThrowPassed(caster, Dexterity, monster)
+
+          passed shouldBe true
         }
       }
     }
@@ -211,7 +263,9 @@ class SpellSpec extends UnitSpecBase {
           val caster  = cleric.withProficiencyBonus(2).withWisdom(14).asInstanceOf[Cleric]
           val monster = testMonster.withDexterity(10)
 
-          spellSavingThrowPassed(caster, Dexterity, monster) shouldBe false
+          val (passed, _) = spellSavingThrowPassed(caster, Dexterity, monster)
+
+          passed shouldBe false
         }
       }
     }

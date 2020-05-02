@@ -3,15 +3,14 @@ package io.github.tjheslin1.dmspredictor.strategy
 import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.strategy.Target.players
 
 import scala.util.{Random => JRandom}
 
 sealed trait Focus extends Product with Serializable
 
-case object LowestFirst   extends Focus
-case object RandomFocus   extends Focus
-case object PlayerHealing extends Focus
+case object LowestFirst extends Focus
+case object RandomFocus extends Focus
+case object Healing     extends Focus
 
 object Focus {
 
@@ -34,8 +33,8 @@ object Focus {
       case RandomFocus =>
         if (visibleCombatants.isEmpty) None
         else visibleCombatants(JRandom.nextInt(visibleCombatants.size)).some
-      case PlayerHealing =>
-        players(targets).sortBy(_.creature.health).headOption
+      case Healing =>
+        targets.sortBy(_.creature.health).headOption
     }
   }
 }

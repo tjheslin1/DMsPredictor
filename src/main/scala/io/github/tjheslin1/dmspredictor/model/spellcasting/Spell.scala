@@ -5,10 +5,11 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 
 import scala.annotation.tailrec
 
@@ -20,7 +21,7 @@ trait Spell {
   val spellEffect: SpellEffect
   val spellLevel: SpellLevel
   val requiresConcentration: Boolean
-  val useHigherSpellSlot: Boolean
+  val benefitsFromHigherSpellSlot: Boolean
 
   def effect[_: RS](
       spellCaster: SpellCaster,
@@ -33,7 +34,8 @@ object Spell {
 
   /**
     *
-    * @param checkConcentration is used to find the spell a caster had just used when finding the spell slot to update
+    * @param checkCasterIsConcentrating is used to find the spell a caster had just used when finding the spell slot to update.
+    *                           It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
     */
   @tailrec
   def spellOfLevelOrBelow(
@@ -42,7 +44,7 @@ object Spell {
       spellLevel: SpellLevel
   )(
       originalSpellLevel: SpellLevel = spellLevel,
-      checkConcentration: Boolean = true,
+      checkCasterIsConcentrating: Boolean = true,
       multiAttackOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
@@ -53,49 +55,58 @@ object Spell {
       val spell = spellLookup.get
 
       if (multiAttackOnly && spell.isInstanceOf[MultiTargetSavingThrowSpell] == false)
-        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
-      else if (checkConcentration && spellCaster.isConcentrating && spell.requiresConcentration)
-        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+          originalSpellLevel,
+          checkCasterIsConcentrating,
+          multiAttackOnly
+        )
+      else if (checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+          originalSpellLevel,
+          checkCasterIsConcentrating,
+          multiAttackOnly
+        )
       else
         spellLookup match {
           case Some(foundSpell) if foundSpell.spellLevel.value == 0 =>
             (foundSpell, foundSpell.spellLevel).some
-          case Some(foundSpell) if foundSpell.useHigherSpellSlot =>
+          case Some(foundSpell) if foundSpell.benefitsFromHigherSpellSlot =>
             (foundSpell, originalSpellLevel).some
-          case Some(foundSpell) => (foundSpell, foundSpell.spellLevel).some
-          case _                => none[(Spell, SpellLevel)]
+          case Some(foundSpell) =>
+            (foundSpell, foundSpell.spellLevel).some
+          case _ => none[(Spell, SpellLevel)]
         }
     } else if (spellLevelBelow >= 0)
-      spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(originalSpellLevel)
+      spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+        originalSpellLevel,
+        checkCasterIsConcentrating,
+        multiAttackOnly
+      )
     else none[(Spell, SpellLevel)]
   }
 
-  def spellAttackBonus(spellCaster: SpellCaster): Int = spellCaster match {
-    case playerSpellcaster: Player with SpellCaster =>
-      playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
-    case spellcaster => attributeModifierForSchool(spellcaster)
-  }
+  def spellAttackBonus(spellCaster: SpellCaster): Int =
+    attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
-  def spellSaveDc(spellCaster: SpellCaster): Int = spellCaster match {
-    case playerSpellcaster: Player with SpellCaster =>
-      8 + playerSpellcaster.proficiencyBonus + attributeModifierForSchool(playerSpellcaster)
-    case spellcaster => 8 + attributeModifierForSchool(spellcaster)
-  }
+  def spellSaveDc(spellCaster: SpellCaster): Int =
+    8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
-  def schoolAttribute(spellcaster: SpellCaster): Attribute = spellcaster match {
+  def schoolAttribute(spellCaster: SpellCaster): Attribute = spellCaster match {
     case _: Cleric     => Wisdom
     case _: BaseCleric => Wisdom
     case _: Wizard     => Intelligence
+
+    case _: Lich => Intelligence
   }
 
-  def attributeModifierForSchool(spellcaster: SpellCaster): Int =
-    attributeModifier(spellcaster, schoolAttribute(spellcaster))
+  def attributeModifierForSchool(spellCaster: SpellCaster): Int =
+    attributeModifier(spellCaster, schoolAttribute(spellCaster))
 
   def spellSavingThrowPassed[_: RS](
       caster: SpellCaster,
       attribute: Attribute,
       target: Creature
-  ): Boolean =
+  ): (Boolean, Creature) =
     savingThrowPassed(spellSaveDc(caster), attribute, target)
 
   def spellAttack[_: RS](spellCaster: SpellCaster, target: Creature): AttackResult =

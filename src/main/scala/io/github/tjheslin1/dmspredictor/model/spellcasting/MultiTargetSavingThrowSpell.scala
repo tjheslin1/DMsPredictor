@@ -20,20 +20,25 @@ abstract class MultiTargetSavingThrowSpell extends Spell with LazyLogging {
       spellLevel: SpellLevel,
       targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
-    val updatedTargets = targets.map { target =>
-      val savingThrowPassed = spellSavingThrowPassed(spellCaster, attribute, target.creature)
+    val damageRoll = damage(spellCaster, spellLevel)
 
-      logger.debug(s"casting $name - Saving throw ${if (savingThrowPassed) "Passed" else "Failed"}")
+    val updatedTargets = targets.map { target =>
+      val (passed, updatedTarget) = spellSavingThrowPassed(spellCaster, attribute, target.creature)
+
+      logger.debug(s"casting $name - Saving throw ${if (passed) "Passed" else "Failed"}")
 
       val dmg =
-        if (savingThrowPassed == false) damage(spellCaster, spellLevel)
-        else if (savingThrowPassed && halfDamageOnSave)
-          Math.floor(damage(spellCaster, spellLevel) / 2).toInt
+        if (passed == false) damageRoll
+        else if (passed && halfDamageOnSave)
+          Math.floor(damageRoll / 2).toInt
         else 0
 
-      val attackResult = if (savingThrowPassed) Miss else Hit
-      target.copy(creature = target.creature.updateHealth(dmg, damageType, attackResult))
+      val attackResult = if (passed) Miss else Hit
+
+      val updatedHealthTarget = updatedTarget.updateHealth(dmg, damageType, attackResult)
+      Combatant.creatureLens.set(updatedHealthTarget)(target)
     }
+
     (spellCaster, updatedTargets)
   }
 }

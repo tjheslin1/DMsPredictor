@@ -39,6 +39,18 @@ class ClericSpec extends UnitSpecBase {
 
       updatedCleric.concentratingSpell shouldBe none[Spell]
     }
+
+    "set the Cleric to dead if the damage brings health below negative max health" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+
+      val cleric = random[Cleric]
+        .withHealth(50)
+        .withMaxHealth(50)
+
+      val updatedCleric = cleric.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Cleric]
+
+      updatedCleric.isAlive shouldBe false
+    }
   }
 
   abstract private class TestContext {

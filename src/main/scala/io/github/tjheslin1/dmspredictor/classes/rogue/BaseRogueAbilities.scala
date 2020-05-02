@@ -134,7 +134,7 @@ object BaseRogueAbilities extends LazyLogging {
           val updatedHealthRogue =
             baseRogue.updateHealth(halfDamageRoundedDown, damageType, attackResult)
 
-          Creature.creatureReactionUsedOptional.set(true)(updatedHealthRogue)
+          Creature.creatureReactionUsedLens.set(true)(updatedHealthRogue)
         } else {
           baseRogue.updateHealth(damage, damageType, attackResult)
         }

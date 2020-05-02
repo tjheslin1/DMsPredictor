@@ -4,10 +4,10 @@ import cats.Show
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
-import io.github.tjheslin1.dmspredictor.model.AdjustedDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.monsters.Monster.defaultSavingThrowScores
 import io.github.tjheslin1.dmspredictor.monsters.MonsterAbilities.multiAttack
 import io.github.tjheslin1.dmspredictor.monsters.Werewolf._
@@ -24,15 +24,20 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon = HydbridFormClaw,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    resistances: List[DamageType] = List.empty[DamageType],
-    immunities: List[DamageType] = List(Bludgeoning, Piercing, Slashing),
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List(Bludgeoning, Piercing, Slashing),
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     conditions: List[Condition] = List.empty,
+    reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
+    isAlive: Boolean = true,
     name: String = NameGenerator.randomName
 ) extends Monster {
 
-  val challengeRating: Double                = 3.0
+  val challengeRating                        = 3.0
   val skills                                 = Skills(perception = 4, stealth = 3)
   val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
 
@@ -40,12 +45,10 @@ import monocle.macros.{GenLens, Lenses}
 
   val abilities: List[CombatantAbility] = standardWerewolfAbilities
 
-  val reactionUsed: Boolean = true
-
   def weapon[_: RS]: Weapon = baseWeapon
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
-    copy(health = Math.max(0, health - adjustedDamage(dmg, damageType, this)))
+    applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   def scoresCritical(roll: Int): Boolean = roll == 20
 

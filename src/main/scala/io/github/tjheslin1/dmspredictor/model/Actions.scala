@@ -66,15 +66,17 @@ object Actions extends LazyLogging {
       }
 
       if (totalAttackRoll >= target.creature.armourClass) {
-
         target.creature.reactionOnHit.fold[(AttackResult, Combatant)]((Hit, target)) {
           onHitReaction =>
-            val (updatedAttackResult, updatedTarget) =
-              onHitReaction.updateAttackOnReaction(target.creature, totalAttackRoll)
+            if (target.creature.reactionUsed) (Hit, target)
+            else {
+              val (updatedAttackResult, updatedTarget) =
+                onHitReaction.updateAttackOnReaction(target.creature, totalAttackRoll)
 
-            val updatedTargetCombatant = Combatant.creatureLens.set(updatedTarget)(target)
+              val updatedTargetCombatant = Combatant.creatureLens.set(updatedTarget)(target)
 
-            (updatedAttackResult, updatedTargetCombatant)
+              (updatedAttackResult, updatedTargetCombatant)
+            }
         }
       } else (Miss, target)
     }
@@ -107,46 +109,17 @@ object Actions extends LazyLogging {
       addStatModifier: Boolean = true
   ): (Combatant, Combatant, List[Combatant]) = {
 
-    val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
-
     val onWeaponDamageAbility = availableOnWeaponDamageAction(attacker, target)
       .fold(none[OnWeaponDamageAbility])(ability => ability(attacker).some)
 
-    val dmg =
-      Math.max(
-        0,
-        attackResult match {
-          case CriticalHit =>
-            val doubleWeaponDamage = weapon.damage + weapon.damage
-
-            val doubleOnWeaponAbilityDamage = onWeaponDamageAbility.fold(0) {
-              onWeaponDamageAbility =>
-                val abilityDamage = onWeaponDamageAbility.damage() + onWeaponDamageAbility.damage()
-
-                logger.debug(
-                  s"${attacker.creature.name} rolls an extra $abilityDamage damage (critical hit) using ${onWeaponDamageAbility.name}"
-                )
-
-                abilityDamage
-            }
-
-            doubleWeaponDamage + doubleOnWeaponAbilityDamage + modifier + damageBonus
-          case Hit =>
-            val onWeaponAbilityDamage = onWeaponDamageAbility.fold(0) { onWeaponDamageAbility =>
-              val abilityDamage = onWeaponDamageAbility.damage()
-
-              logger.debug(
-                s"${attacker.creature.name} rolls an extra $abilityDamage damage using ${onWeaponDamageAbility.name}"
-              )
-
-              abilityDamage
-            }
-
-            weapon.damage + modifier + damageBonus + onWeaponAbilityDamage
-          case Miss         => 0
-          case CriticalMiss => 0
-        }
-      )
+    val dmg = calculatedDamage(
+      attacker,
+      attackResult,
+      weapon,
+      onWeaponDamageAbility,
+      damageBonus,
+      addStatModifier
+    )
 
     val updatedAttacker = Combatant.creatureLens.set(
       onWeaponDamageAbility.fold(attacker.creature)(ability => ability.update)
@@ -227,6 +200,51 @@ object Actions extends LazyLogging {
         val (a, t, o) = combatants
         f(a, t, o)
     }
+
+  private def calculatedDamage[_: RS](
+      attacker: Combatant,
+      attackResult: AttackResult,
+      weapon: Weapon,
+      onWeaponDamageAbility: Option[OnWeaponDamageAbility],
+      damageBonus: Int,
+      addStatModifier: Boolean
+  ): Int = {
+    val modifier = if (addStatModifier) weaponModifier(weapon, attacker.creature) else 0
+
+    Math.max(
+      0,
+      attackResult match {
+        case CriticalHit =>
+          val doubleWeaponDamage = weapon.damage + weapon.damage
+
+          val doubleOnWeaponAbilityDamage = onWeaponDamageAbility.fold(0) { onWeaponDamageAbility =>
+            val abilityDamage = onWeaponDamageAbility.damage() + onWeaponDamageAbility.damage()
+
+            logger.debug(
+              s"${attacker.creature.name} rolls an extra $abilityDamage damage (critical hit) using ${onWeaponDamageAbility.name}"
+            )
+
+            abilityDamage
+          }
+
+          doubleWeaponDamage + doubleOnWeaponAbilityDamage + modifier + damageBonus
+        case Hit =>
+          val onWeaponAbilityDamage = onWeaponDamageAbility.fold(0) { onWeaponDamageAbility =>
+            val abilityDamage = onWeaponDamageAbility.damage()
+
+            logger.debug(
+              s"${attacker.creature.name} rolls an extra $abilityDamage damage using ${onWeaponDamageAbility.name}"
+            )
+
+            abilityDamage
+          }
+
+          weapon.damage + modifier + damageBonus + onWeaponAbilityDamage
+        case Miss         => 0
+        case CriticalMiss => 0
+      }
+    )
+  }
 
   private def weaponModifier(weapon: Weapon, creature: Creature): Int =
     weapon.weaponType match {
