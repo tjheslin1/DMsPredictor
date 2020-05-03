@@ -91,7 +91,16 @@ class StunnedSpec extends UnitSpecBase {
 
   "onConditionApplied" should {
     "set the creature's defense status to Disadvantage" in {
-      fail("TODO")
+      new TestContext {
+        override implicit val roll: RollStrategy = _ => RollResult(10)
+
+        val rogue = random[Rogue]
+        val stunned = Stunned(10)
+
+        val stunnedRogue = stunned.onConditionApplied(rogue)
+
+        stunnedRogue.defenseStatus shouldBe Disadvantage
+      }
     }
   }
 

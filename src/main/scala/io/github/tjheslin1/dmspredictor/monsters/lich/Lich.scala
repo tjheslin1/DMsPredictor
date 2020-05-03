@@ -32,7 +32,8 @@ import monocle.macros.{GenLens, Lenses}
     damageResistances: List[DamageType] = List(Cold, Lightning, Necrotic),
     damageImmunities: List[DamageType] = List(Poison, Bludgeoning, Piercing, Slashing),
     conditionResistances: List[ConditionType] = List(TurnedCondition),
-    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] =
+      List(CharmedCondition, ParalysedCondition, PoisonedCondition),
     conditions: List[Condition] = List.empty[Condition],
     reactionUsed: Boolean = false,
     attackStatus: AttackStatus = Regular,

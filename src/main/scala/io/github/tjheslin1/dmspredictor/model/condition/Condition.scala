@@ -6,8 +6,10 @@ import monocle.Lens
 
 sealed trait ConditionType extends Product with Serializable
 
-case object TurnedCondition   extends ConditionType
-case object PoisonedCondition extends ConditionType
+case object CharmedCondition   extends ConditionType
+case object ParalysedCondition extends ConditionType
+case object PoisonedCondition  extends ConditionType
+case object TurnedCondition    extends ConditionType
 
 trait Condition {
   val name: String
