@@ -42,5 +42,5 @@ case class Stunned(
     }
   }
 
-  def onConditionApplied[_: RS](creature: Creature): Creature = ???
+  def onConditionApplied(creature: Creature): Creature = ???
 }

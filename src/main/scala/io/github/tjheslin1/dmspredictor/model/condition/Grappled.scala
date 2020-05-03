@@ -37,7 +37,7 @@ import monocle.macros.Lenses
     }
   }
 
-  def onConditionApplied[_: RS](creature: Creature): Creature = creature
+  def onConditionApplied(creature: Creature): Creature = creature
 }
 
 object Grappled {

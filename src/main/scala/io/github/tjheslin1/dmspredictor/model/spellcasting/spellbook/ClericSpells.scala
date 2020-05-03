@@ -119,6 +119,6 @@ object ClericSpells extends LazyLogging {
         updatedCreature.updateHealth(damage, Radiant, Hit)
     }
 
-    def onConditionApplied[_: RS](creature: Creature): Creature = creature
+    def onConditionApplied(creature: Creature): Creature = creature
   }
 }

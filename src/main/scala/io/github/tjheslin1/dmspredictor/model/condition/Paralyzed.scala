@@ -26,15 +26,19 @@ import monocle.macros.Lenses
       val paralyzed         = updatedCreature.conditions.find(_.name == name).get
       val updatedConditions = updatedCreature.conditions.except(paralyzed)
 
+      val conditionUpdatedCreature =
+        Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+      Creature.creatureDefenseStatusLens.set(Regular)(conditionUpdatedCreature)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
 
-      updatedCreature
+      Creature.creatureDefenseStatusLens.set(Disadvantage)(updatedCreature)
     }
   }
 
-  override def onConditionApplied[_: RS](creature: Creature): Creature = ???
+  override def onConditionApplied(creature: Creature): Creature =
+    Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
 }

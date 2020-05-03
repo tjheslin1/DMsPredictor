@@ -22,7 +22,7 @@ trait Condition {
   def handleEndOfTurn[_: RS](creature: Creature): Creature
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature
 
-  def onConditionApplied[_: RS](creature: Creature): Creature
+  def onConditionApplied(creature: Creature): Creature
 }
 
 abstract class PassiveCondition extends Condition {
@@ -35,7 +35,7 @@ abstract class PassiveCondition extends Condition {
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature             = creature
 
-  def onConditionApplied[_: RS](creature: Creature): Creature = creature
+  def onConditionApplied(creature: Creature): Creature = creature
 }
 
 abstract class StartOfTurnCondition extends Condition {
@@ -57,6 +57,13 @@ abstract class OnDamageCondition extends Condition {
 }
 
 object Condition {
+
+  def addCondition(creature: Creature, condition: Condition): Creature = {
+    val conditionAppliedCreature = condition.onConditionApplied(creature)
+
+    val updatedConditions = creature.conditions :+ condition
+    Creature.creatureConditionsLens.set(updatedConditions)(conditionAppliedCreature)
+  }
 
   implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>
     x.name == y.name && x.saveDc == y.saveDc
