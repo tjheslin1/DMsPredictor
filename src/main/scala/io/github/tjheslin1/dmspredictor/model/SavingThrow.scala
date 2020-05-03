@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
-import io.github.tjheslin1.dmspredictor.model.condition.Stunned
+import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Stunned}
 import io.github.tjheslin1.dmspredictor.monsters.{Legendary, Monster}
 
 object SavingThrow {
@@ -14,8 +14,7 @@ object SavingThrow {
       target: Creature
   ): (Boolean, Creature) = {
     val (passed, updatedCreature) = (attribute, target) match {
-      case (Strength | Dexterity, creature)
-          if creature.conditions.map(_.name).contains(Stunned.name) =>
+      case (Strength | Dexterity, creature) if autoFailsStrengthAndDexteritySaves(creature) =>
         (false, creature)
       case (attr, p: Player) =>
         if (p.savingThrowProficiencies.exists(_ == attr)) {
@@ -65,4 +64,8 @@ object SavingThrow {
     if (passed == false) (false, updatedCreature)
     else savingThrowPassed(dc, attribute, target)
   }
+
+  private def autoFailsStrengthAndDexteritySaves(creature: Creature): Boolean =
+    creature.conditions.map(_.name).contains(Stunned.name) ||
+      creature.conditions.map(_.name).contains(Paralyzed.name)
 }

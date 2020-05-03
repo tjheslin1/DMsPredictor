@@ -89,6 +89,12 @@ class StunnedSpec extends UnitSpecBase {
     }
   }
 
+  "onConditionApplied" should {
+    "set the creature's defense status to Disadvantage" in {
+      fail("TODO")
+    }
+  }
+
   "Stunned condition" should {
 
     "prevent the creature from taking actions and reactions" in {
