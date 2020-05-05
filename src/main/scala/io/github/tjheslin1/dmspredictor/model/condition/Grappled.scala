@@ -4,13 +4,15 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
-@Lenses("_") case class Grappled(saveDc: Int, name: String = Grappled.name)
-    extends StartOfTurnCondition
-    with LazyLogging {
+object Grappled {
+  val name = "Grappled"
+}
 
+@Lenses("_") case class Grappled(saveDc: Int) extends StartOfTurnCondition with LazyLogging {
+
+  val name                       = Grappled.name
   val turnsLeft: Int             = 100
   val missesTurn: Boolean        = false
   val isHandledOnDamage: Boolean = false
@@ -24,12 +26,9 @@ import monocle.macros.Lenses
     val (passed, updatedCreature) = savingThrowPassed(saveDc, attribute, creature)
 
     if (passed) {
-      val grappled          = updatedCreature.conditions.find(_.name == name).get
-      val updatedConditions = updatedCreature.conditions.except(grappled)
-
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+      Condition.removeCondition(updatedCreature, name)
     } else {
       logger.debug(s"${creature.name} is still $name")
 
@@ -38,8 +37,4 @@ import monocle.macros.Lenses
   }
 
   def onConditionApplied(creature: Creature): Creature = creature
-}
-
-object Grappled {
-  val name: String = "Grappled"
 }

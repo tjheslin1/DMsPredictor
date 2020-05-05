@@ -242,7 +242,7 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
-        Paralyzed(10, 10, attribute, "tracked-condition-spell")
+        Paralyzed(10, 10, attribute)
 
       override def effect[_: RS](spellCaster: SpellCaster,
                                  spellLevel: SpellLevel,

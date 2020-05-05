@@ -20,8 +20,8 @@ object VampireAbilities extends LazyLogging {
     new Ability(combatant) {
       val vampire = combatant.creature.asInstanceOf[Vampire]
 
-      val name: String = "Bite (Vampire)"
-      val order: Int   = currentOrder
+      val name  = "Bite (Vampire)"
+      val order = currentOrder
 
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = SingleAttack
@@ -81,8 +81,8 @@ object VampireAbilities extends LazyLogging {
     new Ability(combatant) {
       val vampire = combatant.creature.asInstanceOf[Vampire]
 
-      val name: String = "Unarmed Strike (Vampire)"
-      val order: Int   = currentOrder
+      val name  = "Unarmed Strike (Vampire)"
+      val order = currentOrder
 
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = SingleAttack
@@ -137,8 +137,8 @@ object VampireAbilities extends LazyLogging {
     new Ability(combatant) {
       val vampire = combatant.creature.asInstanceOf[Vampire]
 
-      val name: String = "Charm (Vampire)"
-      val order: Int   = currentOrder
+      val name  = "Charm (Vampire)"
+      val order = currentOrder
 
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = WholeAction

@@ -3,20 +3,19 @@ package io.github.tjheslin1.dmspredictor.model.condition
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.util.ListOps._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.removeCondition
 import monocle.macros.Lenses
 
 object Charmed {
   val name = "Charmed"
 }
 
-@Lenses("_") case class Charmed(saveDc: Int, name: String = Charmed.name)
-    extends StartOfTurnCondition
-    with LazyLogging {
+@Lenses("_") case class Charmed(saveDc: Int) extends StartOfTurnCondition with LazyLogging {
 
-  val turnsLeft: Int             = 100
-  val missesTurn: Boolean        = true
-  val isHandledOnDamage: Boolean = true
+  val name              = Charmed.name
+  val turnsLeft         = 100
+  val missesTurn        = true
+  val isHandledOnDamage = true
 
   // can only be removed by passing the saving throw
   def decrementTurnsLeft(): Condition = this
@@ -25,12 +24,9 @@ object Charmed {
     val (passed, updatedCreature) = savingThrowPassed(saveDc, Wisdom, creature)
 
     if (passed) {
-      val charmed           = updatedCreature.conditions.find(_.name == name).get
-      val updatedConditions = updatedCreature.conditions.except(charmed) :+ CharmImmunity
-
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+      removeCondition(updatedCreature, name)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
 

@@ -2,13 +2,15 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, OnDamageCondition, Paralyzed, PassiveCondition, StartOfTurnCondition}
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.{addCondition, removeCondition}
+import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object ClericSpells extends LazyLogging {
 
@@ -44,24 +46,38 @@ object ClericSpells extends LazyLogging {
     val benefitsFromHigherSpellSlot        = true
     val halfDamageOnMiss                   = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
+      (3 + spellLevel) * D6
 
-    // TODO Apply advantage effect
     override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
-      target
+      attackResult match {
+        case CriticalHit | Hit =>
+          addCondition(target, GuidingBoltCondition())
+        case CriticalMiss | Miss => target
+      }
   }
 
   case class GuidingBoltCondition(turnsLeft: Int = 2) extends OnDamageCondition {
-    val name = "Guiding Bolt (Condition)"
-    val missesTurn = false
-    val saveDc = 0
+    val name              = "Guiding Bolt (Condition)"
+    val missesTurn        = false
+    val saveDc            = 0
     val isHandledOnDamage = true
 
-    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = ???
+    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = {
+      val defenseUpdatedCreature =
+        Creature.creatureDefenseStatusLens.set(Regular)(creature)
 
-    def decrementTurnsLeft(): Condition = ???
+      removeCondition(defenseUpdatedCreature, name)
+    }
 
-    override def onConditionApplied(creature: Creature): Creature = creature
+    def decrementTurnsLeft(): Condition = {
+      GuidingBoltCondition(turnsLeft - 1)
+
+      throw new NotImplementedError("Need to updated Combatant")
+    }
+
+    override def onConditionApplied(creature: Creature): Creature =
+      Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
   }
 
   case object CureWounds extends SingleTargetHealingSpell {
@@ -78,7 +94,7 @@ object ClericSpells extends LazyLogging {
   }
 
   case object HoldPerson extends ConcentrationConditionSpell {
-    val name: String = "Hold Person"
+    val name = "Hold Person"
 
     val singleTarget: Boolean = true
     val attribute: Attribute  = Wisdom
@@ -111,20 +127,22 @@ object ClericSpells extends LazyLogging {
       spellLevel: SpellLevel,
       saveDc: Int,
       turnsLeft: Int,
-      attribute: Attribute,
-      name: String = "Spirit Guardians (attack)"
+      attribute: Attribute
   ) extends StartOfTurnCondition {
-    val missesTurn: Boolean        = false
-    val isHandledOnDamage: Boolean = false
+    val name              = "Spirit Guardians (attack)"
+    val missesTurn        = false
+    val isHandledOnDamage = false
 
-    def decrementTurnsLeft(): Condition = this.copy(turnsLeft = this.turnsLeft - 1)
+    def decrementTurnsLeft(): Condition =
+      this.copy(turnsLeft = this.turnsLeft - 1)
 
     def handleStartOfTurn[_: RS](creature: Creature): Creature = {
       val damage = spellLevel.value * D8
 
       logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
 
-      val (passed, updatedCreature) = savingThrowPassed(saveDc, Wisdom, creature)
+      val (passed, updatedCreature) =
+        savingThrowPassed(saveDc, Wisdom, creature)
 
       if (passed)
         updatedCreature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)

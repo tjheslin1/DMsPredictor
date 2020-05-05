@@ -5,7 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 
 object Shield extends Armour with Equipment {
 
-  val name: String = "Shield"
+  val name = "Shield"
 
   def armourClass(dexterity: Stat): Int = 2
 }

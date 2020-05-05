@@ -5,17 +5,20 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
-object Turned
+object Turned {
+  val name = "Turned"
+}
 
-@Lenses("_") case class Turned(saveDc: Int, turnsLeft: Int, name: String = "Turned")
+@Lenses("_") case class Turned(saveDc: Int, turnsLeft: Int)
     extends OnDamageCondition
     with LazyLogging {
 
+  val name                       = Turned.name
   val attribute: Attribute       = Wisdom
   val missesTurn: Boolean        = true
   val isHandledOnDamage: Boolean = true
 
-  def decrementTurnsLeft(): Condition = Turned(saveDc, turnsLeft - 1, name)
+  def decrementTurnsLeft(): Condition = Turned(saveDc, turnsLeft - 1)
 
   override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = {
     val turned            = creature.conditions.find(_.name == name).get

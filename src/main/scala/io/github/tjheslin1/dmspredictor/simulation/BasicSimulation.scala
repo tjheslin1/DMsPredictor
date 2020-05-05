@@ -29,8 +29,7 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus)
 
           pcs.foreach(pc => logger.debug(s"pc: ${pc.creature.name} - hp=${pc.creature.health}"))
           mobs.foreach(mob =>
-            logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}")
-          )
+            logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
 
           determineOutcome(updatedInitiative, pcs, mobs)
         } else SimulationResult(Success, info)

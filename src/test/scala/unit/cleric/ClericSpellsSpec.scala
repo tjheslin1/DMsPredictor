@@ -140,9 +140,9 @@ class ClericSpellsSpec extends UnitSpecBase {
         new TestContext {
           override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
-          val fiftyHpRogue = rogue.withHealth(50).withMaxHealth(50)
+          val guidingBoltedRogue = rogue.withCondition(GuidingBoltCondition())
 
-          val updatedRogue = GuidingBoltCondition().handleOnDamage(fiftyHpRogue, 20)
+          val updatedRogue = GuidingBoltCondition().handleOnDamage(guidingBoltedRogue, 20)
 
           updatedRogue.defenseStatus shouldBe Regular
         }

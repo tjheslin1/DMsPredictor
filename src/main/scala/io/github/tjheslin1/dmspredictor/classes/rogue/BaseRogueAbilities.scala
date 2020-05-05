@@ -79,8 +79,8 @@ object BaseRogueAbilities extends LazyLogging {
     new Ability(combatant) {
       val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
 
-      val name: String = "Hide (Rogue)"
-      val order: Int   = currentPriority
+      val name  = "Hide (Rogue)"
+      val order = currentPriority
 
       val levelRequirement: Level = LevelTwo
 

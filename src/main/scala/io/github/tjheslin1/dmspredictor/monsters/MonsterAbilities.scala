@@ -17,8 +17,8 @@ object MonsterAbilities extends LazyLogging {
     new Ability(combatant) {
       val monster = combatant.creature.asInstanceOf[Monster]
 
-      val name: String = s"Multi attack (Monster): $numberOfAttacks attacks"
-      val order: Int   = currentOrder
+      val name  = s"Multi attack (Monster): $numberOfAttacks attacks"
+      val order = currentOrder
 
       val levelRequirement: Level = LevelOne
 

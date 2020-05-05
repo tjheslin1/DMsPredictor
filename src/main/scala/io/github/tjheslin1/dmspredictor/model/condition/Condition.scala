@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.model.condition
 
 import cats.Eq
 import io.github.tjheslin1.dmspredictor.model._
-import monocle.Lens
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 sealed trait ConditionType extends Product with Serializable
 
@@ -67,6 +67,13 @@ object Condition {
       Creature.creatureConditionsLens.set(updatedConditions)(conditionAppliedCreature)
 
     Combatant.creatureLens.set(updatedCreature)(combatant)
+  }
+
+  def removeCondition(creature: Creature, conditionName: String): Creature = {
+    val condition         = creature.conditions.find(_.name == conditionName).get
+    val updatedConditions = creature.conditions.except(condition)
+
+    Creature.creatureConditionsLens.set(updatedConditions)(creature)
   }
 
   implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>

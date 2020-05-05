@@ -74,8 +74,8 @@ object WizardSpells extends LazyLogging {
   }
 
   case object AcidArrow extends SingleTargetAttackSpell {
-    val name: String = "Acid Arrow"
-    val damageType   = Acid
+    val name       = "Acid Arrow"
+    val damageType = Acid
 
     val school                      = Evocation
     val castingTime                 = OneActionCast
@@ -115,7 +115,7 @@ object WizardSpells extends LazyLogging {
   }
 
   case object ShieldSpell extends OnHitReaction {
-    val name: String = "Shield (spell)"
+    val name = "Shield (spell)"
 
     def updateAttackOnReaction[_: RS](
         reactingCreature: Creature,

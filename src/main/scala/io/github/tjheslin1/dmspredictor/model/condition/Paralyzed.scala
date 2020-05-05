@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.condition
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.util.ListOps._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.removeCondition
 import monocle.macros.Lenses
 
 object Paralyzed {
@@ -13,25 +13,21 @@ object Paralyzed {
 @Lenses("_") case class Paralyzed(
     saveDc: Int,
     turnsLeft: Int,
-    attribute: Attribute,
-    name: String = Paralyzed.name
+    attribute: Attribute
 ) extends EndOfTurnCondition
     with LazyLogging {
 
+  val name              = Paralyzed.name
   val missesTurn        = true
   val isHandledOnDamage = false
 
-  def decrementTurnsLeft(): Condition = Paralyzed(saveDc, turnsLeft - 1, attribute, name)
+  def decrementTurnsLeft(): Condition = Paralyzed(saveDc, turnsLeft - 1, attribute)
 
   def handleEndOfTurn[_: RS](creature: Creature): Creature = {
     val (passed, updatedCreature) = savingThrowPassed(saveDc, attribute, creature)
 
     if (passed) {
-      val paralyzed         = updatedCreature.conditions.find(_.name == name).get
-      val updatedConditions = updatedCreature.conditions.except(paralyzed)
-
-      val conditionUpdatedCreature =
-        Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+      val conditionUpdatedCreature = removeCondition(updatedCreature, name)
 
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
