@@ -9,7 +9,7 @@ import util.TestData._
 
 class CharmedSpec extends UnitSpecBase {
 
-  "handle" should {
+  "handleStartOfTurn" should {
     "sustain Charmed condition if saving throw failed" in {
       forAll { goblin: Goblin =>
         new TestContext {

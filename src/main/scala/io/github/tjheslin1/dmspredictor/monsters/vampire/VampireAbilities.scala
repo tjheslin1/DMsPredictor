@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.addCondition
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.{CharmDC, UnarmedStrike}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
@@ -170,9 +171,7 @@ object VampireAbilities extends LazyLogging {
           else {
             logger.debug(s"${updatedTarget.creature.name} has been Charmed")
 
-            val charmedCreature = Condition.addCondition(updatedTarget.creature, Charmed(CharmDC))
-
-            val charmedTarget = Combatant.creatureLens.set(charmedCreature)(updatedTarget)
+            val charmedTarget = addCondition(updatedTarget, Charmed(CharmDC))
 
             (combatant, others.replace(charmedTarget))
           }

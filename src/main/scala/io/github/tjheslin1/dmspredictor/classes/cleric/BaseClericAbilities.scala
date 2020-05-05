@@ -4,7 +4,8 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
-import io.github.tjheslin1.dmspredictor.model.condition.{Turned, TurnedCondition}
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.addCondition
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned, TurnedCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy.Focus
@@ -45,8 +46,7 @@ object BaseClericAbilities extends LazyLogging {
 
               if (passed) updatedUndead
               else
-                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                  .set(updatedCreature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
+                addCondition(updatedUndead, Turned(dc, 10))
             } else {
               val (passed, updatedCreature) =
                 savingThrowPassed(dc, Wisdom, undead.creature)
@@ -54,9 +54,7 @@ object BaseClericAbilities extends LazyLogging {
               val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
 
               if (passed) updatedUndead
-              else
-                (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                  .set(updatedCreature.conditions ++ List(Turned(dc, 10)))(updatedUndead)
+              else addCondition(updatedUndead, Turned(dc, 10))
             }
           }
 

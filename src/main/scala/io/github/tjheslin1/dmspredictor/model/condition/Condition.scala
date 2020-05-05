@@ -29,7 +29,6 @@ trait Condition {
 
 abstract class PassiveCondition extends Condition {
 
-  val turnsLeft         = Integer.MAX_VALUE
   val saveDc            = 0
   val isHandledOnDamage = false
 
@@ -60,11 +59,14 @@ abstract class OnDamageCondition extends Condition {
 
 object Condition {
 
-  def addCondition(creature: Creature, condition: Condition): Creature = {
-    val conditionAppliedCreature = condition.onConditionApplied(creature)
+  def addCondition(combatant: Combatant, condition: Condition): Combatant = {
+    val conditionAppliedCreature = condition.onConditionApplied(combatant.creature)
 
-    val updatedConditions = creature.conditions :+ condition
-    Creature.creatureConditionsLens.set(updatedConditions)(conditionAppliedCreature)
+    val updatedConditions = conditionAppliedCreature.conditions :+ condition
+    val updatedCreature =
+      Creature.creatureConditionsLens.set(updatedConditions)(conditionAppliedCreature)
+
+    Combatant.creatureLens.set(updatedCreature)(combatant)
   }
 
   implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>

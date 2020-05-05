@@ -9,7 +9,7 @@ import util.TestData._
 
 class ParalyzedSpec extends UnitSpecBase {
 
-  "handle" should {
+  "handleEndOfTurn" should {
     "sustain the Paralyzed condition if saving throw failed" in {
       new TestContext {
         override implicit val roll: RollStrategy = Dice.naturalOne

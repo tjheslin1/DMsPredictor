@@ -17,6 +17,8 @@ object RangerSpells extends LazyLogging {
     val missesTurn                  = false
     val benefitsFromHigherSpellSlot = false
 
+    val turnsLeft = Integer.MAX_VALUE
+
     def decrementTurnsLeft(): Condition = this
   }
 

@@ -150,7 +150,7 @@ object WizardSpells extends LazyLogging {
     }
   }
 
-  case class ShieldBuffCondition(override val turnsLeft: Int = 1) extends PassiveCondition {
+  case class ShieldBuffCondition(turnsLeft: Int = 1) extends PassiveCondition {
     val missesTurn = false
     val name       = "Shield (Buff)"
 
