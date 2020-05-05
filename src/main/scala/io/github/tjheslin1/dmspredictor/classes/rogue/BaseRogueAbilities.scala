@@ -15,101 +15,105 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BaseRogueAbilities extends LazyLogging {
 
-  def sneakAttack(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-    val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
+  def sneakAttack(currentPriority: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
 
-    val name: String                 = "Sneak Attack"
-    val order: Int                   = currentPriority
-    val levelRequirement: Level      = LevelOne
-    val abilityAction: AbilityAction = WholeAction
+      val name: String                 = "Sneak Attack"
+      val order: Int                   = currentPriority
+      val levelRequirement: Level      = LevelOne
+      val abilityAction: AbilityAction = WholeAction
 
-    def triggerMet(others: List[Combatant]): Boolean = true
-    def conditionMet: Boolean =
-      baseRogue.attackStatus == Advantage || baseRogue.hiddenFrom.isEmpty == false
+      def triggerMet(others: List[Combatant]): Boolean = true
 
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      logger.debug(s"${combatant.creature.name} used $name")
+      def conditionMet: Boolean =
+        baseRogue.attackStatus == Advantage || baseRogue.hiddenFrom.isEmpty == false
 
-      nextToFocus(combatant, baseRogue.hiddenFrom, focus) match {
-        case None => (combatant, others)
-        case Some(target) =>
-          val sneakAttackingRogue =
-            (Combatant.creatureLens composeLens Creature.creatureAttackStatusLens)
-              .set(Advantage)(combatant)
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
 
-          val (attackResult, hitTarget) =
-            attack(sneakAttackingRogue, sneakAttackingRogue.creature.weapon, target)
-          attackResult match {
-            case CriticalMiss | Miss => (combatant, others)
-            case attackHitResult =>
-              val sneakAttackDmg = {
-                def damage: Int = sneakAttackDamage(baseRogue.level) * BaseRogue.SneakAttackDice
+        nextToFocus(combatant, baseRogue.hiddenFrom, focus) match {
+          case None => (combatant, others)
+          case Some(target) =>
+            val sneakAttackingRogue =
+              (Combatant.creatureLens composeLens Creature.creatureAttackStatusLens)
+                .set(Advantage)(combatant)
 
-                if (attackHitResult == CriticalHit) damage + damage
-                else damage
-              }
+            val (attackResult, hitTarget) =
+              attack(sneakAttackingRogue, sneakAttackingRogue.creature.weapon, target)
+            attackResult match {
+              case CriticalMiss | Miss => (combatant, others)
+              case attackHitResult =>
+                val sneakAttackDmg = {
+                  def damage: Int = sneakAttackDamage(baseRogue.level) * BaseRogue.SneakAttackDice
 
-              val (updatedRogue, updatedTarget, updatedOthers) =
-                resolveDamage(
-                  sneakAttackingRogue,
-                  hitTarget,
-                  others,
-                  sneakAttackingRogue.creature.weapon,
-                  attackHitResult,
-                  sneakAttackDmg
-                )
+                  if (attackHitResult == CriticalHit) damage + damage
+                  else damage
+                }
 
-              logger.debug(s"${baseRogue.name} dealt $sneakAttackDmg sneak attack damage")
+                val (updatedRogue, updatedTarget, updatedOthers) =
+                  resolveDamage(
+                    sneakAttackingRogue,
+                    hitTarget,
+                    others,
+                    sneakAttackingRogue.creature.weapon,
+                    attackHitResult,
+                    sneakAttackDmg
+                  )
 
-              (updatedRogue, updatedOthers.replace(updatedTarget))
-          }
+                logger.debug(s"${baseRogue.name} dealt $sneakAttackDmg sneak attack damage")
 
+                (updatedRogue, updatedOthers.replace(updatedTarget))
+            }
+
+        }
       }
-    }
 
-    def update: Creature = BaseRogue.hiddenFromLens.set(List.empty[Combatant])(baseRogue)
-  }
+      def update: Creature = BaseRogue.hiddenFromLens.set(List.empty[Combatant])(baseRogue)
+    }
 
   /**
     * Assumed to be using Cunning Action.
     */
-  def hide(currentPriority: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-    val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
+  def hide(currentPriority: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val baseRogue = combatant.creature.asInstanceOf[BaseRogue]
 
-    val name: String = "Hide (Rogue)"
-    val order: Int   = currentPriority
+      val name: String = "Hide (Rogue)"
+      val order: Int   = currentPriority
 
-    val levelRequirement: Level = LevelTwo
+      val levelRequirement: Level = LevelTwo
 
-    val abilityAction: AbilityAction = BonusAction
+      val abilityAction: AbilityAction = BonusAction
 
-    def triggerMet(others: List[Combatant]): Boolean = true
-    def conditionMet: Boolean                        = baseRogue.bonusActionUsed == false
+      def triggerMet(others: List[Combatant]): Boolean = true
+      def conditionMet: Boolean                        = baseRogue.bonusActionUsed == false
 
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      logger.debug(s"${combatant.creature.name} used $name")
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
 
-      val hideDc = D20.roll() + baseRogue.skills.stealth
+        val hideDc = D20.roll() + baseRogue.skills.stealth
 
-      val updatedRogue = monsters(others).foldLeft(baseRogue) {
-        case (hidingRogue, enemy) =>
-          if (enemy.creature.isConscious && enemy.creature.passivePerception >= hideDc) hidingRogue
-          else {
-            val updatedEnemiesHiddenFrom = hidingRogue.hiddenFrom ++ List(enemy)
+        val updatedRogue = monsters(others).foldLeft(baseRogue) {
+          case (hidingRogue, enemy) =>
+            if (enemy.creature.isConscious && enemy.creature.passivePerception >= hideDc)
+              hidingRogue
+            else {
+              val updatedEnemiesHiddenFrom = hidingRogue.hiddenFrom ++ List(enemy)
 
-            logger.debug(s"${baseRogue.name} is hidden from ${enemy.creature.name}")
+              logger.debug(s"${baseRogue.name} is hidden from ${enemy.creature.name}")
 
-            BaseRogue.hiddenFromLens.set(updatedEnemiesHiddenFrom)(baseRogue)
-          }
+              BaseRogue.hiddenFromLens.set(updatedEnemiesHiddenFrom)(baseRogue)
+            }
+        }
+
+        val updatedCombatant = Combatant.creatureLens.set(updatedRogue)(combatant)
+
+        (updatedCombatant, others)
       }
 
-      val updatedCombatant = Combatant.creatureLens.set(updatedRogue)(combatant)
-
-      (updatedCombatant, others)
+      def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
     }
-
-    def update: Creature = Player.playerBonusActionUsedLens.set(true)(baseRogue)
-  }
 
   val uncannyDodge: OnDamageReaction =
     new OnDamageReaction {

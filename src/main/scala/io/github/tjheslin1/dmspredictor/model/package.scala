@@ -26,6 +26,7 @@ package object model {
     def toLong(x: RollResult): Long                     = x.result
     def toFloat(x: RollResult): Float                   = x.result
     def toDouble(x: RollResult): Double                 = x.result
+
     def compare(x: RollResult, y: RollResult): Int =
       if (x.result < y.result) -1
       else if (x.result == y.result) 0

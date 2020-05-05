@@ -93,12 +93,13 @@ object Barbarian {
     )
   }
 
-  implicit def barbarianShow[_: RS]: Show[Barbarian] = Show.show { barbarian =>
-    s"Barbarian: " +
-      s"Name: ${barbarian.name}, " +
-      s"health: ${barbarian.health}, " +
-      s"AC: ${barbarian.armourClass}"
-  }
+  implicit def barbarianShow[_: RS]: Show[Barbarian] =
+    Show.show { barbarian =>
+      s"Barbarian: " +
+        s"Name: ${barbarian.name}, " +
+        s"health: ${barbarian.health}, " +
+        s"AC: ${barbarian.armourClass}"
+    }
 
   // format: off
   val strengthLens: Lens[Barbarian, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

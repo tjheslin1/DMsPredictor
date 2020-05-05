@@ -73,12 +73,13 @@ object Fighter {
     twoWeaponFighting(4)
   )
 
-  implicit def fighterShow[_: RS]: Show[Fighter] = Show.show { fighter =>
-    s"Fighter: " +
-      s"Name: ${fighter.name}, " +
-      s"health: ${fighter.health}, " +
-      s"AC: ${fighter.armourClass}"
-  }
+  implicit def fighterShow[_: RS]: Show[Fighter] =
+    Show.show { fighter =>
+      s"Fighter: " +
+        s"Name: ${fighter.name}, " +
+        s"health: ${fighter.health}, " +
+        s"AC: ${fighter.armourClass}"
+    }
 
   // format: off
   val strengthLens: Lens[Fighter, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

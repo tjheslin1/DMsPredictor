@@ -96,12 +96,13 @@ object Ranger {
     (HuntersMark.spellLevel, HuntersMark.spellEffect) -> HuntersMark
   )
 
-  implicit def rangerShow[_: RS]: Show[Ranger] = Show.show { ranger =>
-    s"Ranger: " +
-      s"Name: ${ranger.name}, " +
-      s"health: ${ranger.health}, " +
-      s"AC: ${ranger.armourClass}"
-  }
+  implicit def rangerShow[_: RS]: Show[Ranger] =
+    Show.show { ranger =>
+      s"Ranger: " +
+        s"Name: ${ranger.name}, " +
+        s"health: ${ranger.health}, " +
+        s"AC: ${ranger.armourClass}"
+    }
 
   // format: off
   val strengthLens: Lens[Ranger, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

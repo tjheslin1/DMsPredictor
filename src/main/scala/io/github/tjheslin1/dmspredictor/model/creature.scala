@@ -69,12 +69,13 @@ trait Creature {
 
 object Creature extends LazyLogging {
 
-  implicit def creatureShow[_: RS]: Show[Creature] = Show.show { creature =>
-    s"${creature.creatureType} - " +
-      s"Name: ${creature.name}, " +
-      s"health: ${creature.health}, " +
-      s"AC: ${creature.armourClass}"
-  }
+  implicit def creatureShow[_: RS]: Show[Creature] =
+    Show.show { creature =>
+      s"${creature.creatureType} - " +
+        s"Name: ${creature.name}, " +
+        s"health: ${creature.health}, " +
+        s"AC: ${creature.armourClass}"
+    }
 
   val creatureHealthLens: Lens[Creature, Int] = Lens[Creature, Int](_.health) { hp =>
     {

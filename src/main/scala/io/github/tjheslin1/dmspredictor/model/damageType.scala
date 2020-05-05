@@ -3,6 +3,7 @@ package io.github.tjheslin1.dmspredictor.model
 sealed trait DamageType extends Product with Serializable
 
 object DamageType {
+
   val allDamageTypes = List(
     Bludgeoning,
     Piercing,

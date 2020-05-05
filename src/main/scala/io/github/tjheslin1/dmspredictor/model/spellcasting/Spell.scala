@@ -60,7 +60,9 @@ object Spell {
           checkCasterIsConcentrating,
           multiAttackOnly
         )
-      else if (checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration)
+      else if (
+        checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration
+      )
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
@@ -91,13 +93,14 @@ object Spell {
   def spellSaveDc(spellCaster: SpellCaster): Int =
     8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
-  def schoolAttribute(spellCaster: SpellCaster): Attribute = spellCaster match {
-    case _: Cleric     => Wisdom
-    case _: BaseCleric => Wisdom
-    case _: Wizard     => Intelligence
+  def schoolAttribute(spellCaster: SpellCaster): Attribute =
+    spellCaster match {
+      case _: Cleric     => Wisdom
+      case _: BaseCleric => Wisdom
+      case _: Wizard     => Intelligence
 
-    case _: Lich => Intelligence
-  }
+      case _: Lich => Intelligence
+    }
 
   def attributeModifierForSchool(spellCaster: SpellCaster): Int =
     attributeModifier(spellCaster, schoolAttribute(spellCaster))

@@ -72,12 +72,13 @@ object Berserker {
     recklessAttack(4)
   )
 
-  implicit def berserkerShow[_: RS]: Show[Berserker] = Show.show { berserker =>
-    s"Berserker: " +
-      s"Name: ${berserker.name}, " +
-      s"health: ${berserker.health}, " +
-      s"AC: ${berserker.armourClass}"
-  }
+  implicit def berserkerShow[_: RS]: Show[Berserker] =
+    Show.show { berserker =>
+      s"Berserker: " +
+        s"Name: ${berserker.name}, " +
+        s"health: ${berserker.health}, " +
+        s"AC: ${berserker.armourClass}"
+    }
 
   // format: off
   val strengthLens: Lens[Berserker, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)

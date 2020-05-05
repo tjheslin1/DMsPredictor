@@ -26,56 +26,57 @@ object CoreAbilities extends LazyLogging {
     extraAttack(1)
   )
 
-  def extraAttack(currentOrder: Int)(combatant: Combatant): Ability = new Ability(combatant) {
-    val player = combatant.creature.asInstanceOf[Player]
+  def extraAttack(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val player = combatant.creature.asInstanceOf[Player]
 
-    val name             = ExtraAttack
-    val order            = currentOrder
-    val levelRequirement = LevelFive
-    val abilityAction    = SingleAttack
+      val name             = ExtraAttack
+      val order            = currentOrder
+      val levelRequirement = LevelFive
+      val abilityAction    = SingleAttack
 
-    def triggerMet(others: List[Combatant]) = true
-    def conditionMet: Boolean               = player.level >= levelRequirement
+      def triggerMet(others: List[Combatant]) = true
+      def conditionMet: Boolean               = player.level >= levelRequirement
 
-    def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-      logger.debug(s"${combatant.creature.name} used $name")
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
 
-      nextToFocus(combatant, monsters(others), focus) match {
-        case None => (combatant, others)
-        case Some(target) =>
-          nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
-            .fold {
-              val (updatedAttacker, updatedTarget, updatedOthers) =
-                attackAndDamageTimes(2, combatant, target, others)
+        nextToFocus(combatant, monsters(others), focus) match {
+          case None => (combatant, others)
+          case Some(target) =>
+            nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
+              .fold {
+                val (updatedAttacker, updatedTarget, updatedOthers) =
+                  attackAndDamageTimes(2, combatant, target, others)
 
-              (updatedAttacker, updatedOthers.replace(updatedTarget))
-            } { nextAbility =>
-              val (updatedCombatant, updatedOthers) =
-                useAdditionalAbility(nextAbility, combatant, others, focus)
+                (updatedAttacker, updatedOthers.replace(updatedTarget))
+              } { nextAbility =>
+                val (updatedCombatant, updatedOthers) =
+                  useAdditionalAbility(nextAbility, combatant, others, focus)
 
-              nextAbilityToUseInConjunction(
-                updatedCombatant,
-                updatedOthers,
-                order,
-                one(SingleAttack)
-              ).fold {
-                nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
-                  (updatedCombatant, updatedOthers)
-                } { focusTarget =>
-                  val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
-                    attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
+                nextAbilityToUseInConjunction(
+                  updatedCombatant,
+                  updatedOthers,
+                  order,
+                  one(SingleAttack)
+                ).fold {
+                  nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
+                    (updatedCombatant, updatedOthers)
+                  } { focusTarget =>
+                    val (updatedAttacker, updatedAttackedTarget, updatedOthers2) =
+                      attackAndDamage(updatedCombatant, focusTarget, updatedOthers)
 
-                  (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
+                    (updatedAttacker, updatedOthers2.replace(updatedAttackedTarget))
+                  }
+                } { nextAbility2 =>
+                  useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
                 }
-              } { nextAbility2 =>
-                useAdditionalAbility(nextAbility2, updatedCombatant, updatedOthers, focus)
               }
-            }
+        }
       }
-    }
 
-    def update: Creature = player
-  }
+      def update: Creature = player
+    }
 
   def castSingleTargetOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
@@ -159,6 +160,7 @@ object CoreAbilities extends LazyLogging {
     }
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
+
   def castSingleTargetHealingSpell(currentOrder: Int, bonusHealing: Int = 0)(
       combatant: Combatant
   ): Ability =
@@ -222,8 +224,7 @@ object CoreAbilities extends LazyLogging {
         }
 
         optHealedAlly.fold((updatedCombatant, others))(updatedTarget =>
-          (updatedCombatant, others.replace(updatedTarget))
-        )
+          (updatedCombatant, others.replace(updatedTarget)))
       }
 
       def update: Creature = updateSpellSlot(spellCaster, HealingSpell)

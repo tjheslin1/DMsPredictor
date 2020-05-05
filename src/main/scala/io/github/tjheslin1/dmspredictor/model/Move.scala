@@ -35,9 +35,11 @@ object Move extends LazyLogging {
 
     val otherCombatants = others.toList
 
-    if (turnStartConditionHandledCombatant.creature.isAlive &&
-        turnStartConditionHandledCombatant.creature.isConscious &&
-        missesTurn == false) {
+    if (
+      turnStartConditionHandledCombatant.creature.isAlive &&
+      turnStartConditionHandledCombatant.creature.isConscious &&
+      missesTurn == false
+    ) {
 
       logger.debug(s"${unactedCombatant.creature.name} starts their turn")
 

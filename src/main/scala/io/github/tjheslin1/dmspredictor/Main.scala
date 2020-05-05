@@ -83,11 +83,11 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
       input: String
   ): Either[Error, (SimulationConfig, String, BasicSimulation, String)] =
     for {
-      sqsMessage    <- decode[SQSMessage](input)
-      message       = sqsMessage.Records.head
+      sqsMessage <- decode[SQSMessage](input)
+      message = sqsMessage.Records.head
       configuration <- decode[SimulationConfig](message.body)
-      simHash       = message.messageAttributes.simulationHash.stringValue
-      parsedFocus   <- parseFocus(configuration.focus)
+      simHash = message.messageAttributes.simulationHash.stringValue
+      parsedFocus <- parseFocus(configuration.focus)
     } yield (
       configuration,
       simHash,
@@ -100,8 +100,8 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
   ): Either[Error, String] =
     for {
       sqsMessage <- decode[SQSMessage](input)
-      message    = sqsMessage.Records.head
-      simHash    = message.messageAttributes.simulationHash.stringValue
+      message = sqsMessage.Records.head
+      simHash = message.messageAttributes.simulationHash.stringValue
     } yield simHash
 
   private def writeToDynamo(simulationResult: SimulationResult): Unit = {

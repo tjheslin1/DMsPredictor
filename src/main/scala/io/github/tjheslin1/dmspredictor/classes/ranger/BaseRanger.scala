@@ -26,28 +26,29 @@ object BaseRanger {
   def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
-  def rangerSpellSlots(level: Level): SpellSlots = level match {
-    case LevelOne       => SpellSlots(0, 0, 0)
-    case LevelTwo       => SpellSlots(2, 0, 0)
-    case LevelThree     => SpellSlots(3, 0, 0)
-    case LevelFour      => SpellSlots(3, 0, 0)
-    case LevelFive      => SpellSlots(4, 2, 0)
-    case LevelSix       => SpellSlots(4, 2, 0)
-    case LevelSeven     => SpellSlots(4, 3, 0)
-    case LevelEight     => SpellSlots(4, 3, 0)
-    case LevelNine      => SpellSlots(4, 3, 2)
-    case LevelTen       => SpellSlots(4, 3, 2)
-    case LevelEleven    => SpellSlots(4, 3, 3)
-    case LevelTwelve    => SpellSlots(4, 3, 3)
-    case LevelThirteen  => SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0)
-    case LevelFourteen  => SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0)
-    case LevelFifteen   => SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0)
-    case LevelSixteen   => SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0)
-    case LevelSeventeen => SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0)
-    case LevelEighteen  => SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0)
-    case LevelNineteen  => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
-    case LevelTwenty    => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
-  }
+  def rangerSpellSlots(level: Level): SpellSlots =
+    level match {
+      case LevelOne       => SpellSlots(0, 0, 0)
+      case LevelTwo       => SpellSlots(2, 0, 0)
+      case LevelThree     => SpellSlots(3, 0, 0)
+      case LevelFour      => SpellSlots(3, 0, 0)
+      case LevelFive      => SpellSlots(4, 2, 0)
+      case LevelSix       => SpellSlots(4, 2, 0)
+      case LevelSeven     => SpellSlots(4, 3, 0)
+      case LevelEight     => SpellSlots(4, 3, 0)
+      case LevelNine      => SpellSlots(4, 3, 2)
+      case LevelTen       => SpellSlots(4, 3, 2)
+      case LevelEleven    => SpellSlots(4, 3, 3)
+      case LevelTwelve    => SpellSlots(4, 3, 3)
+      case LevelThirteen  => SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0)
+      case LevelFourteen  => SpellSlots(4, 3, 3, 1, 0, 0, 0, 0, 0)
+      case LevelFifteen   => SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0)
+      case LevelSixteen   => SpellSlots(4, 3, 3, 2, 0, 0, 0, 0, 0)
+      case LevelSeventeen => SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0)
+      case LevelEighteen  => SpellSlots(4, 3, 3, 3, 1, 0, 0, 0, 0)
+      case LevelNineteen  => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
+      case LevelTwenty    => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
+    }
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,

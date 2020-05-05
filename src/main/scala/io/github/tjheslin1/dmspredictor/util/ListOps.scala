@@ -6,6 +6,7 @@ import cats.syntax.eq._
 object ListOps {
 
   implicit class ListOps[T](val list: List[T]) extends AnyVal {
+
     def replace(t: T)(implicit eq: Eq[T]): List[T] =
       if (list.exists(_ === t)) {
         list.map {

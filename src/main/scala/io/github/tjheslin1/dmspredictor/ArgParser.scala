@@ -25,11 +25,12 @@ trait ArgParser {
 
   implicit val rollStrategy: RollStrategy
 
-  def parseFocus(focus: String): Either[Error, Focus] = focus.toLowerCase match {
-    case "lowestfirst" => LowestFirst.asRight
-    case "randomfocus" => RandomFocus.asRight
-    case _             => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
-  }
+  def parseFocus(focus: String): Either[Error, Focus] =
+    focus.toLowerCase match {
+      case "lowestfirst" => LowestFirst.asRight
+      case "randomfocus" => RandomFocus.asRight
+      case _             => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
+    }
 
   implicit val sqsMessageDecoder: Decoder[SQSMessage] = deriveDecoder[SQSMessage]
 
@@ -47,8 +48,8 @@ trait ArgParser {
 
   implicit val barbarianDecoder: Decoder[Barbarian] = Decoder.instance { c =>
     for {
-      levelInt      <- c.downField("level").as[Int]
-      level         = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr      <- c.downField("stats").as[String]
       stats         <- baseStatsConverter(c, statsStr)
       weapon        <- c.downField("weapon").as[String]
@@ -77,8 +78,8 @@ trait ArgParser {
 
   implicit val berserkerDecoder: Decoder[Berserker] = Decoder.instance { c =>
     for {
-      levelInt      <- c.downField("level").as[Int]
-      level         = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr      <- c.downField("stats").as[String]
       stats         <- baseStatsConverter(c, statsStr)
       weapon        <- c.downField("weapon").as[String]
@@ -107,8 +108,8 @@ trait ArgParser {
 
   implicit val clericDecoder: Decoder[Cleric] = Decoder.instance { c =>
     for {
-      levelInt   <- c.downField("level").as[Int]
-      level      = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr   <- c.downField("stats").as[String]
       stats      <- baseStatsConverter(c, statsStr)
       weapon     <- c.downField("weapon").as[String]
@@ -137,8 +138,8 @@ trait ArgParser {
 
   implicit val fighterDecoder: Decoder[Fighter] = Decoder.instance { c =>
     for {
-      levelInt    <- c.downField("level").as[Int]
-      level       = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr    <- c.downField("stats").as[String]
       stats       <- baseStatsConverter(c, statsStr)
       weapon      <- c.downField("weapon").as[String]
@@ -168,8 +169,8 @@ trait ArgParser {
 
   implicit val championDecoder: Decoder[Champion] = Decoder.instance { c =>
     for {
-      levelInt     <- c.downField("level").as[Int]
-      level        = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr     <- c.downField("stats").as[String]
       stats        <- baseStatsConverter(c, statsStr)
       weapon       <- c.downField("weapon").as[String]
@@ -199,8 +200,8 @@ trait ArgParser {
 
   implicit val rogueDecoder: Decoder[Rogue] = Decoder.instance { c =>
     for {
-      levelInt  <- c.downField("level").as[Int]
-      level     = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr  <- c.downField("stats").as[String]
       stats     <- baseStatsConverter(c, statsStr)
       weapon    <- c.downField("weapon").as[String]
@@ -228,8 +229,8 @@ trait ArgParser {
 
   implicit val wizardDecoder: Decoder[Wizard] = Decoder.instance { c =>
     for {
-      levelInt   <- c.downField("level").as[Int]
-      level      = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr   <- c.downField("stats").as[String]
       stats      <- baseStatsConverter(c, statsStr)
       weapon     <- c.downField("weapon").as[String]
@@ -258,8 +259,8 @@ trait ArgParser {
 
   implicit val rangerDecoder: Decoder[Ranger] = Decoder.instance { c =>
     for {
-      levelInt   <- c.downField("level").as[Int]
-      level      = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr   <- c.downField("stats").as[String]
       stats      <- baseStatsConverter(c, statsStr)
       weapon     <- c.downField("weapon").as[String]
@@ -291,8 +292,8 @@ trait ArgParser {
 
   implicit val hunterDecoder: Decoder[Hunter] = Decoder.instance { c =>
     for {
-      levelInt   <- c.downField("level").as[Int]
-      level      = Level(levelInt)
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
       statsStr   <- c.downField("stats").as[String]
       stats      <- baseStatsConverter(c, statsStr)
       weapon     <- c.downField("weapon").as[String]
@@ -383,21 +384,21 @@ trait ArgParser {
   implicit val playerDecoder: Decoder[Player] = Decoder.instance { c =>
     for {
       playerClass <- c.downField("class").as[String]
-      decoderOpt  = playerClassDecoderLookup.get(playerClass.toLowerCase)
+      decoderOpt = playerClassDecoderLookup.get(playerClass.toLowerCase)
       decoder <- decoderOpt.fold[Result[Decoder[_]]](
-                  DecodingFailure(s"Unknown player class: $playerClass", c.history).asLeft
-                )(d => d.asRight)
+        DecodingFailure(s"Unknown player class: $playerClass", c.history).asLeft
+      )(d => d.asRight)
       result <- decoder(c).asInstanceOf[Result[Player]]
     } yield result
   }
 
   implicit val monsterDecoder: Decoder[Monster] = Decoder.instance { c =>
     for {
-      monster    <- c.downField("monster").as[String]
+      monster <- c.downField("monster").as[String]
       decoderOpt = monsterDecoderLookup.get(monster.toLowerCase)
       decoder <- decoderOpt.fold[Result[Decoder[_]]](
-                  DecodingFailure(s"Unknown monster: $monster", c.history).asLeft
-                )(d => d.asRight)
+        DecodingFailure(s"Unknown monster: $monster", c.history).asLeft
+      )(d => d.asRight)
       result <- decoder(c).asInstanceOf[Result[Monster]]
     } yield result
   }
@@ -455,39 +456,41 @@ trait ArgParser {
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =
     for {
-      ints <- Either
-               .catchNonFatal(statsCsv.split(",").map(_.toInt))
-               .leftMap(e => DecodingFailure(e.getMessage, c.history))
+      ints <-
+        Either
+          .catchNonFatal(statsCsv.split(",").map(_.toInt))
+          .leftMap(e => DecodingFailure(e.getMessage, c.history))
       baseStats <- ints match {
-                    case Array(str, dex, con, int, wis, cha) =>
-                      BaseStats(
-                        unsafeApply(str),
-                        unsafeApply(dex),
-                        unsafeApply(con),
-                        unsafeApply(int),
-                        unsafeApply(wis),
-                        unsafeApply(cha)
-                      ).asRight
-                    case _ =>
-                      DecodingFailure(
-                        s"$statsCsv did not match expected format for stats",
-                        c.history
-                      ).asLeft
-                  }
+        case Array(str, dex, con, int, wis, cha) =>
+          BaseStats(
+            unsafeApply(str),
+            unsafeApply(dex),
+            unsafeApply(con),
+            unsafeApply(int),
+            unsafeApply(wis),
+            unsafeApply(cha)
+          ).asRight
+        case _ =>
+          DecodingFailure(
+            s"$statsCsv did not match expected format for stats",
+            c.history
+          ).asLeft
+      }
     } yield baseStats
 
   def skillsConverter(c: HCursor, skillsCsv: String): Result[Skills] =
     for {
-      ints <- Either
-               .catchNonFatal(skillsCsv.split(",").map(_.toInt))
-               .leftMap(e => DecodingFailure(e.getMessage, c.history))
+      ints <-
+        Either
+          .catchNonFatal(skillsCsv.split(",").map(_.toInt))
+          .leftMap(e => DecodingFailure(e.getMessage, c.history))
       skills <- ints match {
-                 case Array(perception, stealth) => Skills(perception, stealth).asRight
-                 case _ =>
-                   DecodingFailure(
-                     s"$skillsCsv did not match expected format for skills",
-                     c.history
-                   ).asLeft
-               }
+        case Array(perception, stealth) => Skills(perception, stealth).asRight
+        case _ =>
+          DecodingFailure(
+            s"$skillsCsv did not match expected format for skills",
+            c.history
+          ).asLeft
+      }
     } yield skills
 }

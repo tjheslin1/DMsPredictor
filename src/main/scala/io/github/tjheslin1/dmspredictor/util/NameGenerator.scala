@@ -11,7 +11,8 @@ object NameGenerator {
   def shuffled(cs: Seq[Char]) = scala.util.Random.shuffle(cs).head.toString
 
   def randomName =
-    shuffled(prefixStart) + shuffled(vowels) + "'" + shuffled(centreStart) + shuffled(vowels) + "'" + shuffled(
+    shuffled(prefixStart) + shuffled(vowels) + "'" + shuffled(centreStart) + shuffled(
+      vowels) + "'" + shuffled(
       suffixStart
     ) + shuffled(vowels)
 }

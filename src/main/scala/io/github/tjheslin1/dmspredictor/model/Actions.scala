@@ -21,9 +21,11 @@ case object CriticalHit extends AttackResult {
 case object Hit extends AttackResult {
   val result = 1
 }
+
 case object Miss extends AttackResult {
   val result = 0
 }
+
 case object CriticalMiss extends AttackResult {
   val result = -1
 }

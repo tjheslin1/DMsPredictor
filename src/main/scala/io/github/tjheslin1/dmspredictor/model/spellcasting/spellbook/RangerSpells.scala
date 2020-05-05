@@ -36,31 +36,33 @@ object RangerSpells extends LazyLogging {
 
   def huntersMarkOnWeaponDamageAbility(
       currentOrder: Int
-  )(combatant: Combatant): OnWeaponDamageAbility = new OnWeaponDamageAbility(combatant) {
+  )(combatant: Combatant): OnWeaponDamageAbility =
+    new OnWeaponDamageAbility(combatant) {
 
-    val name: String            = "Hunters Mark extra damage"
-    val order: Int              = currentOrder
-    val levelRequirement: Level = LevelTwo
+      val name: String            = "Hunters Mark extra damage"
+      val order: Int              = currentOrder
+      val levelRequirement: Level = LevelTwo
 
-    def damage[_: RS](): Int = 1 * D6
+      def damage[_: RS](): Int = 1 * D6
 
-    def triggerMet(others: List[Combatant]): Boolean = true
+      def triggerMet(others: List[Combatant]): Boolean = true
 
-    def conditionMet: Boolean = combatant.creature match {
-      case spellCastingPlayer: Player with SpellCaster =>
-        spellCastingPlayer.level >= levelRequirement &&
-          spellCastingPlayer.conditions.contains(HuntersMarkBuffCondition) &&
-          spellCastingPlayer.spellsKnown.exists {
-            case (_, spell) => spell.name == HuntersMark.name
-          }
-      case spellCaster: SpellCaster =>
-        spellCaster.conditions.contains(HuntersMarkBuffCondition) &&
-          spellCaster.spellsKnown.exists {
-            case (_, spell) => spell.name == HuntersMark.name
-          }
-      case _ => false
+      def conditionMet: Boolean =
+        combatant.creature match {
+          case spellCastingPlayer: Player with SpellCaster =>
+            spellCastingPlayer.level >= levelRequirement &&
+              spellCastingPlayer.conditions.contains(HuntersMarkBuffCondition) &&
+              spellCastingPlayer.spellsKnown.exists {
+                case (_, spell) => spell.name == HuntersMark.name
+              }
+          case spellCaster: SpellCaster =>
+            spellCaster.conditions.contains(HuntersMarkBuffCondition) &&
+              spellCaster.spellsKnown.exists {
+                case (_, spell) => spell.name == HuntersMark.name
+              }
+          case _ => false
+        }
+
+      def update: Creature = combatant.creature
     }
-
-    def update: Creature = combatant.creature
-  }
 }

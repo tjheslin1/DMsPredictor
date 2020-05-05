@@ -53,6 +53,7 @@ import monocle.macros.{GenLens, Lenses}
     applyDamage(this, adjustedDamage(dmg, damageType, this))
 
   val reactionOnHit: Option[OnHitReaction] = None
+
   val reactionOnDamage: Option[OnDamageReaction] =
     if (level >= 5) uncannyDodge.some else none[OnDamageReaction]
 }
