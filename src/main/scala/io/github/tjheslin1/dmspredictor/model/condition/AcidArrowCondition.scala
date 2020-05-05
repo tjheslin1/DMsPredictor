@@ -17,4 +17,6 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
 
   def handleEndOfTurn[_: RS](creature: Creature): Creature =
     creature.updateHealth(spellLevel.value * D4, Acid, Hit)
+
+  def onConditionApplied(creature: Creature): Creature = creature
 }

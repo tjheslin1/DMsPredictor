@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Stunned
+import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Stunned}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import util.TestData._
@@ -80,7 +80,7 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val monster = testMonster.withSavingThrowScores(strength = 5)
 
-          val dc = 12
+          val dc          = 12
           val (result, _) = savingThrowPassed(dc, Strength, monster)
 
           result shouldBe true
@@ -95,7 +95,7 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val stunnedGoblin = goblin.withStrength(10).withCondition(Stunned(20))
 
-          val dc = 5
+          val dc          = 5
           val (result, _) = savingThrowPassed(dc, Strength, stunnedGoblin)
 
           result shouldBe false
@@ -110,7 +110,7 @@ class SavingThrowSpec extends UnitSpecBase {
 
           val stunnedGoblin = goblin.withDexterity(10).withCondition(Stunned(20))
 
-          val dc = 5
+          val dc          = 5
           val (result, _) = savingThrowPassed(dc, Dexterity, stunnedGoblin)
 
           result shouldBe false
@@ -123,9 +123,10 @@ class SavingThrowSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val stunnedGoblin = goblin.withStats(BaseStats(10, 10, 10, 10, 10, 10)).withCondition(Stunned(20))
+          val stunnedGoblin =
+            goblin.withStats(BaseStats(10, 10, 10, 10, 10, 10)).withCondition(Stunned(20))
 
-          val dc = 5
+          val dc           = 5
           val (result1, _) = savingThrowPassed(dc, Constitution, stunnedGoblin)
           val (result2, _) = savingThrowPassed(dc, Intelligence, stunnedGoblin)
           val (result3, _) = savingThrowPassed(dc, Wisdom, stunnedGoblin)
@@ -139,12 +140,67 @@ class SavingThrowSpec extends UnitSpecBase {
       }
     }
 
+    "automatically fail a Strength saving throw for a Paralyzed creature" in {
+      forAll { goblin: Goblin =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val paralyzedGoblin =
+            goblin.withStrength(10).withCondition(Paralyzed(10, 10, Constitution))
+
+          val dc          = 5
+          val (result, _) = savingThrowPassed(dc, Strength, paralyzedGoblin)
+
+          result shouldBe false
+        }
+      }
+    }
+
+    "automatically fail a Dexterity saving throw for a Paralyzed creature" in {
+      forAll { goblin: Goblin =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val paralyzedGoblin =
+            goblin.withDexterity(10).withCondition(Paralyzed(10, 10, Constitution))
+
+          val dc          = 5
+          val (result, _) = savingThrowPassed(dc, Dexterity, paralyzedGoblin)
+
+          result shouldBe false
+        }
+      }
+    }
+
+    "make regular saving throws whilst Paralyzed for Constitution, Intelligence, Wisdom, Charisma" in {
+      forAll { goblin: Goblin =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val paralyzedGoblin = goblin
+            .withStats(BaseStats(10, 10, 10, 10, 10, 10))
+            .withCondition(Paralyzed(10, 10, Constitution))
+
+          val dc = 5
+          val (result1, _) = savingThrowPassed(dc, Constitution, paralyzedGoblin)
+          val (result2, _) = savingThrowPassed(dc, Wisdom, paralyzedGoblin)
+          val (result3, _) = savingThrowPassed(dc, Intelligence, paralyzedGoblin)
+          val (result4, _) = savingThrowPassed(dc, Charisma, paralyzedGoblin)
+
+          result1 shouldBe true
+          result2 shouldBe true
+          result3 shouldBe true
+          result4 shouldBe true
+        }
+      }
+    }
+
     "use a legendary creature's Legendary Resistance to pass a saving throw despite failing on the roll" in {
       forAll { lich: Lich =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(2)
+          implicit override val roll: RollStrategy = _ => RollResult(2)
 
-          val dc = 20
+          val dc                          = 20
           val (result, updatedLich: Lich) = savingThrowPassed(dc, Constitution, lich)
 
           result shouldBe true
@@ -156,9 +212,9 @@ class SavingThrowSpec extends UnitSpecBase {
     "not use a legendary creature's Legendary Resistance on a pass" in {
       forAll { lich: Lich =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(20)
+          implicit override val roll: RollStrategy = _ => RollResult(20)
 
-          val dc = 2
+          val dc                          = 2
           val (result, updatedLich: Lich) = savingThrowPassed(dc, Constitution, lich)
 
           result shouldBe true
@@ -170,12 +226,13 @@ class SavingThrowSpec extends UnitSpecBase {
     "not use a legendary creature's Legendary Resistance if they have no usages left" in {
       forAll { lich: Lich =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(2)
+          implicit override val roll: RollStrategy = _ => RollResult(2)
 
           val noLegendaryResistancesLich = lich.withNoLegendaryResistancesLeft()
 
           val dc = 20
-          val (result, updatedLich: Lich) = savingThrowPassed(dc, Constitution, noLegendaryResistancesLich)
+          val (result, updatedLich: Lich) =
+            savingThrowPassed(dc, Constitution, noLegendaryResistancesLich)
 
           result shouldBe false
           updatedLich.legendaryResistances shouldBe 0
@@ -188,7 +245,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return true if the target's roll equals the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(1, 10)
+          val iterator                             = Iterator(1, 10)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(10)
@@ -203,7 +260,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return true if the target's roll exceeds the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(1, 10)
+          val iterator                             = Iterator(1, 10)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(14)
@@ -218,7 +275,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return false if the target's roll is less than the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(1, 2)
+          val iterator                             = Iterator(1, 2)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(10)
@@ -233,9 +290,9 @@ class SavingThrowSpec extends UnitSpecBase {
     "use Legendary Resistance only once when making a saving throw with advantage" in {
       forAll { lich: Lich =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(2)
+          implicit override val roll: RollStrategy = _ => RollResult(2)
 
-          val dc = 20
+          val dc                          = 20
           val (result, updatedLich: Lich) = savingThrowWithAdvantagePassed(dc, Constitution, lich)
 
           result shouldBe true
@@ -249,7 +306,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return true if the target's roll equals the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(15, 10)
+          val iterator                             = Iterator(15, 10)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(10)
@@ -264,12 +321,12 @@ class SavingThrowSpec extends UnitSpecBase {
     "return true if the target's roll exceeds the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(15, 10)
+          val iterator                             = Iterator(15, 10)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(14)
 
-          val (result, _) =  savingThrowWithDisadvantagePassed(10, Dexterity, monster)
+          val (result, _) = savingThrowWithDisadvantagePassed(10, Dexterity, monster)
 
           result shouldBe true
         }
@@ -279,7 +336,7 @@ class SavingThrowSpec extends UnitSpecBase {
     "return false if the target's roll is less than the caster's spell save DC" in {
       forAll { testMonster: TestMonster =>
         new TestContext {
-          val iterator = Iterator(20, 1)
+          val iterator                             = Iterator(20, 1)
           implicit override val roll: RollStrategy = _ => RollResult(iterator.next())
 
           val monster = testMonster.withDexterity(10)
@@ -294,10 +351,11 @@ class SavingThrowSpec extends UnitSpecBase {
     "use Legendary Resistance only once when making a saving throw with disadvantage" in {
       forAll { lich: Lich =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(2)
+          implicit override val roll: RollStrategy = _ => RollResult(2)
 
           val dc = 20
-          val (result, updatedLich: Lich) = savingThrowWithDisadvantagePassed(dc, Constitution, lich)
+          val (result, updatedLich: Lich) =
+            savingThrowWithDisadvantagePassed(dc, Constitution, lich)
 
           result shouldBe true
           updatedLich.legendaryResistances shouldBe 2

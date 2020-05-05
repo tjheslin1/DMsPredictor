@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.Actions.{attack, resolveDamage}
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, SingleAttack}
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.addCondition
 import io.github.tjheslin1.dmspredictor.model.condition.Paralyzed
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich.ParalyzingTouch
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich.ParalyzingTouch.ParalyzingSaveDC
@@ -46,12 +47,7 @@ object LichAbilities extends LazyLogging {
 
           val conditionUpdatedTarget = attackResult match {
             case CriticalHit | Hit if passedSave == false =>
-              val currentConditions = updatedSavingThrowTarget.creature.conditions
-              val updatedConditions =
-                currentConditions :+ Paralyzed(ParalyzingSaveDC, 10, Constitution)
-
-              (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-                .set(updatedConditions)(updatedSavingThrowTarget)
+              addCondition(updatedSavingThrowTarget, Paralyzed(ParalyzingSaveDC, 10, Constitution))
             case _ =>
               updatedSavingThrowTarget
           }

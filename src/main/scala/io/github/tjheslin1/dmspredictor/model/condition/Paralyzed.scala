@@ -6,11 +6,15 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 import monocle.macros.Lenses
 
+object Paralyzed {
+  val name = "Paralyzed"
+}
+
 @Lenses("_") case class Paralyzed(
     saveDc: Int,
     turnsLeft: Int,
     attribute: Attribute,
-    name: String = "Paralyzed"
+    name: String = Paralyzed.name
 ) extends EndOfTurnCondition
     with LazyLogging {
 
@@ -26,13 +30,19 @@ import monocle.macros.Lenses
       val paralyzed         = updatedCreature.conditions.find(_.name == name).get
       val updatedConditions = updatedCreature.conditions.except(paralyzed)
 
+      val conditionUpdatedCreature =
+        Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
+      Creature.creatureDefenseStatusLens.set(Regular)(conditionUpdatedCreature)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
 
-      updatedCreature
+      Creature.creatureDefenseStatusLens.set(Disadvantage)(updatedCreature)
     }
   }
+
+  override def onConditionApplied(creature: Creature): Creature =
+    Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
 }

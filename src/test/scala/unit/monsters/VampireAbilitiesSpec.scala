@@ -182,12 +182,13 @@ class VampireAbilitiesSpec extends UnitSpecBase {
   }
 
   "charm" should {
+
     "be triggered if no enemies are already charmed and do not have the CharmImmunity condition" in new TestContext {
       implicit val roll: RollStrategy = D20.naturalTwenty
 
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
-      val cleric  = random[Cleric].withCombatIndex(3)
+      val cleric = random[Cleric].withCombatIndex(3)
 
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe true
     }
@@ -197,7 +198,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
-      val cleric  = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
+      val cleric = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
 
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe false
     }
@@ -214,7 +215,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
             charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant),
-                                                  LowestFirst)
+              LowestFirst)
 
           updatedCleric.conditions shouldBe List(Charmed(Vampire.CharmDC))
         }
@@ -227,12 +228,12 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(15)
 
           val vampireCombatant = vampire.withCombatIndex(1)
-          val clericCombatant  = cleric.withWisdom(24).withHealth(50).withCombatIndex(2)
+          val clericCombatant = cleric.withWisdom(24).withHealth(50).withCombatIndex(2)
           val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
           val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
             charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant),
-                                                  LowestFirst)
+              LowestFirst)
 
           updatedCleric.conditions shouldBe List.empty[Condition]
         }
@@ -256,6 +257,32 @@ class VampireAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "only target enemies who do not have immunity to the Charm condition" in new TestContext {
+      implicit val roll: RollStrategy = _ => RollResult(15)
+
+      val vampire = random[Vampire].withCombatIndex(1)
+
+      val lowHpCharmImmuneCleric = random[Cleric]
+        .withConditionImmunity(CharmedCondition)
+        .withHealth(5)
+        .withMaxHealth(50)
+        .withCombatIndex(2)
+
+      val highHpFighter = random[Fighter]
+        .withProficiencyBonus(1)
+        .withWisdom(1)
+        .withHealth(50)
+        .withMaxHealth(50)
+        .withCombatIndex(3)
+
+      val (_, List(Combatant(_, updatedCleric: Cleric), Combatant(_, updatedFighter: Fighter))) =
+        charm(1)(vampire).useAbility(List(lowHpCharmImmuneCleric, highHpFighter), LowestFirst)
+
+      updatedCleric.conditions should contain theSameElementsAs List.empty[Condition]
+
+      updatedFighter.conditions should contain theSameElementsAs List(Charmed(Vampire.CharmDC))
+    }
+
     "not be triggered if all enemies that are not charmed have the CharmImmunity condition" in {
       forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
         new TestContext {
@@ -263,10 +290,25 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val vampireCombatant = vampire.withCombatIndex(1)
 
-          val charmedCleric      = cleric.withCondition(Charmed(15)).withCombatIndex(2)
+          val charmedCleric = cleric.withCondition(Charmed(15)).withCombatIndex(2)
           val charmImmuneFighter = fighter.withCondition(CharmImmunity).withCombatIndex(3)
 
           charm(1)(vampireCombatant).triggerMet(List(charmedCleric, charmImmuneFighter)) shouldBe false
+        }
+      }
+    }
+
+    "not be triggered if all enemies are immune to the Charm condition" in {
+      forAll { (vampire: Vampire, cleric: Cleric, fighter: Fighter) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(15)
+
+          val vampireCombatant = vampire.withCombatIndex(1)
+
+          val charmImmuneCleric = cleric.withConditionImmunity(CharmedCondition).withCombatIndex(2)
+          val charmImmuneFighter = fighter.withConditionImmunity(CharmedCondition).withCombatIndex(3)
+
+          charm(1)(vampireCombatant).triggerMet(List(charmImmuneCleric, charmImmuneFighter)) shouldBe false
         }
       }
     }

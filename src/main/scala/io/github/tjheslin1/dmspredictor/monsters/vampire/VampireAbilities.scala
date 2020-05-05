@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.addCondition
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire.{CharmDC, UnarmedStrike}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
@@ -139,13 +140,20 @@ object VampireAbilities extends LazyLogging {
 
     def charmTargets(others: List[Combatant]): List[Combatant] =
       others
+        .filter(_.creature.conditionImmunities.contains(CharmedCondition) == false)
         .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
         .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
 
-    def triggerMet(others: List[Combatant]): Boolean =
-      others
+    def triggerMet(others: List[Combatant]): Boolean = {
+      val nonImmuneCombatants = others
+        .filter(_.creature.conditionImmunities.contains(CharmedCondition) == false)
         .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
-        .exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
+
+      if (nonImmuneCombatants.isEmpty) false
+      else
+        nonImmuneCombatants
+          .exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
+    }
 
     def conditionMet: Boolean = true
 
@@ -153,7 +161,6 @@ object VampireAbilities extends LazyLogging {
       logger.debug(s"Vampire used $name")
 
       nextToFocus(combatant, charmTargets(players(others)), focus) match {
-        case None => (combatant, others)
         case Some(target) =>
           val (passed, updatedCreature) = savingThrowPassed(CharmDC, Wisdom, target.creature)
 
@@ -164,11 +171,11 @@ object VampireAbilities extends LazyLogging {
           else {
             logger.debug(s"${updatedTarget.creature.name} has been Charmed")
 
-            val charmedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-              .set(updatedTarget.creature.conditions :+ Charmed(CharmDC))(updatedTarget)
+            val charmedTarget = addCondition(updatedTarget, Charmed(CharmDC))
 
             (combatant, others.replace(charmedTarget))
           }
+        case None => (combatant, others)
       }
     }
 

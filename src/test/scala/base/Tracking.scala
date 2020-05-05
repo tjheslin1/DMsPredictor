@@ -338,6 +338,8 @@ trait Tracking {
         trackedStartOfTurnConditionHandledCount += 1
         creature
       }
+
+      def onConditionApplied(creature: Creature): Creature = creature
     }
 
   var trackedEndOfTurnConditionHandledCount = 0
@@ -359,6 +361,7 @@ trait Tracking {
         creature
       }
 
+      def onConditionApplied(creature: Creature): Creature = creature
     }
 
   var trackedBonusActionUsed = false
@@ -380,4 +383,29 @@ trait Tracking {
         Player.playerBonusActionUsedLens.set(true)(combatant.creature.asInstanceOf[Player])
       }
     }
+
+  def trackedCondition(saveDC: Int,
+                       creatureMissesTurn: Boolean,
+                       handledOnDamage: Boolean = false,
+                       conditionTurnsLeft: Int = 10,
+                       startOfTurn: Creature => Creature = c => c,
+                       endOfTurn: Creature => Creature = c => c,
+                       onDamage: Creature => Creature = c => c,
+                       onApplied: Creature => Creature = c => c): Condition = new Condition {
+    val name = "tracked-condition"
+    val saveDc = saveDC
+    val turnsLeft = conditionTurnsLeft
+    val missesTurn = creatureMissesTurn
+    val isHandledOnDamage = handledOnDamage
+
+    def decrementTurnsLeft(): Condition = this
+
+    def handleStartOfTurn[_: RS](creature: Creature): Creature = startOfTurn(creature)
+
+    def handleEndOfTurn[_: RS](creature: Creature): Creature = endOfTurn(creature)
+
+    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = onDamage(creature)
+
+    def onConditionApplied(creature: Creature): Creature = onApplied(creature)
+  }
 }

@@ -36,6 +36,8 @@ import monocle.macros.Lenses
       updatedCreature
     }
   }
+
+  def onConditionApplied(creature: Creature): Creature = creature
 }
 
 object Grappled {
