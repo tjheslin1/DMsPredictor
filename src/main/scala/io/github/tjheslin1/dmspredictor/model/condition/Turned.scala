@@ -28,4 +28,6 @@ object Turned
       creature
     }
   }
+
+  override def onConditionApplied(creature: Creature): Creature = creature
 }

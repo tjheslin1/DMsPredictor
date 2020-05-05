@@ -41,4 +41,7 @@ case class Stunned(
       Creature.creatureDefenseStatusLens.set(Disadvantage)(updatedCreature)
     }
   }
+
+  def onConditionApplied(creature: Creature): Creature =
+    Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
 }

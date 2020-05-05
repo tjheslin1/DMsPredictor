@@ -9,7 +9,7 @@ import util.TestData._
 
 class GrappledSpec extends UnitSpecBase {
 
-  "handle" should {
+  "handleStartOfTurn" should {
     "remove Grappled condition if passed" in {
       forAll { goblin: Goblin =>
         new TestContext {
