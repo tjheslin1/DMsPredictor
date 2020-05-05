@@ -100,14 +100,12 @@ object Barbarian {
       s"AC: ${barbarian.armourClass}"
   }
 
-  val strengthLens: Lens[Barbarian, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](
-    _.constitution
-  )
-  val wisdomLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
-  val intelligenceLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](
-    _.intelligence
-  )
-  val charismaLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: off
+  val strengthLens: Lens[Barbarian, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[Barbarian, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val intelligenceLens: Lens[Barbarian, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val wisdomLens: Lens[Barbarian, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val charismaLens: Lens[Barbarian, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: on
 }

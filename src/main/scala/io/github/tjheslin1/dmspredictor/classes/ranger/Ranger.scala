@@ -103,10 +103,12 @@ object Ranger {
       s"AC: ${ranger.armourClass}"
   }
 
+  // format: off
   val strengthLens: Lens[Ranger, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Ranger, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
   val constitutionLens: Lens[Ranger, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
-  val wisdomLens: Lens[Ranger, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Ranger, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val wisdomLens: Lens[Ranger, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val charismaLens: Lens[Ranger, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: on
 }

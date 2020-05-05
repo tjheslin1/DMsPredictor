@@ -80,10 +80,12 @@ object Champion {
       s"AC: ${champion.armourClass}"
   }
 
+  // format: off
   val strengthLens: Lens[Champion, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Champion, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
   val constitutionLens: Lens[Champion, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
-  val wisdomLens: Lens[Champion, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val intelligenceLens: Lens[Champion, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val wisdomLens: Lens[Champion, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val charismaLens: Lens[Champion, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: on
 }

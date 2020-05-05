@@ -79,14 +79,12 @@ object Berserker {
       s"AC: ${berserker.armourClass}"
   }
 
+  // format: off
   val strengthLens: Lens[Berserker, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](
-    _.constitution
-  )
+  val constitutionLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val intelligenceLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
   val wisdomLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
-  val intelligenceLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](
-    _.intelligence
-  )
   val charismaLens: Lens[Berserker, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: on
 }
