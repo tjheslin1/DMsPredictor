@@ -2,8 +2,10 @@ package unit.cleric
 
 import base.UnitSpecBase
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SacredFlame
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
 import util.TestData._
 
 class ClericSpellsSpec extends UnitSpecBase {
@@ -73,6 +75,88 @@ class ClericSpellsSpec extends UnitSpecBase {
         .asInstanceOf[Cleric]
 
       SacredFlame.damage(cleric, SacredFlame.spellLevel) shouldBe 32
+    }
+  }
+
+  "Guiding Bolt" should {
+
+    "apply the GuidingBoltCondition to a target on a Critical Hit" in new TestContext {
+      implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+      val rogue = random[Rogue].withCombatIndex(1)
+
+      val Combatant(_, updatedRogue) = GuidingBolt.additionalEffect(rogue, CriticalHit)
+
+      updatedRogue.conditions should contain theSameElementsAs List(GuidingBoltCondition())
+    }
+
+    "apply the GuidingBoltCondition to a target on a Hit" in new TestContext {
+      implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+      val rogue = random[Rogue].withCombatIndex(1)
+
+      val Combatant(_, updatedRogue) = GuidingBolt.additionalEffect(rogue, Hit)
+
+      updatedRogue.conditions should contain theSameElementsAs List(GuidingBoltCondition())
+    }
+
+    "not apply the GuidingBoltCondition to a target on a Miss" in new TestContext {
+      implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+      val rogue = random[Rogue].withCombatIndex(1)
+
+      val Combatant(_, updatedRogue) = GuidingBolt.additionalEffect(rogue, Miss)
+
+      updatedRogue.conditions shouldBe List.empty[Condition]
+    }
+
+    "not apply the GuidingBoltCondition to a target if not Critical Miss" in new TestContext {
+      implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+      val rogue = random[Rogue].withCombatIndex(1)
+
+      val Combatant(_, updatedRogue) = GuidingBolt.additionalEffect(rogue, CriticalMiss)
+
+      updatedRogue.conditions shouldBe List.empty[Condition]
+    }
+  }
+
+  "Guiding Bolt Condition" should {
+
+    "set the creatures DefenseStatus to Disadvantage when applied" in {
+      forAll { rogue: Rogue =>
+        new TestContext {
+          override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+          val updatedRogue = GuidingBoltCondition().onConditionApplied(rogue)
+
+          updatedRogue.defenseStatus shouldBe Disadvantage
+        }
+      }
+    }
+
+    "set the creatures DefenseStatus to Regular when the condition is handled" in {
+      forAll { rogue: Rogue =>
+        new TestContext {
+          override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+          val fiftyHpRogue = rogue.withHealth(50).withMaxHealth(50)
+
+          val updatedRogue = GuidingBoltCondition().handleOnDamage(fiftyHpRogue, 20)
+
+          updatedRogue.defenseStatus shouldBe Regular
+        }
+      }
+    }
+
+    "set the creatures DefenseStatus to Regular when the condition runs out" in {
+      forAll { rogue: Rogue =>
+        new TestContext {
+          override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+
+          fail("TODO")
+        }
+      }
     }
   }
 

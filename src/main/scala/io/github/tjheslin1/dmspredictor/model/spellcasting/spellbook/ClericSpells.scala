@@ -5,7 +5,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Paralyzed, StartOfTurnCondition}
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, OnDamageCondition, Paralyzed, PassiveCondition, StartOfTurnCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
@@ -49,6 +49,19 @@ object ClericSpells extends LazyLogging {
     // TODO Apply advantage effect
     override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
       target
+  }
+
+  case class GuidingBoltCondition(turnsLeft: Int = 2) extends OnDamageCondition {
+    val name = "Guiding Bolt (Condition)"
+    val missesTurn = false
+    val saveDc = 0
+    val isHandledOnDamage = true
+
+    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = ???
+
+    def decrementTurnsLeft(): Condition = ???
+
+    override def onConditionApplied(creature: Creature): Creature = creature
   }
 
   case object CureWounds extends SingleTargetHealingSpell {
