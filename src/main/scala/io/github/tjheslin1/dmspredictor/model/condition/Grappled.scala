@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.removeCondition
 import monocle.macros.Lenses
 
 object Grappled {
@@ -28,7 +29,7 @@ object Grappled {
     if (passed) {
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      Condition.removeCondition(updatedCreature, name)
+      removeCondition(updatedCreature, name)
     } else {
       logger.debug(s"${creature.name} is still $name")
 
@@ -37,4 +38,5 @@ object Grappled {
   }
 
   def onConditionApplied(creature: Creature): Creature = creature
+  def onConditionRemoved(creature: Creature): Creature = creature
 }

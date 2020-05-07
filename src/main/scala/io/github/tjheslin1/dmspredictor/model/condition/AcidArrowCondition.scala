@@ -19,4 +19,5 @@ import io.github.tjheslin1.dmspredictor.util.IntOps._
     creature.updateHealth(spellLevel.value * D4, Acid, Hit)
 
   def onConditionApplied(creature: Creature): Creature = creature
+  def onConditionRemoved(creature: Creature): Creature = creature
 }

@@ -340,6 +340,7 @@ trait Tracking {
       }
 
       def onConditionApplied(creature: Creature): Creature = creature
+      def onConditionRemoved(creature: Creature): Creature = creature
     }
 
   var trackedEndOfTurnConditionHandledCount = 0
@@ -362,6 +363,7 @@ trait Tracking {
       }
 
       def onConditionApplied(creature: Creature): Creature = creature
+      def onConditionRemoved(creature: Creature): Creature = creature
     }
 
   var trackedBonusActionUsed = false
@@ -391,7 +393,8 @@ trait Tracking {
                        startOfTurn: Creature => Creature = c => c,
                        endOfTurn: Creature => Creature = c => c,
                        onDamage: Creature => Creature = c => c,
-                       onApplied: Creature => Creature = c => c): Condition = new Condition {
+                       onApplied: Creature => Creature = c => c,
+                       onRemoved: Creature => Creature = c => c): Condition = new Condition {
     val name = "tracked-condition"
     val saveDc = saveDC
     val turnsLeft = conditionTurnsLeft
@@ -407,5 +410,7 @@ trait Tracking {
     def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = onDamage(creature)
 
     def onConditionApplied(creature: Creature): Creature = onApplied(creature)
+
+    def onConditionRemoved(creature: Creature): Creature = onRemoved(creature)
   }
 }

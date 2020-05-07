@@ -16,4 +16,7 @@ import monocle.macros.Lenses
 
   override def onConditionApplied(creature: Creature): Creature =
     Creature.creatureAttackStatusLens.set(Disadvantage)(creature)
+
+  override def onConditionRemoved(creature: Creature): Creature =
+    Creature.creatureAttackStatusLens.set(Regular)(creature)
 }

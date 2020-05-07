@@ -27,18 +27,19 @@ object Paralyzed {
     val (passed, updatedCreature) = savingThrowPassed(saveDc, attribute, creature)
 
     if (passed) {
-      val conditionUpdatedCreature = removeCondition(updatedCreature, name)
-
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      Creature.creatureDefenseStatusLens.set(Regular)(conditionUpdatedCreature)
+      removeCondition(updatedCreature, name)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
 
-      Creature.creatureDefenseStatusLens.set(Disadvantage)(updatedCreature)
+      onConditionApplied(updatedCreature)
     }
   }
 
-  override def onConditionApplied(creature: Creature): Creature =
+  def onConditionApplied(creature: Creature): Creature =
     Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
+
+  def onConditionRemoved(creature: Creature): Creature =
+    Creature.creatureDefenseStatusLens.set(Regular)(creature)
 }

@@ -63,21 +63,17 @@ object ClericSpells extends LazyLogging {
     val saveDc            = 0
     val isHandledOnDamage = true
 
-    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = {
-      val defenseUpdatedCreature =
-        Creature.creatureDefenseStatusLens.set(Regular)(creature)
+    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
+      removeCondition(creature, name)
 
-      removeCondition(defenseUpdatedCreature, name)
-    }
-
-    def decrementTurnsLeft(): Condition = {
+    def decrementTurnsLeft(): Condition =
       GuidingBoltCondition(turnsLeft - 1)
 
-      throw new NotImplementedError("Need to updated Combatant")
-    }
-
-    override def onConditionApplied(creature: Creature): Creature =
+    def onConditionApplied(creature: Creature): Creature =
       Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
+
+    def onConditionRemoved(creature: Creature): Creature =
+      Creature.creatureDefenseStatusLens.set(Regular)(creature)
   }
 
   case object CureWounds extends SingleTargetHealingSpell {
@@ -151,5 +147,6 @@ object ClericSpells extends LazyLogging {
     }
 
     def onConditionApplied(creature: Creature): Creature = creature
+    def onConditionRemoved(creature: Creature): Creature = creature
   }
 }

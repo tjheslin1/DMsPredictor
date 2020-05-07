@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.condition
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.Condition.removeCondition
+import io.github.tjheslin1.dmspredictor.model.condition.Condition._
 import monocle.macros.Lenses
 
 object Charmed {
@@ -26,7 +26,10 @@ object Charmed {
     if (passed) {
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      removeCondition(updatedCreature, name)
+      val charmRemovedCreature = removeCondition(updatedCreature, name)
+      val updatedConditions    = charmRemovedCreature.conditions :+ CharmImmunity
+
+      Creature.creatureConditionsLens.set(updatedConditions)(charmRemovedCreature)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
 
@@ -38,4 +41,5 @@ object Charmed {
     handleStartOfTurn(creature)
 
   def onConditionApplied(creature: Creature): Creature = creature
+  def onConditionRemoved(creature: Creature): Creature = creature
 }

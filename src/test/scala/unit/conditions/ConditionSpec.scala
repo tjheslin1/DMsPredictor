@@ -2,8 +2,10 @@ package unit.conditions
 
 import base.{Tracking, UnitSpecBase}
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition._
+import io.github.tjheslin1.dmspredictor.model.condition.Poisoned
 import util.TestData._
 
 class ConditionSpec extends UnitSpecBase {
@@ -39,6 +41,39 @@ class ConditionSpec extends UnitSpecBase {
           addCondition(fighter, defenseDisadvantageCondition)
 
         updatedFighter.defenseStatus shouldBe Disadvantage
+      }
+    }
+  }
+
+  "removeCondition" should {
+
+    "remove the condition from a creatures list of conditions" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val condition = trackedCondition(10, true)
+        val poisoned = Poisoned(10)
+
+        val conditionAppliedRogue = random[Rogue].withConditions(condition, poisoned)
+
+        val updatedRogue = removeCondition(conditionAppliedRogue, condition.name)
+
+        updatedRogue.conditions should contain theSameElementsAs List(poisoned)
+      }
+    }
+
+    "apply onConditionRemoved to creature" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val condition = trackedCondition(10, true, onRemoved = c => Creature.creatureIsAliveLens.set(false)(c))
+        val poisoned = Poisoned(10)
+
+        val conditionAppliedRogue = random[Rogue].withConditions(condition, poisoned)
+
+        val updatedRogue = removeCondition(conditionAppliedRogue, condition.name)
+
+        updatedRogue.isAlive shouldBe false
       }
     }
   }

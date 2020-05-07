@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.model.condition
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.util.ListOps._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.removeCondition
 
 object Stunned {
   val name = "Stunned"
@@ -26,22 +26,19 @@ case class Stunned(
     val (passed, updatedCreature) = savingThrowPassed(saveDc, savingThrowAttribute, creature)
 
     if (passed) {
-      val stunned           = updatedCreature.conditions.find(_.name == name).get
-      val updatedConditions = updatedCreature.conditions.except(stunned)
-
       logger.debug(s"${updatedCreature.name} is no longer $name")
 
-      val conditionUpdatedCreature =
-        Creature.creatureConditionsLens.set(updatedConditions)(updatedCreature)
-
-      Creature.creatureDefenseStatusLens.set(Regular)(conditionUpdatedCreature)
+      removeCondition(updatedCreature, name)
     } else {
       logger.debug(s"${updatedCreature.name} is still $name")
 
-      Creature.creatureDefenseStatusLens.set(Disadvantage)(updatedCreature)
+      onConditionApplied(updatedCreature)
     }
   }
 
   def onConditionApplied(creature: Creature): Creature =
     Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
+
+  def onConditionRemoved(creature: Creature): Creature =
+    Creature.creatureDefenseStatusLens.set(Regular)(creature)
 }

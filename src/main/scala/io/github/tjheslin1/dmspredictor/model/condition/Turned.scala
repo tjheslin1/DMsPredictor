@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.model.condition
 
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.util.ListOps._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition.removeCondition
 import monocle.macros.Lenses
 
 object Turned {
@@ -20,17 +20,14 @@ object Turned {
 
   def decrementTurnsLeft(): Condition = Turned(saveDc, turnsLeft - 1)
 
-  override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = {
-    val turned            = creature.conditions.find(_.name == name).get
-    val updatedConditions = creature.conditions.except(turned)
-
+  override def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
     if (damage > 0) {
       logger.debug(s"${creature.name} is no longer Turned")
-      Creature.creatureConditionsLens.set(updatedConditions)(creature)
-    } else {
-      creature
-    }
-  }
 
-  override def onConditionApplied(creature: Creature): Creature = creature
+      removeCondition(creature, name)
+    } else
+      creature
+
+  def onConditionApplied(creature: Creature): Creature = creature
+  def onConditionRemoved(creature: Creature): Creature = creature
 }
