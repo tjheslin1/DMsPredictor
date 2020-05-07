@@ -8,7 +8,6 @@ import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model._
-import util.TestData._
 
 class BaseRangerSpec extends UnitSpecBase {
 

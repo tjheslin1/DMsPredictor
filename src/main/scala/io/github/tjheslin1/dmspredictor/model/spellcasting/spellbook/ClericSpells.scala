@@ -10,7 +10,6 @@ import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
-import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object ClericSpells extends LazyLogging {
 
@@ -36,15 +35,15 @@ object ClericSpells extends LazyLogging {
   }
 
   case object GuidingBolt extends SingleTargetAttackSpell {
-    val damageType: DamageType             = Radiant
-    val name                               = "Guiding Bolt"
-    val school: SchoolOfMagic              = Evocation
-    val castingTime: CastingTime           = OneActionCast
-    val spellTargetStyle: SpellTargetStyle = RangedSpellAttack
-    val spellLevel: SpellLevel             = 1
-    val requiresConcentration: Boolean     = false
-    val benefitsFromHigherSpellSlot        = true
-    val halfDamageOnMiss                   = false
+    val name                           = "Guiding Bolt"
+    val damageType                     = Radiant
+    val school                         = Evocation
+    val castingTime                    = OneActionCast
+    val spellTargetStyle               = RangedSpellAttack
+    val spellLevel                     = 1
+    val requiresConcentration: Boolean = false
+    val benefitsFromHigherSpellSlot    = true
+    val halfDamageOnMiss               = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (3 + spellLevel) * D6

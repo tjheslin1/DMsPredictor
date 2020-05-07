@@ -6,7 +6,6 @@ import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
-import org.apache.http.impl.entity.DisallowIdentityContentLengthStrategy
 import util.TestData._
 
 class ClericSpellsSpec extends UnitSpecBase {

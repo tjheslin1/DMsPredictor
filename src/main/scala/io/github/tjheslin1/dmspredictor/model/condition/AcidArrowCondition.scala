@@ -2,8 +2,8 @@ package io.github.tjheslin1.dmspredictor.model.condition
 
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellLevel
-import monocle.macros.Lenses
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import monocle.macros.Lenses
 
 @Lenses("_") case class AcidArrowCondition(spellLevel: SpellLevel, turnsLeft: Int = 1)
     extends EndOfTurnCondition {

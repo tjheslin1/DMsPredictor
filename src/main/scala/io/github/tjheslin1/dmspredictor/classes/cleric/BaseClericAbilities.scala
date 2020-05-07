@@ -5,7 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.SavingThrow._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition.addCondition
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned, TurnedCondition}
+import io.github.tjheslin1.dmspredictor.model.condition.{Turned, TurnedCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.strategy.Focus

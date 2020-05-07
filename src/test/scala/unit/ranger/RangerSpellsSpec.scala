@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import util.TestData._
-import util.{TestMonster, TestSpellCastingMonster}
+import util.TestMonster
 
 class RangerSpellsSpec extends UnitSpecBase {
 

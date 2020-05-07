@@ -2,14 +2,12 @@ package unit
 
 import base.UnitSpecBase
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.Main
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.armour.NoArmour
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model.{BaseStats, LevelFour, PlayerCharacter, ProficiencyBonus, Skills}
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
-import io.github.tjheslin1.dmspredictor.simulation.BasicSimulation
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
-import io.github.tjheslin1.dmspredictor.{Main, SimulationConfig}
 import org.scalatest.EitherValues
 
 class MainSpec extends UnitSpecBase with EitherValues {

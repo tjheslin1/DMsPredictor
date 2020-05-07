@@ -14,7 +14,7 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlo
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -25,7 +25,7 @@ import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitR
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Legendary, Monster, Werewolf, Zombie}
+import io.github.tjheslin1.dmspredictor.monsters._
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 

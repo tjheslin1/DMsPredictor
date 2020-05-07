@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.OnWeaponDamageAbility

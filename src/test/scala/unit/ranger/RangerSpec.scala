@@ -3,8 +3,7 @@ package unit.ranger
 import base.UnitSpecBase
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.ranger.{Defense, Ranger}
-import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
