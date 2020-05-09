@@ -92,12 +92,12 @@ class MainSpec extends UnitSpecBase with EitherValues {
 
       val sqsMessage =
         """
-          |
+          |{
           |    "Records": [
           |        {
           |            "messageId": "c9a6dca2-ccc2-41ba-92ca-588177fd5f5d",
           |            "receiptHandle": "AQEBDNzhoPWsq/oMuBG7BnrzGbe8tYYH47M14hgZUTWlX0zNWdg+KXQYDecHv+RKKvD3lbPRtpiUv6ahS26Z7JXe2FI4y93XZp6l5wr9GLxYVInhS6gTtfjC1AivqzRGcKavUMT9yeUYMuC2B1iHG7SQTLuhF5B1i3gVftsELIGZ/9Mmp+UpfJllYI4rfdT0TARDK1/0e7RwGlyHlq6RfXPxlgay+hlhJlLVgGJpDbk+XhAV+WfnA1MF2pENFA/T1GrEuuu/x8KGOePfIURu4n/k0TIVWqkNTv1lILQOvHNcBOkN1pMy9DjyEkZhgge2lxt18i2wDBtPn/T336pR19BTILmBnvxLyxXE4LqdDbULOBzkGlSsGQLZ4Z5OuL4gz2wqq36lIBY3BRvhY6AhqIufBg==",
-          |            "body": "{\"simulationName\":\"rangervgoblin\",\"simulations\":\"5\",\"focus\":\"LowestFirst\",\"players\":[{\"name\":\"rrrr\",\"class\":\"ranger\",\"level\":\"5\",\"weapon\":\"longbow\",\"armour\":\"chainshirt\",\"offHand\":\"none\",\"stats\":\"14,14,14,14,14,14\",\"skills\":\"0,0\",\"rangerFightingStyle\":\"archery\"}],\"monsters\":[{\"name\":\"gggg\",\"monster\":\"goblin\"}]}",
+          |            "body": "{\"simulationName\":\"rangervgoblin\",\"simulations\":\"5\",\"focus\":\"LowestFirst\",\"players\":[{\"class\":\"ranger\",\"name\":\"TestRanger\",\"level\":\"5\",\"weapon\":\"longbow\",\"armour\":\"chainshirt\",\"offHand\":\"none\",\"stats\":\"14,14,14,14,14,14\",\"skills\":\"1,1 \",\"rangerFightingStyle\":\"archery\"}],\"monsters\":[{\"name\":\"gggg\",\"monster\":\"goblin\"}]}",
           |            "attributes": {
           |                "ApproximateReceiveCount": "1",
           |                "SentTimestamp": "1572678765238",
@@ -125,9 +125,9 @@ class MainSpec extends UnitSpecBase with EitherValues {
       val expectedPlayers = List(
         Hunter(
           LevelFive,
-          39,
-          39,
-          BaseStats(11, 11, 13, 13, 13, 11),
+          44,
+          44,
+          BaseStats(14, 14, 14, 14, 14, 14),
           Longbow,
           Skills(1, 1),
           rangerSpellSlots(LevelFive),
