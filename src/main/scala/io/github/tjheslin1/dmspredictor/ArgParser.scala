@@ -147,7 +147,7 @@ trait ArgParser {
       offHand     <- c.downField("offHand").as[String]
       skillsStr   <- c.downField("skills").as[String]
       skills      <- skillsConverter(c, skillsStr)
-      style       <- c.downField("fightingStyle").as[String]
+      style       <- c.downField("fighterFightingStyle").as[String]
       fighterName <- c.downField("name").as[String]
     } yield {
       val health = BaseFighter.calculateHealth(level, stats.constitution)
@@ -178,7 +178,7 @@ trait ArgParser {
       offHand      <- c.downField("offHand").as[String]
       skillsStr    <- c.downField("skills").as[String]
       skills       <- skillsConverter(c, skillsStr)
-      style        <- c.downField("fightingStyle").as[String]
+      style        <- c.downField("fighterFightingStyle").as[String]
       championName <- c.downField("name").as[String]
     } yield {
       val health = BaseFighter.calculateHealth(level, stats.constitution)
@@ -268,7 +268,7 @@ trait ArgParser {
       offHand    <- c.downField("offHand").as[String]
       skillsStr  <- c.downField("skills").as[String]
       skills     <- skillsConverter(c, skillsStr)
-      style      <- c.downField("fightingStyle").as[String]
+      style      <- c.downField("rangerFightingStyle").as[String]
       rangerName <- c.downField("name").as[String]
     } yield {
       val health = BaseRanger.calculateHealth(level, stats.constitution)
@@ -301,7 +301,7 @@ trait ArgParser {
       offHand    <- c.downField("offHand").as[String]
       skillsStr  <- c.downField("skills").as[String]
       skills     <- skillsConverter(c, skillsStr)
-      style      <- c.downField("fightingStyle").as[String]
+      style      <- c.downField("rangerFightingStyle").as[String]
       rangerName <- c.downField("name").as[String]
     } yield {
       val health = BaseRanger.calculateHealth(level, stats.constitution)
