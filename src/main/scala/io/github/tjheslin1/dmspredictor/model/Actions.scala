@@ -132,11 +132,17 @@ object Actions extends LazyLogging {
         target.creature.updateHealth(dmg, weapon.damageType, attackResult)
       )(target)
     } { reaction =>
-      logger.debug(s"${target.creature.name} used ${reaction.name} (reaction)")
+      if (target.creature.reactionUsed) {
+        Combatant.creatureLens.set(
+          target.creature.updateHealth(dmg, weapon.damageType, attackResult)
+        )(target)
+      } else {
+        logger.debug(s"${target.creature.name} used ${reaction.name} (reaction)")
 
-      Combatant.creatureLens.set(
-        reaction.updateHealthOnReaction(target.creature, dmg, weapon.damageType, attackResult)
-      )(target)
+        Combatant.creatureLens.set(
+          reaction.updateHealthOnReaction(target.creature, dmg, weapon.damageType, attackResult)
+        )(target)
+      }
     }
 
     val (updatedAttacker2, updatedOthers) = (target.creature, updatedTarget.creature) match {

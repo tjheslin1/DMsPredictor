@@ -560,6 +560,33 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
+    "not use available reaction on damage if target has already used their reaction" in {
+      forAll { (rogue: Rogue, goblin: Goblin) =>
+        new TestContext with Tracking {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val attackingGoblin = goblin
+            .withStrength(12)
+            .withBaseWeapon(Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, dmg = 10))
+            .withCombatIndex(1)
+
+          val reactionUsedRogue = rogue
+            .withLevel(LevelFive)
+            .withReactionUsed(true)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withDexterity(10)
+            .withNoArmour()
+            .withCombatIndex(2)
+
+          val (_, Combatant(_, updatedRogue: Rogue), _) =
+            resolveDamage(attackingGoblin, reactionUsedRogue, List.empty[Combatant], attackingGoblin.creature.weapon, Hit)
+
+          updatedRogue.health shouldBe 39 // full damage from goblin's sword + STR as unable to use uncanny dodge
+        }
+      }
+    }
+
     "use available OnWeaponDamage abilities if trigger is met" in {
       forAll { (hunter: Hunter, goblin: Goblin) =>
         new TestContext with Tracking {
