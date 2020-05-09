@@ -6,8 +6,8 @@ This readme is to document design decision made when implementing spells
 
 ### Hunter's Mark
 
-Instead of apply the Hunter's Mark condition on enemies and then handling the movement of the mark 
-onto other enemies when they drop to 0 hit points, I decided that it would be easier and just as 
+Instead of applying the Hunter's Mark condition on enemies and then handling the movement of the mark 
+onto others when they drop to 0 hit points, I decided that it would be easier and just as 
 effective to apply the condition to the Ranger itself, following the assumption that the Ranger 
 will focus it's weapon attacks on the creature it would have marked. This is based on experience 
 of playing 5th edition D&D.
