@@ -4,7 +4,7 @@ import base.UnitSpecBase
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.Main
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlots
-import io.github.tjheslin1.dmspredictor.classes.ranger.{Archery, BaseRanger, Hunter}
+import io.github.tjheslin1.dmspredictor.classes.ranger.{Archery, Hunter}
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour}
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{Longbow, Shortsword}
@@ -97,7 +97,7 @@ class MainSpec extends UnitSpecBase with EitherValues {
           |        {
           |            "messageId": "c9a6dca2-ccc2-41ba-92ca-588177fd5f5d",
           |            "receiptHandle": "AQEBDNzhoPWsq/oMuBG7BnrzGbe8tYYH47M14hgZUTWlX0zNWdg+KXQYDecHv+RKKvD3lbPRtpiUv6ahS26Z7JXe2FI4y93XZp6l5wr9GLxYVInhS6gTtfjC1AivqzRGcKavUMT9yeUYMuC2B1iHG7SQTLuhF5B1i3gVftsELIGZ/9Mmp+UpfJllYI4rfdT0TARDK1/0e7RwGlyHlq6RfXPxlgay+hlhJlLVgGJpDbk+XhAV+WfnA1MF2pENFA/T1GrEuuu/x8KGOePfIURu4n/k0TIVWqkNTv1lILQOvHNcBOkN1pMy9DjyEkZhgge2lxt18i2wDBtPn/T336pR19BTILmBnvxLyxXE4LqdDbULOBzkGlSsGQLZ4Z5OuL4gz2wqq36lIBY3BRvhY6AhqIufBg==",
-          |            "body": "{\"simulationName\":\"rangervgoblin\",\"simulations\":\"5\",\"focus\":\"LowestFirst\",\"players\":[{\"class\":\"ranger\",\"name\":\"TestRanger\",\"level\":\"5\",\"weapon\":\"longbow\",\"armour\":\"chainshirt\",\"offHand\":\"none\",\"stats\":\"14,14,14,14,14,14\",\"skills\":\"1,1 \",\"rangerFightingStyle\":\"archery\"}],\"monsters\":[{\"name\":\"gggg\",\"monster\":\"goblin\"}]}",
+          |            "body": "{\"simulationName\":\"rangervgoblin\",\"simulations\":\"5\",\"focus\":\"LowestFirst\",\"players\":[{\"class\":\"ranger\",\"name\":\"TestRanger\",\"level\":\"5\",\"weapon\":\"longbow\",\"armour\":\"chainshirt\",\"offHand\":\"none\",\"stats\":\"14,14,14,14,14,14\",\"skills\":\"1,1\",\"rangerFightingStyle\":\"archery\"}],\"monsters\":[{\"name\":\"gggg\",\"monster\":\"goblin\"}]}",
           |            "attributes": {
           |                "ApproximateReceiveCount": "1",
           |                "SentTimestamp": "1572678765238",

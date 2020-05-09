@@ -53,7 +53,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
             val dateTime = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)
 
             writeToDynamo(
-              SimulationResult(dateTime, "unknown", nameFieldError.getMessage, "unknown config")
+              SimulationResult(s"dt$dateTime", "unknown", nameFieldError.getMessage, input)
             )
           case Right(simHash) =>
             writeToDynamo(SimulationResult(simHash, "unknown", e.getMessage, "unknown config"))
