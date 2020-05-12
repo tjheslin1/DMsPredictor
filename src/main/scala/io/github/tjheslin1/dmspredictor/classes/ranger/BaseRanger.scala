@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 
-trait BaseRanger extends Player with SpellCaster {
+trait BaseRanger extends Player with SpellCaster with Product with Serializable {
 
   val fightingStyles: List[RangerFightingStyle]
   override val cantrip: Option[Spell] = None

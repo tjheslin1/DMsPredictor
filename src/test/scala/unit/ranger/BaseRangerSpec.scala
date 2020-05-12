@@ -12,23 +12,23 @@ import io.github.tjheslin1.dmspredictor.model._
 class BaseRangerSpec extends UnitSpecBase {
 
   "calculateHealth" should {
-    "calculate starting health for level one fighter with default constitution score" in new TestContext {
+    "calculate starting health for level one ranger with default constitution score" in new TestContext {
       calculateHealth(LevelOne, 10) shouldBe 10
     }
 
-    "calculate starting health for level one fighter with low constitution score" in new TestContext {
+    "calculate starting health for level one ranger with low constitution score" in new TestContext {
       calculateHealth(LevelOne, 6) shouldBe 8
     }
 
-    "calculate starting health for level one fighter with high constitution score" in new TestContext {
+    "calculate starting health for level one ranger with high constitution score" in new TestContext {
       calculateHealth(LevelOne, 16) shouldBe 13
     }
 
-    "calculate health for level two fighter with default constitution score" in new TestContext {
+    "calculate health for level two ranger with default constitution score" in new TestContext {
       calculateHealth(LevelTwo, 10) shouldBe 16
     }
 
-    "calculate health for level twenty fighter with high constitution score" in new TestContext {
+    "calculate health for level twenty ranger with high constitution score" in new TestContext {
       calculateHealth(LevelTwenty, 19) shouldBe 204
     }
   }
