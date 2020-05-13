@@ -10,11 +10,13 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.paladinSpellSlots
+import io.github.tjheslin1.dmspredictor.classes.paladin.{BasePaladin, Paladin, PaladinFightingStyle}
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, paladin, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -363,6 +365,13 @@ object TestData {
       _spellSlots.set(rangerSpellSlots(level))(hunter)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(hunter)
+  }
+
+  implicit class PaladinOps(val paladin: Paladin) extends AnyVal {
+    import Paladin._
+
+    def withFightingStyle(fightingStyle: PaladinFightingStyle) =
+      _fightingStyles.set(List(fightingStyle))(paladin)
   }
 
   implicit class LichOps(val lich: Lich) extends AnyVal {
@@ -1136,5 +1145,44 @@ trait TestData extends RandomDataGenerator {
         player.isAlive,
         player.name
       )
+  }
+
+  implicit val arbPaladinFightingStyle: Arbitrary[Seq[PaladinFightingStyle]] = Arbitrary {
+    Gen.someOf(paladin.Defense, paladin.Dueling, paladin.GreatWeaponFighting)
+  }
+
+  implicit val arbPaladin: Arbitrary[Paladin] = Arbitrary {
+    for {
+    player <- arbPlayer.arbitrary
+    fightingStyles <- arbPaladinFightingStyle.arbitrary
+    level <- arbLevel.arbitrary
+    } yield Paladin(
+      player.level,
+      player.health,
+      player.health,
+      player.stats,
+      player.baseWeapon,
+      player.skills,
+      paladinSpellSlots(level),
+      BasePaladin.standardPaladinSpellList,
+      player.armour,
+      player.offHand,
+      fightingStyles.toList,
+      player.proficiencyBonus,
+      player.damageVulnerabilities,
+      player.damageResistances,
+      player.damageImmunities,
+      player.conditionResistances,
+      player.conditionImmunities,
+      player.bonusActionUsed,
+      player.reactionUsed,
+      Paladin.standardPaladinAbilities,
+      player.conditions,
+      player.attackStatus,
+      player.defenseStatus,
+      none[Spell],
+      player.isAlive,
+      player.name
+    )
   }
 }

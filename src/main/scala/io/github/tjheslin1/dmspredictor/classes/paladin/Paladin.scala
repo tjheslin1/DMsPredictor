@@ -18,33 +18,33 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.macros.Lenses
 
 @Lenses("_") case class Paladin(
-                                 level: Level,
-                                 health: Int,
-                                 maxHealth: Int,
-                                 stats: BaseStats,
-                                 baseWeapon: Weapon,
-                                 skills: Skills,
-                                 spellSlots: SpellSlots,
-                                 spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Map.empty, // TODO
-                                 armour: Armour = NoArmour,
-                                 offHand: Option[Equipment] = None,
-                                 fightingStyles: List[PaladinFightingStyle] = List.empty[PaladinFightingStyle],
-                                 proficiencyBonus: ProficiencyBonus = 2,
-                                 damageVulnerabilities: List[DamageType] = List.empty[DamageType],
-                                 damageResistances: List[DamageType] = List.empty[DamageType],
-                                 damageImmunities: List[DamageType] = List.empty[DamageType],
-                                 conditionResistances: List[ConditionType] = List.empty[ConditionType],
-                                 conditionImmunities: List[ConditionType] = List.empty[ConditionType],
-                                 bonusActionUsed: Boolean = false,
-                                 reactionUsed: Boolean = false,
-                                 abilities: List[CombatantAbility] = List.empty, // TODO
-                                 conditions: List[Condition] = List.empty[Condition],
-                                 attackStatus: AttackStatus = Regular,
-                                 defenseStatus: AttackStatus = Regular,
-                                 concentratingSpell: Option[spellcasting.Spell] = None,
-                                 isAlive: Boolean = true,
-                                 name: String = NameGenerator.randomName
-                               ) extends BasePaladin {
+    level: Level,
+    health: Int,
+    maxHealth: Int,
+    stats: BaseStats,
+    baseWeapon: Weapon,
+    skills: Skills,
+    spellSlots: SpellSlots,
+    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Map.empty, // TODO
+    armour: Armour = NoArmour,
+    offHand: Option[Equipment] = None,
+    fightingStyles: List[PaladinFightingStyle] = List.empty[PaladinFightingStyle],
+    proficiencyBonus: ProficiencyBonus = 2,
+    damageVulnerabilities: List[DamageType] = List.empty[DamageType],
+    damageResistances: List[DamageType] = List.empty[DamageType],
+    damageImmunities: List[DamageType] = List.empty[DamageType],
+    conditionResistances: List[ConditionType] = List.empty[ConditionType],
+    conditionImmunities: List[ConditionType] = List.empty[ConditionType],
+    bonusActionUsed: Boolean = false,
+    reactionUsed: Boolean = false,
+    abilities: List[CombatantAbility] = List.empty, // TODO
+    conditions: List[Condition] = List.empty[Condition],
+    attackStatus: AttackStatus = Regular,
+    defenseStatus: AttackStatus = Regular,
+    concentratingSpell: Option[spellcasting.Spell] = None,
+    isAlive: Boolean = true,
+    name: String = NameGenerator.randomName
+) extends BasePaladin {
 
   val savingThrowProficiencies = NonEmptyList.of(Wisdom, Charisma)
 
@@ -53,11 +53,11 @@ import monocle.macros.Lenses
   def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
 
   def updateHealth[_: RS](
-                           dmg: Int,
-                           damageType: DamageType,
-                           attackResult: AttackResult
-                         ): Creature = {
-    val damageTaken   = adjustedDamage(dmg, damageType, this)
+      dmg: Int,
+      damageType: DamageType,
+      attackResult: AttackResult
+  ): Creature = {
+    val damageTaken    = adjustedDamage(dmg, damageType, this)
     val updatedPaladin = applyDamage(this, damageTaken).asInstanceOf[Paladin]
 
     if (updatedPaladin.isConscious == false && isConcentrating)
@@ -74,6 +74,9 @@ import monocle.macros.Lenses
 }
 
 object Paladin {
+
+  // TODO
+  val standardPaladinAbilities: List[CombatantAbility] = List.empty
 
   implicit def paladinShow[_: RS]: Show[Ranger] =
     Show.show { ranger =>

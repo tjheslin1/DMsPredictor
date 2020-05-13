@@ -3,9 +3,9 @@ package io.github.tjheslin1.dmspredictor.equipment.armour
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 
-case object ChainShirt extends Armour {
+case object ChainMail extends Armour {
 
-  val name = "Chain Shirt"
+  val name = "Chain Mail"
 
-  def armourClass(dexterity: Stat): Int = 13 + Math.min(2, mod(dexterity))
+  def armourClass(dexterity: Stat): Int = 16
 }
