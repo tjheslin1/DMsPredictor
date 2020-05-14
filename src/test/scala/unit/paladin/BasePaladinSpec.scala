@@ -111,7 +111,7 @@ class BasePaladinSpec extends UnitSpecBase {
         ChainShirt,
         Shield.some,
         List.empty[PaladinFightingStyle]
-      ) shouldBe 18
+      ) shouldBe 17
     }
 
     "calculate armour class for having armour and the Defense fighting style" in new TestContext {

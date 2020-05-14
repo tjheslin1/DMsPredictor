@@ -2,8 +2,9 @@ package io.github.tjheslin1.dmspredictor.classes.paladin
 
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
-import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
+import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 
@@ -31,14 +32,50 @@ object BasePaladin {
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,
       fightingStyles: List[PaladinFightingStyle]
-  ): Weapon = ???
+  ): Weapon =
+    weapon.weaponType match {
+      case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+        bonusToHitWeapon(weapon, 2)
+      case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
+        lazy val rerollingDamage = {
+          val damageRoll = weapon.damage
+          if (damageRoll <= 2)
+            weapon.damage
+          else
+            damageRoll
+        }
+        Weapon(
+          weapon.name,
+          weapon.weaponType,
+          weapon.damageType,
+          weapon.twoHanded,
+          weapon.finesse,
+          rerollingDamage,
+          weapon.hitBonus
+        )
+      case _ => weapon
+    }
 
   def armourClassWithFightingStyle(
       stats: BaseStats,
       armour: Armour,
       offHand: Option[Equipment],
       fightingStyles: List[PaladinFightingStyle]
-  ): Int = ???
+  ): Int = {
+    val baseArmourClass = armour.armourClass(stats.dexterity)
+
+    val shieldBonus = offHand match {
+      case Some(Shield) => Shield.armourClass(stats.dexterity)
+      case _            => 0
+    }
+
+    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+
+    armour match {
+      case NoArmour => baseArmourClass + shieldBonus
+      case _        => baseArmourClass + shieldBonus + defenseBonus
+    }
+  }
 
   def paladinSpellSlots(level: Level): SpellSlots =
     level match {

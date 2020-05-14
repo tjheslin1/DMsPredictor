@@ -372,6 +372,14 @@ object TestData {
 
     def withFightingStyle(fightingStyle: PaladinFightingStyle) =
       _fightingStyles.set(List(fightingStyle))(paladin)
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(paladin)
+
+    def withAllSpellSlotsAvailableForLevel(level: Level) =
+      _spellSlots.set(rangerSpellSlots(level))(paladin)
+
+    def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(paladin)
   }
 
   implicit class LichOps(val lich: Lich) extends AnyVal {
