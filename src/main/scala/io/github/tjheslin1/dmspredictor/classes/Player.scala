@@ -4,6 +4,7 @@ import cats.data.NonEmptyList
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
@@ -47,6 +48,8 @@ object Player {
 
       case c: Ranger => Ranger._level.set(lvl)(c)
       case c: Hunter => Hunter._level.set(lvl)(c)
+
+      case c: Paladin => Paladin._level.set(lvl)(c)
     }
   }
 
@@ -67,6 +70,8 @@ object Player {
 
         case c: Ranger => Ranger._bonusActionUsed.set(bonusUsed)(c)
         case c: Hunter => Hunter._bonusActionUsed.set(bonusUsed)(c)
+
+        case c: Paladin => Paladin._bonusActionUsed.set(bonusUsed)(c)
 
         case _ =>
           throw new NotImplementedError(
@@ -92,6 +97,8 @@ object Player {
 
         case c: Ranger => Ranger._proficiencyBonus.set(profBonus)(c)
         case c: Hunter => Hunter._proficiencyBonus.set(profBonus)(c)
+
+        case c: Paladin => Paladin._proficiencyBonus.set(profBonus)(c)
 
         case _ =>
           throw new NotImplementedError(
