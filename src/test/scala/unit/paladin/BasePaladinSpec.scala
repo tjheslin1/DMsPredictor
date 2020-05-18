@@ -131,7 +131,16 @@ class BasePaladinSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
+  "layOnHandsPoolForLevel" should {
+    "have a pool equal to the Paladin's level multiplied by 5" in {
+      forAll { paladin: Paladin =>
+
+        layOnHandsPoolForLevel(paladin.level) shouldBe paladin.level.value * 5
+      }
+    }
+  }
+
+  abstract private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
   }
 }

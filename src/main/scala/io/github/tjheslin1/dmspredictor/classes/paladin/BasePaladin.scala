@@ -10,6 +10,8 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting._
 
 trait BasePaladin extends Player with SpellCaster with Product with Serializable {
 
+  val layOnHandsPool: Int
+
   val fightingStyles: List[PaladinFightingStyle]
 
   override val cantrip: Option[Spell] = None
@@ -103,4 +105,6 @@ object BasePaladin {
 
   // TODO
   val standardPaladinSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map.empty
+
+  def layOnHandsPoolForLevel(level: Level): Int = level.value * 5
 }

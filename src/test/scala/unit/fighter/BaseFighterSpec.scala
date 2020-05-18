@@ -130,7 +130,7 @@ class BaseFighterSpec extends UnitSpecBase {
     }
   }
 
-  private class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
   }
 }
