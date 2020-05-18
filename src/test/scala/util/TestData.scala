@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
-import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.paladinSpellSlots
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.{layOnHandsPoolForLevel, paladinSpellSlots}
 import io.github.tjheslin1.dmspredictor.classes.paladin.{BasePaladin, Paladin, PaladinFightingStyle}
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.ranger._
@@ -380,6 +380,8 @@ object TestData {
       _spellSlots.set(rangerSpellSlots(level))(paladin)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(paladin)
+
+    def withLayOnHandsPoolOf(pool: Int) = _layOnHandsPool.set(pool)(paladin)
   }
 
   implicit class LichOps(val lich: Lich) extends AnyVal {
@@ -1190,6 +1192,7 @@ trait TestData extends RandomDataGenerator {
       player.defenseStatus,
       none[Spell],
       player.isAlive,
+      layOnHandsPoolForLevel(level),
       player.name
     )
   }

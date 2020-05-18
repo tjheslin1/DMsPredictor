@@ -166,6 +166,7 @@ object VampireAbilities extends LazyLogging {
         logger.debug(s"Vampire used $name")
 
         nextToFocus(combatant, charmTargets(players(others)), focus) match {
+          case None => (combatant, others)
           case Some(target) =>
             val (passed, updatedCreature) = savingThrowPassed(CharmDC, Wisdom, target.creature)
 
@@ -180,7 +181,6 @@ object VampireAbilities extends LazyLogging {
 
               (combatant, others.replace(charmedTarget))
             }
-          case None => (combatant, others)
         }
       }
 

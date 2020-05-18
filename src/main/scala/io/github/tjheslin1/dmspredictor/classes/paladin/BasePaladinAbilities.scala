@@ -4,6 +4,9 @@ import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.players
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BasePaladinAbilities extends LazyLogging {
 
@@ -16,12 +19,34 @@ object BasePaladinAbilities extends LazyLogging {
       val levelRequirement = LevelOne
       val abilityAction = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean = ???
+      def triggerMet(others: List[Combatant]): Boolean =
+        players(others)
+        .filter(_.creature.isAlive)
+        .exists(ally => ally.creature.health <= (ally.creature.maxHealth / 2))
 
-      def conditionMet: Boolean = ???
+      def conditionMet: Boolean = basePaladin.layOnHandsPool > 0
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${basePaladin.name} used $name")
 
-      def update: Creature = ???
+        nextToFocus(combatant, players(others), focus) match {
+          case None => (combatant, others)
+          case Some(target) =>
+
+            val healthToRestore =
+              Math.min(basePaladin.layOnHandsPool, target.creature.maxHealth - target.creature.health)
+
+            val updatedPool = basePaladin.layOnHandsPool - healthToRestore
+            val updatedBasePaladin = BasePaladin.layOnHandsPoolLens.set(updatedPool)(basePaladin)
+
+            val updatedPaladin = Combatant.creatureLens.set(updatedBasePaladin)(combatant)
+
+            val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+              .set(target.creature.health + healthToRestore)(target)
+
+            (updatedPaladin, others.replace(updatedTarget))
+        }
+      }
+      def update: Creature = basePaladin
     }
 }

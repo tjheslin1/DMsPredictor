@@ -34,7 +34,7 @@ object Focus {
         if (visibleCombatants.isEmpty) None
         else visibleCombatants(JRandom.nextInt(visibleCombatants.size)).some
       case Healing =>
-        targets.sortBy(_.creature.health).headOption
+        targets.filter(_.creature.isAlive).sortBy(_.creature.health).headOption
     }
   }
 }
