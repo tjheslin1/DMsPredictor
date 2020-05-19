@@ -3,7 +3,7 @@ package io.github.tjheslin1.dmspredictor.classes.paladin
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
-import io.github.tjheslin1.dmspredictor.strategy.Focus
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -14,29 +14,30 @@ object BasePaladinAbilities extends LazyLogging {
     new Ability(combatant) {
       val basePaladin = combatant.creature.asInstanceOf[BasePaladin]
 
-      val name = "Lay on Hands"
-      val order = currentOrder
+      val name             = "Lay on Hands"
+      val order            = currentOrder
       val levelRequirement = LevelOne
-      val abilityAction = WholeAction
+      val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]): Boolean =
         players(others)
-        .filter(_.creature.isAlive)
-        .exists(ally => ally.creature.health <= (ally.creature.maxHealth / 2))
+          .filter(_.creature.isAlive)
+          .exists(ally => ally.creature.health <= (ally.creature.maxHealth / 2))
 
       def conditionMet: Boolean = basePaladin.layOnHandsPool > 0
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${basePaladin.name} used $name")
 
-        nextToFocus(combatant, players(others), focus) match {
+        nextToFocus(combatant, players(others), Healing) match {
           case None => (combatant, others)
           case Some(target) =>
-
             val healthToRestore =
-              Math.min(basePaladin.layOnHandsPool, target.creature.maxHealth - target.creature.health)
+              Math.min(
+                basePaladin.layOnHandsPool,
+                target.creature.maxHealth - target.creature.health)
 
-            val updatedPool = basePaladin.layOnHandsPool - healthToRestore
+            val updatedPool        = basePaladin.layOnHandsPool - healthToRestore
             val updatedBasePaladin = BasePaladin.layOnHandsPoolLens.set(updatedPool)(basePaladin)
 
             val updatedPaladin = Combatant.creatureLens.set(updatedBasePaladin)(combatant)

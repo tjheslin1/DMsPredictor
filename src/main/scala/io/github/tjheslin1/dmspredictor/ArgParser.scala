@@ -430,7 +430,8 @@ trait ArgParser {
   val armourLookup: Map[String, Armour] = Map(
     "none"                      -> NoArmour,
     NoArmour.name.toLowerCase   -> NoArmour,
-    ChainShirt.name.toLowerCase -> ChainShirt
+    ChainShirt.name.toLowerCase -> ChainShirt,
+    ChainMail.name.toLowerCase  -> ChainMail
   )
 
   val offHandLookup: Map[String, Equipment] = Map(

@@ -67,7 +67,7 @@ class BaseFighterSpec extends UnitSpecBase {
         var count = 0
         val twoHandedWeapon = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, {
           count += 1
-          D6.roll()(_ => Random.nextInt(2) + 1) + D6.roll()(_ => Random.nextInt(2) + 1)
+          D6.roll()(_ => Random.nextInt(2) + 1)
         })
 
         val twoHanderFighter = fighter.withFightingStyle(GreatWeaponFighting).withBaseWeapon(twoHandedWeapon)

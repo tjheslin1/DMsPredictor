@@ -106,10 +106,10 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           val paladinCombatant = paladin.withLayOnHandsPoolOf(5).withCombatIndex(1)
 
-          val lowHealthHunter = hunter.withHealth(0).withMaxHealth(30).withIsAlive(true).withCombatIndex(2)
+          val unconsciousHunter = hunter.withHealth(0).withMaxHealth(30).withIsAlive(true).withCombatIndex(2)
 
           val (_, List(Combatant(_, updatedHunter: Hunter))) =
-            layOnHands(1)(paladinCombatant).useAbility(List(lowHealthHunter), LowestFirst)
+            layOnHands(1)(paladinCombatant).useAbility(List(unconsciousHunter), LowestFirst)
 
           updatedHunter.health shouldBe 5
         }
