@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.paladin
 
+import io.github.tjheslin1.dmspredictor.classes.FightingUtils.duelingFightingStyleConditionsMet
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
@@ -34,10 +35,11 @@ object BasePaladin {
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,
+      offHand: Option[Equipment],
       fightingStyles: List[PaladinFightingStyle]
   ): Weapon =
     weapon.weaponType match {
-      case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+      case Melee if duelingFightingStyleConditionsMet(weapon, offHand, fightingStyles, Dueling) =>
         bonusToHitWeapon(weapon, 2)
       case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
         lazy val rerollingDamage = {

@@ -37,25 +37,31 @@ class BaseRangerSpec extends UnitSpecBase {
     "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in new TestContext {
       val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 2
+      weaponWithFightingStyle(sword, none[Equipment], List(Dueling)).hitBonus shouldBe 2
     }
 
     "not apply a hit bonus for a two handed melee weapon with the Dueling fighting style" in new TestContext {
       val sword = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(sword, List(Dueling)).hitBonus shouldBe 0
+      weaponWithFightingStyle(sword, none[Equipment], List(Dueling)).hitBonus shouldBe 0
+    }
+
+    "not apply a hit bonus for a one handed melee weapon with the Dueling fighting style when wielding another weapon in off hand" in new TestContext {
+      val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, dmg = 10)
+
+      weaponWithFightingStyle(sword, sword.some, List(Dueling)).hitBonus shouldBe 0
     }
 
     "apply +2 to hit bonus for a ranged weapon with the Archery fighting style" in new TestContext {
       val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(bow, List(Archery)).hitBonus shouldBe 2
+      weaponWithFightingStyle(bow, none[Equipment], List(Archery)).hitBonus shouldBe 2
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in new TestContext {
       val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(bow, List(Dueling)).hitBonus shouldBe 0
+      weaponWithFightingStyle(bow, none[Equipment], List(Dueling)).hitBonus shouldBe 0
     }
   }
 

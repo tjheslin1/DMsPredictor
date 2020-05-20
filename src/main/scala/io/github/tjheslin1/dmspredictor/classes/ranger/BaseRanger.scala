@@ -1,5 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.ranger
 
+import io.github.tjheslin1.dmspredictor.classes.FightingUtils.duelingFightingStyleConditionsMet
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
@@ -52,12 +53,13 @@ object BaseRanger {
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,
+      offHand: Option[Equipment],
       fightingStyles: List[RangerFightingStyle]
   ): Weapon =
     weapon.weaponType match {
       case Ranged if fightingStyles.contains(Archery) =>
         bonusToHitWeapon(weapon, 2)
-      case Melee if weapon.twoHanded == false && fightingStyles.contains(Dueling) =>
+      case Melee if duelingFightingStyleConditionsMet(weapon, offHand, fightingStyles, Dueling) =>
         bonusToHitWeapon(weapon, 2)
       case _ => weapon
     }
