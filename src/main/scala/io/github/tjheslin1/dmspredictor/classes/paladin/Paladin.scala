@@ -4,10 +4,12 @@ import cats.Show
 import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin._
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladinAbilities._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -78,8 +80,10 @@ import monocle.macros.{GenLens, Lenses}
 
 object Paladin {
 
-  // TODO
-  val standardPaladinAbilities: List[CombatantAbility] = List.empty
+  val standardPaladinAbilities: List[CombatantAbility] = List(
+    layOnHands(1),
+    extraAttack(2)
+  )
 
   implicit def paladinShow[_: RS]: Show[Ranger] =
     Show.show { ranger =>

@@ -2,7 +2,7 @@ package io.github.tjheslin1.dmspredictor.classes.paladin
 
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.ability.{Ability, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack, WholeAction}
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
@@ -49,5 +49,24 @@ object BasePaladinAbilities extends LazyLogging {
         }
       }
       def update: Creature = basePaladin
+    }
+
+  def divineSmite(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val basePaladin = combatant.creature.asInstanceOf[BasePaladin]
+
+      val name             = "Divine Smite"
+      val order            = currentOrder
+      val levelRequirement = LevelTwo
+      val abilityAction    = SingleAttack
+
+      def triggerMet(others: List[Combatant]): Boolean = ???
+
+      def conditionMet: Boolean = ???
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
+        ???
+
+      def update: Creature = ???
     }
 }
