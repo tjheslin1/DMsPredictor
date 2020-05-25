@@ -1,12 +1,19 @@
 package io.github.tjheslin1.dmspredictor.classes.paladin
 
 import com.typesafe.scalalogging.LazyLogging
+import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlot
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.{
+  decrementCastersSpellSlot,
+  highestSpellSlotAvailable
+}
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
-import io.github.tjheslin1.dmspredictor.strategy.Target.players
+import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 object BasePaladinAbilities extends LazyLogging {
 
@@ -60,13 +67,75 @@ object BasePaladinAbilities extends LazyLogging {
       val levelRequirement = LevelTwo
       val abilityAction    = SingleAttack
 
-      def triggerMet(others: List[Combatant]): Boolean = ???
+      def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = ???
+      def conditionMet: Boolean =
+        basePaladin.level.value >= 2 &&
+          highestSpellSlotAvailable(basePaladin.spellSlots).isDefined
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-        ???
+      def damageFromSpellSlot[_: RS](spellSlot: SpellSlot): Int =
+        spellSlot.spellLevel.value match {
+          case 1 => 2 * D8
+          case 2 => 3 * D8
+          case 3 => 4 * D8
+          case _ => 5 * D8
+        }
 
-      def update: Creature = ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${basePaladin.name} used $name")
+
+        val optSpellSlot = highestSpellSlotAvailable(basePaladin.spellSlots)
+
+        val optTarget = nextToFocus(combatant, monsters(others), focus)
+
+        (optSpellSlot, optTarget) match {
+          case (None, _) => (combatant, others)
+          case (_, None) => (combatant, others)
+          case (Some(spellSlot), Some(target)) =>
+            val otherCombatants = others.except(target)
+            val paladinsWeapon  = combatant.creature.weapon
+
+            attack(combatant, paladinsWeapon, target) match {
+              case (Miss | CriticalMiss, updatedTarget) =>
+                (combatant, others.replace(updatedTarget))
+              case (attackResult, updatedTarget) =>
+                val (updatedPaladin, updatedDamagedTarget, updatedOthers) =
+                  resolveDamage(
+                    combatant,
+                    updatedTarget,
+                    otherCombatants,
+                    paladinsWeapon,
+                    attackResult)
+
+                if (updatedDamagedTarget.creature.isConscious) {
+                  val smiteDamage =
+                    (attackResult, updatedDamagedTarget.creature.creatureType) match {
+                      case (CriticalHit, Undead | Fiend) =>
+                        damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot) + (2 * D8)
+                      case (Hit, Undead | Fiend) =>
+                        damageFromSpellSlot(spellSlot) + (1 * D8)
+                      case (CriticalHit, _) =>
+                        damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot)
+                      case _ => damageFromSpellSlot(spellSlot)
+                    }
+
+                  val smiteDamagedCreature =
+                    updatedDamagedTarget.creature.updateHealth(smiteDamage, Radiant, attackResult)
+                  val smiteDamagedTarget =
+                    Combatant.creatureLens.set(smiteDamagedCreature)(updatedDamagedTarget)
+
+                  (updatedPaladin, updatedOthers.replace(smiteDamagedTarget))
+                } else {
+                  (updatedPaladin, updatedOthers.replace(updatedDamagedTarget))
+                }
+            }
+        }
+      }
+
+      def update: Creature =
+        highestSpellSlotAvailable(basePaladin.spellSlots) match {
+          case None            => basePaladin
+          case Some(spellSlot) => decrementCastersSpellSlot(basePaladin, spellSlot)
+        }
     }
 }

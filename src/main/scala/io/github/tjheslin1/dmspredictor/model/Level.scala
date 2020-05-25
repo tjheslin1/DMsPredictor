@@ -13,6 +13,20 @@ object Level {
       case 3  => LevelThree
       case 4  => LevelFour
       case 5  => LevelFive
+      case 6  => LevelSix
+      case 7  => LevelSeven
+      case 8  => LevelEight
+      case 9  => LevelNine
+      case 10 => LevelTen
+      case 11 => LevelEleven
+      case 12 => LevelTwelve
+      case 13 => LevelThirteen
+      case 14 => LevelFourteen
+      case 15 => LevelFifteen
+      case 16 => LevelSixteen
+      case 17 => LevelSeventeen
+      case 18 => LevelEighteen
+      case 19 => LevelNineteen
       case 20 => LevelTwenty
     }
 }

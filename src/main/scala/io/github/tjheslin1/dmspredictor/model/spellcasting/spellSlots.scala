@@ -127,6 +127,25 @@ object SpellSlots {
       case 9 => spellCaster.spellSlots.ninthLevel
     }
 
+  def decrementCastersSpellSlot(spellCaster: SpellCaster, spellSlot: SpellSlot): SpellCaster = {
+    val updatedSpellSlotCount = spellSlot.count - 1
+
+    val spellSlotLens = spellSlot match {
+      case FirstLevelSpellSlots(_)   => firstLevelLens
+      case SecondLevelSpellSlots(_)  => secondLevelLens
+      case ThirdLevelSpellSlots(_)   => thirdLevelLens
+      case FourthLevelSpellSlots(_)  => fourthLevelLens
+      case FifthLevelSpellSlots(_)   => fifthLevelLens
+      case SixthLevelSpellSlots(_)   => sixthLevelLens
+      case SeventhLevelSpellSlots(_) => seventhLevelLens
+      case EighthLevelSpellSlots(_)  => eighthLevelLens
+      case NinthLevelSpellSlots(_)   => ninthLevelLens
+    }
+
+    (SpellCaster.spellSlotsLens composeLens spellSlotLens)
+      .set(updatedSpellSlotCount)(spellCaster)
+  }
+
   val firstLevelSpellSlotLens: Lens[SpellSlots, FirstLevelSpellSlots] =
     GenLens[SpellSlots](_.firstLevel)
 

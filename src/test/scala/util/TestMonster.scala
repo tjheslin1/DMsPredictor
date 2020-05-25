@@ -4,7 +4,7 @@ import cats.syntax.option._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.HandleDamage.adjustedDamage
+import io.github.tjheslin1.dmspredictor.model.HandleDamage.{adjustedDamage, applyDamage}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.monsters.Monster
@@ -63,12 +63,12 @@ object TestMonster {
     Charisma     -> 0
   )
 
-  val strengthLens: Lens[TestMonster, Stat]  = _stats composeLens GenLens[BaseStats](_.strength)
-  val dexterityLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.dexterity)
-  val constitutionLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](
-    _.constitution)
-  val wisdomLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.wisdom)
-  val intelligenceLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](
-    _.intelligence)
-  val charismaLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: off
+  val strengthLens: Lens[TestMonster, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
+  val dexterityLens: Lens[TestMonster, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)
+  val constitutionLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.constitution)
+  val wisdomLens: Lens[TestMonster, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
+  val intelligenceLens: Lens[TestMonster, Stat] = _stats composeLens GenLens[BaseStats](_.intelligence)
+  val charismaLens: Lens[TestMonster, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
+  // format: on
 }

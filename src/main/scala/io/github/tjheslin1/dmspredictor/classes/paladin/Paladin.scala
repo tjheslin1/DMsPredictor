@@ -82,7 +82,8 @@ object Paladin {
 
   val standardPaladinAbilities: List[CombatantAbility] = List(
     layOnHands(1),
-    extraAttack(2)
+    extraAttack(2),
+    divineSmite(3)
   )
 
   implicit def paladinShow[_: RS]: Show[Ranger] =

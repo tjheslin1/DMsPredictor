@@ -497,22 +497,7 @@ object CoreAbilities extends LazyLogging {
             } else {
               val spellSlotUsed = spellSlotFromLevel(spellCaster, foundSpellLevel)
 
-              val updatedSpellSlotCount = spellSlotUsed.count - 1
-
-              val spellSlotLens = spellSlotUsed match {
-                case FirstLevelSpellSlots(_)   => firstLevelLens
-                case SecondLevelSpellSlots(_)  => secondLevelLens
-                case ThirdLevelSpellSlots(_)   => thirdLevelLens
-                case FourthLevelSpellSlots(_)  => fourthLevelLens
-                case FifthLevelSpellSlots(_)   => fifthLevelLens
-                case SixthLevelSpellSlots(_)   => sixthLevelLens
-                case SeventhLevelSpellSlots(_) => seventhLevelLens
-                case EighthLevelSpellSlots(_)  => eighthLevelLens
-                case NinthLevelSpellSlots(_)   => ninthLevelLens
-              }
-
-              (SpellCaster.spellSlotsLens composeLens spellSlotLens)
-                .set(updatedSpellSlotCount)(spellCaster.asInstanceOf[SpellCaster])
+              decrementCastersSpellSlot(spellCaster, spellSlotUsed)
             }
         }
     }

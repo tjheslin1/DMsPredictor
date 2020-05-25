@@ -25,6 +25,7 @@ sealed trait CreatureType extends Product with Serializable
 case object PlayerCharacter extends CreatureType
 case object Humanoid        extends CreatureType
 case object Undead          extends CreatureType
+case object Fiend           extends CreatureType
 
 trait Creature {
 

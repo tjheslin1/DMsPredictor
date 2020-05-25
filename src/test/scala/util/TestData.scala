@@ -373,11 +373,20 @@ object TestData {
     def withFightingStyle(fightingStyle: PaladinFightingStyle) =
       _fightingStyles.set(List(fightingStyle))(paladin)
 
+    def withNoFightingStyles() =
+      _fightingStyles.set(List.empty[PaladinFightingStyle])(paladin)
+
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(paladin)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
-      _spellSlots.set(rangerSpellSlots(level))(paladin)
+      _spellSlots.set(paladinSpellSlots(level))(paladin)
+
+    def withSpellSlots(spellSlots: SpellSlots) =
+      _spellSlots.set(spellSlots)(paladin)
+
+    def withNoAvailableSpellsSlots() =
+      _spellSlots.set(SpellSlots(0, 0, 0))(paladin)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(paladin)
 
@@ -774,7 +783,7 @@ trait TestData extends RandomDataGenerator {
         creature.damageImmunities,
         creature.conditionResistances,
         creature.conditionImmunities,
-        List.empty[CombatantAbility], // TODO add core abilities?
+        List.empty[CombatantAbility],
         creature.conditions,
         reactionUsed = false,
         creature.attackStatus,

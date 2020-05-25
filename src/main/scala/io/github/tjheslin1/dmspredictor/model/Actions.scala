@@ -101,6 +101,18 @@ object Actions extends LazyLogging {
       addStatModifier = true
     )
 
+  /**
+    *
+    * @param attacker
+    * @param target
+    * @param others is the list of other combatants not including the `target`
+    * @param weapon
+    * @param attackResult
+    * @param damageBonus
+    * @param addStatModifier
+    * @tparam _
+    * @return
+    */
   def resolveDamage[_: RS](
       attacker: Combatant,
       target: Combatant,

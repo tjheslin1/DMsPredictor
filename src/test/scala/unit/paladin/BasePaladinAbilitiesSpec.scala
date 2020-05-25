@@ -1,15 +1,20 @@
 package unit.paladin
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.paladinSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladinAbilities._
 import io.github.tjheslin1.dmspredictor.classes.paladin._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
 import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.monsters.Goblin
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
+import util.TestMonster
+
+import scala.collection.immutable.Queue
 
 class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
@@ -149,15 +154,18 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
   }
 
   "Divine Smite" should {
-    "deal 2d8 extra radiant damage on a weapon attack" in {
+    "deal 2d8 extra radiant damage on a weapon attack using a first level spell slot" in {
       forAll { (paladin: Paladin, goblin: Goblin) =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val levelTwoPaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withNoFightingStyles()
             .withLevel(LevelTwo)
             .withProficiencyBonus(6)
             .withStrength(18)
+            .withDexterity(10)
             .withBaseWeapon(Shortsword)
             .withCombatIndex(1)
 
@@ -167,46 +175,271 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             divineSmite(1)(levelTwoPaladin).useAbility(List(goblinCombatant), LowestFirst)
 
-          updatedGoblin.health shouldBe 50 - (10 + 4 + 20)
+          updatedGoblin.health shouldBe 50 - (10 + 4 + 20) // weapon damage + strength mod + radiant damage
         }
       }
     }
 
-    "deal 4d8 extra radiant damage on a weapon attack" in {
-      fail("TODO")
+    "deal 4d8 extra radiant damage on a weapon attack using a third level spell slot" in {
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+         val thirdLevelSpellPaladin = paladin
+           .withSpellSlots(SpellSlots(0, 0, 1))
+           .withNoFightingStyles()
+            .withProficiencyBonus(6)
+           .withStrength(18)
+           .withDexterity(10)
+           .withBaseWeapon(Shortsword)
+           .withCombatIndex(1)
+
+          val goblinCombatant = goblin
+            .withHealth(100).withMaxHealth(100).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
+            divineSmite(1)(thirdLevelSpellPaladin).useAbility(List(goblinCombatant), LowestFirst)
+
+          updatedGoblin.health shouldBe 100 - (10 + 4 + 40) // weapon damage + strength mod + radiant damage
+        }
+      }
     }
 
     "deal a maximum of 5d8  extra radiant damage" in {
-      fail("TODO")
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val fifthLevelSpellPaladin = paladin
+            .withSpellSlots(SpellSlots(0, 0, 0, 0, 1, 0, 0, 0, 0))
+            .withNoFightingStyles()
+            .withProficiencyBonus(6)
+            .withStrength(18)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
+
+          val werewolfCombatant = goblin
+            .withHealth(100).withMaxHealth(100).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
+            divineSmite(1)(fifthLevelSpellPaladin).useAbility(List(werewolfCombatant), LowestFirst)
+
+          updatedGoblin.health shouldBe 100 - (10 + 4 + 50) // weapon damage + strength mod + radiant damage
+        }
+      }
     }
 
     "deal an extra 1d8 radiant damage on top of the regular extra damage against an Undead target" in {
-      fail("TODO")
+      forAll { (paladin: Paladin, zombie: Zombie) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val levelTwoPaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withNoFightingStyles()
+            .withLevel(LevelTwo)
+            .withProficiencyBonus(6)
+            .withStrength(18)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
+
+          val zombieCombatant = zombie
+            .withHealth(50).withMaxHealth(50).withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedZombie: Zombie))) =
+            divineSmite(1)(levelTwoPaladin).useAbility(List(zombieCombatant), LowestFirst)
+
+          updatedZombie.health shouldBe 50 - (10 + 4 + 30) // weapon damage + strength mod + radiant damage
+        }
+      }
     }
 
     "deal an extra 1d8 radiant damage on top of the regular extra damage against an Fiend target" in {
-      fail("TODO")
+      forAll { (paladin: Paladin, testMonster: TestMonster) =>
+        new TestContext {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val levelTwoPaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withNoFightingStyles()
+            .withLevel(LevelTwo)
+            .withProficiencyBonus(6)
+            .withStrength(18)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
+
+          val fiendCombatant = testMonster
+              .withCreatureType(Fiend)
+            .withArmourClass(5)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
+
+          val (_, List(Combatant(_, updatedTestMonster: TestMonster))) =
+            divineSmite(1)(levelTwoPaladin).useAbility(List(fiendCombatant), LowestFirst)
+
+          updatedTestMonster.health shouldBe 50 - (10 + 4 + 30) // weapon damage + strength mod + radiant damage
+        }
+      }
     }
 
     "be used in conjunction with Extra Attack" in {
-      fail("TODO")
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val levelFivePaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withNoFightingStyles()
+            .withLevel(LevelFive)
+            .withProficiencyBonus(6)
+            .withStrength(18)
+            .withDexterity(10)
+            .withBaseWeapon(trackedSword)
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin
+            .withHealth(100).withMaxHealth(100).withCombatIndex(2)
+
+          val Queue(Combatant(_, updatedGoblin: Goblin), Combatant(_, updatedPaladin: Paladin)) =
+            Move.takeMove(Queue(levelFivePaladin, goblinCombatant), LowestFirst)
+
+          swordUsedCount shouldBe 2
+
+          updatedGoblin.health shouldBe 100 - (1 + 4 + 30) - (1 + 4 + 30) // weapon damage + strength mod + radiant damage
+        }
+      }
     }
 
-    "spend the highest level spell slot when available" in {
-      // let level be randomised
-      fail("TODO")
-    }
+    "not be used if the Paladin kills the creature with the regular weapon attack" in {
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
 
-    "not meet the condition if the Paladin is level one" in {
-      fail("TODO")
-    }
+          val levelTwoPaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withNoFightingStyles()
+            .withLevel(LevelTwo)
+            .withProficiencyBonus(6)
+            .withStrength(8)
+            .withDexterity(8)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
 
-    "not meet the condition if the Paladin has no spell slots available" in {
-      fail("TODO")
+          val goblinCombatant = goblin.withHealth(1).withMaxHealth(1).withCombatIndex(2)
+
+          val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedGoblin: Goblin))) =
+            divineSmite(1)(levelTwoPaladin).useAbility(List(goblinCombatant), LowestFirst)
+
+          updatedGoblin.health shouldBe 0
+
+          updatedPaladin.spellSlots shouldBe paladinSpellSlots(LevelTwo)
+        }
+      }
     }
 
     "not be used if the Paladin misses its attack" in {
-      fail("TODO")
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val levelTwoPaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withNoFightingStyles()
+            .withLevel(LevelTwo)
+            .withProficiencyBonus(2)
+            .withStrength(10)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedGoblin: Goblin))) =
+            divineSmite(1)(levelTwoPaladin).useAbility(List(goblinCombatant), LowestFirst)
+
+          updatedPaladin.spellSlots shouldBe paladinSpellSlots(LevelTwo)
+
+          updatedGoblin.health shouldBe goblin.health
+        }
+      }
+    }
+
+    "not be used if the Paladin misses its attack with a CriticalMiss" in {
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext with Tracking {
+          implicit val roll: RollStrategy = _ => RollResult(1)
+
+          val levelTwoPaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withNoFightingStyles()
+            .withLevel(LevelTwo)
+            .withProficiencyBonus(2)
+            .withStrength(10)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedGoblin: Goblin))) =
+            divineSmite(1)(levelTwoPaladin).useAbility(List(goblinCombatant), LowestFirst)
+
+          updatedPaladin.spellSlots shouldBe paladinSpellSlots(LevelTwo)
+
+          updatedGoblin.health shouldBe goblin.health
+        }
+      }
+    }
+
+    "spend the highest level spell slot when available" in {
+      forAll { paladin: Paladin =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val levelFivePaladin = paladin
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withNoFightingStyles()
+            .withLevel(LevelFive)
+            .withProficiencyBonus(6)
+            .withStrength(18)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
+
+          val updatedPaladin =
+            divineSmite(1)(levelFivePaladin).update.asInstanceOf[Paladin]
+
+          updatedPaladin.spellSlots shouldBe SpellSlots(4, 1, 0)
+        }
+      }
+    }
+
+    "meet the condition if the Paladin is level two or higher" in {
+      val paladin = random[Paladin]
+        .withAllSpellSlotsAvailableForLevel(LevelTwo)
+        .withLevel(LevelTwo)
+        .withCombatIndex(1)
+
+      divineSmite(1)(paladin).conditionMet shouldBe true
+    }
+
+    "not meet the condition if the Paladin is level one" in {
+      val paladin = random[Paladin].withLevel(LevelOne).withCombatIndex(1)
+
+      divineSmite(1)(paladin).conditionMet shouldBe false
+    }
+
+    "not meet the condition if the Paladin has no spell slots available" in {
+      val paladin = random[Paladin]
+        .withNoAvailableSpellsSlots()
+        .withLevel(LevelTwo)
+        .withCombatIndex(1)
+
+      divineSmite(1)(paladin).conditionMet shouldBe false
     }
   }
 
