@@ -5,10 +5,7 @@ import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlot
-import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.{
-  decrementCastersSpellSlot,
-  highestSpellSlotAvailable
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}

@@ -17,6 +17,7 @@ import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionTyp
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -80,10 +81,15 @@ import monocle.macros.{GenLens, Lenses}
 
 object Paladin {
 
+  val standardPaladinSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
+    (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds
+  )
+
   val standardPaladinAbilities: List[CombatantAbility] = List(
-    layOnHands(1),
-    extraAttack(2),
-    divineSmite(3)
+    castSingleTargetHealingSpell(1),
+    layOnHands(2),
+    extraAttack(3),
+    divineSmite(4)
   )
 
   implicit def paladinShow[_: RS]: Show[Ranger] =

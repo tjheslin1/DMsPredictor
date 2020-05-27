@@ -1183,7 +1183,7 @@ trait TestData extends RandomDataGenerator {
       player.baseWeapon,
       player.skills,
       paladinSpellSlots(level),
-      BasePaladin.standardPaladinSpellList,
+      Paladin.standardPaladinSpellList,
       player.armour,
       player.offHand,
       fightingStyles.toList,

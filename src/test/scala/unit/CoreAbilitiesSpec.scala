@@ -136,7 +136,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castSingleTargetOffensiveSpell(Priority)(trackedCleric)
             .useAbility(List(monster), LowestFirst)
 
-          singleSavingThrowSpellUsedCount shouldBe 1
+          singleTargetSavingThrowSpellUsedCount shouldBe 1
         }
       }
     }
@@ -153,15 +153,38 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withProficiencyBonus(6)
             .withLevel(LevelFive)
             .withWisdom(10)
-            .asInstanceOf[Cleric]
+            .withCombatIndex(1)
 
           val monster = testMonster.withWisdom(10).withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castSingleTargetOffensiveSpell(Priority)(trackedCleric.withCombatIndex(1))
-              .useAbility(List(monster), LowestFirst)
+          castSingleTargetOffensiveSpell(Priority)(trackedCleric)
+            .useAbility(List(monster), LowestFirst)
 
-          singleSavingThrowSpellUsedCount shouldBe 1
+          singleTargetSavingThrowSpellLevelUsed shouldBe 2
+          singleTargetSavingThrowSpellUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "cast a spell single target damaging spell even when a higher level multi target spell is known" in {
+      forAll { (wizard: Wizard, testMonster: TestMonster) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedWizard = wizard
+            .withSpellsKnown(trackedSingleTargetSavingThrowSpell(1, Intelligence), trackedMultiMeleeSpellAttack(2))
+            .withAllSpellSlotsAvailableForLevel(LevelThree)
+            .withLevel(LevelThree)
+            .withProficiencyBonus(6)
+              .withIntelligence(10)
+              .withCombatIndex(1)
+
+          val monster = testMonster.withIntelligence(10).withCombatIndex(2)
+
+          castSingleTargetOffensiveSpell(Priority)(trackedWizard).useAbility(List(monster), LowestFirst)
+
+          singleTargetSavingThrowSpellUsedCount shouldBe 1
+          multiMeleeSpellUsedCount shouldBe 0
         }
       }
     }
@@ -256,7 +279,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castSingleTargetOffensiveSpell(Priority)(noSpellSlotsCleric)
             .useAbility(List(monster), LowestFirst)
 
-          singleSavingThrowSpellUsedCount shouldBe 0
+          singleTargetSavingThrowSpellUsedCount shouldBe 0
           meleeSpellUsedCount shouldBe 1
         }
       }
@@ -794,7 +817,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castMultiTargetOffensiveSpell(Priority)(trackedWizard)
             .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
-          singleSavingThrowSpellUsedCount shouldBe 0
+          singleTargetSavingThrowSpellUsedCount shouldBe 0
           multiMeleeSpellUsedCount shouldBe 2
         }
       }
@@ -1104,6 +1127,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           selfBuffSpellUsedCount shouldBe 1
         }
       }
+    }
+  }
+
+
+  "castMultiTargetBuffSpell" should {
+    "cast a spell (Multi Target Buff) updating the targets conditions" in {
+      fail("TODO")
     }
   }
 

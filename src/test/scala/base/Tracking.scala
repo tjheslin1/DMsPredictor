@@ -1,5 +1,6 @@
 package base
 
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -166,7 +167,8 @@ trait Tracking {
       }
     }
 
-  var singleSavingThrowSpellUsedCount = 0
+  var singleTargetSavingThrowSpellLevelUsed: SpellLevel = 0
+  var singleTargetSavingThrowSpellUsedCount = 0
   def trackedSingleTargetSavingThrowSpell(
       spellLvl: SpellLevel,
       savingAttribute: Attribute,
@@ -190,7 +192,8 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        singleSavingThrowSpellUsedCount += 1
+        singleTargetSavingThrowSpellUsedCount += 1
+        singleTargetSavingThrowSpellLevelUsed = spellLevel
         4
       }
 

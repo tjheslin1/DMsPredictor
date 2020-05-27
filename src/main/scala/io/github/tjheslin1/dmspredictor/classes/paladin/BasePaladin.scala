@@ -106,9 +106,6 @@ object BasePaladin {
       case LevelTwenty    => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
     }
 
-  // TODO
-  val standardPaladinSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map.empty
-
   def layOnHandsPoolForLevel(level: Level): Int = level.value * 5
 
   val layOnHandsPoolLens: Lens[BasePaladin, Int] = Lens[BasePaladin, Int](_.layOnHandsPool) {
