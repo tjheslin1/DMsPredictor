@@ -7,6 +7,7 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
@@ -160,7 +161,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           castSingleTargetOffensiveSpell(Priority)(trackedCleric)
             .useAbility(List(monster), LowestFirst)
 
-          singleTargetSavingThrowSpellLevelUsed shouldBe 2
+          singleTargetSavingThrowSpellLevelUsed shouldBe 3
           singleTargetSavingThrowSpellUsedCount shouldBe 1
         }
       }
@@ -1131,11 +1132,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
 
-  "castMultiTargetBuffSpell" should {
-    "cast a spell (Multi Target Buff) updating the targets conditions" in {
-      fail("TODO")
-    }
-  }
+//  "castMultiTargetBuffSpell" should {
+//    "cast a spell (Multi Target Buff) updating the targets conditions" in {
+//      forAll { paladin: Paladin =>
+//
+//
+//      }
+//    }
+//  }
 
   "castSingleTargetInstantEffectSpell" should {
 

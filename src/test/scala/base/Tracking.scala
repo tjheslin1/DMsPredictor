@@ -167,7 +167,7 @@ trait Tracking {
       }
     }
 
-  var singleTargetSavingThrowSpellLevelUsed: SpellLevel = 0
+  var singleTargetSavingThrowSpellLevelUsed = -1
   var singleTargetSavingThrowSpellUsedCount = 0
   def trackedSingleTargetSavingThrowSpell(
       spellLvl: SpellLevel,
