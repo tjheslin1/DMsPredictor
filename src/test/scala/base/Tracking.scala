@@ -6,6 +6,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 trait Tracking {
@@ -264,8 +265,8 @@ trait Tracking {
                            concentration: Boolean = false,
                            higherSpellSlot: Boolean = true): SelfBuffSpell = new SelfBuffSpell {
 
-    val name: String                 = s"tracked-self-buff-spell-${spellLvl.value}"
-    val selfBuffCondition: Condition = buffCondition
+    val name                 = s"tracked-self-buff-spell-${spellLvl.value}"
+    val selfBuffCondition = buffCondition
 
     val school: SchoolOfMagic       = Divination
     val castingTime: CastingTime    = castingAction
@@ -287,6 +288,34 @@ trait Tracking {
       val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
 
       Creature.creatureConditionsLens.set(updatedConditions)(spellCaster).asInstanceOf[SpellCaster]
+    }
+  }
+
+  var trackedMultiTargetBuffSpellLevel = -1
+  var trackedMultiTargetBuffSpellUsed = false
+  def trackedMultiTargetBuffSpell(spellLvl: SpellLevel,
+                                  condition: Condition = BlessCondition,
+                                  concentration: Boolean = false,
+                                  higherSpellSlot: Boolean = true): MultiTargetBuffSpell
+    = new MultiTargetBuffSpell {
+
+    val buffCondition = condition
+
+    val name = s"tracked-self-multi-target-buff-spell-${spellLvl.value}"
+    val school: SchoolOfMagic = Enchantment
+
+    val castingTime: CastingTime = OneActionCast
+    val spellLevel: SpellLevel = spellLvl
+    val requiresConcentration = concentration
+    val benefitsFromHigherSpellSlot = higherSpellSlot
+
+    override def effect[_: RS](spellCaster: SpellCaster,
+                               spellLevel: SpellLevel,
+                               targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+      trackedMultiTargetBuffSpellUsed = true
+      trackedMultiTargetBuffSpellLevel = spellLevel.value
+
+      (spellCaster, targets)
     }
   }
 

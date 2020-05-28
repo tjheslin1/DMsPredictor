@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
@@ -488,6 +489,46 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
+    "handle loss of concentration of a MultiTargetBuffSpell" in {
+      forAll { (paladin: Paladin, fighter: Fighter, rogue: Rogue) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val concentratingCleric = paladin
+            .withConcentratingOn(trackedMultiTargetBuffSpell())
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withConstitution(2)
+            .withCombatIndex(1)
+
+          val spiritGuardiansCondition = SpiritGuardiansCondition(3, 10, 10, Wisdom)
+
+          val goblinCombatant = goblin
+            .withStrength(10)
+            .withDexterity(10)
+            .withCondition(spiritGuardiansCondition)
+            .withCombatIndex(2)
+
+          val zombieCombatant = zombie.withCondition(spiritGuardiansCondition).withCombatIndex(3)
+
+          val (Combatant(_, updatedGoblin: Goblin),
+               Combatant(_, updatedCleric: Cleric),
+               List(Combatant(_, updatedZombie: Zombie))) =
+            resolveDamage(goblinCombatant,
+                          concentratingCleric,
+                          List(zombieCombatant),
+                          goblin.weapon,
+                          Hit,
+                          damageBonus = 30)
+
+          updatedGoblin.conditions shouldBe List.empty[Condition]
+          updatedZombie.conditions shouldBe List.empty[Condition]
+
+          updatedCleric.concentratingSpell shouldBe none[Spell]
+        }
+      }
+    }
+
     "handle loss of concentration of a SelfBuffSpell" in {
       forAll { (ranger: Ranger, zombie: Zombie) =>
         new TestContext {
@@ -809,7 +850,7 @@ class ActionsSpec extends UnitSpecBase {
     }
   }
 
-  abstract private class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
 
     val sixDamageWeapon =
