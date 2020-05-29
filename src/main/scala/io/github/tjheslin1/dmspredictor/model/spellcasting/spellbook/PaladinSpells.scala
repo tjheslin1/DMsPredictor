@@ -6,10 +6,10 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 object PaladinSpells {
 
   case object BlessCondition extends Condition {
-    val name = "Bless (Condition)"
-    val saveDc: Int = ???
-    val turnsLeft: Int = ???
-    val missesTurn: Boolean = ???
+    val name                       = "Bless (Condition)"
+    val saveDc: Int                = ???
+    val turnsLeft: Int             = ???
+    val missesTurn: Boolean        = ???
     val isHandledOnDamage: Boolean = ???
 
     def decrementTurnsLeft(): Condition = ???

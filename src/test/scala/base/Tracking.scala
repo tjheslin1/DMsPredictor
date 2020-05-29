@@ -285,21 +285,22 @@ trait Tracking {
     def onLossOfConcentration(spellCaster: SpellCaster, damage: Int): SpellCaster = {
       selfBuffSpellConcentrationHandled = true
 
-      val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
-
-      Creature.creatureConditionsLens.set(updatedConditions)(spellCaster).asInstanceOf[SpellCaster]
+      super.onLossOfConcentration(spellCaster, damage)
     }
   }
 
   var trackedMultiTargetBuffSpellLevel = -1
   var trackedMultiTargetBuffSpellUsed = false
+  var trackedMultiTargetBuffConcentrationHandled = false
   def trackedMultiTargetBuffSpell(spellLvl: SpellLevel,
                                   condition: Condition = BlessCondition,
+                                  numTargets: Int = 3,
                                   concentration: Boolean = false,
                                   higherSpellSlot: Boolean = true): MultiTargetBuffSpell
     = new MultiTargetBuffSpell {
 
     val buffCondition = condition
+    val affectedTargets = numTargets
 
     val name = s"tracked-self-multi-target-buff-spell-${spellLvl.value}"
     val school: SchoolOfMagic = Enchantment
@@ -315,7 +316,13 @@ trait Tracking {
       trackedMultiTargetBuffSpellUsed = true
       trackedMultiTargetBuffSpellLevel = spellLevel.value
 
-      (spellCaster, targets)
+      super.effect(spellCaster, spellLevel, targets)
+    }
+
+    override def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+      trackedMultiTargetBuffConcentrationHandled = true
+
+      super.onLossOfConcentration(spellCaster)
     }
   }
 

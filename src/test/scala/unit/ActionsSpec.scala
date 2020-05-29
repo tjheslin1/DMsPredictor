@@ -17,6 +17,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardiansCondition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import util.TestData._
@@ -490,41 +491,41 @@ class ActionsSpec extends UnitSpecBase {
     }
 
     "handle loss of concentration of a MultiTargetBuffSpell" in {
-      forAll { (paladin: Paladin, fighter: Fighter, rogue: Rogue) =>
+      forAll { (paladin: Paladin, goblin: Goblin, fighter: Fighter, rogue: Rogue) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val concentratingCleric = paladin
-            .withConcentratingOn(trackedMultiTargetBuffSpell())
+          val concentratingPaladin = paladin
+            .withConcentratingOn(trackedMultiTargetBuffSpell(1, condition = BlessCondition, concentration = true))
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)
             .withCombatIndex(1)
 
-          val spiritGuardiansCondition = SpiritGuardiansCondition(3, 10, 10, Wisdom)
-
           val goblinCombatant = goblin
             .withStrength(10)
             .withDexterity(10)
-            .withCondition(spiritGuardiansCondition)
             .withCombatIndex(2)
 
-          val zombieCombatant = zombie.withCondition(spiritGuardiansCondition).withCombatIndex(3)
+          val blessedFighter = fighter.withCondition(BlessCondition).withCombatIndex(3)
 
-          val (Combatant(_, updatedGoblin: Goblin),
-               Combatant(_, updatedCleric: Cleric),
-               List(Combatant(_, updatedZombie: Zombie))) =
+          val blessRogue = rogue.withCondition(BlessCondition).withCombatIndex(3)
+
+          val (_,
+               Combatant(_, updatedPaladin: Paladin),
+               List(Combatant(_, updatedFighter: Fighter),
+               Combatant(_, updatedRogue: Rogue))) =
             resolveDamage(goblinCombatant,
-                          concentratingCleric,
-                          List(zombieCombatant),
+                          concentratingPaladin,
+                          List(blessedFighter, blessRogue),
                           goblin.weapon,
                           Hit,
                           damageBonus = 30)
 
-          updatedGoblin.conditions shouldBe List.empty[Condition]
-          updatedZombie.conditions shouldBe List.empty[Condition]
+          updatedFighter.conditions shouldBe List.empty[Condition]
+          updatedRogue.conditions shouldBe List.empty[Condition]
 
-          updatedCleric.concentratingSpell shouldBe none[Spell]
+          updatedPaladin.concentratingSpell shouldBe none[Spell]
         }
       }
     }
