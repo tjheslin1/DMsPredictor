@@ -1132,14 +1132,13 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
 
-//  "castMultiTargetBuffSpell" should {
-//    "cast a spell (Multi Target Buff) updating the targets conditions" in {
+  "castMultiTargetBuffSpell" should {
+    "cast a spell (Multi Target Buff) updating the targets conditions" in {
+      fail("TODO")
 //      forAll { paladin: Paladin =>
-//
-//
 //      }
-//    }
-//  }
+    }
+  }
 
   "castSingleTargetInstantEffectSpell" should {
 

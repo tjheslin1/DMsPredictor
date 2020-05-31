@@ -16,7 +16,11 @@ abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
       spellCaster: SpellCaster,
       spellLevel: SpellLevel,
       targets: List[Combatant]
-  ): (SpellCaster, List[Combatant]) = ???
+  ): (SpellCaster, List[Combatant]) = {
+    logger.debug(s"${spellCaster.name} cast $name")
+
+    (spellCaster, targets)
+  }
 
   def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = ???
 }

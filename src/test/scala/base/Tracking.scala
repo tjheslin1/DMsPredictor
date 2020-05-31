@@ -282,10 +282,10 @@ trait Tracking {
       super.effect(spellCaster, spellLevel, targets)
     }
 
-    def onLossOfConcentration(spellCaster: SpellCaster, damage: Int): SpellCaster = {
+    override def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
       selfBuffSpellConcentrationHandled = true
 
-      super.onLossOfConcentration(spellCaster, damage)
+      super.onLossOfConcentration(spellCaster)
     }
   }
 

@@ -8,7 +8,8 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.ConcentrationConditionSpell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{ConcentrationConditionSpell, MultiTargetBuffSpell}
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 sealed trait AttackResult {
   def result: Int
@@ -162,11 +163,19 @@ object Actions extends LazyLogging {
           if lossOfConcentration(spellCaster, damagedSpellCaster) =>
         spellCaster.concentratingSpell.fold((updatedAttacker, others)) {
           case conditionSpell: ConcentrationConditionSpell =>
-            val concentratedCondition: Condition = conditionSpell.conditionFrom(spellCaster)
+            val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
 
             val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
 
             (conditionRemovedAttacker, others.map(removeCondition(_, concentratedCondition)))
+          case multiTargetBuffSpell: MultiTargetBuffSpell =>
+            val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
+
+            val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
+
+            val updatedOthers = others.map(removeCondition(_, concentratedBuffCondition)).replace(conditionRemovedTarget)
+
+            (updatedAttacker, updatedOthers)
           case _ => (updatedAttacker, others)
         }
       case _ =>
