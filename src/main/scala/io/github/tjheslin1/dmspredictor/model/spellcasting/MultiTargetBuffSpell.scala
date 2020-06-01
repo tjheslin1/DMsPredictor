@@ -10,6 +10,8 @@ abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
   val buffCondition: Condition
   val affectedTargets: Int
 
+  val buffCaster: Boolean
+
   val spellEffect: SpellEffect = BuffSpell
 
   def effect[_: RS](
