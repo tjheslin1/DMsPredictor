@@ -293,8 +293,9 @@ trait Tracking {
   var trackedMultiTargetBuffSpellUsed = false
   var trackedMultiTargetBuffConcentrationHandled = false
   def trackedMultiTargetBuffSpell(spellLvl: SpellLevel,
-                                  condition: Condition = BlessCondition,
+                                  condition: Condition,
                                   numTargets: Int = 3,
+                                  priority: (Combatant, Combatant) => Int = (_, _) => -1,
                                   concentration: Boolean = false,
                                   higherSpellSlot: Boolean = true): MultiTargetBuffSpell
     = new MultiTargetBuffSpell {
@@ -309,6 +310,9 @@ trait Tracking {
     val spellLevel: SpellLevel = spellLvl
     val requiresConcentration = concentration
     val benefitsFromHigherSpellSlot = higherSpellSlot
+
+    val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) => ???
+
 
     override def effect[_: RS](spellCaster: SpellCaster,
                                spellLevel: SpellLevel,

@@ -8,7 +8,10 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{ConcentrationConditionSpell, MultiTargetBuffSpell}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{
+  ConcentrationConditionSpell,
+  MultiTargetBuffSpell
+}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 sealed trait AttackResult {
@@ -173,7 +176,9 @@ object Actions extends LazyLogging {
 
             val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
 
-            val updatedOthers = others.map(removeCondition(_, concentratedBuffCondition)).replace(conditionRemovedTarget)
+            val updatedOthers = others
+              .map(removeCondition(_, concentratedBuffCondition))
+              .replace(conditionRemovedTarget)
 
             (updatedAttacker, updatedOthers)
           case _ => (updatedAttacker, others)

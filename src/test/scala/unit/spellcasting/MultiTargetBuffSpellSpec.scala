@@ -12,12 +12,13 @@ import util.TestData._
 class MultiTargetBuffSpellSpec extends UnitSpecBase {
 
   "effect" should {
-    "apply buff condition to targets" in {
+
+    "apply buff condition to targets including the caster if not enough targets" in {
       forAll { (paladin: Paladin, fighter: Fighter, rogue: Rogue) =>
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, numTargets = 3)
+          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition, numTargets = 3)
 
           val buffingPaladin = paladin
 
@@ -32,6 +33,23 @@ class MultiTargetBuffSpellSpec extends UnitSpecBase {
           updatedPaladin.conditions shouldBe List(BlessCondition)
           updatedFighter.conditions shouldBe List(BlessCondition)
           updatedRogue.conditions   shouldBe List(BlessCondition)
+        }
+      }
+    }
+
+    "apply the buff condition to the caster if only of no allies are available" in {
+      forAll { paladin: Paladin =>
+        new TestContext {
+          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+
+          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition, numTargets = 3)
+
+          val buffingPaladin = paladin
+
+          val (updatedPaladin: Paladin, _) =
+            multiTargetBuffSpell.effect(buffingPaladin, multiTargetBuffSpell.spellLevel, List.empty[Combatant])
+
+          updatedPaladin.conditions shouldBe List(BlessCondition)
         }
       }
     }
