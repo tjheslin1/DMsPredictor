@@ -177,8 +177,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
             .withProficiencyBonus(6)
-              .withIntelligence(10)
-              .withCombatIndex(1)
+            .withIntelligence(10)
+            .withCombatIndex(1)
 
           val monster = testMonster.withIntelligence(10).withCombatIndex(2)
 

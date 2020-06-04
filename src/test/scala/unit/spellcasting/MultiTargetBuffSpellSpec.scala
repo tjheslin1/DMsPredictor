@@ -18,7 +18,7 @@ class MultiTargetBuffSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition, numTargets = 3)
+          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), numTargets = 3)
 
           val buffingPaladin = paladin
 
@@ -30,9 +30,9 @@ class MultiTargetBuffSpellSpec extends UnitSpecBase {
               multiTargetBuffSpell.effect(buffingPaladin, multiTargetBuffSpell.spellLevel,
                 List(fighterCombatant, rogueCombatant))
 
-          updatedPaladin.conditions shouldBe List(BlessCondition)
-          updatedFighter.conditions shouldBe List(BlessCondition)
-          updatedRogue.conditions   shouldBe List(BlessCondition)
+          updatedPaladin.conditions shouldBe List(BlessCondition())
+          updatedFighter.conditions shouldBe List(BlessCondition())
+          updatedRogue.conditions   shouldBe List(BlessCondition())
         }
       }
     }
@@ -42,14 +42,14 @@ class MultiTargetBuffSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition, numTargets = 3)
+          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), numTargets = 3)
 
           val buffingPaladin = paladin
 
           val (updatedPaladin: Paladin, _) =
             multiTargetBuffSpell.effect(buffingPaladin, multiTargetBuffSpell.spellLevel, List.empty[Combatant])
 
-          updatedPaladin.conditions shouldBe List(BlessCondition)
+          updatedPaladin.conditions shouldBe List(BlessCondition())
         }
       }
     }

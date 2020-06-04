@@ -45,6 +45,7 @@ object Spell {
   )(
       originalSpellLevel: SpellLevel = spellLevel,
       checkCasterIsConcentrating: Boolean = true,
+      singleTargetAttackOnly: Boolean = false,
       multiAttackOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
@@ -54,10 +55,19 @@ object Spell {
     if (spellLookup.isDefined) {
       val spell = spellLookup.get
 
-      if (multiAttackOnly && spell.isInstanceOf[MultiTargetSavingThrowSpell] == false)
+      // TODO test
+      /*if (singleTargetAttackOnly && singleTargetAttackSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
+          singleTargetAttackOnly,
+          multiAttackOnly
+        )
+      else*/ if (multiAttackOnly && multiTargetAttackSpellOnly(spell) == false)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+          originalSpellLevel,
+          checkCasterIsConcentrating,
+          singleTargetAttackOnly,
           multiAttackOnly
         )
       else if (
@@ -66,6 +76,7 @@ object Spell {
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
+          singleTargetAttackOnly,
           multiAttackOnly
         )
       else
@@ -82,10 +93,27 @@ object Spell {
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
         originalSpellLevel,
         checkCasterIsConcentrating,
+        singleTargetAttackOnly,
         multiAttackOnly
       )
     else none[(Spell, SpellLevel)]
   }
+
+  def singleTargetAttackSpellOnly(spell: Spell): Boolean =
+    spell match {
+      case _: SingleTargetInstantEffectSpell => true
+      case _: SingleTargetSavingThrowSpell => true
+      case _: SingleTargetAttackSpell => true
+      case _: SingleTargetHealingSpell => true
+      case _ => false
+    }
+
+  def multiTargetAttackSpellOnly(spell: Spell): Boolean =
+    spell match {
+      case _: MultiTargetSavingThrowSpell => true
+      case _: MultiTargetBuffSpell => true
+      case _ => false
+    }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =
     attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier

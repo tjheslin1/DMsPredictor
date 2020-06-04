@@ -39,10 +39,11 @@ abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
         .asInstanceOf[SpellCaster]
     } else spellCaster
 
-    val updatedSpellCaster = if (requiresConcentration)
-      SpellCaster.concentratingLens.set(this.some)(buffedSpellCaster)
-    else
-      buffedSpellCaster
+    val updatedSpellCaster =
+      if (requiresConcentration)
+        SpellCaster.concentratingLens.set(this.some)(buffedSpellCaster)
+      else
+        buffedSpellCaster
 
     (updatedSpellCaster, targets.replace(updatedBuffTargets))
   }

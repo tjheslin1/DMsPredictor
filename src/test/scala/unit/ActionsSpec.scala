@@ -496,7 +496,7 @@ class ActionsSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val concentratingPaladin = paladin
-            .withConcentratingOn(trackedMultiTargetBuffSpell(1, condition = BlessCondition, concentration = true))
+            .withConcentratingOn(trackedMultiTargetBuffSpell(1, condition = BlessCondition(), concentration = true))
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)
@@ -507,9 +507,9 @@ class ActionsSpec extends UnitSpecBase {
             .withDexterity(10)
             .withCombatIndex(2)
 
-          val blessedFighter = fighter.withCondition(BlessCondition).withCombatIndex(3)
+          val blessedFighter = fighter.withCondition(BlessCondition()).withCombatIndex(3)
 
-          val blessRogue = rogue.withCondition(BlessCondition).withCombatIndex(3)
+          val blessRogue = rogue.withCondition(BlessCondition()).withCombatIndex(3)
 
           val (_,
                Combatant(_, updatedPaladin: Paladin),

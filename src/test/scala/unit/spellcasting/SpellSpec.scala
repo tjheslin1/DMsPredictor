@@ -26,6 +26,14 @@ class SpellSpec extends UnitSpecBase {
       spellOfLevelOrBelow(cleric, DamageSpell, 1)().get shouldBe (GuidingBolt, GuidingBolt.spellLevel)
     }
 
+    "return a single target attack spell of a specific SpellEffect equal to the level given" in {
+      fail("TODO")
+    }
+
+    "return a single target attack spell when looking down the spell list" in {
+      fail("TODO")
+    }
+
     "return a multi attack spell of a specific SpellEffect equal to the level given" in {
       val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, AcidArrow, Fireball)
 
