@@ -129,7 +129,8 @@ object CoreAbilities extends LazyLogging {
             case None =>
               (spellCaster.cantrip, 0)
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(singleTargetAttackOnly = true)
+              spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(
+                singleTargetAttackOnly = true)
                 .fold((spellCaster.cantrip, 0)) {
                   case (foundSpell, foundSpellLevel) =>
                     (foundSpell.some, foundSpellLevel)

@@ -509,12 +509,16 @@ class ActionsSpec extends UnitSpecBase {
 
           val blessedFighter = fighter.withCondition(BlessCondition()).withCombatIndex(3)
 
-          val blessRogue = rogue.withCondition(BlessCondition()).withCombatIndex(3)
+          val blessRogue = rogue.withCondition(BlessCondition()).withCombatIndex(4)
+
+//          val (_,
+//               Combatant(_, updatedPaladin: Paladin),
+//               List(Combatant(_, updatedFighter: Fighter),
+//               Combatant(_, updatedRogue: Rogue))) =
 
           val (_,
                Combatant(_, updatedPaladin: Paladin),
-               List(Combatant(_, updatedFighter: Fighter),
-               Combatant(_, updatedRogue: Rogue))) =
+updatedTargets) =
             resolveDamage(goblinCombatant,
                           concentratingPaladin,
                           List(blessedFighter, blessRogue),
@@ -522,10 +526,15 @@ class ActionsSpec extends UnitSpecBase {
                           Hit,
                           damageBonus = 30)
 
-          updatedFighter.conditions shouldBe List.empty[Condition]
-          updatedRogue.conditions shouldBe List.empty[Condition]
+          println("updatedTargets:")
+          updatedTargets.foreach(t => println(t.creature.getClass))
 
-          updatedPaladin.concentratingSpell shouldBe none[Spell]
+          fail("fix")
+
+//          updatedFighter.conditions shouldBe List.empty[Condition]
+//          updatedRogue.conditions shouldBe List.empty[Condition]
+
+//          updatedPaladin.concentratingSpell shouldBe none[Spell]
         }
       }
     }

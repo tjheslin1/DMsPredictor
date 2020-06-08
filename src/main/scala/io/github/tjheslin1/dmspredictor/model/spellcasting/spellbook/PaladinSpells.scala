@@ -19,46 +19,47 @@ object PaladinSpells {
 
   // TODO make an OnHitCondition
   case class BlessCondition(turnsLeft: Int = 10) extends PassiveCondition {
-    val name = "Bless (Condition)"
+    val name       = "Bless (Condition)"
     val missesTurn = false
 
     def decrementTurnsLeft(): Condition = BlessCondition(turnsLeft - 1)
   }
 
   case object Bless extends MultiTargetBuffSpell {
-    val name = "Bless"
+    val name          = "Bless"
     val buffCondition = BlessCondition()
 
-    val castingTime = OneActionCast
-    val requiresConcentration = true
+    val castingTime                 = OneActionCast
+    val requiresConcentration       = true
     val benefitsFromHigherSpellSlot = true
-    val school = Enchantment
+    val school                      = Enchantment
 
-    val spellLevel: SpellLevel = 3
-    val affectedTargets = 2 + spellLevel
+    val spellLevel: SpellLevel = 1
+    val affectedTargets        = 2 + spellLevel
 
     val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
       if (creatureOrder(x.creature) == creatureOrder(y.creature)) 0
       else if (creatureOrder(x.creature) < creatureOrder(y.creature)) -1
       else 1
 
-    def creatureOrder(creature: Creature): Int = creature match {
-      case _: Barbarian => 1
-      case _: Berserker => 1
-      case _: Fighter   => 2
-      case _: Champion  => 2
-      case _: Rogue     => 3
-      case _: Ranger    => 4
-      case _: Hunter    => 4
-      case _: Paladin   => 5
-      case _: Wizard    => 6
-      case _: Cleric    => 7
+    def creatureOrder(creature: Creature): Int =
+      creature match {
+        case _: Barbarian => 1
+        case _: Berserker => 1
+        case _: Fighter   => 2
+        case _: Champion  => 2
+        case _: Rogue     => 3
+        case _: Ranger    => 4
+        case _: Hunter    => 4
+        case _: Paladin   => 5
+        case _: Wizard    => 6
+        case _: Cleric    => 7
 
-      case _: Lich      => 8
-      case _: Vampire   => 9
-      case _: Werewolf  => 10
-      case _: Goblin    => 11
-      case _: Zombie    => 12
-    }
+        case _: Lich     => 8
+        case _: Vampire  => 9
+        case _: Werewolf => 10
+        case _: Goblin   => 11
+        case _: Zombie   => 12
+      }
   }
 }

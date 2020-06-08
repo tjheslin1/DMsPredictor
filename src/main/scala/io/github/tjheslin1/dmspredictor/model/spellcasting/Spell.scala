@@ -55,15 +55,14 @@ object Spell {
     if (spellLookup.isDefined) {
       val spell = spellLookup.get
 
-      // TODO test
-      /*if (singleTargetAttackOnly && singleTargetAttackSpellOnly(spell) == false)
+      if (singleTargetAttackOnly && singleTargetAttackSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
           singleTargetAttackOnly,
           multiAttackOnly
         )
-      else*/ if (multiAttackOnly && multiTargetAttackSpellOnly(spell) == false)
+      else if (multiAttackOnly && multiTargetAttackSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
@@ -102,17 +101,17 @@ object Spell {
   def singleTargetAttackSpellOnly(spell: Spell): Boolean =
     spell match {
       case _: SingleTargetInstantEffectSpell => true
-      case _: SingleTargetSavingThrowSpell => true
-      case _: SingleTargetAttackSpell => true
-      case _: SingleTargetHealingSpell => true
-      case _ => false
+      case _: SingleTargetSavingThrowSpell   => true
+      case _: SingleTargetAttackSpell        => true
+      case _: SingleTargetHealingSpell       => true
+      case _                                 => false
     }
 
   def multiTargetAttackSpellOnly(spell: Spell): Boolean =
     spell match {
       case _: MultiTargetSavingThrowSpell => true
-      case _: MultiTargetBuffSpell => true
-      case _ => false
+      case _: MultiTargetBuffSpell        => true
+      case _                              => false
     }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =

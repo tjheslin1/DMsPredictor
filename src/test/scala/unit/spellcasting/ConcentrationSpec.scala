@@ -92,6 +92,10 @@ class ConcentrationSpec extends UnitSpecBase {
         }
       }
     }
+
+    "handle loss of concentration of MultiTargetBuffSpell" in {
+      fail("TODO")
+    }
   }
 
   abstract private class TestContext extends Tracking {

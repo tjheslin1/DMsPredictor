@@ -379,6 +379,9 @@ object TestData {
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(paladin)
 
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(paladin)
+
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(paladinSpellSlots(level))(paladin)
 

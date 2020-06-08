@@ -304,14 +304,14 @@ trait Tracking {
     val affectedTargets = numTargets
 
     val name = s"tracked-self-multi-target-buff-spell-${spellLvl.value}"
-    val school: SchoolOfMagic = Enchantment
+    val school = Enchantment
+    val castingTime = OneActionCast
 
-    val castingTime: CastingTime = OneActionCast
     val spellLevel: SpellLevel = spellLvl
     val requiresConcentration = concentration
     val benefitsFromHigherSpellSlot = higherSpellSlot
 
-    val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) => ???
+    val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) => priority(x, y)
 
 
     override def effect[_: RS](spellCaster: SpellCaster,

@@ -4,6 +4,7 @@ import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
@@ -27,11 +28,24 @@ class SpellSpec extends UnitSpecBase {
     }
 
     "return a single target attack spell of a specific SpellEffect equal to the level given" in {
-      fail("TODO")
+      val paladin = random[Paladin].withSpellsKnown(SacredFlame, Fireball)
+
+      spellOfLevelOrBelow(paladin, DamageSpell, 3)(singleTargetAttackOnly = true).get shouldBe (SacredFlame, SacredFlame.spellLevel)
     }
 
-    "return a single target attack spell when looking down the spell list" in {
-      fail("TODO")
+    "return a single target attack spell when looking down the spell list" in new Tracking {
+      val trackedThirdLevelSingleTargetSpell = trackedSingleTargetSavingThrowSpell(3, Dexterity, higherSpellSlot = true)
+      val trackedSixthLevelMultiTargetSpell = trackedMultiTargetSavingThrowSpell(6, Dexterity, higherSpellSlot = true)
+
+      val lich = random[Lich].withSpellsKnown(
+        trackedThirdLevelSingleTargetSpell,
+        trackedSixthLevelMultiTargetSpell
+      )
+
+      val (foundSpell, foundSpellLevel) = spellOfLevelOrBelow(lich, DamageSpell, 9)(singleTargetAttackOnly = true).get
+
+      foundSpell.name shouldBe trackedThirdLevelSingleTargetSpell.name
+      foundSpellLevel.value shouldBe 9
     }
 
     "return a multi attack spell of a specific SpellEffect equal to the level given" in {
