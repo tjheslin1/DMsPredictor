@@ -163,16 +163,16 @@ object Actions extends LazyLogging {
 
     // why does replacing `spellCaster` with `damagedSpellCaster` break a test?
 
-    val (updatedAttacker2, updatedOthers) = (target.creature, updatedTarget.creature) match {
+    val (updatedAttacker2, updatedTarget2, updatedOthers) = (target.creature, updatedTarget.creature) match {
       case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
           if lossOfConcentration(spellCaster, damagedSpellCaster) =>
-        spellCaster.concentratingSpell.fold((updatedAttacker, others)) {
+        spellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
           case conditionSpell: ConcentrationConditionSpell =>
             val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
 
             val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
 
-            (conditionRemovedAttacker, others.map(removeCondition(_, concentratedCondition)))
+            (conditionRemovedAttacker, updatedTarget, others.map(removeCondition(_, concentratedCondition)))
           case multiTargetBuffSpell: MultiTargetBuffSpell =>
             val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
 
@@ -180,23 +180,22 @@ object Actions extends LazyLogging {
 
             val updatedOthers = others
               .map(removeCondition(_, concentratedBuffCondition))
-              .replace(conditionRemovedTarget)
 
-            (updatedAttacker, updatedOthers)
-          case _ => (updatedAttacker, others)
+            (updatedAttacker, conditionRemovedTarget, updatedOthers)
+          case _ => (updatedAttacker, updatedTarget, others)
         }
       case _ =>
-        (updatedAttacker, others)
+        (updatedAttacker, updatedTarget, others)
     }
 
-    val conditionHandledCreature =
-      updatedTarget.creature.conditions
+    val conditionHandledTargetCreature =
+      updatedTarget2.creature.conditions
         .filter(_.isHandledOnDamage)
-        .foldLeft(updatedTarget.creature) {
+        .foldLeft(updatedTarget2.creature) {
           case (creature, condition) => condition.handleOnDamage(creature, dmg)
         }
 
-    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(updatedTarget)
+    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledTargetCreature)(updatedTarget2)
 
     (updatedAttacker2, conditionHandledTarget, updatedOthers)
   }
