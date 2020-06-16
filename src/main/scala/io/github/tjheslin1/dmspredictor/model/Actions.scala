@@ -163,30 +163,34 @@ object Actions extends LazyLogging {
 
     // why does replacing `spellCaster` with `damagedSpellCaster` break a test?
 
-    val (updatedAttacker2, updatedTarget2, updatedOthers) = (target.creature, updatedTarget.creature) match {
-      case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
-          if lossOfConcentration(spellCaster, damagedSpellCaster) =>
-        spellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
-          case conditionSpell: ConcentrationConditionSpell =>
-            val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
+    val (updatedAttacker2, updatedTarget2, updatedOthers) =
+      (target.creature, updatedTarget.creature) match {
+        case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
+            if lossOfConcentration(spellCaster, damagedSpellCaster) =>
+          spellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
+            case conditionSpell: ConcentrationConditionSpell =>
+              val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
 
-            val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
+              val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
 
-            (conditionRemovedAttacker, updatedTarget, others.map(removeCondition(_, concentratedCondition)))
-          case multiTargetBuffSpell: MultiTargetBuffSpell =>
-            val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
+              (
+                conditionRemovedAttacker,
+                updatedTarget,
+                others.map(removeCondition(_, concentratedCondition)))
+            case multiTargetBuffSpell: MultiTargetBuffSpell =>
+              val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
 
-            val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
+              val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
 
-            val updatedOthers = others
-              .map(removeCondition(_, concentratedBuffCondition))
+              val updatedOthers = others
+                .map(removeCondition(_, concentratedBuffCondition))
 
-            (updatedAttacker, conditionRemovedTarget, updatedOthers)
-          case _ => (updatedAttacker, updatedTarget, others)
-        }
-      case _ =>
-        (updatedAttacker, updatedTarget, others)
-    }
+              (updatedAttacker, conditionRemovedTarget, updatedOthers)
+            case _ => (updatedAttacker, updatedTarget, others)
+          }
+        case _ =>
+          (updatedAttacker, updatedTarget, others)
+      }
 
     val conditionHandledTargetCreature =
       updatedTarget2.creature.conditions
@@ -195,7 +199,8 @@ object Actions extends LazyLogging {
           case (creature, condition) => condition.handleOnDamage(creature, dmg)
         }
 
-    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledTargetCreature)(updatedTarget2)
+    val conditionHandledTarget =
+      Combatant.creatureLens.set(conditionHandledTargetCreature)(updatedTarget2)
 
     (updatedAttacker2, conditionHandledTarget, updatedOthers)
   }

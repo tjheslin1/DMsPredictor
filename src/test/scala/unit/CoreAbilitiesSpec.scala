@@ -1131,7 +1131,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
   }
 
-
   "castMultiTargetBuffSpell" should {
     "cast a spell (Multi Target Buff) updating the targets conditions" in {
       fail("TODO")
