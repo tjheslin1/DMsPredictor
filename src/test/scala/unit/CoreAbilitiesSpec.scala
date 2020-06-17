@@ -4,15 +4,17 @@ import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
+import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
-import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
+import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
@@ -1111,7 +1113,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe false
     }
 
-    "target Player if caster is a Monster" in {
+    "work for a Monster" in {
       forAll { lich: Lich =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
@@ -1133,9 +1135,110 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
   "castMultiTargetBuffSpell" should {
     "cast a spell (Multi Target Buff) updating the targets conditions" in {
-      fail("TODO")
-//      forAll { paladin: Paladin =>
-//      }
+      forAll { (paladin: Paladin, hunter: Hunter, berserker: Berserker) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedBuffTwoTargetsSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), numTargets = 2)
+
+          val castingPaladin = paladin
+            .withSpellKnown(trackedBuffTwoTargetsSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+              .withCombatIndex(1)
+
+          val hunterCombatant = hunter.withCombatIndex(2)
+
+          val berserkerCombatant = berserker.withCombatIndex(3)
+
+          val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
+            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunter, berserker), LowestFirst)
+
+          updatedPaladin.conditions shouldBe List.empty[Condition]
+
+          updatedHunter.conditions shouldBe List(BlessCondition())
+          updatedBerserker.conditionImmunities shouldBe List(BlessCondition())
+        }
+      }
+    }
+
+    "cast a spell (Multi Target Buff) updating the SpellCasters own conditions" in {
+      forAll { (paladin: Paladin, hunter: Hunter, berserker: Berserker) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedBuffThreeTargetsSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), numTargets = 3)
+
+          val castingPaladin = paladin
+            .withSpellKnown(trackedBuffThreeTargetsSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          val hunterCombatant = hunter.withCombatIndex(2)
+
+          val berserkerCombatant = berserker.withCombatIndex(3)
+
+          val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
+            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunter, berserker), LowestFirst)
+
+          updatedPaladin.conditions shouldBe List(BlessCondition())
+
+          updatedHunter.conditions shouldBe List(BlessCondition())
+          updatedBerserker.conditionImmunities shouldBe List(BlessCondition())
+        }
+      }
+    }
+
+    "target Monsters if caster is a Monster" in {
+      forAll { (lich: Lich, goblin: Goblin) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+          val castingLich = lich
+            .withSpellKnown(trackedSpell)
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin.withCombatIndex(2)
+
+          val (Combatant(_, updatedLich: Lich), List(Combatant(_, updatedGoblin: Goblin))) =
+            castMultiTargetBuffSpell(Priority)(castingLich).useAbility(List(goblinCombatant), LowestFirst)
+
+          updatedLich.conditions shouldBe List(BlessCondition())
+
+          updatedGoblin.conditions shouldBe List(BlessCondition())
+        }
+      }
+    }
+
+    "spend the highest available spell slot" in {
+      forAll { paladin: Paladin =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+        }
+      }
+    }
+
+    "spend the lowest available spell slot if using a higher slot has no benefit" in {
+      forAll { paladin: Paladin =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+        }
+      }
+    }
+
+    "meet the condition if the Spell Caster has a Multi Target Buff cantrip to cast" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+    }
+
+    "meet the condition if the Spell Caster has a Multi Target Buff spell to cast" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
+    }
+
+    "not meet the condition if the Spell Caster cannot cast any Multi Target Buff spells at its level" in new TestContext {
+      override implicit val roll: RollStrategy = _ => RollResult(10)
     }
   }
 
