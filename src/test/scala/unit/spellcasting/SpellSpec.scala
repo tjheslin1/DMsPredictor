@@ -30,7 +30,7 @@ class SpellSpec extends UnitSpecBase {
     "return a single target attack spell of a specific SpellEffect equal to the level given" in {
       val paladin = random[Paladin].withSpellsKnown(SacredFlame, Fireball)
 
-      spellOfLevelOrBelow(paladin, DamageSpell, 3)(singleTargetAttackOnly = true).get shouldBe (SacredFlame, SacredFlame.spellLevel)
+      spellOfLevelOrBelow(paladin, DamageSpell, 3)(singleTargetSpellsOnly = true).get shouldBe (SacredFlame, SacredFlame.spellLevel)
     }
 
     "return a single target attack spell when looking down the spell list" in new Tracking {
@@ -42,7 +42,7 @@ class SpellSpec extends UnitSpecBase {
         trackedSixthLevelMultiTargetSpell
       )
 
-      val (foundSpell, foundSpellLevel) = spellOfLevelOrBelow(lich, DamageSpell, 9)(singleTargetAttackOnly = true).get
+      val (foundSpell, foundSpellLevel) = spellOfLevelOrBelow(lich, DamageSpell, 9)(singleTargetSpellsOnly = true).get
 
       foundSpell.name shouldBe trackedThirdLevelSingleTargetSpell.name
       foundSpellLevel.value shouldBe 9
@@ -51,7 +51,7 @@ class SpellSpec extends UnitSpecBase {
     "return a multi attack spell of a specific SpellEffect equal to the level given" in {
       val wizard = random[Wizard].withSpellsKnown(FireBolt, MagicMissile, AcidArrow, Fireball)
 
-      spellOfLevelOrBelow(wizard, DamageSpell, 3)(multiAttackOnly = true).get shouldBe (Fireball, Fireball.spellLevel)
+      spellOfLevelOrBelow(wizard, DamageSpell, 3)(multiTargetSpellsOnly = true).get shouldBe (Fireball, Fireball.spellLevel)
     }
 
     "return a multi attack spell when looking down the spell list" in new Tracking {
@@ -63,7 +63,7 @@ class SpellSpec extends UnitSpecBase {
         trackedSixthLevelSingleTargetSpell
       )
 
-      val (foundSpell, foundSpellLevel) = spellOfLevelOrBelow(lich, DamageSpell, 9)(multiAttackOnly = true).get
+      val (foundSpell, foundSpellLevel) = spellOfLevelOrBelow(lich, DamageSpell, 9)(multiTargetSpellsOnly = true).get
 
       foundSpell.name shouldBe trackedThirdLevelMultiTargetSpell.name
       foundSpellLevel.value shouldBe 9
@@ -108,7 +108,7 @@ class SpellSpec extends UnitSpecBase {
                                                   trackedMultiAttackDamageSpell,
                                                   AcidArrow)
 
-      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(wizard, DamageSpell, 2)(multiAttackOnly = true).get
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(wizard, DamageSpell, 2)(multiTargetSpellsOnly = true).get
 
       actualSpell.name shouldBe trackedMultiAttackDamageSpell.name
       actualSpellLevel.value shouldBe 1
@@ -123,7 +123,7 @@ class SpellSpec extends UnitSpecBase {
                                                   trackedLevelTwoMultiSpell,
                                                   trackedSingleTargetSavingThrowSpell(3, Wisdom))
 
-      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(cleric, DamageSpell, 3)(multiAttackOnly = true).get
+      val (actualSpell, actualSpellLevel) = spellOfLevelOrBelow(cleric, DamageSpell, 3)(multiTargetSpellsOnly = true).get
 
       actualSpell.name shouldBe trackedLevelTwoMultiSpell.name
       actualSpellLevel.value shouldBe 3

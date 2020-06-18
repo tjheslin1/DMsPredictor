@@ -10,7 +10,7 @@ import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
 import io.github.tjheslin1.dmspredictor.model.Actions.{attackAndDamage, attackAndDamageTimes}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
@@ -89,35 +89,8 @@ object CoreAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]) = true
 
-      def conditionMet: Boolean = {
-        val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-          .fold { spellCaster.cantrip.fold(none[Int])(_ => 0.some) } { _.spellLevel.value.some }
-
-        val capableOfCasting = spellCaster match {
-          case player: Player with SpellCaster =>
-            player.level >= player.levelSpellcastingLearned
-          case _ => true
-        }
-
-        optMaxSpellLevel.fold(false) { maxSpellLevel =>
-          capableOfCasting &&
-          spellCaster.spellsKnown.exists {
-            case ((spellLvl, spellEffect: SpellEffect), _: SingleTargetAttackSpell)
-                if spellLvl <= maxSpellLevel =>
-              spellEffect match {
-                case DamageSpell => true
-                case _           => false
-              }
-            case ((spellLvl, spellEffect: SpellEffect), _: SingleTargetSavingThrowSpell)
-                if spellLvl <= maxSpellLevel =>
-              spellEffect match {
-                case DamageSpell => true
-                case _           => false
-              }
-            case _ => false
-          }
-        }
-      }
+      def conditionMet: Boolean = spellConditionMet(spellCaster, DamageSpell,
+        singleTargetSpellsOnly = true, multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -130,7 +103,7 @@ object CoreAbilities extends LazyLogging {
               (spellCaster.cantrip, 0)
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(
-                singleTargetAttackOnly = true)
+                singleTargetSpellsOnly = true)
                 .fold((spellCaster.cantrip, 0)) {
                   case (foundSpell, foundSpellLevel) =>
                     (foundSpell.some, foundSpellLevel)
@@ -176,7 +149,8 @@ object CoreAbilities extends LazyLogging {
       def triggerMet(others: List[Combatant]): Boolean =
         healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean = spellConditionMet(spellCaster, HealingSpell)
+      def conditionMet: Boolean = spellConditionMet(spellCaster, HealingSpell,
+        singleTargetSpellsOnly = true, multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -241,7 +215,8 @@ object CoreAbilities extends LazyLogging {
       val abilityAction    = WholeAction
 
       def triggerMet(others: List[Combatant]) = true
-      def conditionMet: Boolean               = spellConditionMet(spellCaster, ConcentrationSpell)
+      def conditionMet: Boolean               = spellConditionMet(spellCaster, ConcentrationSpell,
+        singleTargetSpellsOnly = true, multiTargetSpellsOnly = true)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -286,29 +261,8 @@ object CoreAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]) = true
 
-      def conditionMet: Boolean = {
-        val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-          .fold { spellCaster.cantrip.fold(none[Int])(_ => 0.some) } { _.spellLevel.value.some }
-
-        val capableOfCasting = spellCaster match {
-          case player: Player with SpellCaster =>
-            player.level >= player.levelSpellcastingLearned
-          case _ => true
-        }
-
-        optMaxSpellLevel.fold(false) { maxSpellLevel =>
-          capableOfCasting &&
-          spellCaster.spellsKnown.exists {
-            case ((spellLvl, spellEffect: SpellEffect), _: MultiTargetSavingThrowSpell)
-                if spellLvl <= maxSpellLevel =>
-              spellEffect match {
-                case DamageSpell => true
-                case _           => false
-              }
-            case _ => false
-          }
-        }
-      }
+      def conditionMet: Boolean = spellConditionMet(spellCaster, DamageSpell,
+        singleTargetSpellsOnly = false, multiTargetSpellsOnly = true)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -320,7 +274,7 @@ object CoreAbilities extends LazyLogging {
             case None => (none[Spell], 0)
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(
-                multiAttackOnly = true
+                multiTargetSpellsOnly = true
               ).fold((none[Spell], 0)) {
                 case (foundSpell, foundSpellLevel) =>
                   (foundSpell.some, foundSpellLevel)
@@ -360,7 +314,8 @@ object CoreAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = spellConditionMet(spellCaster, BuffSpell)
+      def conditionMet: Boolean = spellConditionMet(spellCaster, BuffSpell,
+        singleTargetSpellsOnly = true, multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -383,7 +338,6 @@ object CoreAbilities extends LazyLogging {
 
             (updatedCombatant, others.replace(updatedOthers))
         }
-
       }
 
       def update: Creature = updateSpellSlot(spellCaster, BuffSpell)
@@ -398,14 +352,15 @@ object CoreAbilities extends LazyLogging {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean = ???
+      def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = ???
+      def conditionMet: Boolean = spellConditionMet(spellCaster, BuffSpell,
+        singleTargetSpellsOnly = false, multiTargetSpellsOnly = true)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
         ???
 
-      def update: Creature = ???
+      def update: Creature = updateSpellSlot(spellCaster, BuffSpell, multiAttackSpellUsed = true)
     }
 
   def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =
@@ -419,7 +374,8 @@ object CoreAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = spellConditionMet(spellCaster, InstantEffectSpell)
+      def conditionMet: Boolean = spellConditionMet(spellCaster, InstantEffectSpell,
+        singleTargetSpellsOnly = true, multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -467,9 +423,16 @@ object CoreAbilities extends LazyLogging {
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =
     players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 
-  def spellConditionMet(spellCaster: SpellCaster, effect: SpellEffect): Boolean = {
+  def spellConditionMet(spellCaster: SpellCaster,
+                        effect: SpellEffect,
+                        singleTargetSpellsOnly: Boolean,
+                        multiTargetSpellsOnly: Boolean): Boolean = {
     val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-      .fold { spellCaster.cantrip.fold(none[Int])(_ => 0.some) } { _.spellLevel.value.some }
+      .fold {
+        spellCaster.cantrip.fold(none[Int])(_ => 0.some)
+      } {
+        _.spellLevel.value.some
+      }
 
     val capableOfCasting = spellCaster match {
       case player: Player with SpellCaster =>
@@ -479,14 +442,22 @@ object CoreAbilities extends LazyLogging {
 
     optMaxSpellLevel.fold(false) { maxSpellLevel =>
       capableOfCasting &&
-      spellCaster.spellsKnown.exists {
-        case ((spellLvl, spellEffect), spell) if spellLvl <= maxSpellLevel =>
-          spellEffect match {
-            case `effect` if canCastSpell(spellCaster, spell) => true
-            case _                                            => false
+        spellCaster.spellsKnown
+          .filter {
+            case (_, spell) if singleTargetSpellsOnly && multiTargetSpellsOnly =>
+              singleTargetSpellOnly(spell) || multiTargetAttackSpellOnly(spell)
+            case (_, spell) if singleTargetSpellsOnly => singleTargetSpellOnly(spell)
+            case (_, spell) if multiTargetSpellsOnly => multiTargetAttackSpellOnly(spell)
+            case _ => true
           }
-        case _ => false
-      }
+          .exists {
+            case ((spellLvl, spellEffect), spell) if spellLvl <= maxSpellLevel =>
+              spellEffect match {
+                case `effect` if canCastSpell(spellCaster, spell) => true
+                case _ => false
+              }
+            case _ => false
+          }
     }
   }
 
@@ -507,7 +478,7 @@ object CoreAbilities extends LazyLogging {
       case Some(spellSlotFound) =>
         spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotFound.spellLevel)(
           checkCasterIsConcentrating = newlyConcentrating == false,
-          multiAttackOnly = multiAttackSpellUsed
+          multiTargetSpellsOnly = multiAttackSpellUsed
         ).fold {
           spellCaster
         } {

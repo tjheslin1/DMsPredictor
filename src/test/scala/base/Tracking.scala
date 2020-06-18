@@ -263,13 +263,14 @@ trait Tracking {
                            spellLvl: SpellLevel,
                            castingAction: CastingTime = OneActionCast,
                            concentration: Boolean = false,
-                           higherSpellSlot: Boolean = true): SelfBuffSpell = new SelfBuffSpell {
+                           higherSpellSlot: Boolean = true): SelfBuffSpell
+    = new SelfBuffSpell {
 
     val name                 = s"tracked-self-buff-spell-${spellLvl.value}"
     val selfBuffCondition = buffCondition
 
-    val school: SchoolOfMagic       = Divination
-    val castingTime: CastingTime    = castingAction
+    val school                      = Divination
+    val castingTime                 = castingAction
     val spellLevel: SpellLevel      = spellLvl
     val requiresConcentration       = concentration
     val benefitsFromHigherSpellSlot = higherSpellSlot

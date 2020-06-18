@@ -43,10 +43,10 @@ object Spell {
       spellEffect: SpellEffect,
       spellLevel: SpellLevel
   )(
-      originalSpellLevel: SpellLevel = spellLevel,
-      checkCasterIsConcentrating: Boolean = true,
-      singleTargetAttackOnly: Boolean = false,
-      multiAttackOnly: Boolean = false
+    originalSpellLevel: SpellLevel = spellLevel,
+    checkCasterIsConcentrating: Boolean = true,
+    singleTargetSpellsOnly: Boolean = false,
+    multiTargetSpellsOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
@@ -55,19 +55,19 @@ object Spell {
     if (spellLookup.isDefined) {
       val spell = spellLookup.get
 
-      if (singleTargetAttackOnly && singleTargetAttackSpellOnly(spell) == false)
+      if (singleTargetSpellsOnly && singleTargetSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
-          singleTargetAttackOnly,
-          multiAttackOnly
+          singleTargetSpellsOnly,
+          multiTargetSpellsOnly
         )
-      else if (multiAttackOnly && multiTargetAttackSpellOnly(spell) == false)
+      else if (multiTargetSpellsOnly && multiTargetAttackSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
-          singleTargetAttackOnly,
-          multiAttackOnly
+          singleTargetSpellsOnly,
+          multiTargetSpellsOnly
         )
       else if (
         checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration
@@ -75,8 +75,8 @@ object Spell {
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
-          singleTargetAttackOnly,
-          multiAttackOnly
+          singleTargetSpellsOnly,
+          multiTargetSpellsOnly
         )
       else
         spellLookup match {
@@ -92,18 +92,19 @@ object Spell {
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
         originalSpellLevel,
         checkCasterIsConcentrating,
-        singleTargetAttackOnly,
-        multiAttackOnly
+        singleTargetSpellsOnly,
+        multiTargetSpellsOnly
       )
     else none[(Spell, SpellLevel)]
   }
 
-  def singleTargetAttackSpellOnly(spell: Spell): Boolean =
+  def singleTargetSpellOnly(spell: Spell): Boolean =
     spell match {
       case _: SingleTargetInstantEffectSpell => true
       case _: SingleTargetSavingThrowSpell   => true
       case _: SingleTargetAttackSpell        => true
       case _: SingleTargetHealingSpell       => true
+      case _: SelfBuffSpell                 => true
       case _                                 => false
     }
 
