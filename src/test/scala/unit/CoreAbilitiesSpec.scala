@@ -1152,7 +1152,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val berserkerCombatant = berserker.withCombatIndex(3)
 
           val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
-            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunter, berserker), LowestFirst)
+            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunterCombatant, berserkerCombatant), LowestFirst)
 
           updatedPaladin.conditions shouldBe List.empty[Condition]
 
@@ -1180,7 +1180,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val berserkerCombatant = berserker.withCombatIndex(3)
 
           val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
-            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunter, berserker), LowestFirst)
+            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunterCombatant, berserkerCombatant), LowestFirst)
 
           updatedPaladin.conditions shouldBe List(BlessCondition())
 
@@ -1217,6 +1217,20 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       forAll { paladin: Paladin =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+          val castingPaladin = paladin
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Paladin]
+
+          val updatedPaladin =
+            castMultiTargetBuffSpell(Priority)(castingPaladin.withCombatIndex(1)).update.asInstanceOf[Paladin]
+
+          updatedPaladin.spellSlots.firstLevel.count shouldBe castingPaladin.spellSlots.firstLevel.count
+          updatedPaladin.spellSlots.secondLevel.count shouldBe castingPaladin.spellSlots.firstLevel.count - 1
         }
       }
     }
@@ -1225,20 +1239,62 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       forAll { paladin: Paladin =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), higherSpellSlot = false)
+
+          val castingPaladin = paladin
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withLevel(LevelFive)
+            .asInstanceOf[Paladin]
+
+          val updatedPaladin =
+            castMultiTargetBuffSpell(Priority)(castingPaladin.withCombatIndex(1)).update.asInstanceOf[Paladin]
+
+          updatedPaladin.spellSlots.firstLevel.count shouldBe castingPaladin.spellSlots.firstLevel.count - 1
+          updatedPaladin.spellSlots.secondLevel.count shouldBe castingPaladin.spellSlots.firstLevel.count
         }
       }
     }
 
     "meet the condition if the Spell Caster has a Multi Target Buff cantrip to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedSpell = trackedMultiTargetBuffSpell(0, BlessCondition())
+
+      val cleric = random[Cleric]
+        .withSpellKnown(trackedSpell)
+          .withCombatIndex(1)
+
+      castMultiTargetBuffSpell(Priority)(cleric).conditionMet shouldBe true
     }
 
     "meet the condition if the Spell Caster has a Multi Target Buff spell to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+      val paladin = random[Paladin]
+        .withSpellKnown(trackedSpell)
+        .withAllSpellSlotsAvailableForLevel(LevelTwo)
+        .withLevel(LevelTwo)
+        .withCombatIndex(1)
+
+      castMultiTargetBuffSpell(Priority)(paladin).conditionMet shouldBe true
     }
 
     "not meet the condition if the Spell Caster cannot cast any Multi Target Buff spells at its level" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedMeleeAttackSpell = trackedMultiMeleeSpellAttack(1)
+
+      val paladin = random[Paladin]
+        .withSpellKnown(trackedMeleeAttackSpell)
+        .withAllSpellSlotsAvailableForLevel(LevelTwo)
+        .withLevel(LevelTwo)
+        .withCombatIndex(1)
+
+      castMultiTargetBuffSpell(Priority)(paladin).conditionMet shouldBe false
     }
   }
 
