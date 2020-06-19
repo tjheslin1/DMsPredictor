@@ -30,13 +30,21 @@ object LifeClericAbilities extends LazyLogging {
       def triggerMet(others: List[Combatant]): Boolean =
         healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean = spellConditionMet(lifeCleric, HealingSpell,
-        singleTargetSpellsOnly = true, multiTargetSpellsOnly = true)
+      def conditionMet: Boolean =
+        spellConditionMet(
+          lifeCleric,
+          HealingSpell,
+          singleTargetSpellsOnly = true,
+          multiTargetSpellsOnly = true)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${lifeCleric.name} used $name")
 
-        if (lifeCleric.abilities.map(ability => ability(combatant).name).contains(CastSingleTargetHealingSpellName)) {
+        if (
+          lifeCleric.abilities
+            .map(ability => ability(combatant).name)
+            .contains(CastSingleTargetHealingSpellName)
+        ) {
 
           val optSpell = highestSpellSlotAvailable(lifeCleric.spellSlots) match {
             case None => none[(Spell, SpellLevel)]

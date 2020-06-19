@@ -31,9 +31,11 @@ package object spellcasting {
 
   sealed trait SpellEffect extends Product with Serializable
 
-  case object DamageSpell        extends SpellEffect
-  case object HealingSpell       extends SpellEffect
-  case object ConcentrationSpell extends SpellEffect // TODO need a better name as other types of spells can be concentration
+  case object DamageSpell  extends SpellEffect
+  case object HealingSpell extends SpellEffect
+
+  case object ConcentrationSpell
+      extends SpellEffect // TODO need a better name as other types of spells can be concentration
   case object BuffSpell          extends SpellEffect
   case object InstantEffectSpell extends SpellEffect
 }

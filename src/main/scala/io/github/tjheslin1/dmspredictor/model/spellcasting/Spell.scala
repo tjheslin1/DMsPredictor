@@ -43,10 +43,10 @@ object Spell {
       spellEffect: SpellEffect,
       spellLevel: SpellLevel
   )(
-    originalSpellLevel: SpellLevel = spellLevel,
-    checkCasterIsConcentrating: Boolean = true,
-    singleTargetSpellsOnly: Boolean = false,
-    multiTargetSpellsOnly: Boolean = false
+      originalSpellLevel: SpellLevel = spellLevel,
+      checkCasterIsConcentrating: Boolean = true,
+      singleTargetSpellsOnly: Boolean = false,
+      multiTargetSpellsOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
@@ -104,7 +104,7 @@ object Spell {
       case _: SingleTargetSavingThrowSpell   => true
       case _: SingleTargetAttackSpell        => true
       case _: SingleTargetHealingSpell       => true
-      case _: SelfBuffSpell                 => true
+      case _: SelfBuffSpell                  => true
       case _                                 => false
     }
 

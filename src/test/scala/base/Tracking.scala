@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.{Bless, BlessCondition}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 trait Tracking {
@@ -125,7 +125,9 @@ trait Tracking {
         additionalTargetEffect(target)
     }
 
-  var multiMeleeSpellUsedCount = 0
+  var multiTargetAttackSpellSlotUsed = -1
+  var multiTargetMeleeSpellUsedCount = 0
+  var multiMeleeSpellDamageRollCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel,
                                    savingThrowAttribute: Attribute = Dexterity,
                                    concentration: Boolean = false,
@@ -144,9 +146,17 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        multiMeleeSpellUsedCount += 1
+        multiMeleeSpellDamageRollCount += 1
+
         4
       }
+
+      override def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel, targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+        multiTargetMeleeSpellUsedCount += 1
+
+        multiTargetAttackSpellSlotUsed = spellLevel.value
+
+        super.effect(spellCaster, spellLevel, targets)}
     }
 
   var trackedHealingSpellUsed      = false
@@ -207,7 +217,9 @@ trait Tracking {
         additionalTargetEffect(spellCaster, target, others, savingThrowPassed)
     }
 
-  var multiSavingThrowSpellUsedCount = 0
+  var multiTargetSavingThrowSpellSlotUsed = -1
+  var multiTargetSavingThrowSpellUsedCount = 0
+  var multiSavingThrowSpellDamageRollCount = 0
   def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
                                          savingAttribute: Attribute,
                                          damageOnSave: Boolean = false,
@@ -225,8 +237,19 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        multiSavingThrowSpellUsedCount += 1
+        multiSavingThrowSpellDamageRollCount += 1
+
         4
+      }
+
+      override def effect[_: RS](spellCaster: SpellCaster,
+                                 spellLevel: SpellLevel,
+                                 targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+        multiTargetSavingThrowSpellUsedCount += 1
+
+        multiTargetSavingThrowSpellSlotUsed = spellLevel.value
+
+        super.effect(spellCaster, spellLevel, targets)
       }
     }
 
@@ -292,12 +315,12 @@ trait Tracking {
   }
 
   var trackedMultiTargetBuffSpellLevel = -1
-  var trackedMultiTargetBuffSpellUsed = false
+  var trackedMultiTargetBuffSpellUsedCount = 0
   var trackedMultiTargetBuffConcentrationHandled = false
   def trackedMultiTargetBuffSpell(spellLvl: SpellLevel,
                                   condition: Condition,
                                   numTargets: Int = 3,
-                                  priority: (Combatant, Combatant) => Int = (_, _) => -1,
+                                  priority: (Combatant, Combatant) => Int = (x, y) => Bless.buffTargetsPriority.compare(x, y),
                                   concentration: Boolean = false,
                                   higherSpellSlot: Boolean = true): MultiTargetBuffSpell
     = new MultiTargetBuffSpell {
@@ -319,7 +342,8 @@ trait Tracking {
     override def effect[_: RS](spellCaster: SpellCaster,
                                spellLevel: SpellLevel,
                                targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
-      trackedMultiTargetBuffSpellUsed = true
+
+      trackedMultiTargetBuffSpellUsedCount += 1
       trackedMultiTargetBuffSpellLevel = spellLevel.value
 
       super.effect(spellCaster, spellLevel, targets)
