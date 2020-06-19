@@ -86,10 +86,11 @@ object Paladin {
   )
 
   val standardPaladinAbilities: List[CombatantAbility] = List(
-    castSingleTargetHealingSpell(1),
-    layOnHands(2),
-    extraAttack(3),
-    divineSmite(4)
+    castMultiTargetBuffSpell(1),
+    castSingleTargetHealingSpell(2),
+    layOnHands(3),
+    extraAttack(4),
+    divineSmite(5)
   )
 
   implicit def paladinShow[_: RS]: Show[Ranger] =
