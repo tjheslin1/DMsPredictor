@@ -286,16 +286,13 @@ object CoreAbilities extends LazyLogging {
           case _         => players(others)
         }
 
-        val updatedTargets = optSpell.fold(others) { spell =>
-          targets.map { target =>
-            val (_, List(updatedTarget)) =
-              spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), List(target))
-
-            updatedTarget
-          }
+        val (updatesSpellCaster, updatedTargets) = optSpell.fold((spellCaster, others)) { spell =>
+            spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), targets)
         }
 
-        (combatant, others.replace(updatedTargets))
+        val updatedCombatant = Combatant.creatureLens.set(updatesSpellCaster)(combatant)
+
+        (updatedCombatant, others.replace(updatedTargets))
       }
 
       def update: Creature = updateSpellSlot(spellCaster, DamageSpell, multiAttackSpellUsed = true)
@@ -357,8 +354,36 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean = spellConditionMet(spellCaster, BuffSpell,
         singleTargetSpellsOnly = false, multiTargetSpellsOnly = true)
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) =
-        ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${combatant.creature.name} used $name")
+
+        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
+
+        val (optSpell, spellLevelToUse) =
+          highestSpellSlot match {
+            case None => (none[Spell], 0)
+            case Some(spellSlot) =>
+              spellOfLevelOrBelow(spellCaster, BuffSpell, spellSlot.spellLevel)(
+                multiTargetSpellsOnly = true
+              ).fold((none[Spell], 0)) {
+                case (foundSpell, foundSpellLevel) =>
+                  (foundSpell.some, foundSpellLevel)
+              }
+          }
+
+        val targets = spellCaster match {
+          case _: Player => players(others)
+          case _         => monsters(others)
+        }
+
+        val (updatesSpellCaster, updatedTargets) = optSpell.fold((spellCaster, others)) { spell =>
+          spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), targets)
+        }
+
+        val updatedCombatant = Combatant.creatureLens.set(updatesSpellCaster)(combatant)
+
+        (updatedCombatant, others.replace(updatedTargets))
+      }
 
       def update: Creature = updateSpellSlot(spellCaster, BuffSpell, multiAttackSpellUsed = true)
     }

@@ -131,6 +131,7 @@ trait Tracking {
                                    concentration: Boolean = false,
                                    higherSpellSlot: Boolean = true): Spell =
     new MultiTargetSavingThrowSpell {
+
       val name: String           = s"tracked-multi-melee-spell-${spellLvl.value}"
       val damageType: DamageType = Fire
 
