@@ -55,12 +55,6 @@ class MultiTargetBuffSpellSpec extends UnitSpecBase {
     }
   }
 
-  "focusTanksCreatureOrder" should {
-    "have all classes listed in its priority list" in {
-      fail("TODO")
-    }
-  }
-
   abstract private class TestContext extends Tracking {
     implicit val rollStrategy: RollStrategy
   }

@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.paladin
 
 import com.typesafe.scalalogging.LazyLogging
+import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack, WholeAction}
@@ -118,10 +119,16 @@ object BasePaladinAbilities extends LazyLogging {
 
                   val smiteDamagedCreature =
                     updatedDamagedTarget.creature.updateHealth(smiteDamage, Radiant, attackResult)
+
                   val smiteDamagedTarget =
                     Combatant.creatureLens.set(smiteDamagedCreature)(updatedDamagedTarget)
 
-                  (updatedPaladin, updatedOthers.replace(smiteDamagedTarget))
+                  val updatedSpellCaster = updatedPaladin.creature.asInstanceOf[SpellCaster]
+                  val spellSlotUpdatedCaster = decrementCastersSpellSlot(updatedSpellCaster, spellSlot)
+
+                  val spellSlotUpdatedPaladin = Combatant.creatureLens.set(spellSlotUpdatedCaster)(updatedPaladin)
+
+                  (spellSlotUpdatedPaladin, updatedOthers.replace(smiteDamagedTarget))
                 } else {
                   (updatedPaladin, updatedOthers.replace(updatedDamagedTarget))
                 }
@@ -129,10 +136,6 @@ object BasePaladinAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature =
-        highestSpellSlotAvailable(basePaladin.spellSlots) match {
-          case None            => basePaladin
-          case Some(spellSlot) => decrementCastersSpellSlot(basePaladin, spellSlot)
-        }
+      def update: Creature = basePaladin
     }
 }

@@ -2,6 +2,7 @@ package unit.paladin
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.barbarian.Berserker
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.paladinSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladinAbilities._
 import io.github.tjheslin1.dmspredictor.classes.paladin._
@@ -396,7 +397,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
     }
 
     "spend the highest level spell slot when available" in {
-      forAll { paladin: Paladin =>
+      forAll { (paladin: Paladin, goblin: Goblin) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -408,12 +409,19 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withStrength(18)
             .withDexterity(10)
             .withBaseWeapon(Shortsword)
-            .withCombatIndex(1)
+            .asInstanceOf[Paladin]
 
-          val updatedPaladin =
-            divineSmite(1)(levelFivePaladin).update.asInstanceOf[Paladin]
+          val goblinCombatant = goblin
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withCombatIndex(2)
 
-          updatedPaladin.spellSlots shouldBe SpellSlots(4, 1, 0)
+          val (Combatant(_, updatedPaladin: Paladin), _) =
+            divineSmite(1)(levelFivePaladin.withCombatIndex(1))
+              .useAbility(List(goblinCombatant), LowestFirst)
+
+          updatedPaladin.spellSlots.firstLevel.count shouldBe levelFivePaladin.spellSlots.firstLevel.count
+          updatedPaladin.spellSlots.secondLevel.count shouldBe levelFivePaladin.spellSlots.secondLevel.count - 1
         }
       }
     }
