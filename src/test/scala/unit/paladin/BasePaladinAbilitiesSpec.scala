@@ -2,12 +2,11 @@ package unit.paladin
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.barbarian.Berserker
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.paladinSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladinAbilities._
 import io.github.tjheslin1.dmspredictor.classes.paladin._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
-import io.github.tjheslin1.dmspredictor.equipment.weapons.Shortsword
+import io.github.tjheslin1.dmspredictor.equipment.weapons.{PlusOneShortsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
@@ -295,6 +294,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
           val levelFivePaladin = paladin
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withNoFightingStyles()
+            .withSpellsKnown() // to prevent casting other spells
             .withLevel(LevelFive)
             .withProficiencyBonus(6)
             .withStrength(18)
@@ -448,6 +448,71 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
         .withCombatIndex(1)
 
       divineSmite(1)(paladin).conditionMet shouldBe false
+    }
+  }
+
+  "SacredWeaponCondition" should {
+    "make the Paladins weapon to have DamageType of Magical" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val paladin = random[Paladin]
+          .withBaseWeapon(Shortsword)
+          .withCondition(SacredWeaponCondition())
+
+        paladin.weapon.damageType shouldBe Magical
+      }
+    }
+
+    "make the Paladins weapon have a hit bonus equal to its Charisma modifier" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val paladin = random[Paladin]
+          .withBaseWeapon(Shortsword)
+          .withCondition(SacredWeaponCondition())
+
+        paladin.weapon.hitBonus shouldBe Modifier.mod(paladin.stats.charisma)
+      }
+    }
+
+    "make the Paladins weapon have a hit bonus equal to its Charisma modifier plus the weapons base hit bonus" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val paladin = random[Paladin]
+          .withBaseWeapon(PlusOneShortsword)
+          .withCondition(SacredWeaponCondition())
+
+        paladin.weapon.hitBonus shouldBe Modifier.mod(paladin.stats.charisma) + PlusOneShortsword.hitBonus
+      }
+    }
+  }
+
+  "Sacred Weapon" should {
+    "apply the SacredWeaponCondition to Paladin" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val levelThreePaladin = random[Paladin].withLevel(LevelThree).withCombatIndex(1)
+
+        val (Combatant(_, updatedPaladin: Paladin), _) =
+          sacredWeapon(1)(levelThreePaladin).useAbility(List.empty[Combatant], LowestFirst)
+
+        updatedPaladin.conditions shouldBe List(SacredWeaponCondition())
+      }
+    }
+
+    "set the Paladins channelDivinityUsed to true" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val levelThreePaladin = random[Paladin].withLevel(LevelThree).withCombatIndex(1)
+
+        val updatedPaladin = sacredWeapon(1)(levelThreePaladin).update.asInstanceOf[Paladin]
+
+        updatedPaladin.channelDivinityUsed shouldBe true
+      }
     }
   }
 

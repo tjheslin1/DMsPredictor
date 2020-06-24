@@ -1,6 +1,7 @@
 package io.github.tjheslin1.dmspredictor.classes.paladin
 
 import io.github.tjheslin1.dmspredictor.classes.FightingUtils.duelingFightingStyleConditionsMet
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladinAbilities.SacredWeaponCondition
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
@@ -33,15 +34,15 @@ object BasePaladin {
   def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
-  def weaponWithFightingStyle[_: RS](
+  def paladinWeapon[_: RS](
+      paladin: BasePaladin,
       weapon: Weapon,
-      offHand: Option[Equipment],
-      fightingStyles: List[PaladinFightingStyle]
-  ): Weapon =
-    weapon.weaponType match {
-      case Melee if duelingFightingStyleConditionsMet(weapon, offHand, fightingStyles, Dueling) =>
+      offHand: Option[Equipment]
+  ): Weapon = {
+    val weaponWithFightingStyle = weapon.weaponType match {
+      case Melee if duelingFightingStyleConditionsMet(weapon, offHand, paladin.fightingStyles, Dueling) =>
         bonusToHitWeapon(weapon, 2)
-      case Melee if weapon.twoHanded && fightingStyles.contains(GreatWeaponFighting) =>
+      case Melee if weapon.twoHanded && paladin.fightingStyles.contains(GreatWeaponFighting) =>
         lazy val rerollingDamage = {
           val damageRoll = weapon.damage
           if (damageRoll <= 2)
@@ -60,6 +61,9 @@ object BasePaladin {
         )
       case _ => weapon
     }
+
+    if (paladin.conditions.contains(SacredWeaponCondition()))
+  }
 
   def armourClassWithFightingStyle(
       stats: BaseStats,

@@ -3,13 +3,14 @@ package io.github.tjheslin1.dmspredictor.classes.paladin
 import cats.Show
 import cats.data.NonEmptyList
 import eu.timepit.refined.auto._
+import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin._
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladinAbilities._
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.model.HandleDamage._
 import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
@@ -18,6 +19,7 @@ import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitR
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.Bless
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
@@ -30,7 +32,8 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon,
     skills: Skills,
     spellSlots: SpellSlots,
-    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Map.empty, // TODO
+    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardPaladinSpellList,
+    channelDivinityUsed: Boolean = false,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[PaladinFightingStyle] = List.empty[PaladinFightingStyle],
@@ -42,7 +45,7 @@ import monocle.macros.{GenLens, Lenses}
     conditionImmunities: List[ConditionType] = List.empty[ConditionType],
     bonusActionUsed: Boolean = false,
     reactionUsed: Boolean = false,
-    abilities: List[CombatantAbility] = List.empty, // TODO
+    abilities: List[CombatantAbility] = standardPaladinAbilities,
     conditions: List[Condition] = List.empty[Condition],
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
@@ -56,7 +59,7 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, offHand, fightingStyles)
+  def weapon[_: RS]: Weapon = paladinWeapon(baseWeapon, offHand, fightingStyles)
 
   def updateHealth[_: RS](
       dmg: Int,
@@ -82,7 +85,8 @@ import monocle.macros.{GenLens, Lenses}
 object Paladin {
 
   val standardPaladinSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds
+    (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds,
+    (Bless.spellLevel, Bless.spellEffect) -> Bless
   )
 
   val standardPaladinAbilities: List[CombatantAbility] = List(

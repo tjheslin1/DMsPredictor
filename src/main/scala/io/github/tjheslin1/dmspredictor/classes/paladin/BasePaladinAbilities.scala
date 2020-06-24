@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.model.Actions._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.condition.{Condition, PassiveCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlot
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
@@ -137,5 +138,30 @@ object BasePaladinAbilities extends LazyLogging {
       }
 
       def update: Creature = basePaladin
+    }
+
+  case class SacredWeaponCondition(turnsLeft: Int = 10) extends PassiveCondition {
+    val name = "Sacred Weapon (Condition)"
+    val missesTurn = false
+
+    def decrementTurnsLeft(): Condition = SacredWeaponCondition(turnsLeft - 1)
+  }
+
+  def sacredWeapon(currentOrder: Int)(combatant: Combatant): Ability =
+    new Ability(combatant) {
+      val basePaladin = combatant.creature.asInstanceOf[BasePaladin]
+
+      val name             = "Sacred Weapon"
+      val order            = currentOrder
+      val levelRequirement = LevelThree
+      val abilityAction    = WholeAction
+
+      def triggerMet(others: List[Combatant]): Boolean = ???
+
+      def conditionMet: Boolean = ???
+
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
+
+      def update: Creature = ???
     }
 }

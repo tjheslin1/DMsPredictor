@@ -37,29 +37,29 @@ class BasePaladinSpec extends UnitSpecBase {
     }
   }
 
-  "weaponWithFightingStyle" should {
+  "paladinWeapon" should {
     "apply +2 to hit bonus for a one handed melee weapon with the Dueling fighting style" in new TestContext {
       val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(sword, none[Equipment], List(Dueling)).hitBonus shouldBe 2
+      paladinWeapon(sword, none[Equipment], List(Dueling)).hitBonus shouldBe 2
     }
 
     "not apply a hit bonus for a two handed melee weapon with the Dueling fighting style" in new TestContext {
       val sword = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(sword, none[Equipment], List(Dueling)).hitBonus shouldBe 0
+      paladinWeapon(sword, none[Equipment], List(Dueling)).hitBonus shouldBe 0
     }
 
     "not apply a hit bonus for a one handed melee weapon with the Dueling fighting style when wielding another weapon in off hand" in new TestContext {
       val sword = Weapon("sword", Melee, Slashing, isTwoHanded = false, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(sword, sword.some, List(Dueling)).hitBonus shouldBe 0
+      paladinWeapon(sword, sword.some, List(Dueling)).hitBonus shouldBe 0
     }
 
     "apply no hit bonus for a weapon without a complementary fighting style" in new TestContext {
       val bow = Weapon("bow", Ranged, Piercing, isTwoHanded = true, isFinesse = false, dmg = 10)
 
-      weaponWithFightingStyle(bow, none[Equipment], List(Dueling)).hitBonus shouldBe 0
+      paladinWeapon(bow, none[Equipment], List(Dueling)).hitBonus shouldBe 0
     }
 
     "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in new TestContext {

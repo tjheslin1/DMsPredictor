@@ -1187,6 +1187,7 @@ trait TestData extends RandomDataGenerator {
       player.skills,
       paladinSpellSlots(level),
       Paladin.standardPaladinSpellList,
+      channelDivinityUsed = false,
       player.armour,
       player.offHand,
       fightingStyles.toList,
