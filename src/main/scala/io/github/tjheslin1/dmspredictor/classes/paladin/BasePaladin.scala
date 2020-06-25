@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
-import io.github.tjheslin1.dmspredictor.model.Weapon.bonusToHitWeapon
+import io.github.tjheslin1.dmspredictor.model.Weapon._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import monocle.Lens
@@ -23,6 +23,8 @@ trait BasePaladin extends Player with SpellCaster with Product with Serializable
 
   val spellCastingLevel        = level
   val levelSpellcastingLearned = LevelTwo
+
+  val channelDivinityUsed: Boolean
 
   def resetStartOfTurn(): Creature = this
 }
@@ -62,7 +64,19 @@ object BasePaladin {
       case _ => weapon
     }
 
-    if (paladin.conditions.contains(SacredWeaponCondition()))
+    val sacredWeaponBuffActive = paladin.conditions.exists {
+      case SacredWeaponCondition(_) => true
+      case _ => false
+    }
+
+    if (sacredWeaponBuffActive) {
+      val charismaBonus = Math.max(1, Modifier.mod(paladin.stats.charisma))
+
+      val bonusToHitWpn = bonusToHitWeapon(weaponWithFightingStyle, charismaBonus)
+
+      ofDamageTypeWeapon(bonusToHitWpn, Magical)
+    }
+    else weaponWithFightingStyle
   }
 
   def armourClassWithFightingStyle(
@@ -120,4 +134,14 @@ object BasePaladin {
         case _ => throw new NotImplementedError("Missing a case in layOnHandsPoolLens")
       }
   }
+
+  val channelDivinityUsedLens: Lens[BasePaladin, Boolean] =
+    Lens[BasePaladin, Boolean](_.channelDivinityUsed) { channelDivinityUsed =>
+    {
+      case paladin: Paladin => Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
+
+      case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+
+    }
+    }
 }

@@ -421,10 +421,11 @@ trait ArgParser {
   )
 
   val weaponsLookup: Map[String, Weapon] = Map(
-    Shortsword.name.toLowerCase -> Shortsword,
-    Greataxe.name.toLowerCase   -> Greataxe,
-    Greatsword.name.toLowerCase -> Greatsword,
-    Longbow.name.toLowerCase    -> Longbow
+    Shortsword.name.toLowerCase         -> Shortsword,
+    PlusOneShortsword.name.toLowerCase  -> PlusOneShortsword,
+    Greataxe.name.toLowerCase           -> Greataxe,
+    Greatsword.name.toLowerCase         -> Greatsword,
+    Longbow.name.toLowerCase            -> Longbow
   )
 
   val armourLookup: Map[String, Armour] = Map(

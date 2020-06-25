@@ -457,6 +457,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
         override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin]
+          .withNoFightingStyles()
           .withBaseWeapon(Shortsword)
           .withCondition(SacredWeaponCondition())
 
@@ -464,27 +465,33 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "make the Paladins weapon have a hit bonus equal to its Charisma modifier" in {
+    "make the Paladins weapon have a hit bonus equal to its Charisma modifier (minimum of 1)" in {
       new TestContext {
         override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin]
+          .withNoFightingStyles()
           .withBaseWeapon(Shortsword)
           .withCondition(SacredWeaponCondition())
 
-        paladin.weapon.hitBonus shouldBe Modifier.mod(paladin.stats.charisma)
+        val charismaBonus = Math.max(1, Modifier.mod(paladin.stats.charisma))
+
+        paladin.weapon.hitBonus shouldBe charismaBonus
       }
     }
 
-    "make the Paladins weapon have a hit bonus equal to its Charisma modifier plus the weapons base hit bonus" in {
+    "make the Paladins weapon have a hit bonus equal to its Charisma modifier (minimum of 1) plus the weapons base hit bonus" in {
       new TestContext {
         override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin]
+          .withNoFightingStyles()
           .withBaseWeapon(PlusOneShortsword)
           .withCondition(SacredWeaponCondition())
 
-        paladin.weapon.hitBonus shouldBe Modifier.mod(paladin.stats.charisma) + PlusOneShortsword.hitBonus
+        val charismaBonus = Math.max(1, Modifier.mod(paladin.stats.charisma))
+
+        paladin.weapon.hitBonus shouldBe charismaBonus + PlusOneShortsword.hitBonus
       }
     }
   }

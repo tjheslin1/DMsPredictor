@@ -162,6 +162,6 @@ object BasePaladinAbilities extends LazyLogging {
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
 
-      def update: Creature = ???
+      def update: Creature = BasePaladin.channelDivinityUsedLens.set(true)(basePaladin)
     }
 }

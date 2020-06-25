@@ -59,7 +59,7 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-  def weapon[_: RS]: Weapon = paladinWeapon(baseWeapon, offHand, fightingStyles)
+  def weapon[_: RS]: Weapon = paladinWeapon(this, baseWeapon, offHand)
 
   def updateHealth[_: RS](
       dmg: Int,
