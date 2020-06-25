@@ -394,6 +394,8 @@ object TestData {
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(paladin)
 
     def withLayOnHandsPoolOf(pool: Int) = _layOnHandsPool.set(pool)(paladin)
+
+    def withChannelDivinityUsed() = _channelDivinityUsed.set(true)(paladin)
   }
 
   implicit class LichOps(val lich: Lich) extends AnyVal {

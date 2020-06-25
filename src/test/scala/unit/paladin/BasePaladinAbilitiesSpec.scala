@@ -521,6 +521,26 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
         updatedPaladin.channelDivinityUsed shouldBe true
       }
     }
+
+    "meet the condition if channel divinity has not been used" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val paladin = random[Paladin].withCombatIndex(1)
+
+        sacredWeapon(1)(paladin).conditionMet shouldBe true
+      }
+    }
+
+    "not meet the condition if channel divinity has already been used" in {
+      new TestContext {
+        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+        val paladin = random[Paladin].withChannelDivinityUsed().withCombatIndex(1)
+
+        sacredWeapon(1)(paladin).conditionMet shouldBe false
+      }
+    }
   }
 
   abstract private class TestContext {

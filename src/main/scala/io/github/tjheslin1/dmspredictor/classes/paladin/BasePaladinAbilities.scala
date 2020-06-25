@@ -125,9 +125,11 @@ object BasePaladinAbilities extends LazyLogging {
                     Combatant.creatureLens.set(smiteDamagedCreature)(updatedDamagedTarget)
 
                   val updatedSpellCaster = updatedPaladin.creature.asInstanceOf[SpellCaster]
-                  val spellSlotUpdatedCaster = decrementCastersSpellSlot(updatedSpellCaster, spellSlot)
+                  val spellSlotUpdatedCaster =
+                    decrementCastersSpellSlot(updatedSpellCaster, spellSlot)
 
-                  val spellSlotUpdatedPaladin = Combatant.creatureLens.set(spellSlotUpdatedCaster)(updatedPaladin)
+                  val spellSlotUpdatedPaladin =
+                    Combatant.creatureLens.set(spellSlotUpdatedCaster)(updatedPaladin)
 
                   (spellSlotUpdatedPaladin, updatedOthers.replace(smiteDamagedTarget))
                 } else {
@@ -141,7 +143,7 @@ object BasePaladinAbilities extends LazyLogging {
     }
 
   case class SacredWeaponCondition(turnsLeft: Int = 10) extends PassiveCondition {
-    val name = "Sacred Weapon (Condition)"
+    val name       = "Sacred Weapon (Condition)"
     val missesTurn = false
 
     def decrementTurnsLeft(): Condition = SacredWeaponCondition(turnsLeft - 1)
@@ -156,11 +158,20 @@ object BasePaladinAbilities extends LazyLogging {
       val levelRequirement = LevelThree
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean = ???
+      def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean = ???
+      def conditionMet: Boolean = basePaladin.channelDivinityUsed == false
 
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = ???
+      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
+        logger.debug(s"${basePaladin.name} cast $name")
+
+        val updatedConditions = basePaladin.conditions :+ SacredWeaponCondition()
+
+        val updatedCombatant = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+          .set(updatedConditions)(combatant)
+
+        (updatedCombatant, others)
+      }
 
       def update: Creature = BasePaladin.channelDivinityUsedLens.set(true)(basePaladin)
     }

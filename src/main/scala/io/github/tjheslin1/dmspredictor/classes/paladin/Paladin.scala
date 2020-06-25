@@ -86,7 +86,7 @@ object Paladin {
 
   val standardPaladinSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
     (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds,
-    (Bless.spellLevel, Bless.spellEffect) -> Bless
+    (Bless.spellLevel, Bless.spellEffect)           -> Bless
   )
 
   val standardPaladinAbilities: List[CombatantAbility] = List(

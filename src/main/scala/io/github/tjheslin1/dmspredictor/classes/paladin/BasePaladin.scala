@@ -42,7 +42,8 @@ object BasePaladin {
       offHand: Option[Equipment]
   ): Weapon = {
     val weaponWithFightingStyle = weapon.weaponType match {
-      case Melee if duelingFightingStyleConditionsMet(weapon, offHand, paladin.fightingStyles, Dueling) =>
+      case Melee
+          if duelingFightingStyleConditionsMet(weapon, offHand, paladin.fightingStyles, Dueling) =>
         bonusToHitWeapon(weapon, 2)
       case Melee if weapon.twoHanded && paladin.fightingStyles.contains(GreatWeaponFighting) =>
         lazy val rerollingDamage = {
@@ -66,7 +67,7 @@ object BasePaladin {
 
     val sacredWeaponBuffActive = paladin.conditions.exists {
       case SacredWeaponCondition(_) => true
-      case _ => false
+      case _                        => false
     }
 
     if (sacredWeaponBuffActive) {
@@ -75,8 +76,7 @@ object BasePaladin {
       val bonusToHitWpn = bonusToHitWeapon(weaponWithFightingStyle, charismaBonus)
 
       ofDamageTypeWeapon(bonusToHitWpn, Magical)
-    }
-    else weaponWithFightingStyle
+    } else weaponWithFightingStyle
   }
 
   def armourClassWithFightingStyle(
@@ -137,11 +137,11 @@ object BasePaladin {
 
   val channelDivinityUsedLens: Lens[BasePaladin, Boolean] =
     Lens[BasePaladin, Boolean](_.channelDivinityUsed) { channelDivinityUsed =>
-    {
-      case paladin: Paladin => Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
+      {
+        case paladin: Paladin => Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
 
-      case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+        case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
 
-    }
+      }
     }
 }
