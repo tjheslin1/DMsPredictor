@@ -6,7 +6,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.{Bless, BlessCondition}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.Bless
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 trait Tracking {

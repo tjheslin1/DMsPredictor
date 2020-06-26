@@ -261,6 +261,8 @@ object TestData {
 
     def withAbilitiesUsed(secondWindUsed: Boolean, actionSurgeUsed: Boolean) =
       _abilityUsages.set(BaseFighterAbilities(secondWindUsed, actionSurgeUsed))(champion)
+
+    def withNoFightingStyles() = _fightingStyles.set(List.empty[FighterFightingStyle])(champion)
   }
 
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {

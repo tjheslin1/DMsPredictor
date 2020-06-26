@@ -8,10 +8,11 @@ import io.circe.generic.semiauto._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, BaseBarbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.paladin.{BasePaladin, Paladin, PaladinFightingStyle}
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
-import io.github.tjheslin1.dmspredictor.classes.{fighter, ranger, Player}
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, paladin, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
@@ -324,6 +325,40 @@ trait ArgParser {
     }
   }
 
+  implicit val paladinDecoder: Decoder[Paladin] = Decoder.instance { c =>
+    for {
+      levelInt <- c.downField("level").as[Int]
+      level = Level(levelInt)
+      statsStr   <- c.downField("stats").as[String]
+      stats      <- baseStatsConverter(c, statsStr)
+      weapon     <- c.downField("weapon").as[String]
+      armour     <- c.downField("armour").as[String]
+      offHand    <- c.downField("offHand").as[String]
+      skillsStr  <- c.downField("skills").as[String]
+      skills     <- skillsConverter(c, skillsStr)
+      style      <- c.downField("paladinFightingStyle").as[String]
+      paladinName <- c.downField("name").as[String]
+    } yield {
+      val health = BasePaladin.calculateHealth(level, stats.constitution)
+      Paladin(
+        level,
+        health,
+        health,
+        stats,
+        weaponsLookup(weapon.toLowerCase),
+        skills,
+        BasePaladin.paladinSpellSlots(level),
+        Paladin.standardPaladinSpellList,
+        armour = armourLookup(armour.toLowerCase),
+        offHand = offHandLookup.get(offHand.toLowerCase),
+        fightingStyles = List(paladinFightingStyleLookup(style.toLowerCase)),
+        abilities = Paladin.standardPaladinAbilities,
+        layOnHandsPool = BasePaladin.layOnHandsPoolForLevel(level),
+        name = paladinName
+      )
+    }
+  }
+
   implicit val goblinDecoder: Decoder[Goblin] = Decoder.instance { c =>
     for {
       goblinName <- c.downField("name").as[String]
@@ -408,6 +443,7 @@ trait ArgParser {
     "cleric"    -> Decoder[Cleric],
     "fighter"   -> Decoder[Champion],
     "ranger"    -> Decoder[Hunter],
+    "paladin"   -> Decoder[Paladin],
     "rogue"     -> Decoder[Rogue],
     "wizard"    -> Decoder[Wizard]
   )
@@ -454,6 +490,12 @@ trait ArgParser {
     "defense"             -> ranger.Defense,
     "dueling"             -> ranger.Dueling,
     "two_weapon_fighting" -> ranger.TwoWeaponFighting
+  )
+
+  val paladinFightingStyleLookup: Map[String, PaladinFightingStyle] = Map(
+    "defense"               -> paladin.Defense,
+    "dueling"               -> paladin.Dueling,
+    "great_weapon_fighting" -> paladin.GreatWeaponFighting
   )
 
   def baseStatsConverter(c: HCursor, statsCsv: String): Result[BaseStats] =

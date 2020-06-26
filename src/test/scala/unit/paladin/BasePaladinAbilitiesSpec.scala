@@ -494,6 +494,14 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
         paladin.weapon.hitBonus shouldBe charismaBonus + PlusOneShortsword.hitBonus
       }
     }
+
+    "reset the Paladins weapon when the condition is removed" in {
+      fail("TODO")
+    }
+
+    "reset the Paladins magical weapon when the condition is removed" in {
+      fail("TODO")
+    }
   }
 
   "Sacred Weapon" should {
