@@ -12,7 +12,7 @@ import io.github.tjheslin1.dmspredictor.classes.paladin.{BasePaladin, Paladin, P
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.{BaseRogue, Rogue}
 import io.github.tjheslin1.dmspredictor.classes.wizard._
-import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, paladin, ranger}
+import io.github.tjheslin1.dmspredictor.classes.{fighter, paladin, ranger, Player}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.equipment.weapons._
@@ -329,14 +329,14 @@ trait ArgParser {
     for {
       levelInt <- c.downField("level").as[Int]
       level = Level(levelInt)
-      statsStr   <- c.downField("stats").as[String]
-      stats      <- baseStatsConverter(c, statsStr)
-      weapon     <- c.downField("weapon").as[String]
-      armour     <- c.downField("armour").as[String]
-      offHand    <- c.downField("offHand").as[String]
-      skillsStr  <- c.downField("skills").as[String]
-      skills     <- skillsConverter(c, skillsStr)
-      style      <- c.downField("paladinFightingStyle").as[String]
+      statsStr    <- c.downField("stats").as[String]
+      stats       <- baseStatsConverter(c, statsStr)
+      weapon      <- c.downField("weapon").as[String]
+      armour      <- c.downField("armour").as[String]
+      offHand     <- c.downField("offHand").as[String]
+      skillsStr   <- c.downField("skills").as[String]
+      skills      <- skillsConverter(c, skillsStr)
+      style       <- c.downField("paladinFightingStyle").as[String]
       paladinName <- c.downField("name").as[String]
     } yield {
       val health = BasePaladin.calculateHealth(level, stats.constitution)

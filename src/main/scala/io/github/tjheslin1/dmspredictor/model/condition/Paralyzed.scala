@@ -37,9 +37,9 @@ object Paralyzed {
     }
   }
 
-  def onConditionApplied(creature: Creature): Creature =
+  def onConditionApplied[_: RS](creature: Creature): Creature =
     Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
 
-  def onConditionRemoved(creature: Creature): Creature =
+  def onConditionRemoved[_: RS](creature: Creature): Creature =
     Creature.creatureDefenseStatusLens.set(Regular)(creature)
 }

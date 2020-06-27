@@ -28,6 +28,6 @@ object Turned {
     } else
       creature
 
-  def onConditionApplied(creature: Creature): Creature = creature
-  def onConditionRemoved(creature: Creature): Creature = creature
+  def onConditionApplied[_: RS](creature: Creature): Creature = creature
+  def onConditionRemoved[_: RS](creature: Creature): Creature = creature
 }

@@ -86,7 +86,7 @@ object WizardSpells extends LazyLogging {
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (spellLevel + 2) * D4
 
-    override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+    override def additionalEffect[_: RS](target: Combatant, attackResult: AttackResult): Combatant =
       attackResult match {
         case CriticalHit | Hit =>
           val currentConditions  = target.creature.conditions

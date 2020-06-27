@@ -121,7 +121,7 @@ trait Tracking {
         dmg
       }
 
-      override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+      override def additionalEffect[_: RS](target: Combatant, attackResult: AttackResult): Combatant =
         additionalTargetEffect(target)
     }
 
@@ -408,8 +408,8 @@ trait Tracking {
         creature
       }
 
-      def onConditionApplied(creature: Creature): Creature = creature
-      def onConditionRemoved(creature: Creature): Creature = creature
+      def onConditionApplied[_: RS](creature: Creature): Creature = creature
+      def onConditionRemoved[_: RS](creature: Creature): Creature = creature
     }
 
   var trackedEndOfTurnConditionHandledCount = 0
@@ -431,8 +431,8 @@ trait Tracking {
         creature
       }
 
-      def onConditionApplied(creature: Creature): Creature = creature
-      def onConditionRemoved(creature: Creature): Creature = creature
+      def onConditionApplied[_: RS](creature: Creature): Creature = creature
+      def onConditionRemoved[_: RS](creature: Creature): Creature = creature
     }
 
   var trackedBonusActionUsed = false
@@ -478,8 +478,8 @@ trait Tracking {
 
     def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = onDamage(creature)
 
-    def onConditionApplied(creature: Creature): Creature = onApplied(creature)
+    def onConditionApplied[_: RS](creature: Creature): Creature = onApplied(creature)
 
-    def onConditionRemoved(creature: Creature): Creature = onRemoved(creature)
+    def onConditionRemoved[_: RS](creature: Creature): Creature = onRemoved(creature)
   }
 }

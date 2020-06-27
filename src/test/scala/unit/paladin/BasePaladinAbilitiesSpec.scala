@@ -8,6 +8,7 @@ import io.github.tjheslin1.dmspredictor.classes.paladin._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
 import io.github.tjheslin1.dmspredictor.equipment.weapons.{PlusOneShortsword, Shortsword}
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -493,14 +494,6 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
         paladin.weapon.hitBonus shouldBe charismaBonus + PlusOneShortsword.hitBonus
       }
-    }
-
-    "reset the Paladins weapon when the condition is removed" in {
-      fail("TODO")
-    }
-
-    "reset the Paladins magical weapon when the condition is removed" in {
-      fail("TODO")
     }
   }
 

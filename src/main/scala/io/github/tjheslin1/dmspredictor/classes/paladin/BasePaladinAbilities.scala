@@ -147,12 +147,6 @@ object BasePaladinAbilities extends LazyLogging {
     val missesTurn = false
 
     def decrementTurnsLeft(): Condition = SacredWeaponCondition(turnsLeft - 1)
-
-    override def onConditionRemoved(creature: Creature): Creature = {
-      // TODO recalculate weapon
-
-      ???
-    }
   }
 
   def sacredWeapon(currentOrder: Int)(combatant: Combatant): Ability =
