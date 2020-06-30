@@ -26,7 +26,7 @@ lazy val dmspredictor = (project in file("."))
       
       "com.gu"                      %% "scanamo"                          % "1.0.0-M8",
 
-      "org.scalatest"               %% "scalatest"                        % "3.1.2"         % Test,
+      "org.scalatest"               %% "scalatest"                        % "3.2.0"         % Test,
       "org.scalatestplus"           %% "scalatestplus-scalacheck"         % "3.1.0.0-RC2"   % Test,
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.8"           % Test,
@@ -45,7 +45,7 @@ resolvers ++= Seq(
 )
 
 val CirceVersion   = "0.13.0"
-val MonocleVersion = "2.0.4"
+val MonocleVersion = "2.0.5"
 val RefinedVersion = "0.9.14"
 
 assemblyMergeStrategy in assembly := {
