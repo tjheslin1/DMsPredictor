@@ -31,6 +31,7 @@ import monocle.macros.{GenLens, Lenses}
     stats: BaseStats,
     baseWeapon: Weapon,
     skills: Skills,
+    layOnHandsPool: Int,
     spellSlots: SpellSlots,
     spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardPaladinSpellList,
     channelDivinityUsed: Boolean = false,
@@ -51,7 +52,6 @@ import monocle.macros.{GenLens, Lenses}
     defenseStatus: AttackStatus = Regular,
     concentratingSpell: Option[spellcasting.Spell] = None,
     isAlive: Boolean = true,
-    layOnHandsPool: Int,
     name: String = NameGenerator.randomName
 ) extends BasePaladin {
 

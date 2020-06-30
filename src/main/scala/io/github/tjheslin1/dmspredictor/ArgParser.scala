@@ -132,6 +132,7 @@ trait ArgParser {
         Cleric.standardClericSpellList,
         armour = armourLookup(armour.toLowerCase),
         offHand = offHandLookup.get(offHand.toLowerCase),
+        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = clericName
       )
     }
@@ -347,13 +348,14 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        BasePaladin.layOnHandsPoolForLevel(level),
         BasePaladin.paladinSpellSlots(level),
         Paladin.standardPaladinSpellList,
         armour = armourLookup(armour.toLowerCase),
         offHand = offHandLookup.get(offHand.toLowerCase),
         fightingStyles = List(paladinFightingStyleLookup(style.toLowerCase)),
+        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         abilities = Paladin.standardPaladinAbilities,
-        layOnHandsPool = BasePaladin.layOnHandsPoolForLevel(level),
         name = paladinName
       )
     }
