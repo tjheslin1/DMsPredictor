@@ -22,7 +22,7 @@ object PaladinSpells {
 
     val castingTime                 = OneActionCast
     val requiresConcentration       = true
-    val benefitsFromHigherSpellSlot = true
+    val benefitsFromHigherSpellSlot = false
     val school                      = Enchantment
 
     val spellLevel: SpellLevel = 1

@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.{Bless, BlessCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.FireBolt
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
@@ -18,6 +18,7 @@ import util.TestMonster
 class PaladinSpellsSpec extends UnitSpecBase {
 
   "Bless" should {
+
     "add 1d4 to weapon attack roll" in {
       forAll { (champion: Champion, testMonster: TestMonster) =>
         new TestContext {
