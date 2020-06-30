@@ -142,8 +142,6 @@ class PaladinSpellsSpec extends UnitSpecBase {
           val (passed, _) =
             SavingThrow.savingThrowPassed(21, Constitution, blessedLich)
 
-//          println(passed) // TODO remove
-
           passed shouldBe true
         }
       }
