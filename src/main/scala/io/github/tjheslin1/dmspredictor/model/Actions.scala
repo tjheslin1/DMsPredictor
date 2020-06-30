@@ -110,7 +110,6 @@ object Actions extends LazyLogging {
     )
 
   /**
-    *
     * @param attacker
     * @param target
     * @param others is the list of other combatants not including the `target`
