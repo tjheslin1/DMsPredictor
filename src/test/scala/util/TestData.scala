@@ -1189,6 +1189,7 @@ trait TestData extends RandomDataGenerator {
       player.stats,
       player.baseWeapon,
       player.skills,
+      layOnHandsPoolForLevel(level),
       paladinSpellSlots(level),
       Paladin.standardPaladinSpellList,
       channelDivinityUsed = false,
@@ -1209,7 +1210,6 @@ trait TestData extends RandomDataGenerator {
       player.defenseStatus,
       none[Spell],
       player.isAlive,
-      layOnHandsPoolForLevel(level),
       player.name
     )
   }

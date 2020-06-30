@@ -9,6 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
+import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -1323,6 +1324,40 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           updatedPaladin.spellSlots.secondLevel.count shouldBe castingPaladin.spellSlots.secondLevel.count
         }
       }
+    }
+
+    "be triggered if the caster has at least one ally to buff" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+      val paladin = random[Paladin]
+        .withAllSpellSlotsAvailableForLevel(LevelTwo)
+        .withSpellKnown(trackedSpell)
+        .withLevel(LevelTwo)
+        .withCombatIndex(2)
+
+      val rogue = random[Rogue].withCombatIndex(2)
+
+      val goblin = random[Goblin].withCombatIndex(3)
+
+      castMultiTargetBuffSpell(Priority)(paladin).triggerMet(List(rogue, goblin)) shouldBe true
+    }
+
+    "not be triggered if the caster does not have any allies to buff" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+      val paladin = random[Paladin]
+        .withAllSpellSlotsAvailableForLevel(LevelTwo)
+        .withSpellKnown(trackedSpell)
+        .withLevel(LevelTwo)
+        .withCombatIndex(2)
+
+      val goblin = random[Goblin].withCombatIndex(2)
+
+      castMultiTargetBuffSpell(Priority)(paladin).triggerMet(List(goblin)) shouldBe false
     }
 
     "meet the condition if the Spell Caster has a Multi Target Buff cantrip to cast" in new TestContext {
