@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{
   ConcentrationConditionSpell,
   MultiTargetBuffSpell
@@ -67,12 +67,12 @@ object Actions extends LazyLogging {
 
           roll + modifier +
             attackerWeapon.hitBonus +
-            player.proficiencyBonus //+
-//            blessAttackBonus(attacker)
+            player.proficiencyBonus +
+            blessAttackBonus(attacker.creature)
         case _ =>
           roll +
-            attackerWeapon.hitBonus //+
-//            blessAttackBonus(attacker)
+            attackerWeapon.hitBonus +
+            blessAttackBonus(attacker.creature)
       }
 
       if (totalAttackRoll >= target.creature.armourClass) {
@@ -244,16 +244,6 @@ object Actions extends LazyLogging {
         val (a, t, o) = combatants
         f(a, t, o)
     }
-
-  private def blessAttackBonus[_: RS](attacker: Combatant): Int = {
-    val blessed = attacker.creature.conditions.exists {
-      case BlessCondition(_) => true
-      case _                 => false
-    }
-
-    if (blessed) 1 * D4
-    else 0
-  }
 
   private def calculatedDamage[_: RS](
       attacker: Combatant,

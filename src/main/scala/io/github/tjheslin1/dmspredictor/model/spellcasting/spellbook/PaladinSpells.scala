@@ -5,6 +5,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, PassiveCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.MultiTargetBuffSpell.focusTanksCreatureOrder
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 object PaladinSpells {
 
@@ -31,5 +32,15 @@ object PaladinSpells {
       if (focusTanksCreatureOrder(x.creature) == focusTanksCreatureOrder(y.creature)) 0
       else if (focusTanksCreatureOrder(x.creature) < focusTanksCreatureOrder(y.creature)) -1
       else 1
+  }
+
+  def blessAttackBonus[_: RS](creature: Creature): Int = {
+    val blessed = creature.conditions.exists {
+      case BlessCondition(_) => true
+      case _                 => false
+    }
+
+    if (blessed) 1 * D4
+    else 0
   }
 }

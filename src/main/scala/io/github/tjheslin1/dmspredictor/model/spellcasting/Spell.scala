@@ -9,7 +9,9 @@ import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 import scala.annotation.tailrec
 
@@ -145,6 +147,8 @@ object Spell {
       case roll if spellCaster.scoresCritical(roll) => CriticalHit
       case 1                                        => CriticalMiss
       case roll =>
-        if ((roll + spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
+        val attackRoll = roll + spellAttackBonus(spellCaster) + blessAttackBonus(spellCaster)
+
+        if (attackRoll >= target.armourClass) Hit else Miss
     }
 }

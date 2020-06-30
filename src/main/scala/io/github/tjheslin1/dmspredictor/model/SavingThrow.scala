@@ -4,6 +4,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.condition.{Paralyzed, Stunned}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
 import io.github.tjheslin1.dmspredictor.monsters.{Legendary, Monster}
 
 object SavingThrow {
@@ -18,16 +19,18 @@ object SavingThrow {
         (false, creature)
       case (attr, p: Player) =>
         if (p.savingThrowProficiencies.exists(_ == attr)) {
-          val passed = (D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus) >= dc
+          val passed =
+            (D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus + blessAttackBonus(
+              p)) >= dc
 
           (passed, p)
         } else {
-          val passed = (D20.roll() + attributeModifier(p, attr)) >= dc
+          val passed = (D20.roll() + attributeModifier(p, attr) + blessAttackBonus(p)) >= dc
 
           (passed, p)
         }
       case (attr, m: Monster) =>
-        val passed = D20.roll() + m.savingThrowScores(attr) >= dc
+        val passed = D20.roll() + m.savingThrowScores(attr) + blessAttackBonus(m) >= dc
 
         (passed, m)
     }

@@ -35,8 +35,6 @@ class PaladinSpellsSpec extends UnitSpecBase {
 
           val (attackResult, _) = Actions.attack(blessedChampion, trackedSword, monster)
 
-//          println(attackResult) // TODO remove
-
           attackResult shouldBe Hit
         }
       }
@@ -60,8 +58,6 @@ class PaladinSpellsSpec extends UnitSpecBase {
 
           val (attackResult, _) = Actions.attack(blessedGoblin, trackedSword, acElevenRogue)
 
-//          println(attackResult) // TODO remove
-
           attackResult shouldBe Hit
         }
       }
@@ -82,8 +78,6 @@ class PaladinSpellsSpec extends UnitSpecBase {
           val monster = testMonster.withArmourClass(10)
 
           val attackResult = Spell.spellAttack(blessedWizard, monster)
-
-//          println(attackResult) // TODO remove
 
           attackResult shouldBe Hit
         }
@@ -109,8 +103,6 @@ class PaladinSpellsSpec extends UnitSpecBase {
 
           val attackResult = Spell.spellAttack(blessedLich, acThirteenRogue)
 
-//          println(attackResult) // TODO remove
-
           attackResult shouldBe Hit
         }
       }
@@ -130,8 +122,6 @@ class PaladinSpellsSpec extends UnitSpecBase {
 
           val (passed, _) =
             SavingThrow.savingThrowPassed(12, Strength, blessedPaladin)
-
-//          println(passed) // TODO remove
 
           passed shouldBe true
         }
