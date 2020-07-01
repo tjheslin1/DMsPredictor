@@ -90,8 +90,8 @@ object Paladin {
   )
 
   val standardPaladinAbilities: List[CombatantAbility] = List(
-    castMultiTargetBuffSpell(1),
-    castSingleTargetHealingSpell(2),
+    castSingleTargetHealingSpell(1),
+    castMultiTargetBuffSpell(2),
     layOnHands(3),
     extraAttack(4),
     divineSmite(5)

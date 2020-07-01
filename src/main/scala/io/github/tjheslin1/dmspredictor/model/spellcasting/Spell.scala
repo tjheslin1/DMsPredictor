@@ -5,6 +5,7 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
@@ -124,9 +125,10 @@ object Spell {
 
   def schoolAttribute(spellCaster: SpellCaster): Attribute =
     spellCaster match {
-      case _: Cleric     => Wisdom
-      case _: BaseCleric => Wisdom
-      case _: Wizard     => Intelligence
+      case _: Cleric      => Wisdom
+      case _: BaseCleric  => Wisdom
+      case _: BasePaladin => Charisma
+      case _: Wizard      => Intelligence
 
       case _: Lich => Intelligence
     }
