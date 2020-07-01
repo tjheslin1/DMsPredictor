@@ -69,9 +69,9 @@ trait ArgParser {
         weaponsLookup(weapon.toLowerCase),
         BaseBarbarian.rageUsagesPerLevel(level),
         skills,
+        ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = barbarianName
       )
     }
@@ -99,9 +99,9 @@ trait ArgParser {
         weaponsLookup(weapon.toLowerCase),
         BaseBarbarian.rageUsagesPerLevel(level),
         skills,
+        ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = berserkerName
       )
     }
@@ -128,11 +128,11 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         Cleric.clericSpellSlots(level),
         Cleric.standardClericSpellList,
         armour = armourLookup(armour.toLowerCase),
         offHand = offHandLookup.get(offHand.toLowerCase),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = clericName
       )
     }
@@ -160,10 +160,10 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
         List(fighterFightingStyleLookup(style.toLowerCase)),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = fighterName
       )
     }
@@ -191,10 +191,10 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
         List(fighterFightingStyleLookup(style.toLowerCase)),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = championName
       )
     }
@@ -221,9 +221,9 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = rogueName
       )
     }
@@ -237,7 +237,7 @@ trait ArgParser {
       stats      <- baseStatsConverter(c, statsStr)
       weapon     <- c.downField("weapon").as[String]
       armour     <- c.downField("armour").as[String]
-      offHand    <- c.downField("offHand").as[String]
+      offHand    <- c.downField("offHand").as[String] // TODO currently unused
       skillsStr  <- c.downField("skills").as[String]
       skills     <- skillsConverter(c, skillsStr)
       wizardName <- c.downField("name").as[String]
@@ -250,10 +250,10 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         Wizard.wizardSpellSlots(level),
         Wizard.standardWizardSpellList,
         armour = armourLookup(armour.toLowerCase),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         name = wizardName
       )
     }
@@ -281,12 +281,12 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         BaseRanger.rangerSpellSlots(level),
         Ranger.standardRangerSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
         List(rangerFightingStyleLookup(style.toLowerCase)),
-        ProficiencyBonus.fromLevel(level),
         name = rangerName
       )
     }
@@ -314,12 +314,12 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         BaseRanger.rangerSpellSlots(level),
         Hunter.standardHunterSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
         List(rangerFightingStyleLookup(style.toLowerCase)),
-        ProficiencyBonus.fromLevel(level),
         abilities = Hunter.standardHunterAbilities,
         name = rangerName
       )
@@ -348,13 +348,13 @@ trait ArgParser {
         stats,
         weaponsLookup(weapon.toLowerCase),
         skills,
+        ProficiencyBonus.fromLevel(level),
         BasePaladin.layOnHandsPoolForLevel(level),
         BasePaladin.paladinSpellSlots(level),
         Paladin.standardPaladinSpellList,
         armour = armourLookup(armour.toLowerCase),
         offHand = offHandLookup.get(offHand.toLowerCase),
         fightingStyles = List(paladinFightingStyleLookup(style.toLowerCase)),
-        proficiencyBonus = ProficiencyBonus.fromLevel(level),
         abilities = Paladin.standardPaladinAbilities,
         name = paladinName
       )
