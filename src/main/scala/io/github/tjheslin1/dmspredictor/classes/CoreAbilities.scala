@@ -370,7 +370,11 @@ object CoreAbilities extends LazyLogging {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean = true
+      def triggerMet(others: List[Combatant]): Boolean =
+        spellCaster match {
+          case _: Player => players(others).nonEmpty
+          case _         => monsters(others).nonEmpty
+        }
 
       def conditionMet: Boolean =
         spellConditionMet(

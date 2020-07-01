@@ -1344,6 +1344,22 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       castMultiTargetBuffSpell(Priority)(paladin).triggerMet(List(rogue, goblin)) shouldBe true
     }
 
+    "be triggered for a Monster if the caster has at least one ally to buff" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+      val lich = random[Lich]
+        .withSpellKnown(trackedSpell)
+        .withCombatIndex(2)
+
+      val goblin = random[Goblin].withCombatIndex(2)
+
+      val rogue = random[Rogue].withCombatIndex(3)
+
+      castMultiTargetBuffSpell(Priority)(lich).triggerMet(List(goblin, rogue)) shouldBe true
+    }
+
     "not be triggered if the caster does not have any allies to buff" in new TestContext {
       override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
@@ -1358,6 +1374,20 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       val goblin = random[Goblin].withCombatIndex(2)
 
       castMultiTargetBuffSpell(Priority)(paladin).triggerMet(List(goblin)) shouldBe false
+    }
+
+    "not be triggered for a Monster if the caster does not have any allies to buff" in new TestContext {
+      override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+      val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+      val lich = random[Lich]
+        .withSpellKnown(trackedSpell)
+        .withCombatIndex(2)
+
+      val rogue = random[Rogue].withCombatIndex(2)
+
+      castMultiTargetBuffSpell(Priority)(lich).triggerMet(List(rogue)) shouldBe false
     }
 
     "meet the condition if the Spell Caster has a Multi Target Buff cantrip to cast" in new TestContext {
