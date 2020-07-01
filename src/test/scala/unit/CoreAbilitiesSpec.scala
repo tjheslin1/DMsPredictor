@@ -834,7 +834,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "cast a multi target spell and not a single target spell even if of a higher level" in {
+    "cast a multi target spell (spell attack) and not a single target spell even if of a higher level" in {
       forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
@@ -927,7 +927,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val (_, List(Combatant(_, updatedMonsterOne: TestMonster), Combatant(_, updatedMonsterTwo: TestMonster))) =
             castMultiTargetOffensiveSpell(Priority)(trackedWizard)
-
               .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedMonsterOne.health < monsterOne.creature.health shouldBe true
@@ -1180,7 +1179,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       castSelfBuffSpell(Priority)(wizard).conditionMet shouldBe false
     }
 
-    "work for a Monster" in {
+    "cast a spell (Self Buff) for a Monster updating the casters conditions" in {
       forAll { lich: Lich =>
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)

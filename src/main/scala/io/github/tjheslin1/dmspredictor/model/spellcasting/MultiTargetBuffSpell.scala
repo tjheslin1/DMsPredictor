@@ -44,6 +44,7 @@ abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
 
     val buffedSpellCaster = if (buffTargets.size < affectedTargets) {
       val currentConditions = spellCaster.conditions
+
       Creature.creatureConditionsLens
         .set(currentConditions :+ buffCondition)(spellCaster)
         .asInstanceOf[SpellCaster]

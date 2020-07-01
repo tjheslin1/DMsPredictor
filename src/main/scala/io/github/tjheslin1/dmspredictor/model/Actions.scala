@@ -9,10 +9,7 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{
-  ConcentrationConditionSpell,
-  MultiTargetBuffSpell
-}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 sealed trait AttackResult {
