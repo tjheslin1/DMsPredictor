@@ -314,7 +314,7 @@ trait Tracking {
     }
   }
 
-  var trackedMultiTargetBuffSpellLevel = -1
+  var trackedMultiTargetBuffSpellLevelUsed = -1
   var trackedMultiTargetBuffSpellUsedCount = 0
   var trackedMultiTargetBuffConcentrationHandled = false
   def trackedMultiTargetBuffSpell(spellLvl: SpellLevel,
@@ -344,7 +344,7 @@ trait Tracking {
                                targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
 
       trackedMultiTargetBuffSpellUsedCount += 1
-      trackedMultiTargetBuffSpellLevel = spellLevel.value
+      trackedMultiTargetBuffSpellLevelUsed = spellLevel.value
 
       super.effect(spellCaster, spellLevel, targets)
     }

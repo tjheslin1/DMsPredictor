@@ -1211,16 +1211,16 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withSpellKnown(trackedBuffTwoTargetsSpell)
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withLevel(LevelTwo)
-              .withCombatIndex(1)
+            .withCombatIndex(1)
 
           val hunterCombatant = hunter.withCombatIndex(2)
 
           val berserkerCombatant = berserker.withCombatIndex(3)
 
           val (Combatant(_, updatedPaladin: Paladin),
-          List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
-            castMultiTargetBuffSpell(Priority)(castingPaladin)
-              .useAbility(List(hunterCombatant, berserkerCombatant), LowestFirst)
+            List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
+              castMultiTargetBuffSpell(Priority)(castingPaladin)
+                .useAbility(List(hunterCombatant, berserkerCombatant), LowestFirst)
 
           updatedPaladin.conditions shouldBe List.empty[Condition]
 
@@ -1247,8 +1247,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val berserkerCombatant = berserker.withCombatIndex(3)
 
-          val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
-            castMultiTargetBuffSpell(Priority)(castingPaladin).useAbility(List(hunterCombatant, berserkerCombatant), LowestFirst)
+          val (Combatant(_, updatedPaladin: Paladin),
+            List(Combatant(_, updatedHunter: Hunter), Combatant(_, updatedBerserker: Berserker))) =
+              castMultiTargetBuffSpell(Priority)(castingPaladin)
+                .useAbility(List(hunterCombatant, berserkerCombatant), LowestFirst)
 
           updatedPaladin.conditions shouldBe List(BlessCondition())
 
@@ -1396,7 +1398,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
       val cleric = random[Cleric]
         .withSpellKnown(trackedSpell)
-          .withCombatIndex(1)
+        .withCombatIndex(1)
 
       castMultiTargetBuffSpell(Priority)(cleric).conditionMet shouldBe true
     }
