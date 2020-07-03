@@ -70,7 +70,7 @@ class BasePaladinSpec extends UnitSpecBase {
       paladinWeapon(duelingPaladin, bow, none[Equipment]).hitBonus shouldBe 0
     }
 
-    "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in new TestContext {
+    "reroll a roll of 1 or 2 for a two-handed weapon with the Great Weapon Fighting style" in new TestContext {
       forAll { (paladin: Paladin, testMonster: TestMonster) =>
         var count = 0
         val twoHandedWeapon = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, {

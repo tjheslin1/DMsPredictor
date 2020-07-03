@@ -27,29 +27,12 @@ class MultiTargetBuffSpellSpec extends UnitSpecBase {
 
           val (updatedPaladin: Paladin,
             List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedRogue: Rogue))) =
-          multiTargetBuffSpell.effect(buffingPaladin, multiTargetBuffSpell.spellLevel,
+              multiTargetBuffSpell.effect(buffingPaladin, multiTargetBuffSpell.spellLevel,
                 List(fighterCombatant, rogueCombatant))
 
           updatedPaladin.conditions shouldBe List(BlessCondition())
           updatedFighter.conditions shouldBe List(BlessCondition())
           updatedRogue.conditions   shouldBe List(BlessCondition())
-        }
-      }
-    }
-
-    "apply the buff condition to the caster if only of no allies are available" in {
-      forAll { paladin: Paladin =>
-        new TestContext {
-          implicit val rollStrategy: RollStrategy = _ => RollResult(10)
-
-          val multiTargetBuffSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
-
-          val buffingPaladin = paladin
-
-          val (updatedPaladin: Paladin, _) =
-            multiTargetBuffSpell.effect(buffingPaladin, multiTargetBuffSpell.spellLevel, List.empty[Combatant])
-
-          updatedPaladin.conditions shouldBe List(BlessCondition())
         }
       }
     }

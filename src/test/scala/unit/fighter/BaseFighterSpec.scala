@@ -68,7 +68,7 @@ class BaseFighterSpec extends UnitSpecBase {
       weaponWithFightingStyle(sword, none[Equipment], List.empty).hitBonus shouldBe 0
     }
 
-    "reroll a roll of 1 or 2 for a two-handed with the Great Weapon Fighting style" in new TestContext {
+    "reroll a roll of 1 or 2 for a two-handed weapon with the Great Weapon Fighting style" in new TestContext {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         var count = 0
         val twoHandedWeapon = Weapon("sword", Melee, Slashing, isTwoHanded = true, isFinesse = false, {

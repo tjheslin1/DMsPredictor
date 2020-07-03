@@ -273,7 +273,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val fiendCombatant = testMonster
-              .withCreatureType(Fiend)
+            .withCreatureType(Fiend)
             .withArmourClass(5)
             .withHealth(50)
             .withMaxHealth(50)

@@ -26,7 +26,7 @@ class RangerSpec extends UnitSpecBase {
     }
 
     "not handle concentration if damage taken was 0" in new TestContext {
-      implicit val roll: RollStrategy = _ => RollResult(19)
+      implicit val roll: RollStrategy = _ => RollResult(1)
 
       val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
 
@@ -43,7 +43,7 @@ class RangerSpec extends UnitSpecBase {
     }
 
     "handle loss of concentration if ranger goes unconscious" in new TestContext {
-      implicit val roll: RollStrategy = _ => RollResult(19)
+      implicit val roll: RollStrategy = _ => RollResult(10)
 
       val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
 
