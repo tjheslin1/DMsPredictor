@@ -485,7 +485,8 @@ trait ArgParser {
 
   val offHandLookup: Map[String, Equipment] = Map(
     Shield.name.toLowerCase     -> Shield,
-    Shortsword.name.toLowerCase -> Shortsword
+    Shortsword.name.toLowerCase -> Shortsword,
+    "plus_one_shortsword"       -> PlusOneShortsword
   )
 
   val fighterFightingStyleLookup: Map[String, FighterFightingStyle] = Map(
