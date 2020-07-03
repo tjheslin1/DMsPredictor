@@ -70,7 +70,7 @@ trait ArgParser {
         BaseBarbarian.rageUsagesPerLevel(level),
         skills,
         ProficiencyBonus.fromLevel(level),
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         name = barbarianName
       )
@@ -100,7 +100,7 @@ trait ArgParser {
         BaseBarbarian.rageUsagesPerLevel(level),
         skills,
         ProficiencyBonus.fromLevel(level),
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         name = berserkerName
       )
@@ -131,7 +131,7 @@ trait ArgParser {
         ProficiencyBonus.fromLevel(level),
         Cleric.clericSpellSlots(level),
         Cleric.standardClericSpellList,
-        armour = armourLookup(armour.toLowerCase),
+        armour = armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHand = offHandLookup.get(offHand.toLowerCase),
         name = clericName
       )
@@ -161,7 +161,7 @@ trait ArgParser {
         weaponsLookup(weapon.toLowerCase),
         skills,
         ProficiencyBonus.fromLevel(level),
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         fighterFightingStyleLookup
           .get(style.toLowerCase)
@@ -194,7 +194,7 @@ trait ArgParser {
         weaponsLookup(weapon.toLowerCase),
         skills,
         ProficiencyBonus.fromLevel(level),
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         fighterFightingStyleLookup
           .get(style.toLowerCase)
@@ -226,7 +226,7 @@ trait ArgParser {
         weaponsLookup(weapon.toLowerCase),
         skills,
         ProficiencyBonus.fromLevel(level),
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         name = rogueName
       )
@@ -257,7 +257,7 @@ trait ArgParser {
         ProficiencyBonus.fromLevel(level),
         Wizard.wizardSpellSlots(level),
         Wizard.standardWizardSpellList,
-        armour = armourLookup(armour.toLowerCase),
+        armour = armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         name = wizardName
       )
     }
@@ -288,7 +288,7 @@ trait ArgParser {
         ProficiencyBonus.fromLevel(level),
         BaseRanger.rangerSpellSlots(level),
         Ranger.standardRangerSpellList,
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         rangerFightingStyleLookup
           .get(style.toLowerCase)
@@ -323,7 +323,7 @@ trait ArgParser {
         ProficiencyBonus.fromLevel(level),
         BaseRanger.rangerSpellSlots(level),
         Hunter.standardHunterSpellList,
-        armourLookup(armour.toLowerCase),
+        armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHandLookup.get(offHand.toLowerCase),
         rangerFightingStyleLookup
           .get(style.toLowerCase)
@@ -360,7 +360,7 @@ trait ArgParser {
         BasePaladin.layOnHandsPoolForLevel(level),
         BasePaladin.paladinSpellSlots(level),
         Paladin.standardPaladinSpellList,
-        armour = armourLookup(armour.toLowerCase),
+        armour = armourLookup.get(armour.toLowerCase).fold(NoArmour)(_),
         offHand = offHandLookup.get(offHand.toLowerCase),
         fightingStyles = paladinFightingStyleLookup
           .get(style.toLowerCase)
@@ -477,10 +477,9 @@ trait ArgParser {
   )
 
   val armourLookup: Map[String, Armour] = Map(
-    "none"                      -> NoArmour,
-    NoArmour.name.toLowerCase   -> NoArmour,
-    ChainShirt.name.toLowerCase -> ChainShirt,
-    ChainMail.name.toLowerCase  -> ChainMail
+    NoArmour.name.toLowerCase -> NoArmour,
+    "chain_shirt"             -> ChainShirt,
+    "chain_mail"              -> ChainMail
   )
 
   val offHandLookup: Map[String, Equipment] = Map(
