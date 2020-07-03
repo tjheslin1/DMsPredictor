@@ -64,7 +64,7 @@ object Spell {
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
-      else if (multiTargetSpellsOnly && multiTargetAttackSpellOnly(spell) == false)
+      else if (multiTargetSpellsOnly && multiTargetSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
@@ -110,7 +110,7 @@ object Spell {
       case _                                 => false
     }
 
-  def multiTargetAttackSpellOnly(spell: Spell): Boolean =
+  def multiTargetSpellOnly(spell: Spell): Boolean =
     spell match {
       case _: MultiTargetSavingThrowSpell => true
       case _: MultiTargetBuffSpell        => true

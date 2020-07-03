@@ -510,9 +510,9 @@ object CoreAbilities extends LazyLogging {
       spellCaster.spellsKnown
         .filter {
           case (_, spell) if singleTargetSpellsOnly && multiTargetSpellsOnly =>
-            singleTargetSpellOnly(spell) || multiTargetAttackSpellOnly(spell)
+            singleTargetSpellOnly(spell) || multiTargetSpellOnly(spell)
           case (_, spell) if singleTargetSpellsOnly => singleTargetSpellOnly(spell)
-          case (_, spell) if multiTargetSpellsOnly  => multiTargetAttackSpellOnly(spell)
+          case (_, spell) if multiTargetSpellsOnly  => multiTargetSpellOnly(spell)
           case _                                    => true
         }
         .exists {
