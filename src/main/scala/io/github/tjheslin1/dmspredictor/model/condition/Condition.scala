@@ -24,8 +24,8 @@ trait Condition {
   def handleEndOfTurn[_: RS](creature: Creature): Creature
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature
 
-  def onConditionApplied(creature: Creature): Creature
-  def onConditionRemoved(creature: Creature): Creature
+  def onConditionApplied[_: RS](creature: Creature): Creature
+  def onConditionRemoved[_: RS](creature: Creature): Creature
 }
 
 abstract class PassiveCondition extends Condition {
@@ -37,8 +37,8 @@ abstract class PassiveCondition extends Condition {
   def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = creature
   def handleEndOfTurn[_: RS](creature: Creature): Creature             = creature
 
-  def onConditionApplied(creature: Creature): Creature = creature
-  def onConditionRemoved(creature: Creature): Creature = creature
+  def onConditionApplied[_: RS](creature: Creature): Creature = creature
+  def onConditionRemoved[_: RS](creature: Creature): Creature = creature
 }
 
 abstract class StartOfTurnCondition extends Condition {
@@ -61,7 +61,7 @@ abstract class OnDamageCondition extends Condition {
 
 object Condition {
 
-  def addCondition(combatant: Combatant, condition: Condition): Combatant = {
+  def addCondition[_: RS](combatant: Combatant, condition: Condition): Combatant = {
     val conditionAppliedCreature = condition.onConditionApplied(combatant.creature)
 
     val updatedConditions = conditionAppliedCreature.conditions :+ condition
@@ -71,13 +71,14 @@ object Condition {
     Combatant.creatureLens.set(updatedCreature)(combatant)
   }
 
-  def removeCondition(creature: Creature, conditionName: String): Creature = {
+  def removeCondition[_: RS](creature: Creature, conditionName: String): Creature = {
     val condition         = creature.conditions.find(_.name == conditionName).get
     val updatedConditions = creature.conditions.except(condition)
 
-    val conditionRemovedCreature = condition.onConditionRemoved(creature)
+    val conditionRemovedCreature =
+      Creature.creatureConditionsLens.set(updatedConditions)(creature)
 
-    Creature.creatureConditionsLens.set(updatedConditions)(conditionRemovedCreature)
+    condition.onConditionRemoved(conditionRemovedCreature)
   }
 
   implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>

@@ -13,7 +13,7 @@ class ClericSpec extends UnitSpecBase {
 
   "updateHealth" should {
     "not handle concentration if damage taken was 0" in new TestContext {
-      implicit val roll: RollStrategy = _ => RollResult(19)
+      implicit val roll: RollStrategy = _ => RollResult(1)
 
       val concentratingCleric = random[Cleric]
         .withConcentratingOn(SpiritGuardians)

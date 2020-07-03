@@ -5,11 +5,13 @@ import cats.syntax.option._
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.HuntersMarkBuffCondition
 import util.TestData._
 
@@ -89,6 +91,30 @@ class ConcentrationSpec extends UnitSpecBase {
 
           updatedRanger.conditions shouldBe List.empty[Condition]
           updatedRanger.concentratingSpell shouldBe none[Spell]
+        }
+      }
+    }
+
+    "handle loss of concentration of MultiTargetBuffSpell" in {
+      forAll { paladin: Paladin =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
+
+          val concentratingPaladin = paladin
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .withConstitution(2)
+            .withCondition(BlessCondition())
+            .asInstanceOf[Paladin]
+
+          val updatedPaladin =
+            handleConcentration(concentratingPaladin, trackedSpell, 50).asInstanceOf[Paladin]
+
+          updatedPaladin.conditions shouldBe List.empty[Condition]
+          updatedPaladin.concentratingSpell shouldBe none[Spell]
         }
       }
     }

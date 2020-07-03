@@ -27,7 +27,7 @@ class MultiTargetSavingThrowSpellSpec extends UnitSpecBase {
 
       savingThrowSpell.effect(cleric, savingThrowSpell.spellLevel, List(monsterOne, monsterTwo))
 
-      multiSavingThrowSpellUsedCount shouldBe 1
+      multiSavingThrowSpellDamageRollCount shouldBe 1
     }
 
     "deal full damage if saving throw failed" in {

@@ -25,6 +25,10 @@ object Concentration extends LazyLogging {
           val selfBuffHandledCaster = selfBuffSpell.onLossOfConcentration(updatedSpellCaster)
 
           SpellCaster.concentratingLens.set(None)(selfBuffHandledCaster)
+        case multiTargetBuffSpell: MultiTargetBuffSpell =>
+          val buffHandledCaster = multiTargetBuffSpell.onLossOfConcentration(updatedSpellCaster)
+
+          SpellCaster.concentratingLens.set(None)(buffHandledCaster)
         case _ =>
           SpellCaster.concentratingLens.set(None)(updatedSpellCaster)
       }

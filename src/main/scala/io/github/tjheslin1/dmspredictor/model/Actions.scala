@@ -8,7 +8,9 @@ import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponDamageAbility}
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.ConcentrationConditionSpell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 sealed trait AttackResult {
   def result: Int
@@ -62,9 +64,12 @@ object Actions extends LazyLogging {
 
           roll + modifier +
             attackerWeapon.hitBonus +
-            player.proficiencyBonus
+            player.proficiencyBonus +
+            blessAttackBonus(attacker.creature)
         case _ =>
-          roll + attackerWeapon.hitBonus
+          roll +
+            attackerWeapon.hitBonus +
+            blessAttackBonus(attacker.creature)
       }
 
       if (totalAttackRoll >= target.creature.armourClass) {
@@ -101,6 +106,17 @@ object Actions extends LazyLogging {
       addStatModifier = true
     )
 
+  /**
+    * @param attacker
+    * @param target
+    * @param others is the list of other combatants not including the `target`
+    * @param weapon
+    * @param attackResult
+    * @param damageBonus
+    * @param addStatModifier
+    * @tparam _
+    * @return
+    */
   def resolveDamage[_: RS](
       attacker: Combatant,
       target: Combatant,
@@ -145,30 +161,44 @@ object Actions extends LazyLogging {
       }
     }
 
-    val (updatedAttacker2, updatedOthers) = (target.creature, updatedTarget.creature) match {
-      case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
-          if lossOfConcentration(spellCaster, damagedSpellCaster) =>
-        spellCaster.concentratingSpell.fold((updatedAttacker, others)) {
-          case conditionSpell: ConcentrationConditionSpell =>
-            val concentratedCondition: Condition = conditionSpell.conditionFrom(spellCaster)
+    val (updatedAttacker2, updatedTarget2, updatedOthers) =
+      (target.creature, updatedTarget.creature) match {
+        case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
+            if lossOfConcentration(spellCaster, damagedSpellCaster) =>
+          spellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
+            case conditionSpell: ConcentrationConditionSpell =>
+              val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
 
-            val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
+              val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
 
-            (conditionRemovedAttacker, others.map(removeCondition(_, concentratedCondition)))
-          case _ => (updatedAttacker, others)
-        }
-      case _ =>
-        (updatedAttacker, others)
-    }
+              (
+                conditionRemovedAttacker,
+                updatedTarget,
+                others.map(removeCondition(_, concentratedCondition)))
+            case multiTargetBuffSpell: MultiTargetBuffSpell =>
+              val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
 
-    val conditionHandledCreature =
-      updatedTarget.creature.conditions
+              val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
+
+              val updatedOthers = others
+                .map(removeCondition(_, concentratedBuffCondition))
+
+              (updatedAttacker, conditionRemovedTarget, updatedOthers)
+            case _ => (updatedAttacker, updatedTarget, others)
+          }
+        case _ =>
+          (updatedAttacker, updatedTarget, others)
+      }
+
+    val conditionHandledTargetCreature =
+      updatedTarget2.creature.conditions
         .filter(_.isHandledOnDamage)
-        .foldLeft(updatedTarget.creature) {
+        .foldLeft(updatedTarget2.creature) {
           case (creature, condition) => condition.handleOnDamage(creature, dmg)
         }
 
-    val conditionHandledTarget = Combatant.creatureLens.set(conditionHandledCreature)(updatedTarget)
+    val conditionHandledTarget =
+      Combatant.creatureLens.set(conditionHandledTargetCreature)(updatedTarget2)
 
     (updatedAttacker2, conditionHandledTarget, updatedOthers)
   }

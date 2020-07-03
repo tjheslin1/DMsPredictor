@@ -58,10 +58,10 @@ class MainSpec extends UnitSpecBase with EitherValues {
           BaseStats(10, 10, 14, 14, 14, 10),
           Shortsword,
           Skills(1, 1),
+          ProficiencyBonus.fromLevel(LevelFour),
           Wizard.wizardSpellSlots(LevelFour),
           Wizard.standardWizardSpellList,
           armour = NoArmour,
-          proficiencyBonus = ProficiencyBonus.fromLevel(LevelFour),
           name = "TestWizard"
         ))
 
@@ -130,10 +130,10 @@ class MainSpec extends UnitSpecBase with EitherValues {
           BaseStats(14, 14, 14, 14, 14, 14),
           Longbow,
           Skills(1, 1),
+          ProficiencyBonus.fromLevel(LevelFive),
           rangerSpellSlots(LevelFive),
           armour = ChainShirt,
           fightingStyles = List(Archery),
-          proficiencyBonus = ProficiencyBonus.fromLevel(LevelFive),
           name = "TestRanger"
         ))
 

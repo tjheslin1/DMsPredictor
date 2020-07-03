@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.ShieldBuffCondition
 
-trait BaseWizard extends Player with SpellCaster {
+trait BaseWizard extends Player with SpellCaster with Product with Serializable {
 
   val spellCastingModifier = proficiencyBonus.value
 

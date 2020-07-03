@@ -18,6 +18,6 @@ import monocle.macros.Lenses
   def handleEndOfTurn[_: RS](creature: Creature): Creature =
     creature.updateHealth(spellLevel.value * D4, Acid, Hit)
 
-  def onConditionApplied(creature: Creature): Creature = creature
-  def onConditionRemoved(creature: Creature): Creature = creature
+  def onConditionApplied[_: RS](creature: Creature): Creature = creature
+  def onConditionRemoved[_: RS](creature: Creature): Creature = creature
 }

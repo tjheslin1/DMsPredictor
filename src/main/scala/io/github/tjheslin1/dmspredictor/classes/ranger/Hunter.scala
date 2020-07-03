@@ -31,12 +31,12 @@ import monocle.macros.{GenLens, Lenses}
     stats: BaseStats,
     baseWeapon: Weapon,
     skills: Skills,
+    proficiencyBonus: ProficiencyBonus,
     spellSlots: SpellSlots,
     spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardHunterSpellList,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[RangerFightingStyle] = List.empty[RangerFightingStyle],
-    proficiencyBonus: ProficiencyBonus = 2,
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List.empty[DamageType],
     damageImmunities: List[DamageType] = List.empty[DamageType],
@@ -58,7 +58,7 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, offHand, fightingStyles)
 
   def updateHealth[_: RS](
       dmg: Int,

@@ -1,10 +1,12 @@
 package base
 
+import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.Bless
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 
 trait Tracking {
@@ -119,16 +121,19 @@ trait Tracking {
         dmg
       }
 
-      override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+      override def additionalEffect[_: RS](target: Combatant, attackResult: AttackResult): Combatant =
         additionalTargetEffect(target)
     }
 
-  var multiMeleeSpellUsedCount = 0
+  var multiTargetAttackSpellSlotUsed = -1
+  var multiTargetMeleeSpellUsedCount = 0
+  var multiMeleeSpellDamageRollCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel,
                                    savingThrowAttribute: Attribute = Dexterity,
                                    concentration: Boolean = false,
                                    higherSpellSlot: Boolean = true): Spell =
     new MultiTargetSavingThrowSpell {
+
       val name: String           = s"tracked-multi-melee-spell-${spellLvl.value}"
       val damageType: DamageType = Fire
 
@@ -141,9 +146,17 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        multiMeleeSpellUsedCount += 1
+        multiMeleeSpellDamageRollCount += 1
+
         4
       }
+
+      override def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel, targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+        multiTargetMeleeSpellUsedCount += 1
+
+        multiTargetAttackSpellSlotUsed = spellLevel.value
+
+        super.effect(spellCaster, spellLevel, targets)}
     }
 
   var trackedHealingSpellUsed      = false
@@ -166,7 +179,8 @@ trait Tracking {
       }
     }
 
-  var singleSavingThrowSpellUsedCount = 0
+  var singleTargetSavingThrowSpellLevelUsed = -1
+  var singleTargetSavingThrowSpellUsedCount = 0
   def trackedSingleTargetSavingThrowSpell(
       spellLvl: SpellLevel,
       savingAttribute: Attribute,
@@ -190,7 +204,8 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        singleSavingThrowSpellUsedCount += 1
+        singleTargetSavingThrowSpellUsedCount += 1
+        singleTargetSavingThrowSpellLevelUsed = spellLevel
         4
       }
 
@@ -202,7 +217,9 @@ trait Tracking {
         additionalTargetEffect(spellCaster, target, others, savingThrowPassed)
     }
 
-  var multiSavingThrowSpellUsedCount = 0
+  var multiTargetSavingThrowSpellSlotUsed = -1
+  var multiTargetSavingThrowSpellUsedCount = 0
+  var multiSavingThrowSpellDamageRollCount = 0
   def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
                                          savingAttribute: Attribute,
                                          damageOnSave: Boolean = false,
@@ -220,8 +237,19 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        multiSavingThrowSpellUsedCount += 1
+        multiSavingThrowSpellDamageRollCount += 1
+
         4
+      }
+
+      override def effect[_: RS](spellCaster: SpellCaster,
+                                 spellLevel: SpellLevel,
+                                 targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+        multiTargetSavingThrowSpellUsedCount += 1
+
+        multiTargetSavingThrowSpellSlotUsed = spellLevel.value
+
+        super.effect(spellCaster, spellLevel, targets)
       }
     }
 
@@ -259,13 +287,14 @@ trait Tracking {
                            spellLvl: SpellLevel,
                            castingAction: CastingTime = OneActionCast,
                            concentration: Boolean = false,
-                           higherSpellSlot: Boolean = true): SelfBuffSpell = new SelfBuffSpell {
+                           higherSpellSlot: Boolean = true): SelfBuffSpell
+    = new SelfBuffSpell {
 
-    val name: String                 = s"tracked-self-buff-spell-${spellLvl.value}"
-    val selfBuffCondition: Condition = buffCondition
+    val name                 = s"tracked-self-buff-spell-${spellLvl.value}"
+    val selfBuffCondition = buffCondition
 
-    val school: SchoolOfMagic       = Divination
-    val castingTime: CastingTime    = castingAction
+    val school                      = Divination
+    val castingTime                 = castingAction
     val spellLevel: SpellLevel      = spellLvl
     val requiresConcentration       = concentration
     val benefitsFromHigherSpellSlot = higherSpellSlot
@@ -278,12 +307,52 @@ trait Tracking {
       super.effect(spellCaster, spellLevel, targets)
     }
 
-    def onLossOfConcentration(spellCaster: SpellCaster, damage: Int): SpellCaster = {
+    override def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
       selfBuffSpellConcentrationHandled = true
 
-      val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
+      super.onLossOfConcentration(spellCaster)
+    }
+  }
 
-      Creature.creatureConditionsLens.set(updatedConditions)(spellCaster).asInstanceOf[SpellCaster]
+  var trackedMultiTargetBuffSpellLevelUsed = -1
+  var trackedMultiTargetBuffSpellUsedCount = 0
+  var trackedMultiTargetBuffConcentrationHandled = false
+  def trackedMultiTargetBuffSpell(spellLvl: SpellLevel,
+                                  condition: Condition,
+                                  numTargets: Int = 3,
+                                  priority: (Combatant, Combatant) => Int = (x, y) => Bless.buffTargetsPriority.compare(x, y),
+                                  concentration: Boolean = false,
+                                  higherSpellSlot: Boolean = true): MultiTargetBuffSpell
+    = new MultiTargetBuffSpell {
+
+    val buffCondition = condition
+    val affectedTargets = numTargets
+
+    val name = s"tracked-self-multi-target-buff-spell-${spellLvl.value}"
+    val school = Enchantment
+    val castingTime = OneActionCast
+
+    val spellLevel: SpellLevel = spellLvl
+    val requiresConcentration = concentration
+    val benefitsFromHigherSpellSlot = higherSpellSlot
+
+    val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) => priority(x, y)
+
+
+    override def effect[_: RS](spellCaster: SpellCaster,
+                               spellLevel: SpellLevel,
+                               targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
+
+      trackedMultiTargetBuffSpellUsedCount += 1
+      trackedMultiTargetBuffSpellLevelUsed = spellLevel.value
+
+      super.effect(spellCaster, spellLevel, targets)
+    }
+
+    override def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+      trackedMultiTargetBuffConcentrationHandled = true
+
+      super.onLossOfConcentration(spellCaster)
     }
   }
 
@@ -339,8 +408,8 @@ trait Tracking {
         creature
       }
 
-      def onConditionApplied(creature: Creature): Creature = creature
-      def onConditionRemoved(creature: Creature): Creature = creature
+      def onConditionApplied[_: RS](creature: Creature): Creature = creature
+      def onConditionRemoved[_: RS](creature: Creature): Creature = creature
     }
 
   var trackedEndOfTurnConditionHandledCount = 0
@@ -362,8 +431,8 @@ trait Tracking {
         creature
       }
 
-      def onConditionApplied(creature: Creature): Creature = creature
-      def onConditionRemoved(creature: Creature): Creature = creature
+      def onConditionApplied[_: RS](creature: Creature): Creature = creature
+      def onConditionRemoved[_: RS](creature: Creature): Creature = creature
     }
 
   var trackedBonusActionUsed = false
@@ -409,8 +478,8 @@ trait Tracking {
 
     def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = onDamage(creature)
 
-    def onConditionApplied(creature: Creature): Creature = onApplied(creature)
+    def onConditionApplied[_: RS](creature: Creature): Creature = onApplied(creature)
 
-    def onConditionRemoved(creature: Creature): Creature = onRemoved(creature)
+    def onConditionRemoved[_: RS](creature: Creature): Creature = onRemoved(creature)
   }
 }

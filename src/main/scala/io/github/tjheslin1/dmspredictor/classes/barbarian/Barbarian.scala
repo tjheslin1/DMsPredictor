@@ -29,9 +29,9 @@ import monocle.macros.{GenLens, Lenses}
     baseWeapon: Weapon,
     rageUsages: Int,
     skills: Skills,
+    proficiencyBonus: ProficiencyBonus,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
-    proficiencyBonus: ProficiencyBonus = 0,
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List.empty[DamageType],
     damageImmunities: List[DamageType] = List.empty[DamageType],
@@ -71,27 +71,6 @@ object Barbarian {
     extraAttack(2),
     recklessAttack(3)
   )
-
-  def levelOneBarbarian[_: RS](
-      weapon: Weapon = Greatsword,
-      armour: Armour = NoArmour
-  ): Barbarian = {
-    val health    = calculateHealth(LevelOne, 14)
-    val profBonus = ProficiencyBonus.fromLevel(LevelOne)
-
-    Barbarian(
-      LevelOne,
-      health,
-      health,
-      BaseStats(15, 13, 14, 12, 8, 10),
-      weapon,
-      rageUsages = 3,
-      Skills(perception = mod(12) + profBonus, stealth = mod(13)),
-      NoArmour,
-      none[Equipment],
-      profBonus
-    )
-  }
 
   implicit def barbarianShow[_: RS]: Show[Barbarian] =
     Show.show { barbarian =>

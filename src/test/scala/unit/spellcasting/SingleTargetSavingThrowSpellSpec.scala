@@ -35,7 +35,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
-          singleSavingThrowSpellUsedCount shouldBe 1
+          singleTargetSavingThrowSpellUsedCount shouldBe 1
           updatedMonster.health shouldBe monster.creature.health - 4
         }
       }
@@ -63,7 +63,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
-          singleSavingThrowSpellUsedCount shouldBe 1
+          singleTargetSavingThrowSpellUsedCount shouldBe 1
           updatedMonster.health shouldBe monster.creature.health - 2
         }
       }
@@ -91,7 +91,7 @@ class SingleTargetSavingThrowSpellSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedMonster: TestMonster))) =
             savingThrowSpell.effect(trackedCleric, savingThrowSpell.spellLevel, List(monster))
 
-          singleSavingThrowSpellUsedCount shouldBe 0
+          singleTargetSavingThrowSpellUsedCount shouldBe 0
           updatedMonster.health shouldBe monster.creature.health
         }
       }

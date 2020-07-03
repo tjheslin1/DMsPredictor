@@ -7,7 +7,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model._
 import monocle.Lens
 
-abstract class BaseCleric extends Player with SpellCaster {
+abstract class BaseCleric extends Player with SpellCaster with Product with Serializable {
 
   val spellCastingModifier = proficiencyBonus.value
 

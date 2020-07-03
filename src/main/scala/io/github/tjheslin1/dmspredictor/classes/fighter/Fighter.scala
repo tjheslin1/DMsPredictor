@@ -27,11 +27,11 @@ import monocle.macros.{GenLens, Lenses}
     stats: BaseStats,
     baseWeapon: Weapon,
     skills: Skills,
+    proficiencyBonus: ProficiencyBonus,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[FighterFightingStyle] = List.empty,
     abilityUsages: BaseFighterAbilities = allUnused,
-    proficiencyBonus: ProficiencyBonus = 0,
     damageVulnerabilities: List[DamageType] = List.empty[DamageType],
     damageResistances: List[DamageType] = List.empty[DamageType],
     damageImmunities: List[DamageType] = List.empty[DamageType],
@@ -51,7 +51,7 @@ import monocle.macros.{GenLens, Lenses}
 
   val armourClass: Int = armourClassWithFightingStyle(stats, armour, offHand, fightingStyles)
 
-  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, fightingStyles)
+  def weapon[_: RS]: Weapon = weaponWithFightingStyle(baseWeapon, offHand, fightingStyles)
 
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     applyDamage(this, adjustedDamage(dmg, damageType, this))

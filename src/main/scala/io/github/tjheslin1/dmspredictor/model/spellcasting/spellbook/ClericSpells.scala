@@ -48,7 +48,7 @@ object ClericSpells extends LazyLogging {
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (3 + spellLevel) * D6
 
-    override def additionalEffect(target: Combatant, attackResult: AttackResult): Combatant =
+    override def additionalEffect[_: RS](target: Combatant, attackResult: AttackResult): Combatant =
       attackResult match {
         case CriticalHit | Hit =>
           addCondition(target, GuidingBoltCondition())
@@ -68,10 +68,10 @@ object ClericSpells extends LazyLogging {
     def decrementTurnsLeft(): Condition =
       GuidingBoltCondition(turnsLeft - 1)
 
-    def onConditionApplied(creature: Creature): Creature =
+    def onConditionApplied[_: RS](creature: Creature): Creature =
       Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
 
-    def onConditionRemoved(creature: Creature): Creature =
+    def onConditionRemoved[_: RS](creature: Creature): Creature =
       Creature.creatureDefenseStatusLens.set(Regular)(creature)
   }
 
@@ -145,7 +145,7 @@ object ClericSpells extends LazyLogging {
         updatedCreature.updateHealth(damage, Radiant, Hit)
     }
 
-    def onConditionApplied(creature: Creature): Creature = creature
-    def onConditionRemoved(creature: Creature): Creature = creature
+    def onConditionApplied[_: RS](creature: Creature): Creature = creature
+    def onConditionRemoved[_: RS](creature: Creature): Creature = creature
   }
 }

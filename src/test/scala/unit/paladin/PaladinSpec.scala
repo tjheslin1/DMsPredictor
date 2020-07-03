@@ -1,28 +1,27 @@
-package unit.ranger
+package unit.paladin
 
 import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
+import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import util.TestData._
 
-class RangerSpec extends UnitSpecBase {
+class PaladinSpec extends UnitSpecBase {
 
   "updateHealth" should {
 
-    "set the Ranger to dead if the damage brings health below negative max health" in new TestContext {
+    "set the Paladin to dead if the damage brings health below negative max health" in new TestContext {
       override implicit val roll: RollStrategy = _ => RollResult(10)
 
-      val ranger = random[Ranger]
+      val paladin = random[Paladin]
         .withHealth(50)
         .withMaxHealth(50)
 
-      val updatedRanger = ranger.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Ranger]
+      val updatedPaladin = paladin.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Paladin]
 
-      updatedRanger.isAlive shouldBe false
+      updatedPaladin.isAlive shouldBe false
     }
 
     "not handle concentration if damage taken was 0" in new TestContext {
@@ -30,24 +29,24 @@ class RangerSpec extends UnitSpecBase {
 
       val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
 
-      val concentratingRanger = random[Ranger]
+      val concentratingPaladin = random[Paladin]
         .withSpellKnown(trackedConcentrationSpell)
         .withAllSpellSlotsAvailableForLevel(LevelTwo)
         .withConcentratingOn(trackedConcentrationSpell)
         .withLevel(LevelTwo)
         .withConstitution(2)
 
-      val updatedRanger = concentratingRanger.updateHealth(0, Bludgeoning, Hit).asInstanceOf[Ranger]
+      val updatedPaladin = concentratingPaladin.updateHealth(0, Bludgeoning, Hit).asInstanceOf[Paladin]
 
-      updatedRanger.concentratingSpell shouldBe trackedConcentrationSpell.some
+      updatedPaladin.concentratingSpell shouldBe trackedConcentrationSpell.some
     }
 
-    "handle loss of concentration if ranger goes unconscious" in new TestContext {
-      implicit val roll: RollStrategy = _ => RollResult(10)
+    "handle loss of concentration if Paladin goes unconscious" in new TestContext {
+      implicit val roll: RollStrategy = _ => RollResult(19)
 
       val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
 
-      val concentratingRanger = random[Ranger]
+      val concentratingPaladin = random[Paladin]
         .withSpellKnown(trackedConcentrationSpell)
         .withAllSpellSlotsAvailableForLevel(LevelTwo)
         .withConcentratingOn(trackedConcentrationSpell)
@@ -56,9 +55,9 @@ class RangerSpec extends UnitSpecBase {
         .withHealth(1)
         .withMaxHealth(50)
 
-      val updatedRanger = concentratingRanger.updateHealth(1, Bludgeoning, Hit).asInstanceOf[Ranger]
+      val updatedPaladin = concentratingPaladin.updateHealth(1, Bludgeoning, Hit).asInstanceOf[Paladin]
 
-      updatedRanger.concentratingSpell shouldBe none[Spell]
+      updatedPaladin.concentratingSpell shouldBe none[Spell]
     }
   }
 

@@ -8,6 +8,7 @@ https://www.dmspredictor.com
 - [Barbarian](src/main/scala/io/github/tjheslin1/dmspredictor/classes/barbarian/README.md)
 - [Cleric](src/main/scala/io/github/tjheslin1/dmspredictor/classes/cleric/README.md)
 - [Fighter](src/main/scala/io/github/tjheslin1/dmspredictor/classes/fighter/README.md)
+- [Paladin](src/main/scala/io/github/tjheslin1/dmspredictor/classes/paladin/README.md)
 - [Ranger](src/main/scala/io/github/tjheslin1/dmspredictor/classes/ranger/README.md)
 - [Rogue](src/main/scala/io/github/tjheslin1/dmspredictor/classes/rogue/README.md)
 - [Wizard](src/main/scala/io/github/tjheslin1/dmspredictor/classes/wizard/README.md)

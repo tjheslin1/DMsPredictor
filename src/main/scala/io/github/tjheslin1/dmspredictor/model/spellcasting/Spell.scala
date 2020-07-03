@@ -5,11 +5,14 @@ import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
+import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 import scala.annotation.tailrec
 
@@ -34,7 +37,7 @@ object Spell {
 
   /**
     * @param checkCasterIsConcentrating is used to find the spell a caster had just used when finding the spell slot to update.
-    *                           It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
+    *    It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
     */
   @tailrec
   def spellOfLevelOrBelow(
@@ -44,7 +47,8 @@ object Spell {
   )(
       originalSpellLevel: SpellLevel = spellLevel,
       checkCasterIsConcentrating: Boolean = true,
-      multiAttackOnly: Boolean = false
+      singleTargetSpellsOnly: Boolean = false,
+      multiTargetSpellsOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
     val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
 
@@ -53,11 +57,19 @@ object Spell {
     if (spellLookup.isDefined) {
       val spell = spellLookup.get
 
-      if (multiAttackOnly && spell.isInstanceOf[MultiTargetSavingThrowSpell] == false)
+      if (singleTargetSpellsOnly && singleTargetSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
-          multiAttackOnly
+          singleTargetSpellsOnly,
+          multiTargetSpellsOnly
+        )
+      else if (multiTargetSpellsOnly && multiTargetSpellOnly(spell) == false)
+        spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
+          originalSpellLevel,
+          checkCasterIsConcentrating,
+          singleTargetSpellsOnly,
+          multiTargetSpellsOnly
         )
       else if (
         checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration
@@ -65,7 +77,8 @@ object Spell {
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           checkCasterIsConcentrating,
-          multiAttackOnly
+          singleTargetSpellsOnly,
+          multiTargetSpellsOnly
         )
       else
         spellLookup match {
@@ -81,10 +94,28 @@ object Spell {
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
         originalSpellLevel,
         checkCasterIsConcentrating,
-        multiAttackOnly
+        singleTargetSpellsOnly,
+        multiTargetSpellsOnly
       )
     else none[(Spell, SpellLevel)]
   }
+
+  def singleTargetSpellOnly(spell: Spell): Boolean =
+    spell match {
+      case _: SingleTargetInstantEffectSpell => true
+      case _: SingleTargetSavingThrowSpell   => true
+      case _: SingleTargetAttackSpell        => true
+      case _: SingleTargetHealingSpell       => true
+      case _: SelfBuffSpell                  => true
+      case _                                 => false
+    }
+
+  def multiTargetSpellOnly(spell: Spell): Boolean =
+    spell match {
+      case _: MultiTargetSavingThrowSpell => true
+      case _: MultiTargetBuffSpell        => true
+      case _                              => false
+    }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =
     attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
@@ -92,17 +123,18 @@ object Spell {
   def spellSaveDc(spellCaster: SpellCaster): Int =
     8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
+  def attributeModifierForSchool(spellCaster: SpellCaster): Int =
+    attributeModifier(spellCaster, schoolAttribute(spellCaster))
+
   def schoolAttribute(spellCaster: SpellCaster): Attribute =
     spellCaster match {
-      case _: Cleric     => Wisdom
-      case _: BaseCleric => Wisdom
-      case _: Wizard     => Intelligence
+      case _: Cleric      => Wisdom
+      case _: BaseCleric  => Wisdom
+      case _: BasePaladin => Charisma
+      case _: Wizard      => Intelligence
 
       case _: Lich => Intelligence
     }
-
-  def attributeModifierForSchool(spellCaster: SpellCaster): Int =
-    attributeModifier(spellCaster, schoolAttribute(spellCaster))
 
   def spellSavingThrowPassed[_: RS](
       caster: SpellCaster,
@@ -116,6 +148,8 @@ object Spell {
       case roll if spellCaster.scoresCritical(roll) => CriticalHit
       case 1                                        => CriticalMiss
       case roll =>
-        if ((roll + spellAttackBonus(spellCaster)) >= target.armourClass) Hit else Miss
+        val attackRoll = roll + spellAttackBonus(spellCaster) + blessAttackBonus(spellCaster)
+
+        if (attackRoll >= target.armourClass) Hit else Miss
     }
 }

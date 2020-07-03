@@ -14,9 +14,9 @@ import monocle.macros.Lenses
 
   def decrementTurnsLeft(): Condition = Poisoned(saveDc, turnsLeft - 1)
 
-  override def onConditionApplied(creature: Creature): Creature =
+  override def onConditionApplied[_: RS](creature: Creature): Creature =
     Creature.creatureAttackStatusLens.set(Disadvantage)(creature)
 
-  override def onConditionRemoved(creature: Creature): Creature =
+  override def onConditionRemoved[_: RS](creature: Creature): Creature =
     Creature.creatureAttackStatusLens.set(Regular)(creature)
 }

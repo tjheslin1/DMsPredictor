@@ -10,11 +10,13 @@ import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.standardCoreAbilit
 import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
+import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.{layOnHandsPoolForLevel, paladinSpellSlots}
+import io.github.tjheslin1.dmspredictor.classes.paladin.{BasePaladin, Paladin, PaladinFightingStyle}
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, ranger}
+import io.github.tjheslin1.dmspredictor.classes.{Player, fighter, paladin, ranger}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{Armour, NoArmour, Shield}
 import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
@@ -259,6 +261,8 @@ object TestData {
 
     def withAbilitiesUsed(secondWindUsed: Boolean, actionSurgeUsed: Boolean) =
       _abilityUsages.set(BaseFighterAbilities(secondWindUsed, actionSurgeUsed))(champion)
+
+    def withNoFightingStyles() = _fightingStyles.set(List.empty[FighterFightingStyle])(champion)
   }
 
   implicit class ClericOps(val cleric: Cleric) extends AnyVal {
@@ -363,6 +367,37 @@ object TestData {
       _spellSlots.set(rangerSpellSlots(level))(hunter)
 
     def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(hunter)
+  }
+
+  implicit class PaladinOps(val paladin: Paladin) extends AnyVal {
+    import Paladin._
+
+    def withFightingStyle(fightingStyle: PaladinFightingStyle) =
+      _fightingStyles.set(List(fightingStyle))(paladin)
+
+    def withNoFightingStyles() =
+      _fightingStyles.set(List.empty[PaladinFightingStyle])(paladin)
+
+    def withSpellKnown(spell: Spell) =
+      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(paladin)
+
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(paladin)
+
+    def withAllSpellSlotsAvailableForLevel(level: Level) =
+      _spellSlots.set(paladinSpellSlots(level))(paladin)
+
+    def withSpellSlots(spellSlots: SpellSlots) =
+      _spellSlots.set(spellSlots)(paladin)
+
+    def withNoAvailableSpellsSlots() =
+      _spellSlots.set(SpellSlots(0, 0, 0))(paladin)
+
+    def withConcentratingOn(spell: Spell) = _concentratingSpell.set(spell.some)(paladin)
+
+    def withLayOnHandsPoolOf(pool: Int) = _layOnHandsPool.set(pool)(paladin)
+
+    def withChannelDivinityUsed() = _channelDivinityUsed.set(true)(paladin)
   }
 
   implicit class LichOps(val lich: Lich) extends AnyVal {
@@ -755,7 +790,7 @@ trait TestData extends RandomDataGenerator {
         creature.damageImmunities,
         creature.conditionResistances,
         creature.conditionImmunities,
-        List.empty[CombatantAbility], // TODO add core abilities?
+        List.empty[CombatantAbility],
         creature.conditions,
         reactionUsed = false,
         creature.attackStatus,
@@ -832,11 +867,11 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         player.armour,
         player.offHand,
         fightingStyles.toList,
         BaseFighterAbilities.allUnused,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -868,11 +903,11 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         armour,
         shield,
         fightingStyles.toList,
         BaseFighterAbilities.allUnused,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -902,9 +937,9 @@ trait TestData extends RandomDataGenerator {
         player.baseWeapon,
         BaseBarbarian.rageUsagesPerLevel(level),
         player.skills,
+        player.proficiencyBonus,
         player.armour,
         player.offHand,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -936,9 +971,9 @@ trait TestData extends RandomDataGenerator {
         player.baseWeapon,
         BaseBarbarian.rageUsagesPerLevel(level),
         player.skills,
+        player.proficiencyBonus,
         player.armour,
         player.offHand,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -970,12 +1005,12 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         Cleric.clericSpellSlots(level),
         Cleric.standardClericSpellList,
         channelDivinityUsed = false,
         player.armour,
         player.offHand,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -1005,9 +1040,9 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         player.armour,
         none[Equipment],
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -1037,13 +1072,13 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         Wizard.wizardSpellSlots(player.level),
         Wizard.standardWizardSpellList,
         castShieldAsReaction = true,
         mageArmourPrepared = true,
         NoArmour,
         none[Equipment],
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -1078,12 +1113,12 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         rangerSpellSlots(level),
         Ranger.standardRangerSpellList,
         player.armour,
         player.offHand,
         fightingStyles.toList,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -1114,12 +1149,12 @@ trait TestData extends RandomDataGenerator {
         player.stats,
         player.baseWeapon,
         player.skills,
+        player.proficiencyBonus,
         rangerSpellSlots(level),
         Hunter.standardHunterSpellList,
         player.armour,
         player.offHand,
         fightingStyles.toList,
-        player.proficiencyBonus,
         player.damageVulnerabilities,
         player.damageResistances,
         player.damageImmunities,
@@ -1136,5 +1171,46 @@ trait TestData extends RandomDataGenerator {
         player.isAlive,
         player.name
       )
+  }
+
+  implicit val arbPaladinFightingStyle: Arbitrary[Seq[PaladinFightingStyle]] = Arbitrary {
+    Gen.someOf(paladin.Defense, paladin.Dueling, paladin.GreatWeaponFighting)
+  }
+
+  implicit val arbPaladin: Arbitrary[Paladin] = Arbitrary {
+    for {
+    player <- arbPlayer.arbitrary
+    fightingStyles <- arbPaladinFightingStyle.arbitrary
+    level <- arbLevel.arbitrary
+    } yield Paladin(
+      player.level,
+      player.health,
+      player.health,
+      player.stats,
+      player.baseWeapon,
+      player.skills,
+      player.proficiencyBonus,
+      layOnHandsPoolForLevel(level),
+      paladinSpellSlots(level),
+      Paladin.standardPaladinSpellList,
+      channelDivinityUsed = false,
+      player.armour,
+      player.offHand,
+      fightingStyles.toList,
+      player.damageVulnerabilities,
+      player.damageResistances,
+      player.damageImmunities,
+      player.conditionResistances,
+      player.conditionImmunities,
+      player.bonusActionUsed,
+      player.reactionUsed,
+      Paladin.standardPaladinAbilities,
+      player.conditions,
+      player.attackStatus,
+      player.defenseStatus,
+      none[Spell],
+      player.isAlive,
+      player.name
+    )
   }
 }

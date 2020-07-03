@@ -20,7 +20,7 @@ abstract class SelfBuffSpell extends Spell with LazyLogging {
 
     val currentConditions = spellCaster.conditions
     val conditionAppliedCaster = Creature.creatureConditionsLens
-      .set(currentConditions ++ List(selfBuffCondition))(spellCaster)
+      .set(currentConditions :+ selfBuffCondition)(spellCaster)
       .asInstanceOf[SpellCaster]
 
     val buffedSpellCaster =
