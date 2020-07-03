@@ -163,7 +163,7 @@ trait ArgParser {
         ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        List(fighterFightingStyleLookup(style.toLowerCase)),
+        fighterFightingStyleLookup.get(style.toLowerCase).fold(List.empty[FighterFightingStyle])(List(_)),
         name = fighterName
       )
     }
@@ -194,7 +194,7 @@ trait ArgParser {
         ProficiencyBonus.fromLevel(level),
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        List(fighterFightingStyleLookup(style.toLowerCase)),
+        fighterFightingStyleLookup.get(style.toLowerCase).fold(List.empty[FighterFightingStyle])(List(_)),
         name = championName
       )
     }
@@ -286,7 +286,7 @@ trait ArgParser {
         Ranger.standardRangerSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        List(rangerFightingStyleLookup(style.toLowerCase)),
+        rangerFightingStyleLookup.get(style.toLowerCase).fold(List.empty[RangerFightingStyle])(List(_)),
         name = rangerName
       )
     }
@@ -319,7 +319,7 @@ trait ArgParser {
         Hunter.standardHunterSpellList,
         armourLookup(armour.toLowerCase),
         offHandLookup.get(offHand.toLowerCase),
-        List(rangerFightingStyleLookup(style.toLowerCase)),
+        rangerFightingStyleLookup.get(style.toLowerCase).fold(List.empty[RangerFightingStyle])(List(_)),
         abilities = Hunter.standardHunterAbilities,
         name = rangerName
       )
@@ -354,7 +354,7 @@ trait ArgParser {
         Paladin.standardPaladinSpellList,
         armour = armourLookup(armour.toLowerCase),
         offHand = offHandLookup.get(offHand.toLowerCase),
-        fightingStyles = List(paladinFightingStyleLookup(style.toLowerCase)),
+        fightingStyles = paladinFightingStyleLookup.get(style.toLowerCase).fold(List.empty[PaladinFightingStyle])(List(_)),
         abilities = Paladin.standardPaladinAbilities,
         name = paladinName
       )
