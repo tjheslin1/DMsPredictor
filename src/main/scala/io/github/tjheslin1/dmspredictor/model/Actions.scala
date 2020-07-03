@@ -161,8 +161,6 @@ object Actions extends LazyLogging {
       }
     }
 
-    // why does replacing `spellCaster` with `damagedSpellCaster` break a test?
-
     val (updatedAttacker2, updatedTarget2, updatedOthers) =
       (target.creature, updatedTarget.creature) match {
         case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
