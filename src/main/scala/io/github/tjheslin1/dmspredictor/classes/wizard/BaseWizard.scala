@@ -10,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpell
 trait BaseWizard extends Player with SpellCaster with Product with Serializable {
 
   val spellCastingModifier = proficiencyBonus.value
+  val spellCastingAttribute = Intelligence
 
   val spellCastingLevel        = level
   val levelSpellcastingLearned = LevelOne

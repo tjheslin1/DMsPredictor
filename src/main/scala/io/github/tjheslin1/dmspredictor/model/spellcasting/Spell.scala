@@ -4,14 +4,10 @@ import cats.syntax.option._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
-import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
-import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin
-import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model.Modifier.attributeModifier
 import io.github.tjheslin1.dmspredictor.model.SavingThrow.savingThrowPassed
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
-import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 import scala.annotation.tailrec
@@ -124,17 +120,7 @@ object Spell {
     8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
   def attributeModifierForSchool(spellCaster: SpellCaster): Int =
-    attributeModifier(spellCaster, schoolAttribute(spellCaster))
-
-  def schoolAttribute(spellCaster: SpellCaster): Attribute =
-    spellCaster match {
-      case _: Cleric      => Wisdom
-      case _: BaseCleric  => Wisdom
-      case _: BasePaladin => Charisma
-      case _: Wizard      => Intelligence
-
-      case _: Lich => Intelligence
-    }
+    attributeModifier(spellCaster, spellCaster.spellCastingAttribute)
 
   def spellSavingThrowPassed[_: RS](
       caster: SpellCaster,

@@ -42,6 +42,7 @@ import util.TestMonster.defaultScores
     spellSlots: SpellSlots = SpellSlots(0, 0, 0),
     concentratingSpell: Option[Spell] = none[Spell],
     spellCastingModifier: Int = 0,
+    spellCastingAttribute: Attribute = Intelligence,
     spellCastingLevel: Level = LevelOne,
     isAlive: Boolean = true,
     name: String = NameGenerator.randomName)

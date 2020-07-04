@@ -20,6 +20,7 @@ trait BasePaladin extends Player with SpellCaster with Product with Serializable
   override val cantrip: Option[Spell] = None
 
   val spellCastingModifier = proficiencyBonus.value
+  val spellCastingAttribute = Charisma
 
   val spellCastingLevel        = level
   val levelSpellcastingLearned = LevelTwo

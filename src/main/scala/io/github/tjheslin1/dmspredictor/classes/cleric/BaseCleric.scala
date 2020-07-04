@@ -10,6 +10,7 @@ import monocle.Lens
 abstract class BaseCleric extends Player with SpellCaster with Product with Serializable {
 
   val spellCastingModifier = proficiencyBonus.value
+  val spellCastingAttribute = Wisdom
 
   val spellCastingLevel        = level
   val levelSpellcastingLearned = LevelOne

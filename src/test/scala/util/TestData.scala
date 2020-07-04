@@ -839,6 +839,7 @@ trait TestData extends RandomDataGenerator {
         SpellSlots(0, 0, 0),
         none[Spell],
         0,
+        Intelligence,
         LevelOne,
         creature.isAlive,
         creature.name

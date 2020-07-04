@@ -50,6 +50,8 @@ import monocle.macros.{GenLens, Lenses}
 
   val spellCastingLevel    = LevelEighteen
   val spellCastingModifier = 7
+  val spellCastingAttribute = Intelligence
+
   val armourClass          = calculateArmourClass(stats, conditions)
 
   val challengeRating = 21.0
