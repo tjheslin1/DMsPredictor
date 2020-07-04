@@ -14,7 +14,7 @@ trait BaseRanger extends Player with SpellCaster with Product with Serializable 
   val fightingStyles: List[RangerFightingStyle]
   override val cantrip: Option[Spell] = None
 
-  val spellCastingModifier = proficiencyBonus.value
+  val spellCastingModifier  = proficiencyBonus.value
   val spellCastingAttribute = Wisdom
 
   val spellCastingLevel        = level

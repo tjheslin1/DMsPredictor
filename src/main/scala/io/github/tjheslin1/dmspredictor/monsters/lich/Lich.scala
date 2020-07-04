@@ -48,11 +48,11 @@ import monocle.macros.{GenLens, Lenses}
     with SpellCaster
     with Legendary {
 
-  val spellCastingLevel    = LevelEighteen
-  val spellCastingModifier = 7
+  val spellCastingLevel     = LevelEighteen
+  val spellCastingModifier  = 7
   val spellCastingAttribute = Intelligence
 
-  val armourClass          = calculateArmourClass(stats, conditions)
+  val armourClass = calculateArmourClass(stats, conditions)
 
   val challengeRating = 21.0
   val skills          = Skills(perception = 9, stealth = stats.dexterity.value)
