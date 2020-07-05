@@ -35,14 +35,14 @@ object ClericSpells extends LazyLogging {
   }
 
   case object GuidingBolt extends SingleTargetAttackSpell {
-    val name                           = "Guiding Bolt"
-    val damageType                     = Radiant
-    val school                         = Evocation
-    val castingTime                    = OneActionCast
-    val spellTargetStyle               = RangedSpellAttack
-    val spellLevel                     = 1
-    val benefitsFromHigherSpellSlot    = true
-    val halfDamageOnMiss               = false
+    val name                        = "Guiding Bolt"
+    val damageType                  = Radiant
+    val school                      = Evocation
+    val castingTime                 = OneActionCast
+    val spellTargetStyle            = RangedSpellAttack
+    val spellLevel                  = 1
+    val benefitsFromHigherSpellSlot = true
+    val halfDamageOnMiss            = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       (3 + spellLevel) * D6

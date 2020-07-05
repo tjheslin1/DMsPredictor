@@ -681,10 +681,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedConditionSpell = trackedConditionSpell(1, higherSpellSlot = false)
+          val trackedSpell = trackedConditionSpell(1, higherSpellSlot = false)
 
           val trackedCleric = cleric
-            .withSpellKnown(trackedConditionSpell)
+            .withSpellKnown(trackedSpell)
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
