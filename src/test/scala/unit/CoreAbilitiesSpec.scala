@@ -728,7 +728,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val concentratingCleric = cleric
             .withSpellsKnown(concentrationConditionSpell,
-                             trackedSingleTargetSavingThrowSpell(1, Wisdom))
+              trackedSingleTargetSavingThrowSpell(1, Wisdom))
             .withConcentratingOn(concentrationConditionSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
@@ -1009,9 +1009,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedMultiTargetSpell = trackedMultiMeleeSpellAttack(1, higherSpellSlot = false)
+          val trackedSingleTargetSpell = trackedMeleeSpellAttack(3)
 
           val trackedWizard = wizard
-            .withSpellKnown(trackedMultiTargetSpell)
+            .withSpellsKnown(trackedMultiTargetSpell, trackedSingleTargetSpell)
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .asInstanceOf[Wizard]
