@@ -7,6 +7,8 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetHealingSpell extends Spell with LazyLogging {
 
+  val requiresConcentration = false
+
   val spellEffect: SpellEffect = HealingSpell
 
   def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int

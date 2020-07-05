@@ -10,10 +10,11 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
 
+  val requiresConcentration = true
+  val spellEffect =  ConcentrationSpell
+
   val singleTarget: Boolean
   val attribute: Attribute
-  val spellEffect: SpellEffect       = ConcentrationSpell
-  val requiresConcentration: Boolean = true
 
   def conditionFrom(spellCaster: SpellCaster): Condition
 

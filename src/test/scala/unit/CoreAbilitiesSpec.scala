@@ -18,7 +18,7 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.{Bless, BlessCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{ConcentrationConditionSpell, Spell, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -222,8 +222,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
+          val trackedSingleTargetSpell = trackedMeleeSpellAttack(1, higherSpellSlot = false)
+          val trackedMultiTargetSpell = trackedMultiTargetSavingThrowSpell(3, Dexterity, concentration = true)
+
           val trackedCleric = cleric
-            .withSpellKnown(trackedMeleeSpellAttack(1, higherSpellSlot = false))
+            .withSpellsKnown(trackedSingleTargetSpell, trackedMultiTargetSpell)
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
@@ -237,6 +240,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetOffensiveSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.firstLevel.count shouldBe (trackedCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
           updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }
       }
@@ -677,8 +681,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
+          val trackedConditionSpell = trackedConditionSpell(1, higherSpellSlot = false)
+
           val trackedCleric = cleric
-            .withSpellKnown(trackedConditionSpell(1, higherSpellSlot = false))
+            .withSpellKnown(trackedConditionSpell)
             .withChannelDivinityUsed()
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
@@ -940,6 +946,42 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { (paladin: Paladin, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetSavingThrowSpell(1, Dexterity, higherSpellSlot = false, concentration = true)
+
+          val trackedPaladin = paladin
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withProficiencyBonus(6)
+            .withLevel(LevelTwo)
+            .withCharisma(20)
+            .withCombatIndex(1)
+
+          val monsterOne = testMonsterOne
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexteritySavingThrowScore(-10)
+            .withCombatIndex(2)
+
+          val monsterTwo = testMonsterTwo
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexteritySavingThrowScore(-10)
+            .withCombatIndex(3)
+
+          val (Combatant(_, updatedPaladin: Paladin), _) =
+            castMultiTargetOffensiveSpell(Priority)(trackedPaladin)
+              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+
+          updatedPaladin.concentratingSpell shouldBe trackedSpell.some
+        }
+      }
+    }
+
     "spend the highest available spell slot" in {
       forAll { wizard: Wizard =>
         new TestContext {
@@ -966,8 +1008,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
+          val trackedMultiTargetSpell = trackedMultiMeleeSpellAttack(1, higherSpellSlot = false)
+
           val trackedWizard = wizard
-            .withSpellKnown(trackedMultiMeleeSpellAttack(1, higherSpellSlot = false))
+            .withSpellKnown(trackedMultiTargetSpell)
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .asInstanceOf[Wizard]
@@ -978,6 +1022,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe trackedWizard.spellSlots.thirdLevel.count
         }
       }
@@ -1070,19 +1115,39 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
 
-          val buffingRanger = ranger
+          val rangerCombatant = ranger
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withSpellKnown(trackedBuffSpell)
             .withLevel(LevelTwo)
-            .asInstanceOf[Ranger]
-
-          val rangerCombatant = buffingRanger.withCombatIndex(1)
+            .withCombatIndex(1)
 
           val (Combatant(_, updatedRanger: Ranger), _) =
             castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant],
                                                                     LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
+        }
+      }
+    }
+
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { ranger: Ranger =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true)
+
+          val rangerCombatant = ranger
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withSpellKnown(trackedBuffSpell)
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          val (Combatant(_, updatedRanger: Ranger), _) =
+            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant],
+              LowestFirst)
+
+          updatedRanger.concentratingSpell shouldBe trackedBuffSpell.some
         }
       }
     }
@@ -1327,6 +1392,27 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { paladin: Paladin =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
+
+          val castingPaladin = paladin
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .asInstanceOf[Paladin]
+
+          val updatedPaladin =
+            castMultiTargetBuffSpell(Priority)(castingPaladin.withCombatIndex(1)).update.asInstanceOf[Paladin]
+
+          updatedPaladin.concentratingSpell shouldBe trackedSpell.some
+        }
+      }
+    }
+
     "be triggered if the caster has at least one ally to buff" in new TestContext {
       override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
@@ -1452,7 +1538,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withMaxHealth(50)
             .withCombatIndex(2)
 
-            castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
+          castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
           trackedInstantEffectUsed shouldBe true
           trackedInstantEffectSpellLevelUsed shouldBe 3

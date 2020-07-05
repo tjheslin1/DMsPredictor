@@ -419,7 +419,7 @@ object CoreAbilities extends LazyLogging {
           spellCaster,
           BuffSpell,
           multiAttackSpellUsed = true,
-          newlyConcentrating = true)
+          newlyConcentrating = true) // TODO should this always be true?
     }
 
   def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =

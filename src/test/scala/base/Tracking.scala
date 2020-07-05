@@ -100,7 +100,6 @@ trait Tracking {
 
   var meleeSpellUsedCount = 0
   def trackedMeleeSpellAttack(spellLvl: SpellLevel,
-                              concentration: Boolean = false,
                               higherSpellSlot: Boolean = true,
                               dmg: Int = 4,
                               halfDamageOnAMiss: Boolean = false,
@@ -111,7 +110,6 @@ trait Tracking {
       val school: SchoolOfMagic       = Evocation
       val castingTime: CastingTime    = OneActionCast
       val spellLevel: SpellLevel      = spellLvl
-      val requiresConcentration       = concentration
       val benefitsFromHigherSpellSlot = higherSpellSlot
       val halfDamageOnMiss            = halfDamageOnAMiss
 
@@ -169,7 +167,6 @@ trait Tracking {
       val school: SchoolOfMagic          = Evocation
       val castingTime: CastingTime       = OneActionCast
       val spellLevel: SpellLevel         = spellLvl
-      val requiresConcentration: Boolean = false
       val benefitsFromHigherSpellSlot    = higherSpellSlot
 
       def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
@@ -223,7 +220,8 @@ trait Tracking {
   def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
                                          savingAttribute: Attribute,
                                          damageOnSave: Boolean = false,
-                                         higherSpellSlot: Boolean = true): Spell =
+                                         higherSpellSlot: Boolean = true,
+                                         concentration: Boolean = false): Spell =
     new MultiTargetSavingThrowSpell {
       val attribute: Attribute      = savingAttribute
       val halfDamageOnSave: Boolean = damageOnSave
@@ -233,7 +231,7 @@ trait Tracking {
       val school: SchoolOfMagic       = Evocation
       val castingTime: CastingTime    = OneActionCast
       val spellLevel: SpellLevel      = spellLvl
-      val requiresConcentration       = false
+      val requiresConcentration       = concentration
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
@@ -374,7 +372,6 @@ trait Tracking {
       val school                      = Enchantment
       val castingTime                 = OneActionCast
       val spellLevel                  = spellLvl
-      val requiresConcentration       = false
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def instantEffect(spellCaster: SpellCaster, spellLevel: SpellLevel, target: Combatant): (SpellCaster, Combatant) = {

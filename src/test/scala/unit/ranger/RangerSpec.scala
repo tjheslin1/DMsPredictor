@@ -6,7 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.ranger.Ranger
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import util.TestData._
 
 class RangerSpec extends UnitSpecBase {
@@ -28,7 +28,7 @@ class RangerSpec extends UnitSpecBase {
     "not handle concentration if damage taken was 0" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(1)
 
-      val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
+      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
 
       val concentratingRanger = random[Ranger]
         .withSpellKnown(trackedConcentrationSpell)
@@ -45,7 +45,7 @@ class RangerSpec extends UnitSpecBase {
     "handle loss of concentration if ranger goes unconscious" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
-      val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
+      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
 
       val concentratingRanger = random[Ranger]
         .withSpellKnown(trackedConcentrationSpell)

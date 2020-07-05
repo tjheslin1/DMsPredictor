@@ -41,7 +41,6 @@ object ClericSpells extends LazyLogging {
     val castingTime                    = OneActionCast
     val spellTargetStyle               = RangedSpellAttack
     val spellLevel                     = 1
-    val requiresConcentration: Boolean = false
     val benefitsFromHigherSpellSlot    = true
     val halfDamageOnMiss               = false
 
@@ -81,7 +80,6 @@ object ClericSpells extends LazyLogging {
     val castingTime: CastingTime           = OneActionCast
     val spellTargetStyle: SpellTargetStyle = MeleeSpellAttack
     val spellLevel: SpellLevel             = 1
-    val requiresConcentration: Boolean     = false
     val benefitsFromHigherSpellSlot        = true
 
     def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
