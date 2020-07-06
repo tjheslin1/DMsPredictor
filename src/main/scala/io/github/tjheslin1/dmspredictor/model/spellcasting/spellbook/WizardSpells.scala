@@ -105,7 +105,6 @@ object WizardSpells extends LazyLogging {
     val attribute: Attribute        = Dexterity
     val halfDamageOnSave            = true
     val spellLevel: SpellLevel      = 3
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8

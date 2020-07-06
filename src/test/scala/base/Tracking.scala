@@ -128,7 +128,6 @@ trait Tracking {
   var multiMeleeSpellDamageRollCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel,
                                    savingThrowAttribute: Attribute = Dexterity,
-                                   concentration: Boolean = false,
                                    higherSpellSlot: Boolean = true): Spell =
     new MultiTargetSavingThrowSpell {
 
@@ -138,7 +137,6 @@ trait Tracking {
       val school: SchoolOfMagic       = Evocation
       val castingTime: CastingTime    = OneActionCast
       val spellLevel: SpellLevel      = spellLvl
-      val requiresConcentration       = concentration
       val attribute: Attribute        = savingThrowAttribute
       val halfDamageOnSave            = false
       val benefitsFromHigherSpellSlot = higherSpellSlot
@@ -220,8 +218,7 @@ trait Tracking {
   def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
                                          savingAttribute: Attribute,
                                          damageOnSave: Boolean = false,
-                                         higherSpellSlot: Boolean = true,
-                                         concentration: Boolean = false): Spell =
+                                         higherSpellSlot: Boolean = true): Spell =
     new MultiTargetSavingThrowSpell {
       val attribute: Attribute      = savingAttribute
       val halfDamageOnSave: Boolean = damageOnSave
@@ -231,7 +228,6 @@ trait Tracking {
       val school: SchoolOfMagic       = Evocation
       val castingTime: CastingTime    = OneActionCast
       val spellLevel: SpellLevel      = spellLvl
-      val requiresConcentration       = concentration
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {

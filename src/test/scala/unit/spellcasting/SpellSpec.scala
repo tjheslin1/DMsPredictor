@@ -101,7 +101,7 @@ class SpellSpec extends UnitSpecBase {
 
     "return a multi target spell of a specific SpellEffect below the level given using the lowest spell slot" in new Tracking {
       val trackedMultiAttackDamageSpell =
-        trackedMultiMeleeSpellAttack(1, concentration = false, higherSpellSlot = false)
+        trackedMultiMeleeSpellAttack(1, higherSpellSlot = false)
 
       val wizard = random[Wizard].withSpellsKnown(FireBolt,
                                                   MagicMissile,
@@ -116,7 +116,7 @@ class SpellSpec extends UnitSpecBase {
 
     "return a multi target spell of a specific SpellEffect below the level given using the highest spell slot" in new Tracking {
       val trackedLevelTwoMultiTargetSpell =
-        trackedMultiMeleeSpellAttack(2, concentration = false, higherSpellSlot = true)
+        trackedMultiMeleeSpellAttack(2, higherSpellSlot = true)
 
       val cleric = random[Cleric].withSpellsKnown(FireBolt,
                                                   MagicMissile,
