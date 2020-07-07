@@ -9,7 +9,7 @@ abstract class SingleTargetInstantEffectSpell extends Spell with LazyLogging {
 
   val requiresConcentration = false
 
-  val spellEffect = InstantEffectSpell
+  val spellEffect = InstantEffectSpellEffect
   val damageType  = Magical
 
   def instantEffect(

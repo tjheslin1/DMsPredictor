@@ -92,7 +92,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          DamageSpell,
+          DamageSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = false)
 
@@ -106,7 +106,7 @@ object CoreAbilities extends LazyLogging {
             case None =>
               (spellCaster.cantrip, 0)
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(
+              spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true)
                 .fold((spellCaster.cantrip, 0)) {
                   case (foundSpell, foundSpellLevel) =>
@@ -134,7 +134,7 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpell, singleTargetSpellUsed = true)
+      def update: Creature = updateSpellSlot(spellCaster, DamageSpellEffect, singleTargetSpellUsed = true)
     }
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
@@ -156,7 +156,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          HealingSpell,
+          HealingSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = false)
 
@@ -168,7 +168,7 @@ object CoreAbilities extends LazyLogging {
         val optSpell = highestSpellSlot match {
           case None => none[(Spell, SpellLevel)]
           case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, HealingSpell, spellSlot.spellLevel)()
+            spellOfLevelOrBelow(spellCaster, HealingSpellEffect, spellSlot.spellLevel)()
         }
 
         val targets = spellCaster match {
@@ -210,7 +210,7 @@ object CoreAbilities extends LazyLogging {
           (updatedCombatant, others.replace(updatedTarget)))
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, HealingSpell)
+      def update: Creature = updateSpellSlot(spellCaster, HealingSpellEffect)
     }
 
   def castConcentrationSpell(currentOrder: Int)(combatant: Combatant): Ability =
@@ -227,7 +227,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          ConcentrationSpell,
+          ConditionSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = true)
 
@@ -239,7 +239,7 @@ object CoreAbilities extends LazyLogging {
         val optSpell = highestSpellSlot match {
           case None => none[(Spell, SpellLevel)]
           case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, ConcentrationSpell, spellSlot.spellLevel)()
+            spellOfLevelOrBelow(spellCaster, ConditionSpellEffect, spellSlot.spellLevel)()
         }
 
         val targets = spellCaster match {
@@ -260,7 +260,7 @@ object CoreAbilities extends LazyLogging {
       }
 
       def update: Creature =
-        updateSpellSlot(spellCaster, ConcentrationSpell, newlyConcentrating = true)
+        updateSpellSlot(spellCaster, ConditionSpellEffect, newlyConcentrating = true)
     }
 
   def castMultiTargetOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability =
@@ -277,7 +277,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          DamageSpell,
+          DamageSpellEffect,
           singleTargetSpellsOnly = false,
           multiTargetSpellsOnly = true)
 
@@ -290,7 +290,7 @@ object CoreAbilities extends LazyLogging {
           highestSpellSlot match {
             case None => (none[Spell], 0)
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, DamageSpell, spellSlot.spellLevel)(
+              spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
               ).fold((none[Spell], 0)) {
                 case (foundSpell, foundSpellLevel) =>
@@ -312,7 +312,7 @@ object CoreAbilities extends LazyLogging {
         (updatedCombatant, others.replace(updatedTargets))
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpell, multiTargetSpellUsed = true)
+      def update: Creature = updateSpellSlot(spellCaster, DamageSpellEffect, multiTargetSpellUsed = true)
     }
 
   def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(
@@ -331,7 +331,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          BuffSpell,
+          BuffSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = false)
 
@@ -344,7 +344,7 @@ object CoreAbilities extends LazyLogging {
           highestSpellSlot match {
             case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, BuffSpell, spellSlot.spellLevel)()
+              spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)()
           }
 
         optSpell.fold((combatant, others)) {
@@ -358,7 +358,7 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, BuffSpell)
+      def update: Creature = updateSpellSlot(spellCaster, BuffSpellEffect)
     }
 
   def castMultiTargetBuffSpell(currentOrder: Int)(combatant: Combatant): Ability =
@@ -379,7 +379,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          BuffSpell,
+          BuffSpellEffect,
           singleTargetSpellsOnly = false,
           multiTargetSpellsOnly = true)
 
@@ -392,7 +392,7 @@ object CoreAbilities extends LazyLogging {
           highestSpellSlot match {
             case None => (none[Spell], 0)
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, BuffSpell, spellSlot.spellLevel)(
+              spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
               ).fold((none[Spell], 0)) {
                 case (foundSpell, foundSpellLevel) =>
@@ -417,7 +417,7 @@ object CoreAbilities extends LazyLogging {
       def update: Creature =
         updateSpellSlot(
           spellCaster,
-          BuffSpell,
+          BuffSpellEffect,
           multiTargetSpellUsed = true,
           newlyConcentrating = true
         ) // TODO should this always be true?
@@ -437,7 +437,7 @@ object CoreAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          InstantEffectSpell,
+          InstantEffectSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = false)
 
@@ -447,14 +447,14 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val instantEffectCantrip: Option[Spell] =
-          spellCaster.spellsKnown.get((0, InstantEffectSpell))
+          spellCaster.spellsKnown.get((0, InstantEffectSpellEffect))
 
         val (optSpell, spellLevelToUse) =
           highestSpellSlot match {
             case None =>
               (instantEffectCantrip, 0)
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, InstantEffectSpell, spellSlot.spellLevel)()
+              spellOfLevelOrBelow(spellCaster, InstantEffectSpellEffect, spellSlot.spellLevel)()
                 .fold((instantEffectCantrip, 0)) {
                   case (foundSpell, foundSpellLevel) =>
                     (foundSpell.some, foundSpellLevel)
@@ -481,7 +481,7 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, InstantEffectSpell)
+      def update: Creature = updateSpellSlot(spellCaster, InstantEffectSpellEffect)
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean =

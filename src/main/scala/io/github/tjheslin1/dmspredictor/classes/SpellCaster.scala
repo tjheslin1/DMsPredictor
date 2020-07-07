@@ -24,7 +24,7 @@ trait SpellCaster extends Creature {
 
   def isConcentrating: Boolean = concentratingSpell.isDefined
 
-  def cantrip: Option[Spell] = spellsKnown.get((0, DamageSpell))
+  def cantrip: Option[Spell] = spellsKnown.get((0, DamageSpellEffect))
 }
 
 object SpellCaster {

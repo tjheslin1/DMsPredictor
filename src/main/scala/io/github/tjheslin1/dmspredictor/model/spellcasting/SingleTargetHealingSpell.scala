@@ -9,7 +9,7 @@ abstract class SingleTargetHealingSpell extends Spell with LazyLogging {
 
   val requiresConcentration = false
 
-  val spellEffect: SpellEffect = HealingSpell
+  val spellEffect: SpellEffect = HealingSpellEffect
 
   def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 

@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
 
   val requiresConcentration = true
-  val spellEffect           = ConcentrationSpell
+  val spellEffect           = ConditionSpellEffect
 
   val singleTarget: Boolean
   val attribute: Attribute
@@ -33,10 +33,9 @@ abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
       spellLevel: SpellLevel,
       allTargets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
+    logger.debug(s"${spellCaster.name} is casting $name")
 
     val targets = if (singleTarget) List(allTargets.head) else allTargets
-
-    logger.debug(s"${spellCaster.name} is casting $name")
 
     val updatedTargets = targets.map { target =>
       val (passed, updatedCreature) =

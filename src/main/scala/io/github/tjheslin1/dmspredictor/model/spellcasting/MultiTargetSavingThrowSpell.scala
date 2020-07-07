@@ -13,7 +13,7 @@ abstract class MultiTargetSavingThrowSpell extends Spell with LazyLogging {
   val halfDamageOnSave: Boolean
 
   val damageType: DamageType
-  val spellEffect: SpellEffect = DamageSpell
+  val spellEffect: SpellEffect = DamageSpellEffect
 
   def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int
 

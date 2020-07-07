@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.highestSpellSlotAvailable
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpell, Spell, SpellLevel}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpellEffect, Spell, SpellLevel}
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._
@@ -33,7 +33,7 @@ object LifeClericAbilities extends LazyLogging {
       def conditionMet: Boolean =
         spellConditionMet(
           lifeCleric,
-          HealingSpell,
+          HealingSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = true)
 
@@ -49,7 +49,7 @@ object LifeClericAbilities extends LazyLogging {
           val optSpell = highestSpellSlotAvailable(lifeCleric.spellSlots) match {
             case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(lifeCleric, HealingSpell, spellSlot.spellLevel)()
+              spellOfLevelOrBelow(lifeCleric, HealingSpellEffect, spellSlot.spellLevel)()
           }
 
           optSpell.fold((combatant, others)) {

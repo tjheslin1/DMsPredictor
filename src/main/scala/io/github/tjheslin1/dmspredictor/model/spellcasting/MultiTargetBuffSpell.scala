@@ -24,7 +24,7 @@ abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
 
   val buffTargetsPriority: Ordering[Combatant]
 
-  val spellEffect: SpellEffect = BuffSpell
+  val spellEffect: SpellEffect = BuffSpellEffect
 
   def effect[_: RS](
       spellCaster: SpellCaster,
