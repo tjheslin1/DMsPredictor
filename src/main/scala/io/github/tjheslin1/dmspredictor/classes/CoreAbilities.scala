@@ -211,7 +211,8 @@ object CoreAbilities extends LazyLogging {
           (updatedCombatant, others.replace(updatedTarget)))
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, HealingSpellEffect)
+      def update: Creature =
+        updateSpellSlot(spellCaster, HealingSpellEffect, singleTargetSpellUsed = true)
     }
 
   def castConcentrationSpell(currentOrder: Int)(combatant: Combatant): Ability =
@@ -546,7 +547,7 @@ object CoreAbilities extends LazyLogging {
       case None => spellCaster
       case Some(spellSlotFound) =>
         spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotFound.spellLevel)(
-          checkCasterIsConcentrating = newlyConcentrating == false,
+          findNewlyConcentratingSpell = newlyConcentrating,
           singleTargetSpellsOnly = singleTargetSpellUsed,
           multiTargetSpellsOnly = multiTargetSpellUsed
         ).fold {

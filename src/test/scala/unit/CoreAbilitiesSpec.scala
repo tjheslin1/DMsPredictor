@@ -1186,6 +1186,24 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "update the correct spell slot for a newly concentrating spell" in {
+      forAll { ranger: Ranger =>
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 2, concentration = true)
+
+          val concentratingRanger = ranger
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withConcentratingOn(trackedBuffSpell)
+            .withSpellKnown(trackedBuffSpell)
+            .withLevel(LevelTwo)
+
+          fail("TODO")
+        }
+      }
+    }
+
     "meet the condition if the Spell Caster has a Self Buff spell to cast" in new TestContext {
       implicit val roll: RollStrategy = Dice.defaultRandomiser
 

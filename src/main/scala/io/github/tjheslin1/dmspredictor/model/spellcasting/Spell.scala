@@ -32,7 +32,7 @@ trait Spell {
 object Spell {
 
   /**
-    * @param checkCasterIsConcentrating is used to find the spell a caster had just used when finding the spell slot to update.
+    * @param findNewlyConcentratingSpell is used to find the spell a caster had just used when finding the spell slot to update.
     *    It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
     */
   @tailrec
@@ -42,7 +42,7 @@ object Spell {
       spellLevel: SpellLevel
   )(
       originalSpellLevel: SpellLevel = spellLevel,
-      checkCasterIsConcentrating: Boolean = true,
+      findNewlyConcentratingSpell: Boolean = true,
       singleTargetSpellsOnly: Boolean = false,
       multiTargetSpellsOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
@@ -56,23 +56,23 @@ object Spell {
       if (singleTargetSpellsOnly && singleTargetSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
-          checkCasterIsConcentrating,
+          findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
       else if (multiTargetSpellsOnly && multiTargetSpellOnly(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
-          checkCasterIsConcentrating,
+          findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
       else if (
-        checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration
+        findNewlyConcentratingSpell == false && spellCaster.isConcentrating && spell.requiresConcentration
       )
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
-          checkCasterIsConcentrating,
+          findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
@@ -89,7 +89,7 @@ object Spell {
     } else if (spellLevelBelow >= 0)
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
         originalSpellLevel,
-        checkCasterIsConcentrating,
+        findNewlyConcentratingSpell,
         singleTargetSpellsOnly,
         multiTargetSpellsOnly
       )

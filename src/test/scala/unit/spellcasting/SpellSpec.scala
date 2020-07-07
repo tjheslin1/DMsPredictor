@@ -129,7 +129,7 @@ class SpellSpec extends UnitSpecBase {
       actualSpellLevel.value shouldBe 3
     }
 
-    "return a concentration spell if already concentrating when checkCasterIsConcentrating is set to false" in new TestContext {
+    "return a concentration spell if already concentrating when findNewlyConcentratingSpell is set to true" in new TestContext {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
@@ -137,20 +137,20 @@ class SpellSpec extends UnitSpecBase {
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
       val (actualSpell, actualSpellLevel) =
-        spellOfLevelOrBelow(concentratingCleric, ConditionSpellEffect, 3)(checkCasterIsConcentrating = false).get
+        spellOfLevelOrBelow(concentratingCleric, ConditionSpellEffect, 3)(findNewlyConcentratingSpell = true).get
 
       actualSpell shouldBe HoldPerson
       actualSpellLevel shouldBe HoldPerson.spellLevel
     }
 
-    "not return a concentration spell if already concentrating when checkCasterIsConcentrating is set to true" in new TestContext {
+    "not return a concentration spell if already concentrating when findNewlyConcentratingSpell is set to false" in new TestContext {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val concentratingCleric = random[Cleric]
         .withConcentratingOn(HoldPerson)
         .withSpellsKnown(SacredFlame, GuidingBolt, CureWounds, HoldPerson)
 
-      spellOfLevelOrBelow(concentratingCleric, ConditionSpellEffect, 3)(checkCasterIsConcentrating = true) shouldBe none[(Spell, SpellLevel)]
+      spellOfLevelOrBelow(concentratingCleric, ConditionSpellEffect, 3)(findNewlyConcentratingSpell = false) shouldBe none[(Spell, SpellLevel)]
     }
 
     "return the highest spell slot for a spell which benefits from a higher slot" in new TestContext {
