@@ -134,7 +134,8 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpellEffect, singleTargetSpellUsed = true)
+      def update: Creature =
+        updateSpellSlot(spellCaster, DamageSpellEffect, singleTargetSpellUsed = true)
     }
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
@@ -312,7 +313,8 @@ object CoreAbilities extends LazyLogging {
         (updatedCombatant, others.replace(updatedTargets))
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpellEffect, multiTargetSpellUsed = true)
+      def update: Creature =
+        updateSpellSlot(spellCaster, DamageSpellEffect, multiTargetSpellUsed = true)
     }
 
   def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(
