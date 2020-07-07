@@ -23,7 +23,6 @@ abstract class SingleTargetInstantEffectSpell extends Spell with LazyLogging {
       spellLevel: SpellLevel,
       targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
-
     logger.debug(s"${spellCaster.name} is casting $name")
 
     val target = targets.head

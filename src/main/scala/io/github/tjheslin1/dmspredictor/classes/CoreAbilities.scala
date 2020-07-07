@@ -134,7 +134,7 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpell)
+      def update: Creature = updateSpellSlot(spellCaster, DamageSpell, singleTargetSpellUsed = true)
     }
 
   val CastSingleTargetHealingSpellName = "Cast Spell (Healing)"
@@ -312,7 +312,7 @@ object CoreAbilities extends LazyLogging {
         (updatedCombatant, others.replace(updatedTargets))
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, DamageSpell, multiAttackSpellUsed = true)
+      def update: Creature = updateSpellSlot(spellCaster, DamageSpell, multiTargetSpellUsed = true)
     }
 
   def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(
@@ -418,7 +418,7 @@ object CoreAbilities extends LazyLogging {
         updateSpellSlot(
           spellCaster,
           BuffSpell,
-          multiAttackSpellUsed = true,
+          multiTargetSpellUsed = true,
           newlyConcentrating = true
         ) // TODO should this always be true?
     }
@@ -537,14 +537,16 @@ object CoreAbilities extends LazyLogging {
       spellCaster: SpellCaster,
       spellEffect: SpellEffect,
       newlyConcentrating: Boolean = false,
-      multiAttackSpellUsed: Boolean = false
+      singleTargetSpellUsed: Boolean = false,
+      multiTargetSpellUsed: Boolean = false
   ): Creature =
     highestSpellSlotAvailable(spellCaster.spellSlots) match {
       case None => spellCaster
       case Some(spellSlotFound) =>
         spellOfLevelOrBelow(spellCaster, spellEffect, spellSlotFound.spellLevel)(
           checkCasterIsConcentrating = newlyConcentrating == false,
-          multiTargetSpellsOnly = multiAttackSpellUsed
+          singleTargetSpellsOnly = singleTargetSpellUsed,
+          multiTargetSpellsOnly = multiTargetSpellUsed
         ).fold {
           spellCaster
         } {

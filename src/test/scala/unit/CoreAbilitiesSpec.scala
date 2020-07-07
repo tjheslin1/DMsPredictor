@@ -6,7 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
-import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
+import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
@@ -507,6 +507,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.firstLevel.count shouldBe (healingCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
           updatedCleric.spellSlots.thirdLevel.count shouldBe healingCleric.spellSlots.thirdLevel.count
         }
       }
@@ -706,6 +707,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castConcentrationSpell(Priority)(clericCombatant).update.asInstanceOf[Cleric]
 
           updatedCleric.spellSlots.firstLevel.count shouldBe (trackedCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
           updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }
       }
@@ -771,7 +773,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
   }
 
   "castMultiTargetOffensiveSpell" should {
-
     "cast a multi target spell (spell attack) using the highest available spell slot" in {
       forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
         new TestContext {
@@ -975,8 +976,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val updatedWizard: Wizard =
             castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe trackedWizard.spellSlots.firstLevel.count - 1
-          updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count - 1
+          updatedWizard.spellSlots.firstLevel.count shouldBe trackedWizard.spellSlots.firstLevel.count
+          updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe (trackedWizard.spellSlots.thirdLevel.count - 1)
         }
       }
@@ -1333,6 +1334,29 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
+    "set the spellCasters concentration to the cast spell if a concentration spell" in {
+      forAll { (paladin: Paladin, champion: Champion) =>
+        new TestContext {
+          override implicit val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
+
+          val paladinCombatant = paladin
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .withCombatIndex(1)
+
+          val championCombatant = champion.withCombatIndex(2)
+
+          val (Combatant(_, updatedPaladin: Paladin), _) =
+            castMultiTargetBuffSpell(Priority)(paladinCombatant).useAbility(List(championCombatant), LowestFirst)
+
+          updatedPaladin.concentratingSpell shouldBe trackedSpell.some
+        }
+      }
+    }
+
     "spend the highest available spell slot" in {
       forAll { wizard: Wizard =>
         new TestContext {
@@ -1377,27 +1401,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           updatedWizard.spellSlots.firstLevel.count shouldBe castingWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe castingWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe castingWizard.spellSlots.thirdLevel.count
-        }
-      }
-    }
-
-    "set the spellCasters concentration to the cast spell if a concentration spell" in {
-      forAll { paladin: Paladin =>
-        new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
-
-          val castingPaladin = paladin
-            .withSpellKnown(trackedSpell)
-            .withAllSpellSlotsAvailableForLevel(LevelTwo)
-            .withLevel(LevelTwo)
-            .asInstanceOf[Paladin]
-
-          val updatedPaladin =
-            castMultiTargetBuffSpell(Priority)(castingPaladin.withCombatIndex(1)).update.asInstanceOf[Paladin]
-
-          updatedPaladin.concentratingSpell shouldBe trackedSpell.some
         }
       }
     }
@@ -1627,6 +1630,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
 
           updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count
+          updatedWizard.spellSlots.secondLevel.count shouldBe instantEffectWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe instantEffectWizard.spellSlots.thirdLevel.count
         }
       }
