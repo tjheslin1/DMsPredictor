@@ -1186,20 +1186,54 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       }
     }
 
-    "update the correct spell slot for a newly concentrating spell" in {
-      forAll { ranger: Ranger =>
+    "update the correct spell slot for a newly concentrating spell which benefits from being cast in a higher slot" in {
+      forAll { hunter: Hunter =>
         new TestContext {
           override implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 2, concentration = true)
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition,
+            1,
+            concentration = true,
+            higherSpellSlot = true)
 
-          val concentratingRanger = ranger
-            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+          val concentratingHunter = hunter
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withConcentratingOn(trackedBuffSpell)
             .withSpellKnown(trackedBuffSpell)
-            .withLevel(LevelTwo)
+            .withLevel(LevelFive)
+            .asInstanceOf[Hunter]
 
-          fail("TODO")
+          val updatedHunter = castSelfBuffSpell(Priority)(concentratingHunter.withCombatIndex(1)).update
+            .asInstanceOf[Hunter]
+
+          updatedHunter.spellSlots.firstLevel.count shouldBe concentratingHunter.spellSlots.firstLevel.count
+          updatedHunter.spellSlots.secondLevel.count shouldBe (concentratingHunter.spellSlots.secondLevel.count - 1)
+        }
+      }
+    }
+
+    "update the correct spell slot for a newly concentrating spell which does not benefit from being cast in a higher slot" in {
+      forAll { hunter: Hunter =>
+        new TestContext {
+          override implicit val roll: RollStrategy = Dice.defaultRandomiser
+
+          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition,
+            2,
+            concentration = true,
+            higherSpellSlot = false)
+
+          val concentratingHunter = hunter
+            .withAllSpellSlotsAvailableForLevel(LevelFive)
+            .withConcentratingOn(trackedBuffSpell)
+            .withSpellKnown(trackedBuffSpell)
+            .withLevel(LevelFive)
+            .asInstanceOf[Hunter]
+
+          val updatedHunter = castSelfBuffSpell(Priority)(concentratingHunter.withCombatIndex(1)).update
+            .asInstanceOf[Hunter]
+
+          updatedHunter.spellSlots.firstLevel.count shouldBe concentratingHunter.spellSlots.firstLevel.count
+          updatedHunter.spellSlots.secondLevel.count shouldBe (concentratingHunter.spellSlots.secondLevel.count - 1)
         }
       }
     }
