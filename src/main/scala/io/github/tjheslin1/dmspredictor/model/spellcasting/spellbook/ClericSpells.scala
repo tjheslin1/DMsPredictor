@@ -86,11 +86,16 @@ object ClericSpells extends LazyLogging {
       (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
   }
 
-  case object HoldPerson extends ConcentrationConditionSpell {
+  case object HoldPerson extends ConditionSpell {
     val name = "Hold Person"
 
-    val singleTarget: Boolean = true
-    val attribute: Attribute  = Wisdom
+    val attribute = Wisdom
+
+    val affectedTargets       = 1
+    val requiresConcentration = true
+
+    val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
+      x.creature.health.compare(y.creature.health)
 
     val school: SchoolOfMagic       = Enchantment
     val castingTime: CastingTime    = OneActionCast
@@ -101,15 +106,21 @@ object ClericSpells extends LazyLogging {
       Paralyzed(spellSaveDc(spellCaster), 10, attribute)
   }
 
-  case object SpiritGuardians extends ConcentrationConditionSpell {
+  case object SpiritGuardians extends ConditionSpell {
     val name = "Spirit Guardians"
 
-    val singleTarget: Boolean = false
-    val attribute: Attribute  = Wisdom
+    val attribute = Wisdom
 
-    val school: SchoolOfMagic       = Conjuration
-    val castingTime: CastingTime    = OneActionCast
-    val spellLevel: SpellLevel      = 3
+    val affectedTargets       = Int.MaxValue
+    val requiresConcentration = true
+
+    val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
+      x.creature.health.compare(y.creature.health)
+
+    val school: SchoolOfMagic    = Conjuration
+    val castingTime: CastingTime = OneActionCast
+    val spellLevel: SpellLevel   = 3
+
     val benefitsFromHigherSpellSlot = false
 
     def conditionFrom(spellCaster: SpellCaster): Condition =

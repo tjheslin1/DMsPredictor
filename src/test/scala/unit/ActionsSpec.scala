@@ -450,33 +450,35 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "handle loss of concentration of a ConcentrationConditionSpell" in {
+    "handle loss of concentration of a ConditionSpell" in {
       forAll { (cleric: Cleric, goblin: Goblin, zombie: Zombie) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
+          val trackedSpell = trackedConditionSpell(1)
+
           val concentratingCleric = cleric
-            .withConcentratingOn(spiritGuardiansConcentrationSpell)
+            .withConcentratingOn(trackedSpell)
             .withHealth(50)
             .withMaxHealth(50)
             .withConstitution(2)
-            .withCombatIndex(1)
+            .asInstanceOf[Cleric]
 
-          val spiritGuardiansCondition = SpiritGuardiansCondition(3, 10, 10, Wisdom)
+          val trackedCondition = trackedSpell.conditionFrom(concentratingCleric)
 
           val goblinCombatant = goblin
             .withStrength(10)
             .withDexterity(10)
-            .withCondition(spiritGuardiansCondition)
+            .withCondition(trackedCondition)
             .withCombatIndex(2)
 
-          val zombieCombatant = zombie.withCondition(spiritGuardiansCondition).withCombatIndex(3)
+          val zombieCombatant = zombie.withCondition(trackedCondition).withCombatIndex(3)
 
           val (Combatant(_, updatedGoblin: Goblin),
                Combatant(_, updatedCleric: Cleric),
                List(Combatant(_, updatedZombie: Zombie))) =
             resolveDamage(goblinCombatant,
-                          concentratingCleric,
+                          concentratingCleric.withCombatIndex(1),
                           List(zombieCombatant),
                           goblin.weapon,
                           Hit,
@@ -859,20 +861,5 @@ class ActionsSpec extends UnitSpecBase {
 
     def weaponWithHitBonus(bonus: Int) =
       Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)
-
-    val spiritGuardiansConcentrationSpell: Spell = new ConcentrationConditionSpell {
-      val name: String = "test-concentration-spell"
-
-      val attribute: Attribute  = Wisdom
-      val singleTarget: Boolean = true
-
-      val school: SchoolOfMagic    = Evocation
-      val castingTime: CastingTime = OneActionCast
-      val spellLevel: SpellLevel   = 1
-      val benefitsFromHigherSpellSlot       = true
-
-      def conditionFrom(spellCaster: SpellCaster): Condition =
-        SpiritGuardiansCondition(3, 10, 10, Wisdom)
-    }
   }
 }

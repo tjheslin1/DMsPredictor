@@ -249,14 +249,20 @@ trait Tracking {
 
   var conditionSpellUsedCount = 0
   def trackedConditionSpell(spellLvl: SpellLevel,
+                            numTargets: Int = 3,
                             savingThrowAttribute: Attribute = Constitution,
+                            concentration: Boolean = false,
                             singleTargetSpell: Boolean = true,
-                            higherSpellSlot: Boolean = true): ConcentrationConditionSpell =
-    new ConcentrationConditionSpell {
-      val name: String = s"tracked-melee-spell-${spellLvl.value}"
+                            higherSpellSlot: Boolean = true,
+                            priority: (Combatant, Combatant) => Int = (x, y) => x.creature.health.compare(y.creature.health)): ConditionSpell =
+    new ConditionSpell {
+      val name = s"tracked-multi-target-condition-spell-${spellLvl.value}"
 
       val attribute: Attribute  = savingThrowAttribute
-      val singleTarget: Boolean = singleTargetSpell
+      val requiresConcentration = concentration
+
+      val affectedTargets = numTargets
+      val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) => priority(x, y)
 
       val school: SchoolOfMagic       = Evocation
       val castingTime: CastingTime    = OneActionCast
@@ -271,7 +277,7 @@ trait Tracking {
                                  targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
         conditionSpellUsedCount += 1
 
-        (spellCaster, targets)
+        super.effect(spellCaster, spellLevel, targets)
       }
     }
 

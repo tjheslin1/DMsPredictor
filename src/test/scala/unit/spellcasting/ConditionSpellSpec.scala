@@ -1,17 +1,15 @@
 package unit.spellcasting
 
-import base.UnitSpecBase
+import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.model._
-import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import util.TestData._
 
-class ConcentrationConditionSpellSpec extends UnitSpecBase {
+class ConditionSpellSpec extends UnitSpecBase {
 
   "effect" should {
     "apply condition to first enemy if single target spell and saving throw failed" in {
@@ -19,7 +17,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterityConditionSpell = dexterityConditionSaveSpell(singleTargetSpell = true)
+          val dexterityConditionSpell = trackedConditionSpell(1, numTargets = 1, savingThrowAttribute = Dexterity)
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -40,7 +38,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
-          dexteritySaveConditionCount shouldBe 1
+          conditionSpellUsedCount shouldBe 1
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions
@@ -54,7 +52,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterityConditionSpell = dexterityConditionSaveSpell(singleTargetSpell = false)
+          val dexterityConditionSpell = trackedConditionSpell(1, numTargets = 3, savingThrowAttribute = Dexterity)
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -75,7 +73,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
-          dexteritySaveConditionCount shouldBe 3
+          conditionSpellUsedCount shouldBe 3
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions ++ expectedCondition
@@ -89,7 +87,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterityConditionSpell = dexterityConditionSaveSpell(singleTargetSpell = false)
+          val dexterityConditionSpell = trackedConditionSpell(1, numTargets = 3, savingThrowAttribute = Dexterity)
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -109,7 +107,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
-          dexteritySaveConditionCount shouldBe 2
+          conditionSpellUsedCount shouldBe 2
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions ++ expectedCondition
@@ -123,7 +121,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterityConditionSpell = dexterityConditionSaveSpell(singleTargetSpell = false)
+          val dexterityConditionSpell = trackedConditionSpell(1, numTargets = 3, savingThrowAttribute = Dexterity)
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -151,7 +149,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterityConditionSpell = dexterityConditionSaveSpell(singleTargetSpell = false)
+          val dexterityConditionSpell = trackedConditionSpell(1, numTargets = 3, savingThrowAttribute = Dexterity)
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -181,29 +179,7 @@ class ConcentrationConditionSpellSpec extends UnitSpecBase {
   private def highDexGoblin(goblin: Goblin, combatIndex: Int) =
     goblin.withDexterity(26).withCombatIndex(combatIndex)
 
-  abstract private class TestContext {
+  abstract private class TestContext extends Tracking {
     implicit val roll: RollStrategy
-
-    var dexteritySaveConditionCount = 0
-    def dexterityConditionSaveSpell(singleTargetSpell: Boolean): ConcentrationConditionSpell =
-      new ConcentrationConditionSpell {
-        val name: String = "tracked-multi-dexterity-save-spell"
-
-        val attribute: Attribute  = Dexterity
-        val singleTarget: Boolean = singleTargetSpell
-
-        val school: SchoolOfMagic    = Evocation
-        val castingTime: CastingTime = OneActionCast
-        val spellLevel: SpellLevel   = 1
-        val benefitsFromHigherSpellSlot       = true
-
-        def conditionFrom(spellCaster: SpellCaster): Condition = Turned(10, 10)
-
-        override def applyCondition[_: RS](spellCaster: SpellCaster,
-                                           target: Combatant): Combatant = {
-          dexteritySaveConditionCount += 1
-          super.applyCondition(spellCaster, target)(roll)
-        }
-      }
   }
 }

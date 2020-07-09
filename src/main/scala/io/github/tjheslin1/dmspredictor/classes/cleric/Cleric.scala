@@ -94,7 +94,7 @@ object Cleric {
     castSingleTargetHealingSpell(3),
     destroyUndead(4),
     turnUndead(5),
-    castConcentrationSpell(6),
+    castConditionSpell(6),
     castSingleTargetOffensiveSpell(7)
   )
 

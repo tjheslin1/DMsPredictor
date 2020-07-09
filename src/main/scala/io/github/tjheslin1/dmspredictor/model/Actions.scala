@@ -166,7 +166,7 @@ object Actions extends LazyLogging {
         case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
             if lossOfConcentration(spellCaster, damagedSpellCaster) =>
           spellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
-            case conditionSpell: ConcentrationConditionSpell =>
+            case conditionSpell: ConditionSpell =>
               val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
 
               val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)

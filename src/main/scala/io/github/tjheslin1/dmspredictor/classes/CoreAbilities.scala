@@ -214,11 +214,11 @@ object CoreAbilities extends LazyLogging {
         updateSpellSlot(spellCaster, HealingSpellEffect, singleTargetSpellUsed = true)
     }
 
-  def castConcentrationSpell(currentOrder: Int)(combatant: Combatant): Ability =
+  def castConditionSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name             = "Cast Spell (Concentration)"
+      val name             = "Cast Spell (Multi Target Condition)"
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
@@ -251,17 +251,24 @@ object CoreAbilities extends LazyLogging {
         optSpell match {
           case None => (combatant, others)
           case Some((foundSpell, foundSpellLevel)) =>
-            val (updatedSpellCaster, updatedTargets) =
+            val (spellAffectedCaster, updatedOthers) =
               foundSpell.effect(spellCaster, foundSpellLevel, targets)
+
+            val updatedSpellCaster = updateSpellSlot(
+              spellAffectedCaster,
+              ConditionSpellEffect,
+              newlyConcentrating =
+                spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration
+            ) // TODO specific tests
+              .asInstanceOf[SpellCaster]
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
-            (updatedCombatant, others.replace(updatedTargets))
+            (updatedCombatant, others.replace(updatedOthers))
         }
       }
 
-      def update: Creature =
-        updateSpellSlot(spellCaster, ConditionSpellEffect, newlyConcentrating = true)
+      def update: Creature = spellCaster
     }
 
   def castMultiTargetOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability =
