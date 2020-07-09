@@ -1,7 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes
 
 import cats.data.NonEmptyList
-import cats.data.NonEmptyList.one
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.api.Refined
@@ -58,7 +57,7 @@ object CoreAbilities extends LazyLogging {
                   updatedCombatant,
                   updatedOthers,
                   order,
-                  one(SingleAttack)
+                  NonEmptyList.one(SingleAttack)
                 ).fold {
                   nextToFocus(updatedCombatant, monsters(updatedOthers), focus).fold {
                     (updatedCombatant, updatedOthers)
@@ -352,8 +351,14 @@ object CoreAbilities extends LazyLogging {
 
         optSpell.fold((combatant, others)) {
           case (foundSpell, foundSpellLevel) =>
-            val (updatedSpellCaster, updatedOthers) =
+            val (spellAffectedCaster, updatedOthers) =
               foundSpell.effect(spellCaster, foundSpellLevel, others)
+
+            val updatedSpellCaster = updateSpellSlot(
+              spellAffectedCaster,
+              BuffSpellEffect,
+              newlyConcentrating = foundSpell.requiresConcentration,
+              singleTargetSpellUsed = true).asInstanceOf[SpellCaster]
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -361,7 +366,7 @@ object CoreAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = updateSpellSlot(spellCaster, BuffSpellEffect)
+      def update: Creature = spellCaster
     }
 
   def castMultiTargetBuffSpell(currentOrder: Int)(combatant: Combatant): Ability =
