@@ -95,7 +95,9 @@ object ClericSpells extends LazyLogging {
     val requiresConcentration = true
 
     val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
-      x.creature.health.compare(y.creature.health)
+      if (x.creature.isConscious) 1
+      else if (y.creature.isConscious) -1
+      else x.creature.health.compare(y.creature.health)
 
     val school: SchoolOfMagic       = Enchantment
     val castingTime: CastingTime    = OneActionCast
@@ -115,7 +117,9 @@ object ClericSpells extends LazyLogging {
     val requiresConcentration = true
 
     val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
-      x.creature.health.compare(y.creature.health)
+      if (x.creature.isConscious) 1
+      else if (y.creature.isConscious) -1
+      else x.creature.health.compare(y.creature.health)
 
     val school: SchoolOfMagic    = Conjuration
     val castingTime: CastingTime = OneActionCast

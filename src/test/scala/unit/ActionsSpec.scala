@@ -3,7 +3,6 @@ package unit
 import base.{Tracking, UnitSpecBase}
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
@@ -16,7 +15,6 @@ import io.github.tjheslin1.dmspredictor.model.Weapon.fixedDamageWeapon
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, Turned}
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.SpiritGuardiansCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells._
 import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Zombie}
@@ -488,6 +486,37 @@ class ActionsSpec extends UnitSpecBase {
           updatedZombie.conditions shouldBe List.empty[Condition]
 
           updatedCleric.concentratingSpell shouldBe none[Spell]
+        }
+      }
+    }
+
+    "handle loss of concentration of a SelfBuffSpell" in {
+      forAll { (paladin: Paladin, goblin: Goblin) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(19)
+
+          val concentratingPaladin = paladin
+            .withConcentratingOn(trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true))
+            .withCondition(HuntersMarkBuffCondition)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withConstitution(2)
+            .withCombatIndex(1)
+
+          val goblinCombatant = goblin
+            .withStrength(10)
+            .withDexterity(10)
+            .withCombatIndex(2)
+
+          val (_, Combatant(_, updatedPaladin: Paladin), _) =
+            resolveDamage(goblinCombatant,
+                          concentratingPaladin,
+                          List.empty[Combatant],
+                          goblin.weapon,
+                          Hit,
+                          damageBonus = 30)
+
+          updatedPaladin.concentratingSpell shouldBe none[Spell]
         }
       }
     }

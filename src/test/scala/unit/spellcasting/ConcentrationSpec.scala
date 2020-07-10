@@ -70,6 +70,31 @@ class ConcentrationSpec extends UnitSpecBase {
       }
     }
 
+    "handle loss of concentration of ConditionSpell" in {
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell =
+            trackedConditionSpell(1, concentration = true)
+
+          val concentratingRanger = ranger
+            .withSpellKnown(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .withConstitution(2)
+            .withCondition(HuntersMarkBuffCondition)
+            .asInstanceOf[Ranger]
+
+          val updatedRanger =
+            handleConcentration(concentratingRanger, trackedSpell, 50).asInstanceOf[Ranger]
+
+          updatedRanger.conditions shouldBe List.empty[Condition]
+          updatedRanger.concentratingSpell shouldBe none[Spell]
+        }
+      }
+    }
+
     "handle loss of concentration of SelfBuffSpell" in {
       forAll { ranger: Ranger =>
         new TestContext {

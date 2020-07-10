@@ -247,6 +247,11 @@ trait Tracking {
       }
     }
 
+  val compareHealth: (Combatant, Combatant) => Int = (x, y) => if (x.creature.isConscious) 1
+  else if (x.creature.isConscious) 1
+  else x.creature.health.compare(y.creature.health)
+
+  var conditionSpellConditionAppliedCount = 0
   var conditionSpellUsedCount = 0
   def trackedConditionSpell(spellLvl: SpellLevel,
                             numTargets: Int = 3,
@@ -254,7 +259,7 @@ trait Tracking {
                             concentration: Boolean = false,
                             singleTargetSpell: Boolean = true,
                             higherSpellSlot: Boolean = true,
-                            priority: (Combatant, Combatant) => Int = (x, y) => x.creature.health.compare(y.creature.health)): ConditionSpell =
+                            priority: (Combatant, Combatant) => Int = compareHealth): ConditionSpell =
     new ConditionSpell {
       val name = s"tracked-multi-target-condition-spell-${spellLvl.value}"
 
@@ -271,6 +276,12 @@ trait Tracking {
 
       def conditionFrom(spellCaster: SpellCaster): Condition =
         Paralyzed(10, 10, attribute)
+
+      override def applyCondition[_: RS](spellCaster: SpellCaster, target: Combatant): Combatant = {
+        conditionSpellConditionAppliedCount += 1
+
+        super.applyCondition(spellCaster, target)
+      }
 
       override def effect[_: RS](spellCaster: SpellCaster,
                                  spellLevel: SpellLevel,

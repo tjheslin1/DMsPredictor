@@ -175,6 +175,8 @@ object Actions extends LazyLogging {
                 conditionRemovedAttacker,
                 updatedTarget,
                 others.map(removeCondition(_, concentratedCondition)))
+            case selfBuffSpell: SelfBuffSpell =>
+              ??? // TODO
             case multiTargetBuffSpell: MultiTargetBuffSpell =>
               val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
 

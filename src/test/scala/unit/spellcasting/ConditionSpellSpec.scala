@@ -26,19 +26,21 @@ class ConditionSpellSpec extends UnitSpecBase {
             .withWisdom(15)
             .asInstanceOf[Cleric]
 
+          val lowHealthGoblin: Combatant = goblinOne.withHealth(1).withDexterity(2).withCombatIndex(2)
+
           val (_,
                List(Combatant(_, updatedGoblinOne: Goblin),
                     Combatant(_, updatedGoblinTwo: Goblin),
                     Combatant(_, updatedGoblinThree: Goblin))) =
             dexterityConditionSpell.effect(conditionSpellCleric,
                                            dexterityConditionSpell.spellLevel,
-                                           List(lowDexGoblin(goblinOne, 2),
+                                           List(lowHealthGoblin,
                                                 lowDexGoblin(goblinTwo, 3),
                                                 lowDexGoblin(goblinThree, 4)))
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
-          conditionSpellUsedCount shouldBe 1
+          conditionSpellConditionAppliedCount shouldBe 1
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions
@@ -73,7 +75,7 @@ class ConditionSpellSpec extends UnitSpecBase {
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
-          conditionSpellUsedCount shouldBe 3
+          conditionSpellConditionAppliedCount shouldBe 3
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions ++ expectedCondition
@@ -107,7 +109,7 @@ class ConditionSpellSpec extends UnitSpecBase {
 
           val expectedCondition = List(dexterityConditionSpell.conditionFrom(conditionSpellCleric))
 
-          conditionSpellUsedCount shouldBe 2
+          conditionSpellConditionAppliedCount shouldBe 2
 
           updatedGoblinOne.conditions shouldBe goblinOne.creature.conditions ++ expectedCondition
           updatedGoblinTwo.conditions shouldBe goblinTwo.creature.conditions ++ expectedCondition
@@ -121,7 +123,10 @@ class ConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val dexterityConditionSpell = trackedConditionSpell(1, numTargets = 3, savingThrowAttribute = Dexterity)
+          val dexterityConditionSpell = trackedConditionSpell(1,
+            numTargets = 3,
+            savingThrowAttribute = Dexterity,
+            concentration = true)
 
           val conditionSpellCleric = cleric
             .withSpellKnown(dexterityConditionSpell)
@@ -137,6 +142,8 @@ class ConditionSpellSpec extends UnitSpecBase {
             dexterityConditionSpell.effect(conditionSpellCleric,
                                            dexterityConditionSpell.spellLevel,
                                            List(slowGoblin, quickGoblin))
+
+          conditionSpellConditionAppliedCount shouldBe 1
 
           updatedCleric.isConcentrating shouldBe true
           updatedCleric.concentratingSpell shouldBe dexterityConditionSpell.some

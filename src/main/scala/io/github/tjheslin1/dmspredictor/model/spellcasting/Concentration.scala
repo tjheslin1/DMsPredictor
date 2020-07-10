@@ -21,6 +21,8 @@ object Concentration extends LazyLogging {
       logger.debug(s"${updatedSpellCaster.name} loses concentration")
 
       concentrationSpell match {
+        case conditionSpell: ConditionSpell =>
+          val conditionSpellHandledCaster = conditionSpell
         case selfBuffSpell: SelfBuffSpell =>
           val selfBuffHandledCaster = selfBuffSpell.onLossOfConcentration(updatedSpellCaster)
 

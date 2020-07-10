@@ -254,6 +254,7 @@ object CoreAbilities extends LazyLogging {
             val (spellAffectedCaster, updatedOthers) =
               foundSpell.effect(spellCaster, foundSpellLevel, targets)
 
+            // TODO `foundSpellLevel` could just be passed here
             val updatedSpellCaster = updateSpellSlot(
               spellAffectedCaster,
               ConditionSpellEffect,
@@ -361,10 +362,11 @@ object CoreAbilities extends LazyLogging {
             val (spellAffectedCaster, updatedOthers) =
               foundSpell.effect(spellCaster, foundSpellLevel, others)
 
+            // TODO `foundSpellLevel` could just be passed here
             val updatedSpellCaster = updateSpellSlot(
               spellAffectedCaster,
               BuffSpellEffect,
-              newlyConcentrating = foundSpell.requiresConcentration,
+              newlyConcentrating = spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration,
               singleTargetSpellUsed = true).asInstanceOf[SpellCaster]
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
@@ -403,16 +405,13 @@ object CoreAbilities extends LazyLogging {
 
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
-        val (optSpell, spellLevelToUse) =
+        val optSpell =
           highestSpellSlot match {
-            case None => (none[Spell], 0)
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
-              ).fold((none[Spell], 0)) {
-                case (foundSpell, foundSpellLevel) =>
-                  (foundSpell.some, foundSpellLevel)
-              }
+              )
           }
 
         val targets = spellCaster match {
@@ -420,22 +419,26 @@ object CoreAbilities extends LazyLogging {
           case _         => monsters(others)
         }
 
-        val (updatesSpellCaster, updatedTargets) = optSpell.fold((spellCaster, others)) { spell =>
-          spell.effect(spellCaster, Refined.unsafeApply(spellLevelToUse), targets)
+        optSpell.fold((combatant, others)) {
+          case (foundSpell, foundSpellLevel) =>
+            val (spellAffectedCaster, updatedOthers) =
+              foundSpell.effect(spellCaster, foundSpellLevel, targets)
+
+            // TODO `foundSpellLevel` could just be passed here
+            val updatedSpellCaster = updateSpellSlot(
+              spellAffectedCaster,
+              BuffSpellEffect,
+              multiTargetSpellUsed = true,
+              newlyConcentrating = spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration)
+              .asInstanceOf[SpellCaster]
+
+            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+
+            (updatedCombatant, others.replace(updatedOthers))
         }
-
-        val updatedCombatant = Combatant.creatureLens.set(updatesSpellCaster)(combatant)
-
-        (updatedCombatant, others.replace(updatedTargets))
       }
 
-      def update: Creature =
-        updateSpellSlot(
-          spellCaster,
-          BuffSpellEffect,
-          multiTargetSpellUsed = true,
-          newlyConcentrating = true
-        ) // TODO should this always be true?
+      def update: Creature = spellCaster
     }
 
   def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =
