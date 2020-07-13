@@ -165,7 +165,7 @@ object Actions extends LazyLogging {
       (target.creature, updatedTarget.creature) match {
         case (concentratingSpellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
             if lossOfConcentration(concentratingSpellCaster, damagedSpellCaster) =>
-          updateConditionOnOthers(concentratingSpellCaster, updatedAttacker, updatedTarget, others)
+          updateConditionOfOthers(concentratingSpellCaster, updatedAttacker, updatedTarget, others)
         case _ =>
           (updatedAttacker, updatedTarget, others)
       }
@@ -219,12 +219,11 @@ object Actions extends LazyLogging {
         f(a, t, o)
     }
 
-  private def updateConditionOnOthers[_: RS](
+  private def updateConditionOfOthers[_: RS](
       concentratingSpellCaster: SpellCaster,
       updatedAttacker: Combatant,
       updatedTarget: Combatant,
-      others: List[Combatant]
-  ) = {
+      others: List[Combatant]) = {
     concentratingSpellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
       case conditionSpell: ConditionSpell =>
         val concentratedCondition = conditionSpell.conditionFrom(concentratingSpellCaster)
