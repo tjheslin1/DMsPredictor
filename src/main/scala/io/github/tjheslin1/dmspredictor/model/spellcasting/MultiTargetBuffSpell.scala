@@ -49,7 +49,7 @@ abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
     (updatedSpellCaster, targets.replace(updatedBuffTargets))
   }
 
-  def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+  def onLossOfConcentrationLoseBuff(spellCaster: SpellCaster): SpellCaster = {
     val updatedConditions = spellCaster.conditions diff List(buffCondition)
 
     Creature.creatureConditionsLens.set(updatedConditions)(spellCaster).asInstanceOf[SpellCaster]

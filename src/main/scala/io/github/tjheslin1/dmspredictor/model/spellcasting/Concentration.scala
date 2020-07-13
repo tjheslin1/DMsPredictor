@@ -9,7 +9,7 @@ object Concentration extends LazyLogging {
 
   def handleConcentration[_: RS](
       spellCaster: SpellCaster,
-      concentrationSpell: Spell,
+      buffSpell: Spell,
       damageTaken: Int
   ): SpellCaster = {
     val dc = concentrationDifficultyClass(damageTaken)
@@ -20,19 +20,18 @@ object Concentration extends LazyLogging {
     else {
       logger.debug(s"${updatedSpellCaster.name} loses concentration")
 
-      concentrationSpell match {
-        case conditionSpell: ConditionSpell =>
-          val conditionSpellHandledCaster = conditionSpell
+      buffSpell match {
         case selfBuffSpell: SelfBuffSpell =>
-          val selfBuffHandledCaster = selfBuffSpell.onLossOfConcentration(updatedSpellCaster)
+          val selfBuffHandledCaster =
+            selfBuffSpell.onLossOfConcentrationLoseBuff(updatedSpellCaster)
 
           SpellCaster.concentratingLens.set(None)(selfBuffHandledCaster)
         case multiTargetBuffSpell: MultiTargetBuffSpell =>
-          val buffHandledCaster = multiTargetBuffSpell.onLossOfConcentration(updatedSpellCaster)
+          val buffHandledCaster =
+            multiTargetBuffSpell.onLossOfConcentrationLoseBuff(updatedSpellCaster)
 
           SpellCaster.concentratingLens.set(None)(buffHandledCaster)
-        case _ =>
-          SpellCaster.concentratingLens.set(None)(updatedSpellCaster)
+        case _ => SpellCaster.concentratingLens.set(None)(updatedSpellCaster)
       }
     }
   }

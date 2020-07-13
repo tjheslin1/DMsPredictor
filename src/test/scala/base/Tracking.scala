@@ -318,10 +318,10 @@ trait Tracking {
       super.effect(spellCaster, spellLevel, targets)
     }
 
-    override def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+    override def onLossOfConcentrationLoseBuff(spellCaster: SpellCaster): SpellCaster = {
       selfBuffSpellConcentrationHandled = true
 
-      super.onLossOfConcentration(spellCaster)
+      super.onLossOfConcentrationLoseBuff(spellCaster)
     }
   }
 
@@ -360,10 +360,10 @@ trait Tracking {
       super.effect(spellCaster, spellLevel, targets)
     }
 
-    override def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+    override def onLossOfConcentrationLoseBuff(spellCaster: SpellCaster): SpellCaster = {
       trackedMultiTargetBuffConcentrationHandled = true
 
-      super.onLossOfConcentration(spellCaster)
+      super.onLossOfConcentrationLoseBuff(spellCaster)
     }
   }
 

@@ -42,7 +42,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val updatedCleric = handleConcentration(lowConstitutionCleric,
                                                   damageTaken = 20,
-                                                  concentrationSpell = trackedSpell)
+                                                  buffSpell = trackedSpell)
 
           updatedCleric.isConcentrating shouldBe false
         }
@@ -63,7 +63,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val updatedCleric = handleConcentration(highConstitutionCleric,
                                                   damageTaken = 10,
-                                                  concentrationSpell = trackedSpell)
+                                                  buffSpell = trackedSpell)
 
           updatedCleric.isConcentrating shouldBe true
         }
@@ -75,15 +75,14 @@ class ConcentrationSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedSpell =
-            trackedConditionSpell(1, concentration = true)
+          val trackedSpell = trackedConditionSpell(1, concentration = true)
 
           val concentratingRanger = ranger
             .withSpellKnown(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withLevel(LevelTwo)
             .withConstitution(2)
-            .withCondition(HuntersMarkBuffCondition)
             .asInstanceOf[Ranger]
 
           val updatedRanger =
@@ -105,6 +104,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val concentratingRanger = ranger
             .withSpellKnown(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withLevel(LevelTwo)
             .withConstitution(2)
@@ -129,6 +129,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val concentratingPaladin = paladin
             .withSpellKnown(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withLevel(LevelTwo)
             .withConstitution(2)

@@ -32,7 +32,7 @@ abstract class SelfBuffSpell extends Spell with LazyLogging {
     (buffedSpellCaster, targets)
   }
 
-  def onLossOfConcentration(spellCaster: SpellCaster): SpellCaster = {
+  def onLossOfConcentrationLoseBuff(spellCaster: SpellCaster): SpellCaster = {
     val updatedConditions = spellCaster.conditions diff List(selfBuffCondition)
 
     Creature.creatureConditionsLens.set(updatedConditions)(spellCaster).asInstanceOf[SpellCaster]

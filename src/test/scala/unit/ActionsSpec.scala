@@ -490,37 +490,6 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "handle loss of concentration of a SelfBuffSpell" in {
-      forAll { (paladin: Paladin, goblin: Goblin) =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val concentratingPaladin = paladin
-            .withConcentratingOn(trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true))
-            .withCondition(HuntersMarkBuffCondition)
-            .withHealth(50)
-            .withMaxHealth(50)
-            .withConstitution(2)
-            .withCombatIndex(1)
-
-          val goblinCombatant = goblin
-            .withStrength(10)
-            .withDexterity(10)
-            .withCombatIndex(2)
-
-          val (_, Combatant(_, updatedPaladin: Paladin), _) =
-            resolveDamage(goblinCombatant,
-                          concentratingPaladin,
-                          List.empty[Combatant],
-                          goblin.weapon,
-                          Hit,
-                          damageBonus = 30)
-
-          updatedPaladin.concentratingSpell shouldBe none[Spell]
-        }
-      }
-    }
-
     "handle loss of concentration of a MultiTargetBuffSpell" in {
       forAll { (paladin: Paladin, goblin: Goblin, fighter: Fighter, rogue: Rogue) =>
         new TestContext {

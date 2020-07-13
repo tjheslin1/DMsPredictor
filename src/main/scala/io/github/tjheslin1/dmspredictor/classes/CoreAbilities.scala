@@ -259,8 +259,8 @@ object CoreAbilities extends LazyLogging {
               spellAffectedCaster,
               ConditionSpellEffect,
               newlyConcentrating =
-                spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration
-            ) // TODO specific tests
+            spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration // TODO specific tests
+            )
               .asInstanceOf[SpellCaster]
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
@@ -366,8 +366,10 @@ object CoreAbilities extends LazyLogging {
             val updatedSpellCaster = updateSpellSlot(
               spellAffectedCaster,
               BuffSpellEffect,
-              newlyConcentrating = spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration,
-              singleTargetSpellUsed = true).asInstanceOf[SpellCaster]
+              newlyConcentrating =
+                spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration, // TODO specific tests
+              singleTargetSpellUsed = true
+            ).asInstanceOf[SpellCaster]
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
@@ -428,8 +430,10 @@ object CoreAbilities extends LazyLogging {
             val updatedSpellCaster = updateSpellSlot(
               spellAffectedCaster,
               BuffSpellEffect,
-              multiTargetSpellUsed = true,
-              newlyConcentrating = spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration)
+              newlyConcentrating =
+                spellAffectedCaster.isConcentrating && foundSpell.requiresConcentration, // TODO specific tests
+              multiTargetSpellUsed = true
+            )
               .asInstanceOf[SpellCaster]
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
