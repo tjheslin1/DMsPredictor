@@ -18,6 +18,8 @@ package object spellcasting {
 
   type SpellLevel = Int Refined Interval.ClosedOpen[W.`0`.T, W.`10`.T]
 
+  val LevelZero: SpellLevel = Refined.unsafeApply(0)
+
   sealed trait SchoolOfMagic extends Product with Serializable
 
   case object Evocation     extends SchoolOfMagic

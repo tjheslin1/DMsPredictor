@@ -344,6 +344,10 @@ object TestData {
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(ranger)
 
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        ranger)
+
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(rangerSpellSlots(level))(ranger)
 
@@ -362,6 +366,10 @@ object TestData {
 
     def withSpellKnown(spell: Spell) =
       _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(hunter)
+
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
+        hunter)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(rangerSpellSlots(level))(hunter)

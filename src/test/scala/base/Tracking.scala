@@ -98,6 +98,7 @@ trait Tracking {
       }
     }
 
+  var meleeSpellLevelUsed = -1
   var meleeSpellUsedCount = 0
   def trackedMeleeSpellAttack(spellLvl: SpellLevel,
                               higherSpellSlot: Boolean = true,
@@ -155,7 +156,7 @@ trait Tracking {
         super.effect(spellCaster, spellLevel, targets)}
     }
 
-  var trackedHealingSpellUsed      = false
+  var trackedHealingSpellLevelUsed = -1
   var trackedHealingSpellUsedCount = 0
   def trackedHealingSpell(spellLvl: SpellLevel,
                           healingDone: Int = 1,
@@ -168,8 +169,9 @@ trait Tracking {
       val benefitsFromHigherSpellSlot    = higherSpellSlot
 
       def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        trackedHealingSpellUsed = true
         trackedHealingSpellUsedCount += 1
+        trackedHealingSpellLevelUsed = spellLevel.value
+
         healingDone
       }
     }
@@ -252,6 +254,7 @@ trait Tracking {
   else x.creature.health.compare(y.creature.health)
 
   var conditionSpellConditionAppliedCount = 0
+  var conditionSpellLevelUsed = -1
   var conditionSpellUsedCount = 0
   def trackedConditionSpell(spellLvl: SpellLevel,
                             numTargets: Int = 3,
@@ -287,11 +290,13 @@ trait Tracking {
                                  spellLevel: SpellLevel,
                                  targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
         conditionSpellUsedCount += 1
+        conditionSpellLevelUsed = spellLevel.value
 
         super.effect(spellCaster, spellLevel, targets)
       }
     }
 
+  var selfBuffSpellLevelUsed            = -1
   var selfBuffSpellUsedCount            = 0
   var selfBuffSpellConcentrationHandled = false
   def trackedSelfBuffSpell(buffCondition: Condition,
@@ -314,6 +319,7 @@ trait Tracking {
                                spellLevel: SpellLevel,
                                targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
       selfBuffSpellUsedCount += 1
+      selfBuffSpellLevelUsed = spellLevel.value
 
       super.effect(spellCaster, spellLevel, targets)
     }
