@@ -223,7 +223,8 @@ object Actions extends LazyLogging {
       concentratingSpellCaster: SpellCaster,
       updatedAttacker: Combatant,
       updatedTarget: Combatant,
-      others: List[Combatant]) = {
+      others: List[Combatant]
+  ) = {
     concentratingSpellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
       case conditionSpell: ConditionSpell =>
         val concentratedCondition = conditionSpell.conditionFrom(concentratingSpellCaster)

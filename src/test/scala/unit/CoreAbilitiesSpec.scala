@@ -552,7 +552,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric), _) =
+          val (Combatant(_, updatedCleric: Cleric), _) =
             castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1))
               .useAbility(List(woundedHunter), LowestFirst)
 
@@ -869,11 +869,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedSpell = trackedMultiMeleeSpellAttack(2, higherSpellSlot = true)
-          fail("carry on here....") // TODO
+          val trackedSpell = trackedMultiMeleeSpellAttack(1, higherSpellSlot = true)
+          val trackedSingleSpell = trackedMeleeSpellAttack(2, higherSpellSlot = false)
 
           val trackedWizard = wizard
-            .withSpellKnown(trackedSpell)
+            .withSpellsKnown(trackedSpell, trackedSingleSpell)
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .withIntelligence(20)
@@ -896,12 +896,15 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           multiTargetMeleeSpellUsedCount shouldBe 1
-          multiMeleeSpellDamageRollCount shouldBe 1
+          multiTargetMeleeSpellUsedCount shouldBe 3
+          multiTargetSpellDamageRollCount shouldBe 1
+
+          meleeSpellUsedCount shouldBe 0
 
           updatedMonsterOne.health < monsterOne.creature.health shouldBe true
           updatedMonsterTwo.health < monsterTwo.creature.health shouldBe true
 
-          multiTargetAttackSpellSlotUsed shouldBe 3
+          multiTargetAttackSpellLevelUsed shouldBe 3
         }
       }
     }
@@ -911,8 +914,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
+          val trackedSpell = trackedMultiMeleeSpellAttack(2, higherSpellSlot = false)
+          val trackedSingleSpell = trackedMeleeSpellAttack(3, higherSpellSlot = false)
+
           val trackedWizard = wizard
-            .withSpellKnown(trackedMultiMeleeSpellAttack(2, higherSpellSlot = false))
+            .withSpellsKnown(trackedSpell, trackedSingleSpell)
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .withIntelligence(20)
@@ -935,38 +941,15 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           multiTargetMeleeSpellUsedCount shouldBe 1
-          multiMeleeSpellDamageRollCount shouldBe 1
+          multiTargetAttackSpellLevelUsed shouldBe 2
+          multiTargetSpellDamageRollCount shouldBe 1
+
+          meleeSpellUsedCount shouldBe 0
 
           updatedMonsterOne.health < monsterOne.creature.health shouldBe true
           updatedMonsterTwo.health < monsterTwo.creature.health shouldBe true
 
-          multiTargetAttackSpellSlotUsed shouldBe 2
-        }
-      }
-    }
-
-    "cast a multi target spell (spell attack) and not a single target spell even if of a higher level" in {
-      forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
-        new TestContext {
-          implicit override val roll: RollStrategy = _ => RollResult(19)
-
-          val trackedWizard = wizard
-            .withSpellsKnown(trackedMultiMeleeSpellAttack(2),
-              trackedSingleTargetSavingThrowSpell(3, Wisdom))
-            .withAllSpellSlotsAvailableForLevel(LevelFive)
-            .withLevel(LevelFive)
-            .withIntelligence(20)
-            .withCombatIndex(1)
-
-          val monsterOne = testMonsterOne.withDexteritySavingThrowScore(-10).withCombatIndex(2)
-          val monsterTwo = testMonsterTwo.withDexteritySavingThrowScore(-10).withCombatIndex(3)
-
-          castMultiTargetOffensiveSpell(Priority)(trackedWizard)
-            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
-
-          singleTargetSavingThrowSpellUsedCount shouldBe 0
-
-          multiTargetMeleeSpellUsedCount shouldBe 1
+          multiTargetAttackSpellLevelUsed shouldBe 2
         }
       }
     }
@@ -1006,7 +989,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           multiTargetSavingThrowSpellUsedCount shouldBe 1
           multiSavingThrowSpellDamageRollCount shouldBe 1
 
-          multiTargetSavingThrowSpellSlotUsed shouldBe 3
+          multiTargetSavingThrowSpellLevelUsed shouldBe 3
         }
       }
     }
@@ -1016,8 +999,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
+          val trackedSpell = trackedMultiTargetSavingThrowSpell(2, Wisdom, higherSpellSlot = false)
+          val trackedSingleSpell = trackedSingleTargetSavingThrowSpell(3, Strength, higherSpellSlot = false)
+
           val trackedWizard = wizard
-            .withSpellKnown(trackedMultiTargetSavingThrowSpell(2, Wisdom, higherSpellSlot = false))
+            .withSpellsKnown(trackedSpell, trackedSingleSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withProficiencyBonus(6)
             .withLevel(LevelThree)
@@ -1044,15 +1030,16 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           updatedMonsterTwo.health < monsterTwo.creature.health shouldBe true
 
           multiTargetSavingThrowSpellUsedCount shouldBe 1
+          multiTargetSavingThrowSpellLevelUsed shouldBe 2
           multiSavingThrowSpellDamageRollCount shouldBe 1
 
-          multiTargetSavingThrowSpellSlotUsed shouldBe 2
+          singleTargetSavingThrowSpellUsedCount shouldBe 0
         }
       }
     }
 
     "spend the highest available spell slot" in {
-      forAll { wizard: Wizard =>
+      forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
@@ -1067,8 +1054,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val wizardCombatant = trackedWizard.withCombatIndex(1)
 
-          val updatedWizard: Wizard =
-            castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
+          val monsterOne = testMonsterOne
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexteritySavingThrowScore(-10)
+            .withCombatIndex(2)
+
+          val monsterTwo = testMonsterTwo
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexteritySavingThrowScore(-10)
+            .withCombatIndex(3)
+
+          val (Combatant(_, updatedWizard: Wizard), _) =
+            castMultiTargetOffensiveSpell(Priority)(wizardCombatant)
+              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe trackedWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
@@ -1078,7 +1078,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
-      forAll { wizard: Wizard =>
+      forAll { (wizard: Wizard, testMonsterOne: TestMonster, testMonsterTwo: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
@@ -1093,8 +1093,21 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val wizardCombatant = trackedWizard.withCombatIndex(1)
 
-          val updatedWizard: Wizard =
-            castMultiTargetOffensiveSpell(Priority)(wizardCombatant).update.asInstanceOf[Wizard]
+          val monsterOne = testMonsterOne
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexteritySavingThrowScore(-10)
+            .withCombatIndex(2)
+
+          val monsterTwo = testMonsterTwo
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withDexteritySavingThrowScore(-10)
+            .withCombatIndex(3)
+
+          val (Combatant(_, updatedWizard: Wizard), _) =
+            castMultiTargetOffensiveSpell(Priority)(wizardCombatant)
+              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
@@ -1153,9 +1166,12 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
+          val trackedSpell = trackedMultiMeleeSpellAttack(2, savingThrowAttribute = Dexterity)
+          val trackedSingleSpell = trackedMeleeSpellAttack(3, higherSpellSlot = false)
+
           val lichCombatant = lich
             .withSpellKnown(
-              trackedMultiMeleeSpellAttack(spellLvl = 2, savingThrowAttribute = Dexterity))
+              trackedSpell)
             .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
             .withCombatIndex(1)
 
@@ -1174,6 +1190,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedWizard: Wizard))) =
             castMultiTargetOffensiveSpell(Priority)(lichCombatant)
               .useAbility(List(easyToHitFighter, easyToHitWizard), LowestFirst)
+
+          multiTargetMeleeSpellUsedCount shouldBe 1
+          multiTargetAttackSpellLevelUsed shouldBe 9
+
+          meleeSpellUsedCount shouldBe 0
 
           updatedFighter.health < easyToHitFighter.creature.health shouldBe true
           updatedWizard.health < easyToHitWizard.creature.health shouldBe true
@@ -1198,8 +1219,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant],
-                                                                    LowestFirst)
+            castSelfBuffSpell(Priority)(rangerCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 1
@@ -1224,8 +1245,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant],
-              LowestFirst)
+            castSelfBuffSpell(Priority)(rangerCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 1
@@ -1252,8 +1273,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant).useAbility(List.empty[Combatant],
-              LowestFirst)
+            castSelfBuffSpell(Priority)(rangerCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 1
@@ -1282,7 +1303,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
           val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant).useAbility(List.empty[Combatant], LowestFirst)
+            castSelfBuffSpell(Priority)(wizardCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -1308,7 +1330,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
           val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant).useAbility(List.empty[Combatant], LowestFirst)
+            castSelfBuffSpell(Priority)(wizardCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -1335,7 +1358,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
           val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant).useAbility(List.empty[Combatant], LowestFirst)
+            castSelfBuffSpell(Priority)(wizardCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (buffingWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -1362,7 +1386,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
           val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant).useAbility(List.empty[Combatant], LowestFirst)
+            castSelfBuffSpell(Priority)(wizardCombatant)
+              .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (buffingWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -1527,7 +1552,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val goblinCombatant = goblin.withCombatIndex(2)
 
           val (Combatant(_, updatedLich: Lich), List(Combatant(_, updatedGoblin: Goblin))) =
-            castMultiTargetBuffSpell(Priority)(castingLich).useAbility(List(goblinCombatant), LowestFirst)
+            castMultiTargetBuffSpell(Priority)(castingLich)
+              .useAbility(List(goblinCombatant), LowestFirst)
 
           trackedMultiTargetBuffSpellUsedCount shouldBe 1
           trackedMultiTargetBuffSpellLevelUsed shouldBe 9
@@ -1558,7 +1584,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val championCombatant = champion.withCombatIndex(2)
 
           val (Combatant(_, updatedPaladin: Paladin), _) =
-            castMultiTargetBuffSpell(Priority)(paladinCombatant).useAbility(List(championCombatant), LowestFirst)
+            castMultiTargetBuffSpell(Priority)(paladinCombatant)
+              .useAbility(List(championCombatant), LowestFirst)
 
           trackedMultiTargetBuffSpellUsedCount shouldBe 1
           trackedMultiTargetBuffSpellLevelUsed shouldBe 1
@@ -1587,7 +1614,8 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val championCombatant = champion.withCombatIndex(2)
 
           val (Combatant(_, updatedPaladin: Paladin), _) =
-            castMultiTargetBuffSpell(Priority)(paladinCombatant).useAbility(List(championCombatant), LowestFirst)
+            castMultiTargetBuffSpell(Priority)(paladinCombatant)
+              .useAbility(List(championCombatant), LowestFirst)
 
           trackedMultiTargetBuffSpellUsedCount shouldBe 1
           trackedMultiTargetBuffSpellLevelUsed shouldBe 1
@@ -1834,7 +1862,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
-          trackedInstantEffectUsed shouldBe true
+          trackedInstantEffectUsedCount shouldBe 1
           trackedInstantEffectSpellLevelUsed shouldBe 3
         }
       }
@@ -1861,14 +1889,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val (_, List(Combatant(_, updatedGoblin: Goblin))) =
             castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(goblinCombatant), LowestFirst)
 
-          trackedInstantEffectUsed shouldBe true
+          trackedInstantEffectUsedCount shouldBe 1
           trackedInstantEffectSpellLevelUsed shouldBe 1
         }
       }
     }
 
     "spend the highest available spell slot" in {
-      forAll { wizard: Wizard =>
+      forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -1881,8 +1909,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelFive)
             .asInstanceOf[Wizard]
 
-          val updatedWizard =
-            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
+          val goblinCombatant = goblin
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
+
+          val (Combatant(_, updatedWizard: Wizard), _) =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1))
+                .useAbility(List(goblinCombatant), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe instantEffectWizard.spellSlots.secondLevel.count
@@ -1892,7 +1926,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "spend the lowest available spell slot necessary for spell which does not benefit from a higher slot" in {
-      forAll { wizard: Wizard =>
+      forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -1905,8 +1939,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelFive)
             .asInstanceOf[Wizard]
 
-          val updatedWizard =
-            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
+          val goblinCombatant = goblin
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
+
+          val (Combatant(_, updatedWizard: Wizard), _) =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1))
+              .useAbility(List(goblinCombatant), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (instantEffectWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe instantEffectWizard.spellSlots.secondLevel.count
@@ -1916,7 +1956,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "not spend a spell slot if cantrip was found and used" in {
-      forAll { wizard: Wizard =>
+      forAll { (wizard: Wizard, goblin: Goblin) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
@@ -1928,8 +1968,14 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withLevel(LevelFive)
             .asInstanceOf[Wizard]
 
-          val updatedWizard =
-            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1)).update.asInstanceOf[Wizard]
+          val goblinCombatant = goblin
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
+
+          val (Combatant(_, updatedWizard: Wizard), _) =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard.withCombatIndex(1))
+              .useAbility(List(goblinCombatant), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe instantEffectWizard.spellSlots.secondLevel.count
@@ -1981,29 +2027,25 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "target Player if caster is a Monster" in {
-      forAll { (wizard: Wizard, fighter: Fighter, goblin: Goblin) =>
+      forAll { (lich: Lich, fighter: Fighter, goblin: Goblin) =>
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
           val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect)
 
-          val instantEffectWizard = wizard
+          val instantEffectWizard = lich
             .withSpellKnown(trackedInstantSpell)
-            .withAllSpellSlotsAvailableForLevel(LevelFive)
-            .withLevel(LevelFive)
             .withCombatIndex(1)
 
-          val fighterCombatant = fighter.withCombatIndex(2)
+          val (_, List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedGoblin: Goblin))) =
+            castSingleTargetInstantEffectSpell(1)(instantEffectWizard)
+              .useAbility(List(fighter.withCombatIndex(2), goblin.withCombatIndex(3)), LowestFirst)
 
-          val goblinCombatant = goblin
-            .withHealth(50)
-            .withMaxHealth(50)
-            .withCombatIndex(3)
+          trackedInstantEffectUsedCount shouldBe 1
+          trackedInstantEffectSpellLevelUsed shouldBe 9
 
-          val (_, List(_, Combatant(_, updatedGoblin: Goblin))) =
-            castSingleTargetInstantEffectSpell(1)(instantEffectWizard).useAbility(List(fighterCombatant, goblinCombatant), LowestFirst)
-
-          updatedGoblin.health shouldBe 1
+          updatedFighter.health shouldBe 1
+          updatedGoblin.health shouldBe goblin.health
         }
       }
     }

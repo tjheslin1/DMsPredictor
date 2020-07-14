@@ -124,9 +124,9 @@ trait Tracking {
         additionalTargetEffect(target)
     }
 
-  var multiTargetAttackSpellSlotUsed = -1
+  var multiTargetAttackSpellLevelUsed = -1
   var multiTargetMeleeSpellUsedCount = 0
-  var multiMeleeSpellDamageRollCount = 0
+  var multiTargetSpellDamageRollCount = 0
   def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel,
                                    savingThrowAttribute: Attribute = Dexterity,
                                    higherSpellSlot: Boolean = true): Spell =
@@ -143,7 +143,7 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        multiMeleeSpellDamageRollCount += 1
+        multiTargetSpellDamageRollCount += 1
 
         4
       }
@@ -151,7 +151,7 @@ trait Tracking {
       override def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel, targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
         multiTargetMeleeSpellUsedCount += 1
 
-        multiTargetAttackSpellSlotUsed = spellLevel.value
+        multiTargetAttackSpellLevelUsed = spellLevel.value
 
         super.effect(spellCaster, spellLevel, targets)}
     }
@@ -214,7 +214,7 @@ trait Tracking {
         additionalTargetEffect(spellCaster, target, others, savingThrowPassed)
     }
 
-  var multiTargetSavingThrowSpellSlotUsed = -1
+  var multiTargetSavingThrowSpellLevelUsed = -1
   var multiTargetSavingThrowSpellUsedCount = 0
   var multiSavingThrowSpellDamageRollCount = 0
   def trackedMultiTargetSavingThrowSpell(spellLvl: SpellLevel,
@@ -243,7 +243,7 @@ trait Tracking {
                                  targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
         multiTargetSavingThrowSpellUsedCount += 1
 
-        multiTargetSavingThrowSpellSlotUsed = spellLevel.value
+        multiTargetSavingThrowSpellLevelUsed = spellLevel.value
 
         super.effect(spellCaster, spellLevel, targets)
       }
@@ -380,8 +380,8 @@ trait Tracking {
     (spellCaster, oneHpTarget)
   }
 
-  var trackedInstantEffectUsed = false
   var trackedInstantEffectSpellLevelUsed = -1
+  var trackedInstantEffectUsedCount = 0
   def trackedInstantEffectSpell(spellLvl: SpellLevel,
                                  trackedEffect: (SpellCaster, Combatant) => (SpellCaster, Combatant) =
         setHealthToOneEffect,
@@ -394,7 +394,7 @@ trait Tracking {
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       def instantEffect(spellCaster: SpellCaster, spellLevel: SpellLevel, target: Combatant): (SpellCaster, Combatant) = {
-        trackedInstantEffectUsed = true
+        trackedInstantEffectUsedCount += 1
         trackedInstantEffectSpellLevelUsed = spellLevel.value
 
         trackedEffect(spellCaster, target)
