@@ -158,12 +158,12 @@ class CoreAbilitiesSpec extends UnitSpecBase {
     }
 
     "cast a spell (saving throw) using the highest available spell slot which has a damaging spell" in {
-      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+      forAll { (cleric: Cleric, goblin: Goblin) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedSpell = trackedSingleTargetSavingThrowSpell(2, Wisdom)
-          val trackedMultiSpell = trackedMultiTargetSavingThrowSpell(2, Strength, higherSpellSlot = false)
+          val trackedSpell = trackedSingleTargetSavingThrowSpell(2, Strength)
+          val trackedMultiSpell = trackedMultiTargetSavingThrowSpell(2, Wisdom, higherSpellSlot = false)
           val trackedHealSpell = trackedHealingSpell(3)
 
           val trackedCleric = cleric
@@ -172,16 +172,18 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withProficiencyBonus(6)
             .withLevel(LevelFive)
-            .withWisdom(10)
+            .withWisdom(20)
             .withCombatIndex(1)
 
-          val monster = testMonster.withWisdom(10).withCombatIndex(2)
+          println(s"SIZE: ${trackedCleric.creature.asInstanceOf[Cleric].spellsKnown.size}")
+
+          val goblinCombatant = goblin.withStrength(1).withCombatIndex(2)
 
           castSingleTargetOffensiveSpell(Priority)(trackedCleric)
-            .useAbility(List(monster), LowestFirst)
+            .useAbility(List(goblinCombatant), LowestFirst)
 
-          singleTargetSavingThrowSpellLevelUsed shouldBe 3
           singleTargetSavingThrowSpellUsedCount shouldBe 1
+          singleTargetSavingThrowSpellLevelUsed shouldBe 3
 
           multiTargetSavingThrowSpellUsedCount shouldBe 0
 

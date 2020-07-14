@@ -3,7 +3,6 @@ package io.github.tjheslin1.dmspredictor.classes
 import cats.data.NonEmptyList
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
-import eu.timepit.refined
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.ClassAbilities._
@@ -492,7 +491,10 @@ object CoreAbilities extends LazyLogging {
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
         val instantEffectCantrip: Option[Spell] =
-          spellCaster.spellsKnown.get((0, InstantEffectSpellEffect))
+          spellCaster.spellsKnown
+            .find { spell =>
+              spell.spellLevel.value == 0 && spell.spellEffect == InstantEffectSpellEffect
+            }
 
         val (optSpell, foundSpellLevel) =
           highestSpellSlot match {
@@ -565,15 +567,15 @@ object CoreAbilities extends LazyLogging {
       capableOfCasting &&
       spellCaster.spellsKnown
         .filter {
-          case (_, spell) if singleTargetSpellsOnly && multiTargetSpellsOnly =>
-            singleTargetSpellOnly(spell) || multiTargetSpellOnly(spell)
-          case (_, spell) if singleTargetSpellsOnly => singleTargetSpellOnly(spell)
-          case (_, spell) if multiTargetSpellsOnly  => multiTargetSpellOnly(spell)
+          case spell if singleTargetSpellsOnly && multiTargetSpellsOnly =>
+            isSingleTargetSpell(spell) || isMultiTargetSpell(spell)
+          case spell if singleTargetSpellsOnly => isSingleTargetSpell(spell)
+          case spell if multiTargetSpellsOnly  => isMultiTargetSpell(spell)
           case _                                    => true
         }
         .exists {
-          case ((spellLvl, spellEffect), spell) if spellLvl <= maxSpellLevel =>
-            spellEffect match {
+          case spell if spell.spellLevel <= maxSpellLevel =>
+            spell.spellEffect match {
               case `effect` if canCastSpell(spellCaster, spell) => true
               case _                                            => false
             }

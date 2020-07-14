@@ -31,7 +31,7 @@ import monocle.macros.{GenLens, Lenses}
     skills: Skills,
     proficiencyBonus: ProficiencyBonus,
     spellSlots: SpellSlots,
-    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardClericSpellList,
+    spellsKnown: List[Spell] = standardClericSpellList,
     channelDivinityUsed: Boolean = false,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
@@ -80,12 +80,12 @@ object Cleric {
 
   import BaseClericAbilities._
 
-  val standardClericSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (SacredFlame.spellLevel, SacredFlame.spellEffect)         -> SacredFlame,
-    (GuidingBolt.spellLevel, GuidingBolt.spellEffect)         -> GuidingBolt,
-    (CureWounds.spellLevel, CureWounds.spellEffect)           -> CureWounds,
-    (HoldPerson.spellLevel, HoldPerson.spellEffect)           -> HoldPerson,
-    (SpiritGuardians.spellLevel, SpiritGuardians.spellEffect) -> SpiritGuardians
+  val standardClericSpellList: List[Spell] = List(
+    SacredFlame,
+    GuidingBolt,
+    CureWounds,
+    HoldPerson,
+    SpiritGuardians
   )
 
   val standardClericAbilities: List[CombatantAbility] = List(

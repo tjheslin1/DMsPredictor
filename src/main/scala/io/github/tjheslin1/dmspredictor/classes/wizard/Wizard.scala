@@ -29,7 +29,7 @@ import monocle.macros.{GenLens, Lenses}
     skills: Skills,
     proficiencyBonus: ProficiencyBonus,
     spellSlots: SpellSlots,
-    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = Wizard.standardWizardSpellList,
+    spellsKnown: List[Spell] = Wizard.standardWizardSpellList,
     castShieldAsReaction: Boolean = true,
     mageArmourPrepared: Boolean = true,
     armour: Armour = NoArmour,
@@ -78,11 +78,11 @@ import monocle.macros.{GenLens, Lenses}
 
 object Wizard {
 
-  val standardWizardSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (FireBolt.spellLevel, FireBolt.spellEffect)         -> FireBolt,
-    (MagicMissile.spellLevel, MagicMissile.spellEffect) -> MagicMissile,
-    (AcidArrow.spellLevel, AcidArrow.spellEffect)       -> AcidArrow,
-    (Fireball.spellLevel, Fireball.spellEffect)         -> Fireball
+  val standardWizardSpellList: List[Spell] = List(
+    FireBolt,
+    MagicMissile,
+    AcidArrow,
+    Fireball
   )
 
   val standardWizardAbilities: List[CombatantAbility] = List(

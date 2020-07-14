@@ -1,6 +1,5 @@
 package io.github.tjheslin1.dmspredictor.classes
 
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
@@ -15,7 +14,7 @@ trait SpellCaster extends Creature {
   val spellCastingModifier: Int
   val spellCastingAttribute: Attribute
 
-  val spellsKnown: Map[(SpellLevel, SpellEffect), Spell]
+  val spellsKnown: List[Spell]
   val spellSlots: SpellSlots
   val concentratingSpell: Option[Spell]
 
@@ -24,7 +23,7 @@ trait SpellCaster extends Creature {
 
   def isConcentrating: Boolean = concentratingSpell.isDefined
 
-  def cantrip: Option[Spell] = spellsKnown.get((0, DamageSpellEffect))
+  def cantrip: Option[Spell] = spellsKnown.find(_.spellLevel.value == 0)
 }
 
 object SpellCaster {

@@ -116,6 +116,7 @@ trait Tracking {
 
       def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         meleeSpellUsedCount += 1
+        meleeSpellLevelUsed = spellLevel.value
 
         dmg
       }
@@ -188,7 +189,7 @@ trait Tracking {
                                List[Combatant],
                                Boolean) => (SpellCaster, Combatant, List[Combatant]) =
         (c, t, o, s) => (c, t, o)): Spell =
-    new SingleTargetSavingThrowSpell() {
+    new SingleTargetSavingThrowSpell {
       val savingThrowAttribute: Attribute = savingAttribute
       val halfDamageOnSave: Boolean       = damageOnSave
 
@@ -200,9 +201,10 @@ trait Tracking {
       val requiresConcentration       = false
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
-      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
+      override def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
         singleTargetSavingThrowSpellUsedCount += 1
-        singleTargetSavingThrowSpellLevelUsed = spellLevel
+        singleTargetSavingThrowSpellLevelUsed = spellLevel.value
+
         4
       }
 
