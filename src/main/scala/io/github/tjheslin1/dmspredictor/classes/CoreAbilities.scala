@@ -571,7 +571,7 @@ object CoreAbilities extends LazyLogging {
             isSingleTargetSpell(spell) || isMultiTargetSpell(spell)
           case spell if singleTargetSpellsOnly => isSingleTargetSpell(spell)
           case spell if multiTargetSpellsOnly  => isMultiTargetSpell(spell)
-          case _                                    => true
+          case _                               => true
         }
         .exists {
           case spell if spell.spellLevel <= maxSpellLevel =>

@@ -53,13 +53,13 @@ object Spell {
         else true
 
       spellTypeMatches &&
-        foundSpell.spellLevel == spellLevel &&
-        foundSpell.spellEffect == spellEffect
+      foundSpell.spellLevel == spellLevel &&
+      foundSpell.spellEffect == spellEffect
     }
 
     val spellLookup = spellCaster.spellsKnown.find {
       case foundSpell if foundSpellMatches(foundSpell) => true
-      case _ => false
+      case _                                           => false
     }
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
@@ -118,7 +118,7 @@ object Spell {
       case _: SingleTargetHealingSpell       => true
       case _: SelfBuffSpell                  => true
 
-      case _                                 => false
+      case _ => false
     }
 
   def isMultiTargetSpell(spell: Spell): Boolean =
@@ -126,7 +126,7 @@ object Spell {
       case _: MultiTargetSavingThrowSpell => true
       case _: MultiTargetBuffSpell        => true
 
-      case _                              => false
+      case _ => false
     }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =

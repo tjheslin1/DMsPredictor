@@ -175,8 +175,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withWisdom(20)
             .withCombatIndex(1)
 
-          println(s"SIZE: ${trackedCleric.creature.asInstanceOf[Cleric].spellsKnown.size}")
-
           val goblinCombatant = goblin.withStrength(1).withCombatIndex(2)
 
           castSingleTargetOffensiveSpell(Priority)(trackedCleric)
@@ -365,7 +363,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             .withSpellsKnown(trackedMeleeSpellAttack(2), // damage dealt is 4
               trackedMultiMeleeSpellAttack(3, higherSpellSlot = false)
             )
-            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
             .withCombatIndex(1)
 
           val easyToHitFighter = fighter
@@ -433,8 +430,11 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
+          val trackedSpell = trackedHealingSpell(1, higherSpellSlot = true)
+          val trackedAttackSpell = trackedMeleeSpellAttack(1)
+
           val healingCleric = cleric
-            .withSpellKnown(trackedHealingSpell(3))
+            .withSpellsKnown(trackedSpell, trackedAttackSpell)
             .withAllSpellSlotsAvailableForLevel(LevelFive)
             .withLevel(LevelFive)
             .withWisdom(12)
@@ -446,32 +446,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castSingleTargetHealingSpell(Priority)(healingCleric)
               .useAbility(List(damagedFighter), LowestFirst)
 
-          trackedHealingSpellUsedCount shouldBe 0
+          trackedHealingSpellUsedCount shouldBe 1
+          trackedHealingSpellLevelUsed shouldBe 3
 
-          healedFighter.creature.health shouldBe 11
-        }
-      }
-    }
-
-    "cast a spell (healing) using the highest available spell slot which has a healing spell" in {
-      forAll { (cleric: Cleric, fighter: Fighter) =>
-        new TestContext {
-          implicit val roll: RollStrategy = _ => RollResult(10)
-
-          val healingCleric = cleric
-            .withSpellKnown(trackedHealingSpell(2))
-            .withAllSpellSlotsAvailableForLevel(LevelFive)
-            .withLevel(LevelFive)
-            .withWisdom(12)
-            .withCombatIndex(1)
-
-          val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
-
-          val (_, List(Combatant(_, healedFighter: Fighter))) =
-            castSingleTargetHealingSpell(Priority)(healingCleric)
-              .useAbility(List(damagedFighter), LowestFirst)
-
-          trackedHealingSpellUsedCount shouldBe 0
+          meleeSpellUsedCount shouldBe 0
 
           healedFighter.creature.health shouldBe 11
         }
@@ -606,7 +584,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val lichCombatant = lich
             .withSpellKnown(trackedSpell)
-            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
             .withIntelligence(10)
             .withCombatIndex(1)
 
