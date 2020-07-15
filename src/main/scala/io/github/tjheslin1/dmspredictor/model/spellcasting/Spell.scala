@@ -46,37 +46,20 @@ object Spell {
       singleTargetSpellsOnly: Boolean = false,
       multiTargetSpellsOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
-//    val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
-
-    def foundSpellMatches(foundSpellLevel: SpellLevel,
-                          foundSpellEffect: SpellEffect,
-                          foundSpell: Spell): Boolean = {
-      println(foundSpell.name)
-
+    def foundSpellMatches(foundSpell: Spell): Boolean = {
       val spellTypeMatches =
         if (singleTargetSpellsOnly && isSingleTargetSpell(foundSpell) == false) false
         else if (multiTargetSpellsOnly && isMultiTargetSpell(foundSpell) == false) false
         else true
 
-      println(s"spellTypeMatches = $spellTypeMatches")
-
       spellTypeMatches &&
-        foundSpellLevel == spellLevel &&
-        foundSpellEffect == spellEffect
+        foundSpell.spellLevel == spellLevel &&
+        foundSpell.spellEffect == spellEffect
     }
 
     val spellLookup = spellCaster.spellsKnown.find {
-      case ((foundSpellLevel, foundSpellEffect), foundSpell)
-        if foundSpellMatches(foundSpellLevel, foundSpellEffect, foundSpell) => true
+      case foundSpell if foundSpellMatches(foundSpell) => true
       case _ => false
-    }.map {
-      case (_, foundSpell) => foundSpell
-    }
-
-    spellLookup.fold {
-      println(">>>>>> SPELL LOOKUP EMPTY")
-    } { spell =>
-      println(s">>>>>> SPELL: ${spell.name}")
     }
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
