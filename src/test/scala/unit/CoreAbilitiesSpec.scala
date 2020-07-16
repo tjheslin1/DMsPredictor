@@ -655,7 +655,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
             castConditionSpell(Priority)(trackedCleric).useAbility(List(monster), LowestFirst)
 
           conditionSpellUsedCount shouldBe 1
-          conditionSpellLevelUsed shouldBe 2
+          conditionSpellLevelUsed shouldBe 3
 
           updatedCleric.concentratingSpell shouldBe trackedSpell.some
         }
@@ -827,7 +827,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
 
           val lichCombatant = lich
             .withSpellKnown(trackedConditionSpell(spellLvl = 2, savingThrowAttribute = Dexterity))
-            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
             .withCombatIndex(1)
 
           val easyToHitFighter = fighter.withDexterity(2).withCombatIndex(2)
@@ -875,7 +874,6 @@ class CoreAbilitiesSpec extends UnitSpecBase {
               .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           multiTargetMeleeSpellUsedCount shouldBe 1
-          multiTargetMeleeSpellUsedCount shouldBe 3
           multiTargetSpellDamageRollCount shouldBe 1
 
           meleeSpellUsedCount shouldBe 0
@@ -1149,9 +1147,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val trackedSingleSpell = trackedMeleeSpellAttack(3, higherSpellSlot = false)
 
           val lichCombatant = lich
-            .withSpellKnown(
-              trackedSpell)
-            .withSpellSlots(SpellSlots(0, 1, 0, 0, 0, 0, 0, 0, 0))
+            .withSpellKnown(trackedSpell)
             .withCombatIndex(1)
 
           val easyToHitFighter = fighter
@@ -2010,7 +2006,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           override implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect)
+          val trackedInstantSpell = trackedInstantEffectSpell(1, setHealthToOneEffect, higherSpellSlot = true)
 
           val instantEffectWizard = lich
             .withSpellKnown(trackedInstantSpell)
