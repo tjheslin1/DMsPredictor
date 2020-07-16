@@ -125,38 +125,6 @@ trait Tracking {
         additionalTargetEffect(target)
     }
 
-  var multiTargetAttackSpellLevelUsed = -1
-  var multiTargetMeleeSpellUsedCount = 0
-  var multiTargetSpellDamageRollCount = 0
-  def trackedMultiMeleeSpellAttack(spellLvl: SpellLevel,
-                                   savingThrowAttribute: Attribute = Dexterity,
-                                   higherSpellSlot: Boolean = true): Spell =
-    new MultiTargetSavingThrowSpell {
-
-      val name: String           = s"tracked-multi-melee-spell-${spellLvl.value}"
-      val damageType: DamageType = Fire
-
-      val school: SchoolOfMagic       = Evocation
-      val castingTime: CastingTime    = OneActionCast
-      val spellLevel: SpellLevel      = spellLvl
-      val attribute: Attribute        = savingThrowAttribute
-      val halfDamageOnSave            = false
-      val benefitsFromHigherSpellSlot = higherSpellSlot
-
-      def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
-        multiTargetSpellDamageRollCount += 1
-
-        4
-      }
-
-      override def effect[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel, targets: List[Combatant]): (SpellCaster, List[Combatant]) = {
-        multiTargetMeleeSpellUsedCount += 1
-
-        multiTargetAttackSpellLevelUsed = spellLevel.value
-
-        super.effect(spellCaster, spellLevel, targets)}
-    }
-
   var trackedHealingSpellLevelUsed = -1
   var trackedHealingSpellUsedCount = 0
   def trackedHealingSpell(spellLvl: SpellLevel,
