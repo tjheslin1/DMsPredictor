@@ -235,7 +235,7 @@ object CoreAbilities extends LazyLogging {
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name             = "Cast Spell (Multi Target Condition)"
+      val name             = "Cast Spell (Condition)"
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
