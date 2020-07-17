@@ -22,7 +22,6 @@ object WizardSpells extends LazyLogging {
     val castingTime                 = OneActionCast
     val spellTargetStyle            = RangedSpellAttack
     val spellLevel: SpellLevel      = 0
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = false
     val halfDamageOnMiss            = false
 
@@ -43,7 +42,6 @@ object WizardSpells extends LazyLogging {
     val castingTime                 = OneActionCast
     val spellTargetStyle            = RangedSpellAttack
     val spellLevel: SpellLevel      = 1
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = true
     val halfDamageOnMiss            = false
 
@@ -80,7 +78,6 @@ object WizardSpells extends LazyLogging {
     val school                      = Evocation
     val castingTime                 = OneActionCast
     val spellLevel: SpellLevel      = 2
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = true
     val halfDamageOnMiss            = true
 
@@ -108,7 +105,6 @@ object WizardSpells extends LazyLogging {
     val attribute: Attribute        = Dexterity
     val halfDamageOnSave            = true
     val spellLevel: SpellLevel      = 3
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (5 + spellLevel) * D8
@@ -255,7 +251,6 @@ object WizardSpells extends LazyLogging {
     val school                      = Enchantment
     val castingTime                 = OneActionCast
     val spellLevel                  = 8
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = false
 
     def instantEffect(
@@ -283,7 +278,6 @@ object WizardSpells extends LazyLogging {
     val school                      = Enchantment
     val castingTime                 = OneActionCast
     val spellLevel                  = 9
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = false
 
     def instantEffect(

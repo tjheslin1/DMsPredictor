@@ -163,29 +163,9 @@ object Actions extends LazyLogging {
 
     val (updatedAttacker2, updatedTarget2, updatedOthers) =
       (target.creature, updatedTarget.creature) match {
-        case (spellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
-            if lossOfConcentration(spellCaster, damagedSpellCaster) =>
-          spellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
-            case conditionSpell: ConcentrationConditionSpell =>
-              val concentratedCondition = conditionSpell.conditionFrom(spellCaster)
-
-              val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
-
-              (
-                conditionRemovedAttacker,
-                updatedTarget,
-                others.map(removeCondition(_, concentratedCondition)))
-            case multiTargetBuffSpell: MultiTargetBuffSpell =>
-              val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
-
-              val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
-
-              val updatedOthers = others
-                .map(removeCondition(_, concentratedBuffCondition))
-
-              (updatedAttacker, conditionRemovedTarget, updatedOthers)
-            case _ => (updatedAttacker, updatedTarget, others)
-          }
+        case (concentratingSpellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
+            if lossOfConcentration(concentratingSpellCaster, damagedSpellCaster) =>
+          updateConditionOfOthers(concentratingSpellCaster, updatedAttacker, updatedTarget, others)
         case _ =>
           (updatedAttacker, updatedTarget, others)
       }
@@ -238,6 +218,36 @@ object Actions extends LazyLogging {
         val (a, t, o) = combatants
         f(a, t, o)
     }
+
+  private def updateConditionOfOthers[_: RS](
+      concentratingSpellCaster: SpellCaster,
+      updatedAttacker: Combatant,
+      updatedTarget: Combatant,
+      others: List[Combatant]
+  ) = {
+    concentratingSpellCaster.concentratingSpell.fold((updatedAttacker, updatedTarget, others)) {
+      case conditionSpell: ConditionSpell =>
+        val concentratedCondition = conditionSpell.conditionFrom(concentratingSpellCaster)
+
+        // TODO Should remove condition from whoever was targeted by adding identifier to Condition
+        val conditionRemovedAttacker = removeCondition(updatedAttacker, concentratedCondition)
+
+        (
+          conditionRemovedAttacker,
+          updatedTarget,
+          others.map(removeCondition(_, concentratedCondition)))
+      case multiTargetBuffSpell: MultiTargetBuffSpell =>
+        val concentratedBuffCondition = multiTargetBuffSpell.buffCondition
+
+        val conditionRemovedTarget = removeCondition(updatedTarget, concentratedBuffCondition)
+
+        val updatedOthers = others
+          .map(removeCondition(_, concentratedBuffCondition))
+
+        (updatedAttacker, conditionRemovedTarget, updatedOthers)
+      case _ => (updatedAttacker, updatedTarget, others)
+    }
+  }
 
   private def calculatedDamage[_: RS](
       attacker: Combatant,

@@ -8,12 +8,14 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellSavingThrowPassed
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
-abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
+abstract class ConditionSpell extends Spell with LazyLogging {
 
-  val singleTarget: Boolean
+  val spellEffect = ConditionSpellEffect
+
+  val affectedTargets: Int
   val attribute: Attribute
-  val spellEffect: SpellEffect       = ConcentrationSpell
-  val requiresConcentration: Boolean = true
+
+  val conditionTargetsPriority: Ordering[Combatant]
 
   def conditionFrom(spellCaster: SpellCaster): Condition
 
@@ -30,14 +32,13 @@ abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
   def effect[_: RS](
       spellCaster: SpellCaster,
       spellLevel: SpellLevel,
-      allTargets: List[Combatant]
+      targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
-
-    val targets = if (singleTarget) List(allTargets.head) else allTargets
-
     logger.debug(s"${spellCaster.name} is casting $name")
 
-    val updatedTargets = targets.map { target =>
+    val conditionTargets = targets.sorted(conditionTargetsPriority).take(affectedTargets)
+
+    val updatedTargets = conditionTargets.map { target =>
       val (passed, updatedCreature) =
         spellSavingThrowPassed(spellCaster, attribute, target.creature)
 
@@ -57,8 +58,8 @@ abstract class ConcentrationConditionSpell extends Spell with LazyLogging {
       val updatedConcentratingSpellCaster =
         SpellCaster.concentratingLens.set(this.some)(spellCaster)
 
-      (updatedConcentratingSpellCaster, allTargets.replace(updatedTargets))
+      (updatedConcentratingSpellCaster, targets.replace(updatedTargets))
     } else
-      (spellCaster, allTargets.replace(updatedTargets))
+      (spellCaster, targets.replace(updatedTargets))
   }
 }

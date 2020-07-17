@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import util.TestData._
 
 class PaladinSpec extends UnitSpecBase {
@@ -27,7 +28,7 @@ class PaladinSpec extends UnitSpecBase {
     "not handle concentration if damage taken was 0" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(1)
 
-      val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
+      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
 
       val concentratingPaladin = random[Paladin]
         .withSpellKnown(trackedConcentrationSpell)
@@ -44,7 +45,7 @@ class PaladinSpec extends UnitSpecBase {
     "handle loss of concentration if Paladin goes unconscious" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(19)
 
-      val trackedConcentrationSpell = trackedMeleeSpellAttack(1, concentration = true)
+      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
 
       val concentratingPaladin = random[Paladin]
         .withSpellKnown(trackedConcentrationSpell)

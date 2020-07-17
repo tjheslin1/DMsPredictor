@@ -42,7 +42,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val updatedCleric = handleConcentration(lowConstitutionCleric,
                                                   damageTaken = 20,
-                                                  concentrationSpell = trackedSpell)
+                                                  buffSpell = trackedSpell)
 
           updatedCleric.isConcentrating shouldBe false
         }
@@ -63,9 +63,33 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val updatedCleric = handleConcentration(highConstitutionCleric,
                                                   damageTaken = 10,
-                                                  concentrationSpell = trackedSpell)
+                                                  buffSpell = trackedSpell)
 
           updatedCleric.isConcentrating shouldBe true
+        }
+      }
+    }
+
+    "handle loss of concentration of ConditionSpell" in {
+      forAll { ranger: Ranger =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val trackedSpell = trackedConditionSpell(1, concentration = true)
+
+          val concentratingRanger = ranger
+            .withSpellKnown(trackedSpell)
+            .withConcentratingOn(trackedSpell)
+            .withAllSpellSlotsAvailableForLevel(LevelTwo)
+            .withLevel(LevelTwo)
+            .withConstitution(2)
+            .asInstanceOf[Ranger]
+
+          val updatedRanger =
+            handleConcentration(concentratingRanger, trackedSpell, 50).asInstanceOf[Ranger]
+
+          updatedRanger.conditions shouldBe List.empty[Condition]
+          updatedRanger.concentratingSpell shouldBe none[Spell]
         }
       }
     }
@@ -80,6 +104,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val concentratingRanger = ranger
             .withSpellKnown(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withLevel(LevelTwo)
             .withConstitution(2)
@@ -104,6 +129,7 @@ class ConcentrationSpec extends UnitSpecBase {
 
           val concentratingPaladin = paladin
             .withSpellKnown(trackedSpell)
+            .withConcentratingOn(trackedSpell)
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
             .withLevel(LevelTwo)
             .withConstitution(2)

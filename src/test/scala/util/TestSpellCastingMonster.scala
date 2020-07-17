@@ -38,7 +38,7 @@ import util.TestMonster.defaultScores
     perceptionScore: Int = 0,
     stealthScore: Int = 0,
     savingThrowScores: Map[Attribute, Int] = defaultScores,
-    spellsKnown: Map[(SpellLevel, spellcasting.SpellEffect), Spell] = Map.empty,
+    spellsKnown: List[Spell] = List.empty[Spell],
     spellSlots: SpellSlots = SpellSlots(0, 0, 0),
     concentratingSpell: Option[Spell] = none[Spell],
     spellCastingModifier: Int = 0,

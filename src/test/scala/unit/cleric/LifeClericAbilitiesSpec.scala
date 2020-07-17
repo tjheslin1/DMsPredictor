@@ -33,7 +33,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
           discipleOfLife(1)(lifeCleric).useAbility(List(weakFighter), LowestFirst)
 
-          trackedHealingSpellUsed shouldBe true
+          trackedHealingSpellUsedCount shouldBe 1
         }
       }
     }

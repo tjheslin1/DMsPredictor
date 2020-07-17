@@ -34,7 +34,7 @@ import monocle.macros.{GenLens, Lenses}
     proficiencyBonus: ProficiencyBonus,
     layOnHandsPool: Int,
     spellSlots: SpellSlots,
-    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardPaladinSpellList,
+    spellsKnown: List[Spell] = standardPaladinSpellList,
     channelDivinityUsed: Boolean = false,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
@@ -84,9 +84,9 @@ import monocle.macros.{GenLens, Lenses}
 
 object Paladin {
 
-  val standardPaladinSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (CureWounds.spellLevel, CureWounds.spellEffect) -> CureWounds,
-    (Bless.spellLevel, Bless.spellEffect)           -> Bless
+  val standardPaladinSpellList: List[Spell] = List(
+    CureWounds,
+    Bless
   )
 
   val standardPaladinAbilities: List[CombatantAbility] = List(

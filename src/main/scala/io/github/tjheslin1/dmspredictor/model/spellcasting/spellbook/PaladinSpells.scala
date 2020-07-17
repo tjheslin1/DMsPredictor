@@ -3,7 +3,6 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook
 import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, PassiveCondition}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.MultiTargetBuffSpell.focusTanksCreatureOrder
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
@@ -29,8 +28,11 @@ object PaladinSpells {
     val affectedTargets        = 2 + spellLevel
 
     val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
-      if (focusTanksCreatureOrder(x.creature) == focusTanksCreatureOrder(y.creature)) 0
-      else if (focusTanksCreatureOrder(x.creature) < focusTanksCreatureOrder(y.creature)) -1
+      if (focusHigherHealthCreatureOrder(x.creature) == focusHigherHealthCreatureOrder(y.creature))
+        0
+      else if (
+        focusHigherHealthCreatureOrder(x.creature) < focusHigherHealthCreatureOrder(y.creature)
+      ) -1
       else 1
   }
 
