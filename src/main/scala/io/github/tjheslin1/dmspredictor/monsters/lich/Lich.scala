@@ -39,7 +39,7 @@ import monocle.macros.{GenLens, Lenses}
     attackStatus: AttackStatus = Regular,
     defenseStatus: AttackStatus = Regular,
     spellSlots: SpellSlots = SpellSlots(4, 3, 3, 3, 3, 1, 1, 1, 1),
-    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardLichSpellList,
+    spellsKnown: List[Spell] = standardLichSpellList,
     concentratingSpell: Option[Spell] = none[Spell],
     isAlive: Boolean = true,
     legendaryResistances: Int = 3,
@@ -120,18 +120,17 @@ object Lich {
     val ParalyzingSaveDC = 18
   }
 
-  val standardLichSpellList: Map[(SpellLevel, SpellEffect), Spell] =
-    Map(
-      (FireBolt.spellLevel, FireBolt.spellEffect)           -> FireBolt,
-      (MagicMissile.spellLevel, MagicMissile.spellEffect)   -> MagicMissile,
-      (AcidArrow.spellLevel, AcidArrow.spellEffect)         -> AcidArrow,
-      (Fireball.spellLevel, Fireball.spellEffect)           -> Fireball,
-      (Blight.spellLevel, Blight.spellEffect)               -> Blight,
-      (Disintegrate.spellLevel, Disintegrate.spellEffect)   -> Disintegrate,
-      (FingerOfDeath.spellLevel, FingerOfDeath.spellEffect) -> FingerOfDeath,
-      (PowerWordStun.spellLevel, PowerWordStun.spellEffect) -> PowerWordStun,
-      (PowerWordKill.spellLevel, PowerWordKill.spellEffect) -> PowerWordKill
-    )
+  val standardLichSpellList: List[Spell] = List(
+    FireBolt,
+    MagicMissile,
+    AcidArrow,
+    Fireball,
+    Blight,
+    Disintegrate,
+    FingerOfDeath,
+    PowerWordStun,
+    PowerWordKill
+  )
 
   val strengthLens: Lens[Lich, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Lich, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)

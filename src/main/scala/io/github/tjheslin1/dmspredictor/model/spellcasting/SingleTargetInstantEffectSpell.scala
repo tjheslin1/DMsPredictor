@@ -7,7 +7,9 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetInstantEffectSpell extends Spell with LazyLogging {
 
-  val spellEffect = InstantEffectSpell
+  val requiresConcentration = false
+
+  val spellEffect = InstantEffectSpellEffect
   val damageType  = Magical
 
   def instantEffect(
@@ -21,7 +23,6 @@ abstract class SingleTargetInstantEffectSpell extends Spell with LazyLogging {
       spellLevel: SpellLevel,
       targets: List[Combatant]
   ): (SpellCaster, List[Combatant]) = {
-
     logger.debug(s"${spellCaster.name} is casting $name")
 
     val target = targets.head

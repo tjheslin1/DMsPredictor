@@ -153,11 +153,10 @@ object TestData {
       _spellSlots.set(spellSlots)(testSpellCastingMonster)
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(testSpellCastingMonster)
+      _spellsKnown.set(List(spell))(testSpellCastingMonster)
 
     def withSpellsKnown(spells: Spell*) =
-      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
-        testSpellCastingMonster)
+      _spellsKnown.set(spells.toList)(testSpellCastingMonster)
 
     def withConcentratingOn(concentrationSpell: Option[Spell]) =
       _concentratingSpell.set(concentrationSpell)(testSpellCastingMonster)
@@ -272,10 +271,9 @@ object TestData {
       _concentratingSpell.set(concentratingSpell.some)(cleric)
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(cleric)
+      _spellsKnown.set(List(spell))(cleric)
     def withSpellsKnown(spells: Spell*) =
-      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
-        cleric)
+      _spellsKnown.set(spells.toList)(cleric)
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(clericSpellSlots(level))(cleric)
     def withNoSpellSlotsAvailable() =
@@ -314,10 +312,9 @@ object TestData {
     import Wizard._
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(wizard)
+      _spellsKnown.set(List(spell))(wizard)
     def withSpellsKnown(spells: Spell*) =
-      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
-        wizard)
+      _spellsKnown.set(spells.toList)(wizard)
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(wizardSpellSlots(level))(wizard)
     def withSpellSlots(spellSlots: SpellSlots) =
@@ -342,7 +339,10 @@ object TestData {
     def withBonusActionUsed() = _bonusActionUsed.set(true)(ranger)
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(ranger)
+      _spellsKnown.set(List(spell))(ranger)
+
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.toList)(ranger)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(rangerSpellSlots(level))(ranger)
@@ -361,7 +361,10 @@ object TestData {
     def withBonusActionUsed() = _bonusActionUsed.set(true)(hunter)
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(hunter)
+      _spellsKnown.set(List(spell))(hunter)
+
+    def withSpellsKnown(spells: Spell*) =
+      _spellsKnown.set(spells.toList)(hunter)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(rangerSpellSlots(level))(hunter)
@@ -379,10 +382,10 @@ object TestData {
       _fightingStyles.set(List.empty[PaladinFightingStyle])(paladin)
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(paladin)
+      _spellsKnown.set(List(spell))(paladin)
 
     def withSpellsKnown(spells: Spell*) =
-      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(paladin)
+      _spellsKnown.set(spells.toList)(paladin)
 
     def withAllSpellSlotsAvailableForLevel(level: Level) =
       _spellSlots.set(paladinSpellSlots(level))(paladin)
@@ -404,11 +407,10 @@ object TestData {
     import Lich._
 
     def withSpellKnown(spell: Spell) =
-      _spellsKnown.set(Map((spell.spellLevel, spell.spellEffect) -> spell))(lich)
+      _spellsKnown.set(List(spell))(lich)
 
     def withSpellsKnown(spells: Spell*) =
-      _spellsKnown.set(spells.map(spell => (spell.spellLevel, spell.spellEffect) -> spell).toMap)(
-        lich)
+      _spellsKnown.set(spells.toList)(lich)
 
     def withSpellSlots(spellSlots: SpellSlots) =
       _spellSlots.set(spellSlots)(lich)
@@ -835,7 +837,7 @@ trait TestData extends RandomDataGenerator {
         arbSkills.perception,
         arbSkills.stealth,
         TestSpellCastingMonster.defaultScores,
-        Map.empty[(SpellLevel, spellcasting.SpellEffect), Spell],
+        List.empty[Spell],
         SpellSlots(0, 0, 0),
         none[Spell],
         0,

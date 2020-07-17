@@ -39,7 +39,7 @@ class BaseRangerAbilitiesSpec extends UnitSpecBase {
 
           Move.takeMove(Queue(healingRanger, woundedFighter, monster), LowestFirst)
 
-          trackedHealingSpellUsed shouldBe true
+          trackedHealingSpellUsedCount shouldBe 1
         }
       }
     }

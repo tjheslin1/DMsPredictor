@@ -32,7 +32,7 @@ import monocle.macros.{GenLens, Lenses}
     skills: Skills,
     proficiencyBonus: ProficiencyBonus,
     spellSlots: SpellSlots,
-    spellsKnown: Map[(SpellLevel, SpellEffect), Spell] = standardRangerSpellList,
+    spellsKnown: List[Spell] = standardRangerSpellList,
     armour: Armour = NoArmour,
     offHand: Option[Equipment] = None,
     fightingStyles: List[RangerFightingStyle] = List.empty[RangerFightingStyle],
@@ -91,9 +91,9 @@ object Ranger {
     twoWeaponFighting(5)
   )
 
-  val standardRangerSpellList: Map[(SpellLevel, SpellEffect), Spell] = Map(
-    (CureWounds.spellLevel, CureWounds.spellEffect)   -> CureWounds,
-    (HuntersMark.spellLevel, HuntersMark.spellEffect) -> HuntersMark
+  val standardRangerSpellList: List[Spell] = List(
+    CureWounds,
+    HuntersMark
   )
 
   implicit def rangerShow[_: RS]: Show[Ranger] =

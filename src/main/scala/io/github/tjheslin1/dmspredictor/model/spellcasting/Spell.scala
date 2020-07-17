@@ -32,7 +32,7 @@ trait Spell {
 object Spell {
 
   /**
-    * @param checkCasterIsConcentrating is used to find the spell a caster had just used when finding the spell slot to update.
+    * @param findNewlyConcentratingSpell is used to find the spell a caster had just used when finding the spell slot to update.
     *    It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
     */
   @tailrec
@@ -42,37 +42,51 @@ object Spell {
       spellLevel: SpellLevel
   )(
       originalSpellLevel: SpellLevel = spellLevel,
-      checkCasterIsConcentrating: Boolean = true,
+      findNewlyConcentratingSpell: Boolean = true,
       singleTargetSpellsOnly: Boolean = false,
       multiTargetSpellsOnly: Boolean = false
   ): Option[(Spell, SpellLevel)] = {
-    val spellLookup = spellCaster.spellsKnown.get((spellLevel, spellEffect))
+    def foundSpellMatches(foundSpell: Spell): Boolean = {
+      val spellTypeMatches =
+        if (singleTargetSpellsOnly && isSingleTargetSpell(foundSpell) == false) false
+        else if (multiTargetSpellsOnly && isMultiTargetSpell(foundSpell) == false) false
+        else true
+
+      spellTypeMatches &&
+      foundSpell.spellLevel == spellLevel &&
+      foundSpell.spellEffect == spellEffect
+    }
+
+    val spellLookup = spellCaster.spellsKnown.find {
+      case foundSpell if foundSpellMatches(foundSpell) => true
+      case _                                           => false
+    }
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
 
     if (spellLookup.isDefined) {
       val spell = spellLookup.get
 
-      if (singleTargetSpellsOnly && singleTargetSpellOnly(spell) == false)
+      if (singleTargetSpellsOnly && isSingleTargetSpell(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
-          checkCasterIsConcentrating,
+          findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
-      else if (multiTargetSpellsOnly && multiTargetSpellOnly(spell) == false)
+      else if (multiTargetSpellsOnly && isMultiTargetSpell(spell) == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
-          checkCasterIsConcentrating,
+          findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
       else if (
-        checkCasterIsConcentrating && spellCaster.isConcentrating && spell.requiresConcentration
+        findNewlyConcentratingSpell == false && spellCaster.isConcentrating && spell.requiresConcentration
       )
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
-          checkCasterIsConcentrating,
+          findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
@@ -89,28 +103,30 @@ object Spell {
     } else if (spellLevelBelow >= 0)
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
         originalSpellLevel,
-        checkCasterIsConcentrating,
+        findNewlyConcentratingSpell,
         singleTargetSpellsOnly,
         multiTargetSpellsOnly
       )
     else none[(Spell, SpellLevel)]
   }
 
-  def singleTargetSpellOnly(spell: Spell): Boolean =
+  def isSingleTargetSpell(spell: Spell): Boolean =
     spell match {
       case _: SingleTargetInstantEffectSpell => true
       case _: SingleTargetSavingThrowSpell   => true
       case _: SingleTargetAttackSpell        => true
       case _: SingleTargetHealingSpell       => true
       case _: SelfBuffSpell                  => true
-      case _                                 => false
+
+      case _ => false
     }
 
-  def multiTargetSpellOnly(spell: Spell): Boolean =
+  def isMultiTargetSpell(spell: Spell): Boolean =
     spell match {
       case _: MultiTargetSavingThrowSpell => true
       case _: MultiTargetBuffSpell        => true
-      case _                              => false
+
+      case _ => false
     }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =
