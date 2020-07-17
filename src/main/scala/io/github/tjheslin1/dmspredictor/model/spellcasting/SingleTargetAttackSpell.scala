@@ -8,6 +8,9 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
 
+  val isSingleTargetSpell = true
+  val isMultiTargetSpell  = false
+
   val requiresConcentration = false
 
   val halfDamageOnMiss: Boolean

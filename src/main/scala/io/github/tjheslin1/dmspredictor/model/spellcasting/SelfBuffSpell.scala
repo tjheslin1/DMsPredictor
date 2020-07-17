@@ -8,6 +8,9 @@ import io.github.tjheslin1.dmspredictor.model.condition.Condition
 
 abstract class SelfBuffSpell extends Spell with LazyLogging {
 
+  val isSingleTargetSpell = true
+  val isMultiTargetSpell  = false
+
   val selfBuffCondition: Condition
 
   val spellEffect: SpellEffect = BuffSpellEffect

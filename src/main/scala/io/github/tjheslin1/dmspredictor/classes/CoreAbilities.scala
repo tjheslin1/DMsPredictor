@@ -246,8 +246,8 @@ object CoreAbilities extends LazyLogging {
         spellConditionMet(
           spellCaster,
           ConditionSpellEffect,
-          singleTargetSpellsOnly = true,
-          multiTargetSpellsOnly = true)
+          singleTargetSpellsOnly = false,
+          multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -568,9 +568,9 @@ object CoreAbilities extends LazyLogging {
       spellCaster.spellsKnown
         .filter {
           case spell if singleTargetSpellsOnly && multiTargetSpellsOnly =>
-            isSingleTargetSpell(spell) || isMultiTargetSpell(spell)
-          case spell if singleTargetSpellsOnly => isSingleTargetSpell(spell)
-          case spell if multiTargetSpellsOnly  => isMultiTargetSpell(spell)
+            spell.isSingleTargetSpell || spell.isMultiTargetSpell
+          case spell if singleTargetSpellsOnly => spell.isSingleTargetSpell
+          case spell if multiTargetSpellsOnly  => spell.isMultiTargetSpell
           case _                               => true
         }
         .exists {

@@ -21,6 +21,8 @@ trait Spell {
   val spellLevel: SpellLevel
   val requiresConcentration: Boolean
   val benefitsFromHigherSpellSlot: Boolean
+  val isSingleTargetSpell: Boolean
+  val isMultiTargetSpell: Boolean
 
   def effect[_: RS](
       spellCaster: SpellCaster,
@@ -48,8 +50,8 @@ object Spell {
   ): Option[(Spell, SpellLevel)] = {
     def foundSpellMatches(foundSpell: Spell): Boolean = {
       val spellTypeMatches =
-        if (singleTargetSpellsOnly && isSingleTargetSpell(foundSpell) == false) false
-        else if (multiTargetSpellsOnly && isMultiTargetSpell(foundSpell) == false) false
+        if (singleTargetSpellsOnly && foundSpell.isSingleTargetSpell == false) false
+        else if (multiTargetSpellsOnly && foundSpell.isMultiTargetSpell == false) false
         else true
 
       spellTypeMatches &&
@@ -67,14 +69,14 @@ object Spell {
     if (spellLookup.isDefined) {
       val spell = spellLookup.get
 
-      if (singleTargetSpellsOnly && isSingleTargetSpell(spell) == false)
+      if (singleTargetSpellsOnly && spell.isSingleTargetSpell == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           findNewlyConcentratingSpell,
           singleTargetSpellsOnly,
           multiTargetSpellsOnly
         )
-      else if (multiTargetSpellsOnly && isMultiTargetSpell(spell) == false)
+      else if (multiTargetSpellsOnly && spell.isMultiTargetSpell == false)
         spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
           originalSpellLevel,
           findNewlyConcentratingSpell,
@@ -109,25 +111,6 @@ object Spell {
       )
     else none[(Spell, SpellLevel)]
   }
-
-  def isSingleTargetSpell(spell: Spell): Boolean =
-    spell match {
-      case _: SingleTargetInstantEffectSpell => true
-      case _: SingleTargetSavingThrowSpell   => true
-      case _: SingleTargetAttackSpell        => true
-      case _: SingleTargetHealingSpell       => true
-      case _: SelfBuffSpell                  => true
-
-      case _ => false
-    }
-
-  def isMultiTargetSpell(spell: Spell): Boolean =
-    spell match {
-      case _: MultiTargetSavingThrowSpell => true
-      case _: MultiTargetBuffSpell        => true
-
-      case _ => false
-    }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =
     attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
