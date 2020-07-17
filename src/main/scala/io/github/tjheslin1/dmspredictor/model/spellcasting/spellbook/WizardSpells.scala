@@ -163,7 +163,6 @@ object WizardSpells extends LazyLogging {
     val halfDamageOnSave       = true
     val damageType: DamageType = Necrotic
 
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
@@ -180,7 +179,6 @@ object WizardSpells extends LazyLogging {
     val halfDamageOnSave     = false
     val damageType           = Force
 
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
@@ -220,7 +218,6 @@ object WizardSpells extends LazyLogging {
     val halfDamageOnSave     = true
     val damageType           = Necrotic
 
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (7 * D8) + 30

@@ -155,7 +155,7 @@ class SpellSpec extends UnitSpecBase {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val spellToCastAtHigherLevel = trackedSelfBuffSpell(HuntersMarkBuffCondition,
-                                                         spellLvl = 1,
+                                                         1,
                                                          concentration = false,
                                                          higherSpellSlot = true)
 
@@ -175,7 +175,7 @@ class SpellSpec extends UnitSpecBase {
       implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
       val spellToCastLowestLevel = trackedSelfBuffSpell(HuntersMarkBuffCondition,
-                                                        spellLvl = 1,
+                                                        1,
                                                         concentration = true,
                                                         higherSpellSlot = false)
 

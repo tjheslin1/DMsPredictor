@@ -9,6 +9,9 @@ import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class MultiTargetBuffSpell extends Spell with LazyLogging {
 
+  val isSingleTargetSpell = false
+  val isMultiTargetSpell  = true
+
   val buffCondition: Condition
   val affectedTargets: Int
 

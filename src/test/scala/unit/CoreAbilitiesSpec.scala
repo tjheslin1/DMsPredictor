@@ -800,17 +800,17 @@ class CoreAbilitiesSpec extends UnitSpecBase {
       castConditionSpell(Priority)(cleric).conditionMet shouldBe false
     }
 
-    "not meet the condition if the Spell Caster is concentrating and has no non-concentration condition spells to cast" in {
+    "not meet the condition if the Spell Caster is concentrating and only has another concentration condition spell to cast" in {
       forAll { cleric: Cleric =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val conditionSpell = trackedConditionSpell(spellLvl = 2)
+          val trackedSpell = trackedConditionSpell(2, concentration = true)
+          val trackedSpell2 = trackedConditionSpell(3, concentration = true)
 
           val concentratingCleric = cleric
-            .withSpellsKnown(conditionSpell,
-              trackedSingleTargetSavingThrowSpell(1, Wisdom))
-            .withConcentratingOn(conditionSpell)
+            .withSpellsKnown(trackedSpell, trackedSpell2)
+            .withConcentratingOn(trackedSpell)
             .withAllSpellSlotsAvailableForLevel(LevelThree)
             .withLevel(LevelThree)
             .withCombatIndex(1)
@@ -826,7 +826,7 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val lichCombatant = lich
-            .withSpellKnown(trackedConditionSpell(spellLvl = 2, savingThrowAttribute = Dexterity))
+            .withSpellKnown(trackedConditionSpell(2, savingThrowAttribute = Dexterity))
             .withCombatIndex(1)
 
           val easyToHitFighter = fighter.withDexterity(2).withCombatIndex(2)

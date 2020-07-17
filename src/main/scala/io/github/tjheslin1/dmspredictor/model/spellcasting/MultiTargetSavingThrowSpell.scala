@@ -7,6 +7,9 @@ import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell._
 
 abstract class MultiTargetSavingThrowSpell extends Spell with LazyLogging {
 
+  val isSingleTargetSpell = false
+  val isMultiTargetSpell  = true
+
   val requiresConcentration = false
 
   val attribute: Attribute

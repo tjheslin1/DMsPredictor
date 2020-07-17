@@ -22,7 +22,6 @@ object ClericSpells extends LazyLogging {
     val school: SchoolOfMagic       = Evocation
     val castingTime: CastingTime    = OneActionCast
     val spellLevel: SpellLevel      = 0
-    val requiresConcentration       = false
     val benefitsFromHigherSpellSlot = false
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
@@ -89,6 +88,9 @@ object ClericSpells extends LazyLogging {
   case object HoldPerson extends ConditionSpell {
     val name = "Hold Person"
 
+    val isSingleTargetSpell = true
+    val isMultiTargetSpell  = false
+
     val attribute = Wisdom
 
     val affectedTargets       = 1
@@ -110,6 +112,9 @@ object ClericSpells extends LazyLogging {
 
   case object SpiritGuardians extends ConditionSpell {
     val name = "Spirit Guardians"
+
+    val isSingleTargetSpell = false
+    val isMultiTargetSpell  = true
 
     val attribute = Wisdom
 

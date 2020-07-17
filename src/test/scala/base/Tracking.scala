@@ -166,7 +166,6 @@ trait Tracking {
       val school: SchoolOfMagic       = Evocation
       val castingTime: CastingTime    = OneActionCast
       val spellLevel: SpellLevel      = spellLvl
-      val requiresConcentration       = false
       val benefitsFromHigherSpellSlot = higherSpellSlot
 
       override def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
@@ -235,6 +234,9 @@ trait Tracking {
                             priority: (Combatant, Combatant) => Int = compareHealth): ConditionSpell =
     new ConditionSpell {
       val name = s"tracked-multi-target-condition-spell-${spellLvl.value}"
+
+      val isSingleTargetSpell = singleTargetSpell
+      val isMultiTargetSpell = singleTargetSpell == false
 
       val attribute: Attribute  = savingThrowAttribute
       val requiresConcentration = concentration
