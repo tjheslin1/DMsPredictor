@@ -104,27 +104,28 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "use Strength, hitBonus and proficiencyBonus to determine an attack result for a player" in {
-      forAll { (fighter: Fighter, testMonster: TestMonster) =>
+    "use Strength, hitBonus and toHitModifier to determine an attack result for a player" in {
+      forAll { (goblin: Goblin, champion: Champion) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val plusTwoWeapon = weaponWithHitBonus(2)
 
-          val fighterCombatant = fighter
-            .withProficiencyBonus(4) // + 4
+          // goblin.toHitModifier
+
+          val goblinCombatant = goblin
             .withStrength(14) // + 2
             .withDexterity(10)
             .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
-          val (attackResult, _) = attack(fighterCombatant,
+          val (attackResult, _) = attack(goblinCombatant,
             plusTwoWeapon,
-            testMonster.withArmourClass(19).withCombatIndex(2))
+            champion.withArmourClass(19).withCombatIndex(2))
 
           attackResult shouldBe Miss
 
-          val (attackResult2, _) = attack(fighterCombatant,
+          val (attackResult2, _) = attack(goblinCombatant,
             plusTwoWeapon,
             testMonster.withArmourClass(18).withCombatIndex(2))
 
@@ -169,7 +170,7 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "use only hitBonus to determine an attack result for a monster" in {
+    "use Strength, hitBonus and proficiencyBonus to determine an attack result for a monster" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
