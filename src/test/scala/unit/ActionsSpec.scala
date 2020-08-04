@@ -177,13 +177,13 @@ class ActionsSpec extends UnitSpecBase {
             .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
-          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(15).withNoArmour()
-          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(16).withNoArmour()
+          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(16).withNoArmour()
+          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
 
-          val (attackResult, _) = attack(goblinCombatant, plusTwoWeapon, ac15Cleric.withCombatIndex(2))
+          val (attackResult, _) = attack(goblinCombatant, plusTwoWeapon, ac16Cleric.withCombatIndex(2))
           attackResult shouldBe Miss
 
-          val (attackResult2, _) = attack(goblinCombatant, plusTwoWeapon, ac16Cleric.withCombatIndex(2))
+          val (attackResult2, _) = attack(goblinCombatant, plusTwoWeapon, ac15Cleric.withCombatIndex(2))
           attackResult2 shouldBe Hit
         }
       }
@@ -204,13 +204,13 @@ class ActionsSpec extends UnitSpecBase {
             .withBaseWeapon(plusTwoFinesseWeapon) // + 2
             .withCombatIndex(1)
 
-          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(15).withNoArmour()
-          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(16).withNoArmour()
+          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(16).withNoArmour()
+          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
 
-          val (attackResult, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac15Cleric.withCombatIndex(2))
+          val (attackResult, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac16Cleric.withCombatIndex(2))
           attackResult shouldBe Miss
 
-          val (attackResult2, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac16Cleric.withCombatIndex(2))
+          val (attackResult2, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac15Cleric.withCombatIndex(2))
           attackResult2 shouldBe Hit
         }
       }

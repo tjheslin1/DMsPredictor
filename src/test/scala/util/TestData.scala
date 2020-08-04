@@ -803,6 +803,7 @@ trait TestData extends RandomDataGenerator {
         arbSkills.stealth,
         TestMonster.defaultScores,
         creature.isAlive,
+        0,
         creature.name
       )
   }
@@ -844,6 +845,7 @@ trait TestData extends RandomDataGenerator {
         Intelligence,
         LevelOne,
         creature.isAlive,
+        0,
         creature.name
       )
   }
