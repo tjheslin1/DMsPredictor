@@ -104,7 +104,7 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "use Strength, hitBonus and toHitModifier to determine an attack result for a player" in {
+    "use Strength, hitBonus and proficiencyBonus to determine an attack result for a player" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
