@@ -68,9 +68,11 @@ object Actions extends LazyLogging {
             player.proficiencyBonus +
             blessAttackBonus(attacker.creature)
         case monster: Monster =>
-          roll +
-            monster.toHitModifier +
+          val modifier = weaponModifier(attackerWeapon, monster)
+
+          roll + modifier +
             attackerWeapon.hitBonus +
+            monster.toHitModifier +
             blessAttackBonus(attacker.creature)
       }
 

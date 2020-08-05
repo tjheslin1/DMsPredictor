@@ -177,8 +177,8 @@ class ActionsSpec extends UnitSpecBase {
             .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
-          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(16).withNoArmour()
-          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
+          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
+          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(18).withNoArmour()
 
           val (attackResult, _) = attack(goblinCombatant, plusTwoWeapon, ac16Cleric.withCombatIndex(2))
           attackResult shouldBe Miss
@@ -204,8 +204,8 @@ class ActionsSpec extends UnitSpecBase {
             .withBaseWeapon(plusTwoFinesseWeapon) // + 2
             .withCombatIndex(1)
 
-          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(16).withNoArmour()
-          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
+          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
+          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(18).withNoArmour()
 
           val (attackResult, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac16Cleric.withCombatIndex(2))
           attackResult shouldBe Miss
