@@ -138,14 +138,7 @@ class ActionsSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val plusTwoFinesseWeapon =
-            Weapon("test-weapon",
-              Melee,
-              Slashing,
-              isTwoHanded = true,
-              isFinesse = true,
-              1,
-              wpnHitBonus = 2)
+          val plusTwoFinesseWeapon = weaponWithHitBonus(2, finesse = true)
 
           val fighterCombatant = fighter
             .withProficiencyBonus(4) // + 4
@@ -169,25 +162,55 @@ class ActionsSpec extends UnitSpecBase {
       }
     }
 
-    "use only hitBonus to determine an attack result for a monster" in {
-      forAll { (cleric: Cleric, testMonster: TestMonster) =>
+    "use Strength, hitBonus and toHitModifier to determine an attack result for a monster" in {
+      forAll { (goblin: Goblin, cleric: Cleric) =>
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val plusTwoWeapon = weaponWithHitBonus(2)
 
-          val monster = testMonster
-            .withStrength(20)
-            .withBaseWeapon(plusTwoWeapon)
+//          goblin.toHitModifier // + 2
+
+          val goblinCombatant = goblin
+            .withStrength(12) // + 1
+            .withDexterity(10)
+            .withBaseWeapon(plusTwoWeapon) // + 2
             .withCombatIndex(1)
 
-          val ac12Cleric = cleric.withOffHand(Shield).withDexterity(10).withNoArmour()
-          val ac13Cleric = cleric.withOffHand(Shield).withDexterity(12).withNoArmour()
+          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
+          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(18).withNoArmour()
 
-          val (attackResult, _) = attack(monster, plusTwoWeapon, ac13Cleric.withCombatIndex(2))
+          val (attackResult, _) = attack(goblinCombatant, plusTwoWeapon, ac16Cleric.withCombatIndex(2))
           attackResult shouldBe Miss
 
-          val (attackResult2, _) = attack(monster, plusTwoWeapon, ac12Cleric.withCombatIndex(2))
+          val (attackResult2, _) = attack(goblinCombatant, plusTwoWeapon, ac15Cleric.withCombatIndex(2))
+          attackResult2 shouldBe Hit
+        }
+      }
+    }
+
+    "use Dexterity, hitBonus and toHitModifier to determine an attack result for a monster" in {
+      forAll { (goblin: Goblin, cleric: Cleric) =>
+        new TestContext {
+          implicit override val roll: RollStrategy = _ => RollResult(10)
+
+          val plusTwoFinesseWeapon = weaponWithHitBonus(2, finesse = true)
+
+//          goblin.toHitModifier // + 2
+
+          val goblinCombatant = goblin
+            .withStrength(10)
+            .withDexterity(12) // + 1
+            .withBaseWeapon(plusTwoFinesseWeapon) // + 2
+            .withCombatIndex(1)
+
+          val ac15Cleric = cleric.withOffHand(Shield).withDexterity(17).withNoArmour()
+          val ac16Cleric = cleric.withOffHand(Shield).withDexterity(18).withNoArmour()
+
+          val (attackResult, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac16Cleric.withCombatIndex(2))
+          attackResult shouldBe Miss
+
+          val (attackResult2, _) = attack(goblinCombatant, plusTwoFinesseWeapon, ac15Cleric.withCombatIndex(2))
           attackResult2 shouldBe Hit
         }
       }
@@ -857,7 +880,7 @@ class ActionsSpec extends UnitSpecBase {
     val sixDamageWeapon =
       Weapon("six-damage-weapon", Melee, Slashing, isTwoHanded = true, isFinesse = false, 6)
 
-    def weaponWithHitBonus(bonus: Int) =
-      Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = false, 1, wpnHitBonus = bonus)
+    def weaponWithHitBonus(bonus: Int, finesse: Boolean = false) =
+      Weapon("", Melee, Slashing, isTwoHanded = true, isFinesse = finesse, 1, wpnHitBonus = bonus)
   }
 }

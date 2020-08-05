@@ -45,6 +45,8 @@ import monocle.macros.{GenLens, Lenses}
     with Legendary
     with LazyLogging {
 
+  val toHitModifier = 5
+
   val challengeRating = 13.0
   val skills          = Skills(perception = 7, stealth = 9)
 

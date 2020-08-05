@@ -48,8 +48,10 @@ import monocle.macros.{GenLens, Lenses}
     with SpellCaster
     with Legendary {
 
+  val toHitModifier        = 7
+  val spellCastingModifier = toHitModifier
+
   val spellCastingLevel     = LevelEighteen
-  val spellCastingModifier  = 7
   val spellCastingAttribute = Intelligence
 
   val armourClass = calculateArmourClass(stats, conditions)
@@ -113,7 +115,7 @@ object Lich {
     val twoHanded  = false
     val finesse    = false
 
-    override val hitBonus: Int = 12
+    override val hitBonus: Int = 5
 
     def damage(implicit rollStrategy: RollStrategy): Int = 3 * D6
 

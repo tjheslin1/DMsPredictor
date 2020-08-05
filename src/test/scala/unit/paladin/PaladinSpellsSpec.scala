@@ -19,17 +19,17 @@ class PaladinSpellsSpec extends UnitSpecBase {
 
   "Bless" should {
 
-    "add 1d4 to weapon attack roll" in {
+    "add 1d4 to Players weapon attack roll" in {
       forAll { (champion: Champion, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+          override implicit val rollStrategy: RollStrategy = _ => RollResult(4)
 
           val blessedChampion = champion
             .withNoFightingStyles()
             .withProficiencyBonus(1)
             .withCondition(BlessCondition())
             .withBaseWeapon(trackedSword)
-            .withStrength(7)
+            .withStrength(12)
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(10).withCombatIndex(2)
@@ -44,12 +44,12 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to a Monsters weapon attack roll" in {
       forAll { (goblin: Goblin, rogue: Rogue) =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+          override implicit val rollStrategy: RollStrategy = _ => RollResult(4)
 
           val blessedGoblin = goblin
             .withCondition(BlessCondition())
             .withBaseWeapon(trackedSword)
-            .withStrength(10)
+            .withStrength(12)
             .withCombatIndex(1)
 
           val acElevenRogue = rogue

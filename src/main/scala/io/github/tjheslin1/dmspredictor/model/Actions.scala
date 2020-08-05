@@ -10,6 +10,7 @@ import io.github.tjheslin1.dmspredictor.model.ability.{OnWeaponDamage, OnWeaponD
 import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.blessAttackBonus
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.IntOps._
 
 sealed trait AttackResult {
@@ -66,9 +67,12 @@ object Actions extends LazyLogging {
             attackerWeapon.hitBonus +
             player.proficiencyBonus +
             blessAttackBonus(attacker.creature)
-        case _ =>
-          roll +
+        case monster: Monster =>
+          val modifier = weaponModifier(attackerWeapon, monster)
+
+          roll + modifier +
             attackerWeapon.hitBonus +
+            monster.toHitModifier +
             blessAttackBonus(attacker.creature)
       }
 

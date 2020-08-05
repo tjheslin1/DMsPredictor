@@ -8,6 +8,8 @@ import monocle.Lens
 
 trait Monster extends Creature {
 
+  val toHitModifier: Int
+
   val challengeRating: Double
 
   val savingThrowScores: Map[Attribute, Int]

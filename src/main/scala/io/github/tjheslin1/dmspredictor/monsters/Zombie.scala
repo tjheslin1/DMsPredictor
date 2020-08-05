@@ -38,6 +38,8 @@ import monocle.macros.{GenLens, Lenses}
 ) extends Monster
     with LazyLogging {
 
+  val toHitModifier = 2
+
   val challengeRating                        = 0.25
   val skills                                 = Skills(perception = 0, stealth = 0)
   val savingThrowScores: Map[Attribute, Int] = defaultSavingThrowScores(this)
