@@ -6,9 +6,10 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetHealingSpell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.highestSpellSlotAvailable
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{HealingSpellEffect, Spell, SpellLevel}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
 import io.github.tjheslin1.dmspredictor.strategy.Target.players
 import io.github.tjheslin1.dmspredictor.util.ListOps._

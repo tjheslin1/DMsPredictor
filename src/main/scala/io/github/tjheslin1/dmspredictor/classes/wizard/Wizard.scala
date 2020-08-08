@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.wizard
 
 import cats.data.NonEmptyList
 import cats.syntax.option._
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.wizard.BaseWizard._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
@@ -13,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell.castSingleTargetOffensiveSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._

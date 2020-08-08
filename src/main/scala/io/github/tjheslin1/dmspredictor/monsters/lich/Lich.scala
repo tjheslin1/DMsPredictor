@@ -12,6 +12,7 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell.castSingleTargetOffensiveSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich._

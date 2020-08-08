@@ -2,12 +2,12 @@ package unit.cleric
 
 import base.{Tracking, UnitSpecBase}
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.castSingleTargetHealingSpell
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.{BaseCleric, Cleric}
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetHealingSpell.castSingleTargetHealingSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
