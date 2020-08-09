@@ -1,7 +1,6 @@
 package io.github.tjheslin1.dmspredictor.classes.cleric
 
 import cats.data.NonEmptyList
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.cleric.BaseCleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric._
 import io.github.tjheslin1.dmspredictor.classes.cleric.LifeClericAbilities._
@@ -14,6 +13,7 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastConditionSpell.castConditionSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetHealingSpell.castSingleTargetHealingSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell.castSingleTargetOffensiveSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
