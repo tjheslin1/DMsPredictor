@@ -1,6 +1,5 @@
 package base
 
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._

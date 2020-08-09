@@ -8,11 +8,11 @@ import io.github.tjheslin1.dmspredictor.model.ability.{Ability, SingleAttack, Wh
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, PassiveCondition}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlot
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
-import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
 import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
-import io.github.tjheslin1.dmspredictor.util.ListOps._
+import io.github.tjheslin1.dmspredictor.strategy.{Focus, Healing}
 import io.github.tjheslin1.dmspredictor.util.IntOps._
+import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 object BasePaladinAbilities extends LazyLogging {
 

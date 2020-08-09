@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.barbarian
 
 import cats.Show
 import cats.data.NonEmptyList
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarian._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.BaseBarbarianAbilities._

@@ -8,27 +8,27 @@ import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
-import io.github.tjheslin1.dmspredictor.strategy.Focus._
-import io.github.tjheslin1.dmspredictor.strategy.Target._
+import io.github.tjheslin1.dmspredictor.strategy.Focus.nextToFocus
+import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
-object CastSingleTargetOffensiveSpell extends LazyLogging {
+object CastSingleTargetInstantEffectSpell extends LazyLogging {
 
-  def castSingleTargetOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability =
+  def castSingleTargetInstantEffectSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name             = "Cast Spell (Offensive)"
-      val order            = currentOrder
-      val levelRequirement = LevelOne
-      val abilityAction    = WholeAction
+      val name                         = "Cast Spell (Instant Effect)"
+      val order                        = currentOrder
+      val levelRequirement             = LevelOne
+      val abilityAction: AbilityAction = WholeAction
 
-      def triggerMet(others: List[Combatant]) = true
+      def triggerMet(others: List[Combatant]): Boolean = true
 
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          DamageSpellEffect,
+          InstantEffectSpellEffect,
           singleTargetSpellsOnly = true,
           multiTargetSpellsOnly = false)
 
@@ -37,15 +37,21 @@ object CastSingleTargetOffensiveSpell extends LazyLogging {
 
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
+        val instantEffectCantrip: Option[Spell] =
+          spellCaster.spellsKnown
+            .find { spell =>
+              spell.spellLevel.value == 0 && spell.spellEffect == InstantEffectSpellEffect
+            }
+
         val (optSpell, foundSpellLevel) =
           highestSpellSlot match {
             case None =>
-              (spellCaster.cantrip, LevelZero)
+              (instantEffectCantrip, LevelZero)
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
+              spellOfLevelOrBelow(spellCaster, InstantEffectSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true
               )
-                .fold((spellCaster.cantrip, LevelZero)) {
+                .fold((instantEffectCantrip, LevelZero)) {
                   case (foundSpell, spellLevel) =>
                     (foundSpell.some, spellLevel)
                 }

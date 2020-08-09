@@ -3,7 +3,6 @@ package io.github.tjheslin1.dmspredictor.classes.cleric
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability.{Ability, AbilityAction, WholeAction}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetHealingSpell._

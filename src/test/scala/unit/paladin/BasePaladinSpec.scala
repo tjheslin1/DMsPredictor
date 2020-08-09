@@ -8,8 +8,8 @@ import io.github.tjheslin1.dmspredictor.classes.paladin._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour._
 import io.github.tjheslin1.dmspredictor.model._
-import util.TestMonster
 import util.TestData._
+import util.TestMonster
 
 import scala.util.Random
 

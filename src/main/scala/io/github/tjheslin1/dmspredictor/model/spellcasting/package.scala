@@ -4,7 +4,6 @@ import cats.syntax.option._
 import eu.timepit.refined.W
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.Interval
-import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.classes.barbarian.{Barbarian, Berserker}
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.{Champion, Fighter}
@@ -12,10 +11,11 @@ import io.github.tjheslin1.dmspredictor.classes.paladin.Paladin
 import io.github.tjheslin1.dmspredictor.classes.ranger.{Hunter, Ranger}
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
+import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots.highestSpellSlotAvailable
-import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf, Zombie}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
+import io.github.tjheslin1.dmspredictor.monsters.{Goblin, Werewolf, Zombie}
 
 package object spellcasting {
 

@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.monsters.lich
 
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities._
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.Armour
@@ -12,8 +11,9 @@ import io.github.tjheslin1.dmspredictor.model.Modifier.mod
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition._
 import io.github.tjheslin1.dmspredictor.model.reaction.OnHitReaction
-import io.github.tjheslin1.dmspredictor.model.spellcasting.CastMultiTargetOffensiveSpell.castMultiTargetOffensiveSpell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell.castSingleTargetOffensiveSpell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastMultiTargetOffensiveSpell._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetInstantEffectSpell._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich._

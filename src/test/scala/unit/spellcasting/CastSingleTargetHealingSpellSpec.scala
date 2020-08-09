@@ -9,7 +9,7 @@ import io.github.tjheslin1.dmspredictor.classes.ranger.Hunter
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetHealingSpell._
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{CastSingleTargetHealingSpell, Spell}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.MagicMissile
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich

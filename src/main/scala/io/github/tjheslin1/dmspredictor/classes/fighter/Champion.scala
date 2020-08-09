@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.fighter
 
 import cats.Show
 import cats.data.NonEmptyList
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.extraAttack
 import io.github.tjheslin1.dmspredictor.classes.fighter.BaseFighter._
 import io.github.tjheslin1.dmspredictor.classes.fighter.Champion._

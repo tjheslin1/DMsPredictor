@@ -8,7 +8,7 @@ import io.github.tjheslin1.dmspredictor.model.BaseStats.Stat
 import io.github.tjheslin1.dmspredictor.model.HandleDamage.adjustedDamage
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellLevel, SpellSlots}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens

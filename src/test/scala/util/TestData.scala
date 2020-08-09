@@ -11,7 +11,7 @@ import io.github.tjheslin1.dmspredictor.classes.barbarian._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter._
 import io.github.tjheslin1.dmspredictor.classes.paladin.BasePaladin.{layOnHandsPoolForLevel, paladinSpellSlots}
-import io.github.tjheslin1.dmspredictor.classes.paladin.{BasePaladin, Paladin, PaladinFightingStyle}
+import io.github.tjheslin1.dmspredictor.classes.paladin.{Paladin, PaladinFightingStyle}
 import io.github.tjheslin1.dmspredictor.classes.ranger.BaseRanger.rangerSpellSlots
 import io.github.tjheslin1.dmspredictor.classes.ranger._
 import io.github.tjheslin1.dmspredictor.classes.rogue.Rogue
@@ -24,10 +24,10 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.{SpellLevel, _}
+import io.github.tjheslin1.dmspredictor.model.spellcasting._
+import io.github.tjheslin1.dmspredictor.monsters._
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.monsters.vampire.Vampire
-import io.github.tjheslin1.dmspredictor.monsters._
 import org.scalacheck.{Arbitrary, Gen}
 import shapeless._
 

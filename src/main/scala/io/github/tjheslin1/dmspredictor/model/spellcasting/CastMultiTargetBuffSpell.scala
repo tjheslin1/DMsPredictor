@@ -8,62 +8,56 @@ import io.github.tjheslin1.dmspredictor.model.ability._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell.spellOfLevelOrBelow
 import io.github.tjheslin1.dmspredictor.model.spellcasting.SpellSlots._
 import io.github.tjheslin1.dmspredictor.strategy.Focus
-import io.github.tjheslin1.dmspredictor.strategy.Focus._
-import io.github.tjheslin1.dmspredictor.strategy.Target._
+import io.github.tjheslin1.dmspredictor.strategy.Target.{monsters, players}
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
-object CastSingleTargetOffensiveSpell extends LazyLogging {
+object CastMultiTargetBuffSpell extends LazyLogging {
 
-  def castSingleTargetOffensiveSpell(currentOrder: Int)(combatant: Combatant): Ability =
+  def castMultiTargetBuffSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
 
-      val name             = "Cast Spell (Offensive)"
+      val name             = "Cast Spell (Multi Target Buff)"
       val order            = currentOrder
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]) = true
+      def triggerMet(others: List[Combatant]): Boolean =
+        spellCaster match {
+          case _: Player => players(others).nonEmpty
+          case _         => monsters(others).nonEmpty
+        }
 
       def conditionMet: Boolean =
         spellConditionMet(
           spellCaster,
-          DamageSpellEffect,
-          singleTargetSpellsOnly = true,
-          multiTargetSpellsOnly = false)
+          BuffSpellEffect,
+          singleTargetSpellsOnly = false,
+          multiTargetSpellsOnly = true)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
 
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
-        val (optSpell, foundSpellLevel) =
+        val optSpell =
           highestSpellSlot match {
-            case None =>
-              (spellCaster.cantrip, LevelZero)
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
-                singleTargetSpellsOnly = true
+              spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
+                multiTargetSpellsOnly = true
               )
-                .fold((spellCaster.cantrip, LevelZero)) {
-                  case (foundSpell, spellLevel) =>
-                    (foundSpell.some, spellLevel)
-                }
           }
 
         val targets = spellCaster match {
-          case _: Player => monsters(others)
-          case _         => players(others)
+          case _: Player => players(others)
+          case _         => monsters(others)
         }
 
-        val target = nextToFocus(combatant, targets, focus)
-
-        (target, optSpell) match {
-          case (_, None) => (combatant, others)
-          case (None, _) => (combatant, others)
-          case (Some(spellTarget), Some(spell)) =>
-            val (spellAffectedCaster, List(updatedTarget)) =
-              spell.effect(spellCaster, foundSpellLevel, List(spellTarget))
+        optSpell.fold((combatant, others)) {
+          case (foundSpell, foundSpellLevel) =>
+            val (spellAffectedCaster, updatedOthers) =
+              foundSpell.effect(spellCaster, foundSpellLevel, targets)
 
             val updatedSpellCaster = if (foundSpellLevel.value == 0) {
               spellAffectedCaster
@@ -75,7 +69,7 @@ object CastSingleTargetOffensiveSpell extends LazyLogging {
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
-            (updatedCombatant, others.replace(updatedTarget))
+            (updatedCombatant, others.replace(updatedOthers))
         }
       }
 

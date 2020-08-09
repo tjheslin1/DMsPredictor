@@ -11,8 +11,8 @@ import io.github.tjheslin1.dmspredictor.model.ProficiencyBonus.ProficiencyBonus
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.condition.{Condition, ConditionType}
 import io.github.tjheslin1.dmspredictor.model.reaction.{OnDamageReaction, OnHitReaction}
-import io.github.tjheslin1.dmspredictor.model.spellcasting.CastMultiTargetOffensiveSpell.castMultiTargetOffensiveSpell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell.castSingleTargetOffensiveSpell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastMultiTargetOffensiveSpell._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Concentration.handleConcentration
 import io.github.tjheslin1.dmspredictor.model.spellcasting._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells._

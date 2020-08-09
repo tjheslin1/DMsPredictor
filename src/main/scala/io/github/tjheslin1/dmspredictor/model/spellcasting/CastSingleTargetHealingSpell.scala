@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting
 
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
-import io.github.tjheslin1.dmspredictor.classes.CoreAbilities.healingSpellTriggerMet
 import io.github.tjheslin1.dmspredictor.classes.{Player, SpellCaster}
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.ability._
@@ -102,4 +101,7 @@ object CastSingleTargetHealingSpell extends LazyLogging {
 
       def update: Creature = spellCaster
     }
+
+  def healingSpellTriggerMet(others: List[Combatant]): Boolean =
+    players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
 }

@@ -3,8 +3,8 @@ package io.github.tjheslin1.dmspredictor.model.spellcasting
 import cats.syntax.option._
 import com.typesafe.scalalogging.LazyLogging
 import io.github.tjheslin1.dmspredictor.classes.SpellCaster
-import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.model._
+import io.github.tjheslin1.dmspredictor.model.condition.Condition
 import io.github.tjheslin1.dmspredictor.util.ListOps._
 
 abstract class MultiTargetBuffSpell extends Spell with LazyLogging {

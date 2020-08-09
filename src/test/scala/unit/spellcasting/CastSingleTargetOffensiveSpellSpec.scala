@@ -5,15 +5,15 @@ import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
 import io.github.tjheslin1.dmspredictor.classes.wizard.Wizard
-import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSingleTargetOffensiveSpell._
+import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
 import io.github.tjheslin1.dmspredictor.monsters.Goblin
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
-import util.TestMonster
 import util.TestData._
+import util.TestMonster
 
 class CastSingleTargetOffensiveSpellSpec extends UnitSpecBase {
 

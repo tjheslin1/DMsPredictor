@@ -2,7 +2,6 @@ package io.github.tjheslin1.dmspredictor.classes.rogue
 
 import cats.data.NonEmptyList
 import cats.syntax.option._
-import eu.timepit.refined.auto._
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.calculateArmourClass
 import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogueAbilities._
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
