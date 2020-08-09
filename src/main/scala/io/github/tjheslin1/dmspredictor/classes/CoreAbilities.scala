@@ -77,62 +77,6 @@ object CoreAbilities extends LazyLogging {
       def update: Creature = player
     }
 
-  def castSelfBuffSpell(currentOrder: Int, buffAction: AbilityAction = BonusAction)(
-      combatant: Combatant
-  ): Ability =
-    new Ability(combatant) {
-      val spellCaster = combatant.creature.asInstanceOf[SpellCaster]
-
-      val name             = "Cast Spell (Self Buff)"
-      val order            = currentOrder
-      val levelRequirement = LevelOne
-      val abilityAction    = buffAction
-
-      def triggerMet(others: List[Combatant]): Boolean = true
-
-      def conditionMet: Boolean =
-        spellConditionMet(
-          spellCaster,
-          BuffSpellEffect,
-          singleTargetSpellsOnly = true,
-          multiTargetSpellsOnly = false)
-
-      def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
-        logger.debug(s"${combatant.creature.name} used $name")
-
-        val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
-
-        val optSpell =
-          highestSpellSlot match {
-            case None => none[(Spell, SpellLevel)]
-            case Some(spellSlot) =>
-              spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
-                singleTargetSpellsOnly = true
-              )
-          }
-
-        optSpell.fold((combatant, others)) {
-          case (foundSpell, foundSpellLevel) =>
-            val (spellAffectedCaster, updatedOthers) =
-              foundSpell.effect(spellCaster, foundSpellLevel, others)
-
-            val updatedSpellCaster = if (foundSpellLevel.value == 0) {
-              spellAffectedCaster
-            } else {
-              val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
-
-              decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
-            }
-
-            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
-
-            (updatedCombatant, others.replace(updatedOthers))
-        }
-      }
-
-      def update: Creature = spellCaster
-    }
-
   def castMultiTargetBuffSpell(currentOrder: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {
       val spellCaster = combatant.creature.asInstanceOf[SpellCaster]

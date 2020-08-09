@@ -72,5 +72,4 @@ object CastMultiTargetOffensiveSpell extends LazyLogging {
 
       def update: Creature = spellCaster
     }
-
 }
