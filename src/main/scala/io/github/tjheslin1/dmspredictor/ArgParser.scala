@@ -1,6 +1,6 @@
 package io.github.tjheslin1.dmspredictor
 
-import cats.implicits._
+import cats.syntax.all._
 import eu.timepit.refined.api.Refined.unsafeApply
 import io.circe.Decoder.Result
 import io.circe._

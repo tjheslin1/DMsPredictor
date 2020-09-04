@@ -1,7 +1,6 @@
 package util
 
 import base.UnitSpecBase
-import cats.implicits._
 import io.github.tjheslin1.dmspredictor.classes.barbarian.Barbarian
 import io.github.tjheslin1.dmspredictor.classes.cleric.Cleric
 import io.github.tjheslin1.dmspredictor.classes.fighter.Fighter
