@@ -37,7 +37,7 @@ object Actions extends LazyLogging {
 
   def rollAttack[_: RS](attacker: Combatant, target: Combatant): Int =
     (attacker.creature.attackStatus, target.creature.defenseStatus) match {
-        //@format: off
+      // format: off
       case (Advantage, Advantage)       => D20.roll()
       case (Disadvantage, Disadvantage) => D20.roll()
       case (Advantage, _)               => D20.rollWithAdvantage()
@@ -45,7 +45,7 @@ object Actions extends LazyLogging {
       case (Disadvantage, _)            => D20.rollWithDisadvantage()
       case (_, Advantage)               => D20.rollWithDisadvantage()
       case _                            => D20.roll()
-      //@format: on
+      // format: on
     }
 
   def attack[_: RS](

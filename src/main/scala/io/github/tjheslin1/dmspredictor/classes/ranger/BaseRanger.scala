@@ -28,7 +28,7 @@ object BaseRanger {
   def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
-  //@format: off
+  // format: off
   def rangerSpellSlots(level: Level): SpellSlots =
     level match {
       case LevelOne       => SpellSlots(0, 0, 0)
@@ -52,7 +52,7 @@ object BaseRanger {
       case LevelNineteen  => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
       case LevelTwenty    => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
     }
-  //@format: on
+  // format: on
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,

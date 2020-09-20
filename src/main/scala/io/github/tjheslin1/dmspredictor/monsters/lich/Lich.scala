@@ -23,7 +23,7 @@ import io.github.tjheslin1.dmspredictor.util.NameGenerator
 import monocle.Lens
 import monocle.macros.{GenLens, Lenses}
 
-//@format: off
+// format: off
 @Lenses("_") case class Lich(
     health: Int,
     maxHealth: Int,
@@ -50,7 +50,7 @@ import monocle.macros.{GenLens, Lenses}
 ) extends Monster
     with SpellCaster
     with Legendary {
-  //@format: on
+  // format: on
 
   val toHitModifier        = 7
   val spellCastingModifier = toHitModifier

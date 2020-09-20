@@ -20,13 +20,13 @@ case class BaseFighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolea
 
 object BaseFighterAbilities extends LazyLogging {
 
-  //@format: off
+  // format: off
   val secondWindUsedLens: Lens[BaseFighterAbilities, Boolean] =
     GenLens[BaseFighterAbilities](_.secondWindUsed)
 
   val actionSurgeUsedLens: Lens[BaseFighterAbilities, Boolean] =
     GenLens[BaseFighterAbilities](_.actionSurgeUsed)
-  //@format: on
+  // format: on
 
   val allUsed: BaseFighterAbilities   = BaseFighterAbilities(true, true)
   val allUnused: BaseFighterAbilities = BaseFighterAbilities(false, false)

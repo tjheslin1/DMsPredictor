@@ -30,7 +30,7 @@ object Monster {
       Charisma     -> mod(monster.stats.charisma)
     )
 
-  //@format: off
+  // format: off
   val monsterArmourClassLens: Lens[Monster, Int] = Lens[Monster, Int](_.armourClass) { ac =>
     {
       case c: Goblin   => Goblin._armourClass.set(ac)(c)
@@ -43,5 +43,5 @@ object Monster {
           )
       }
     }
-  //@format: on
+  // format: on
 }

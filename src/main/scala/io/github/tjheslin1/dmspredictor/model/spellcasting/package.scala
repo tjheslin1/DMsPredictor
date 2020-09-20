@@ -52,7 +52,7 @@ package object spellcasting {
   case object BuffSpellEffect          extends SpellEffect
   case object InstantEffectSpellEffect extends SpellEffect
 
-  //@format: off
+  // format: off
   def focusHigherHealthCreatureOrder(creature: Creature): Int =
     creature match {
       case _: Barbarian => 1
@@ -72,7 +72,7 @@ package object spellcasting {
       case _: Goblin   => 11
       case _: Zombie   => 12
     }
-  //@format: on
+  // format: on
 
   def spellConditionMet(
       spellCaster: SpellCaster,

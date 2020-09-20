@@ -24,7 +24,7 @@ object ClericSpells extends LazyLogging {
     val spellLevel: SpellLevel      = 0
     val benefitsFromHigherSpellSlot = false
 
-    //@format: off
+    // format: off
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellCaster.spellCastingLevel.value match {
         case lvl if lvl >= 17 => 4 * D8
@@ -32,8 +32,8 @@ object ClericSpells extends LazyLogging {
         case lvl if lvl >= 5  => 2 * D8
         case _                => 1 * D8
       }
+    // format: on
   }
-  //@format: on
 
   case object GuidingBolt extends SingleTargetAttackSpell {
     val name                        = "Guiding Bolt"

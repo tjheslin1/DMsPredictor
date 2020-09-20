@@ -6,7 +6,7 @@ sealed trait Level {
 
 object Level {
 
-  //@format: off
+  // format: off
   def apply(value: Int): Level =
     value match {
       case 1  => LevelOne
@@ -30,7 +30,7 @@ object Level {
       case 19 => LevelNineteen
       case 20 => LevelTwenty
     }
-    //@format: on
+    // format: on
 }
 
 object LevelOne extends Level {

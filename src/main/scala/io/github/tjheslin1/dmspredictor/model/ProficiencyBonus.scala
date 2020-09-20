@@ -9,7 +9,7 @@ object ProficiencyBonus {
 
   type ProficiencyBonus = Int Refined Interval.ClosedOpen[W.`0`.T, W.`7`.T]
 
-  //@format: off
+  // format: off
   def fromLevel(level: Level): ProficiencyBonus =
     level.value match {
       case 1 | 2 | 3 | 4     => 2
@@ -18,5 +18,5 @@ object ProficiencyBonus {
       case 13 | 14 | 15 | 16 => 5
       case 17 | 18 | 19 | 20 => 6
     }
-  //@format: on
+  // format: on
 }

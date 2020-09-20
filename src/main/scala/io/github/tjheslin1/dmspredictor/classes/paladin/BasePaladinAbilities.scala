@@ -73,7 +73,7 @@ object BasePaladinAbilities extends LazyLogging {
         basePaladin.level.value >= 2 &&
           highestSpellSlotAvailable(basePaladin.spellSlots).isDefined
 
-      //@format: off
+      // format: off
       def damageFromSpellSlot[_: RS](spellSlot: SpellSlot): Int =
         spellSlot.spellLevel.value match {
           case 1 => 2 * D8
@@ -81,7 +81,7 @@ object BasePaladinAbilities extends LazyLogging {
           case 3 => 4 * D8
           case _ => 5 * D8
         }
-      //@format: on
+      // format: on
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${basePaladin.name} used $name")

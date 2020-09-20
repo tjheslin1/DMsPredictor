@@ -28,7 +28,7 @@ trait SpellCaster extends Creature {
 
 object SpellCaster {
 
-  //@format: off
+  // format: off
   val concentratingLens: Lens[SpellCaster, Option[Spell]] =
     Lens[SpellCaster, Option[Spell]](_.concentratingSpell) { concentratingSpell =>
       {
@@ -46,9 +46,9 @@ object SpellCaster {
         case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }
     }
-  //@format: on
+  // format: on
 
-  //@format: off
+  // format: off
   val spellSlotsLens: Lens[SpellCaster, SpellSlots] = Lens[SpellCaster, SpellSlots](_.spellSlots) {
     spellSlots =>
       {
@@ -66,5 +66,5 @@ object SpellCaster {
         case _ => throw new NotImplementedError("Missing a case in spellSlotsLens")
       }
   }
-  //@format: on
+  // format: on
 }

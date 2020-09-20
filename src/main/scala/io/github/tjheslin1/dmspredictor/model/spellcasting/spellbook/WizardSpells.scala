@@ -25,7 +25,7 @@ object WizardSpells extends LazyLogging {
     val benefitsFromHigherSpellSlot = false
     val halfDamageOnMiss            = false
 
-    //@format: off
+    // format: off
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellCaster.spellCastingLevel.value match {
         case lvl if lvl >= 17 => 4 * D10
@@ -33,7 +33,7 @@ object WizardSpells extends LazyLogging {
         case lvl if lvl >= 5  => 2 * D10
         case _                => 1 * D10
       }
-    //@format: on
+    // format: on
   }
 
   case object MagicMissile extends SingleTargetAttackSpell {
@@ -189,7 +189,7 @@ object WizardSpells extends LazyLogging {
 
     val benefitsFromHigherSpellSlot = true
 
-    //@format: off
+    // format: off
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellLevel.value match {
         case 6 => (10 * D6) + 40
@@ -202,7 +202,7 @@ object WizardSpells extends LazyLogging {
             s"Invalid spell level. Expected 6 or higher but got: ${spellLevel.value}"
           )
       }
-    //@format: on
+    // format: on
 
     override def additionalEffect[_: RS](
         spellCaster: SpellCaster,

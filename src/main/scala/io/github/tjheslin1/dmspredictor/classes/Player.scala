@@ -32,7 +32,7 @@ object Player {
       constitutionScore
     )))
 
-  //@format: off
+  // format: off
   val playerLevelLens: Lens[Player, Level] = Lens[Player, Level](_.level) { lvl =>
     {
       case c: Champion => Champion._level.set(lvl)(c)
@@ -53,9 +53,9 @@ object Player {
       case c: Paladin => Paladin._level.set(lvl)(c)
     }
   }
-  //@format: on
+  // format: on
 
-  //@format: off
+  // format: off
   val playerBonusActionUsedLens: Lens[Player, Boolean] = Lens[Player, Boolean](_.bonusActionUsed) {
     bonusUsed =>
       {
@@ -82,9 +82,9 @@ object Player {
           )
       }
   }
-  //@format: on
+  // format: on
 
-  //@format: off
+  // format: off
   val playerProficiencyBonusLens: Lens[Player, ProficiencyBonus] =
     Lens[Player, ProficiencyBonus](_.proficiencyBonus) { profBonus =>
       {
@@ -111,5 +111,5 @@ object Player {
           )
       }
     }
-  //@format: on
+  // format: on
 }
