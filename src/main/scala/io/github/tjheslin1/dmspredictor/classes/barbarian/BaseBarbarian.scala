@@ -36,7 +36,11 @@ object BaseBarbarian {
     Player.calculateHealth(HitDice, level, constitutionScore)
 
   def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {
-    lazy val inRageDamage = if (inRage) weapon.damage + 2 else weapon.damage
+    lazy val inRageDamage =
+      if (inRage)
+        weapon.damage + 2
+      else
+        weapon.damage
 
     Weapon(
       weapon.name,
@@ -51,14 +55,19 @@ object BaseBarbarian {
 
   def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
-    val shieldBonus = offHand match {
-      case Some(Shield) => Shield.armourClass(stats.dexterity)
-      case _            => 0
-    }
+    val shieldBonus =
+      offHand match {
+        case Some(Shield) =>
+          Shield.armourClass(stats.dexterity)
+        case _ =>
+          0
+      }
 
     armour match {
-      case NoArmour => baseArmourClass + mod(stats.constitution) + shieldBonus // Unarmoured Defense
-      case _        => baseArmourClass + shieldBonus
+      case NoArmour =>
+        baseArmourClass + mod(stats.constitution) + shieldBonus // Unarmoured Defense
+      case _ =>
+        baseArmourClass + shieldBonus
     }
   }
 
@@ -67,25 +76,33 @@ object BaseBarbarian {
     Creature.creatureDefenseStatusLens.set(Regular)(resetAttackStatus).asInstanceOf[BaseBarbarian]
   }
 
-  val inRageLens: Lens[BaseBarbarian, Boolean] = Lens[BaseBarbarian, Boolean](_.inRage) { rage =>
-    {
-      case b: Barbarian => Barbarian._inRage.set(rage)(b)
-      case b: Berserker => Berserker._inRage.set(rage)(b)
-    }
-  }
-
-  val rageUsagesLens: Lens[BaseBarbarian, Int] = Lens[BaseBarbarian, Int](_.rageUsages) { rageNum =>
-    {
-      case b: Barbarian => Barbarian._rageUsages.set(rageNum)(b)
-      case b: Berserker => Berserker._rageUsages.set(rageNum)(b)
-    }
-  }
-
-  val rageTurnsLeftLens: Lens[BaseBarbarian, Int] = Lens[BaseBarbarian, Int](_.rageTurnsLeft) {
-    turnsLeft =>
+  val inRageLens: Lens[BaseBarbarian, Boolean] =
+    Lens[BaseBarbarian, Boolean](_.inRage) { rage =>
       {
-        case b: Barbarian => Barbarian._rageTurnsLeft.set(turnsLeft)(b)
-        case b: Berserker => Berserker._rageTurnsLeft.set(turnsLeft)(b)
+        case b: Barbarian =>
+          Barbarian._inRage.set(rage)(b)
+        case b: Berserker =>
+          Berserker._inRage.set(rage)(b)
       }
-  }
+    }
+
+  val rageUsagesLens: Lens[BaseBarbarian, Int] =
+    Lens[BaseBarbarian, Int](_.rageUsages) { rageNum =>
+      {
+        case b: Barbarian =>
+          Barbarian._rageUsages.set(rageNum)(b)
+        case b: Berserker =>
+          Berserker._rageUsages.set(rageNum)(b)
+      }
+    }
+
+  val rageTurnsLeftLens: Lens[BaseBarbarian, Int] =
+    Lens[BaseBarbarian, Int](_.rageTurnsLeft) { turnsLeft =>
+      {
+        case b: Barbarian =>
+          Barbarian._rageTurnsLeft.set(turnsLeft)(b)
+        case b: Berserker =>
+          Berserker._rageTurnsLeft.set(turnsLeft)(b)
+      }
+    }
 }

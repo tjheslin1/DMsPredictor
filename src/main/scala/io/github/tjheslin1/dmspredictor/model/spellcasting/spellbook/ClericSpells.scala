@@ -24,6 +24,7 @@ object ClericSpells extends LazyLogging {
     val spellLevel: SpellLevel      = 0
     val benefitsFromHigherSpellSlot = false
 
+    //@format: off
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellCaster.spellCastingLevel.value match {
         case lvl if lvl >= 17 => 4 * D8
@@ -32,6 +33,7 @@ object ClericSpells extends LazyLogging {
         case _                => 1 * D8
       }
   }
+  //@format: on
 
   case object GuidingBolt extends SingleTargetAttackSpell {
     val name                        = "Guiding Bolt"
@@ -43,14 +45,14 @@ object ClericSpells extends LazyLogging {
     val benefitsFromHigherSpellSlot = true
     val halfDamageOnMiss            = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
-      (3 + spellLevel) * D6
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (3 + spellLevel) * D6
 
     override def additionalEffect[_: RS](target: Combatant, attackResult: AttackResult): Combatant =
       attackResult match {
         case CriticalHit | Hit =>
           addCondition(target, GuidingBoltCondition())
-        case CriticalMiss | Miss => target
+        case CriticalMiss | Miss =>
+          target
       }
   }
 
@@ -63,8 +65,7 @@ object ClericSpells extends LazyLogging {
     def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
       removeCondition(creature, name)
 
-    def decrementTurnsLeft(): Condition =
-      GuidingBoltCondition(turnsLeft - 1)
+    def decrementTurnsLeft(): Condition = GuidingBoltCondition(turnsLeft - 1)
 
     def onConditionApplied[_: RS](creature: Creature): Creature =
       Creature.creatureDefenseStatusLens.set(Disadvantage)(creature)
@@ -96,10 +97,14 @@ object ClericSpells extends LazyLogging {
     val affectedTargets       = 1
     val requiresConcentration = true
 
-    val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
-      if (x.creature.isConscious) 1
-      else if (y.creature.isConscious) -1
-      else x.creature.health.compare(y.creature.health)
+    val conditionTargetsPriority: Ordering[Combatant] =
+      (x: Combatant, y: Combatant) =>
+        if (x.creature.isConscious)
+          1
+        else if (y.creature.isConscious)
+          -1
+        else
+          x.creature.health.compare(y.creature.health)
 
     val school: SchoolOfMagic       = Enchantment
     val castingTime: CastingTime    = OneActionCast
@@ -121,10 +126,14 @@ object ClericSpells extends LazyLogging {
     val affectedTargets       = Int.MaxValue
     val requiresConcentration = true
 
-    val conditionTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
-      if (x.creature.isConscious) 1
-      else if (y.creature.isConscious) -1
-      else x.creature.health.compare(y.creature.health)
+    val conditionTargetsPriority: Ordering[Combatant] =
+      (x: Combatant, y: Combatant) =>
+        if (x.creature.isConscious)
+          1
+        else if (y.creature.isConscious)
+          -1
+        else
+          x.creature.health.compare(y.creature.health)
 
     val school: SchoolOfMagic    = Conjuration
     val castingTime: CastingTime = OneActionCast
@@ -146,16 +155,14 @@ object ClericSpells extends LazyLogging {
     val missesTurn        = false
     val isHandledOnDamage = false
 
-    def decrementTurnsLeft(): Condition =
-      this.copy(turnsLeft = this.turnsLeft - 1)
+    def decrementTurnsLeft(): Condition = this.copy(turnsLeft = this.turnsLeft - 1)
 
     def handleStartOfTurn[_: RS](creature: Creature): Creature = {
       val damage = spellLevel.value * D8
 
       logger.debug(s"${creature.name} takes damage from ${SpiritGuardians.name}")
 
-      val (passed, updatedCreature) =
-        savingThrowPassed(saveDc, Wisdom, creature)
+      val (passed, updatedCreature) = savingThrowPassed(saveDc, Wisdom, creature)
 
       if (passed)
         updatedCreature.updateHealth(Math.floor(damage / 2).toInt, Radiant, Hit)

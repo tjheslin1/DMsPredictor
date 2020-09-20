@@ -25,6 +25,7 @@ object WizardSpells extends LazyLogging {
     val benefitsFromHigherSpellSlot = false
     val halfDamageOnMiss            = false
 
+    //@format: off
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellCaster.spellCastingLevel.value match {
         case lvl if lvl >= 17 => 4 * D10
@@ -32,6 +33,7 @@ object WizardSpells extends LazyLogging {
         case lvl if lvl >= 5  => 2 * D10
         case _                => 1 * D10
       }
+    //@format: on
   }
 
   case object MagicMissile extends SingleTargetAttackSpell {
@@ -62,10 +64,9 @@ object WizardSpells extends LazyLogging {
       val target = targets.head
       logger.debug(s"casting $name")
 
-      val damagedTarget =
-        target.copy(
-          creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit)
-        )
+      val damagedTarget = target.copy(
+        creature = target.creature.updateHealth(damage(spellCaster, spellLevel), damageType, Hit)
+      )
 
       (spellCaster, targets.replace(damagedTarget))
     }
@@ -91,7 +92,8 @@ object WizardSpells extends LazyLogging {
 
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
             .set(currentConditions :+ acidArrowCondition)(target)
-        case CriticalMiss | Miss => target
+        case CriticalMiss | Miss =>
+          target
       }
   }
 
@@ -119,7 +121,8 @@ object WizardSpells extends LazyLogging {
     ): (AttackResult, Creature) = {
       logger.debug(s"${reactingCreature.name} used its reaction to cast $name")
 
-      if (totalAttackRoll < reactingCreature.armourClass) (Miss, reactingCreature)
+      if (totalAttackRoll < reactingCreature.armourClass)
+        (Miss, reactingCreature)
       else {
         val spellCaster = reactingCreature.asInstanceOf[SpellCaster]
         if (spellCaster.spellSlots.firstLevel.count > 0) {
@@ -138,10 +141,15 @@ object WizardSpells extends LazyLogging {
             Creature.creatureReactionUsedLens.set(true)(conditionUpdated)
           }
 
-          val attackResult = if (totalAttackRoll >= reactedCreature.armourClass) Hit else Miss
+          val attackResult =
+            if (totalAttackRoll >= reactedCreature.armourClass)
+              Hit
+            else
+              Miss
 
           (attackResult, reactedCreature)
-        } else (Hit, reactingCreature)
+        } else
+          (Hit, reactingCreature)
       }
     }
   }
@@ -181,6 +189,7 @@ object WizardSpells extends LazyLogging {
 
     val benefitsFromHigherSpellSlot = true
 
+    //@format: off
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
       spellLevel.value match {
         case 6 => (10 * D6) + 40
@@ -193,6 +202,7 @@ object WizardSpells extends LazyLogging {
             s"Invalid spell level. Expected 6 or higher but got: ${spellLevel.value}"
           )
       }
+    //@format: on
 
     override def additionalEffect[_: RS](
         spellCaster: SpellCaster,
@@ -201,11 +211,13 @@ object WizardSpells extends LazyLogging {
         savingThrowPassed: Boolean
     ): (SpellCaster, Combatant, List[Combatant]) =
       if (target.creature.health <= 0) {
-        val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
-          .set(false)(target)
+        val updatedTarget =
+          (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+            .set(false)(target)
 
         (spellCaster, updatedTarget, others)
-      } else (spellCaster, target, others)
+      } else
+        (spellCaster, target, others)
   }
 
   case object FingerOfDeath extends SingleTargetSavingThrowSpell {
@@ -259,8 +271,9 @@ object WizardSpells extends LazyLogging {
 
         val updatedConditions = target.creature.conditions :+ Stunned(spellSaveDc(spellCaster))
 
-        val updatedTarget = (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
-          .set(updatedConditions)(target)
+        val updatedTarget =
+          (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
+            .set(updatedConditions)(target)
 
         logger.debug(s"${updatedTarget.creature.name} is stunned")
 
@@ -288,8 +301,9 @@ object WizardSpells extends LazyLogging {
           (Combatant.creatureLens composeLens Creature.creatureHealthLens)
             .set(0)(target)
 
-        val deadTarget = (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
-          .set(false)(zeroHealthTarget)
+        val deadTarget =
+          (Combatant.creatureLens composeLens Creature.creatureIsAliveLens)
+            .set(false)(zeroHealthTarget)
 
         logger.debug(s"${deadTarget.creature.name} is dead")
 

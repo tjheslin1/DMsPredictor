@@ -50,9 +50,12 @@ object Spell {
   ): Option[(Spell, SpellLevel)] = {
     def foundSpellMatches(foundSpell: Spell): Boolean = {
       val spellTypeMatches =
-        if (singleTargetSpellsOnly && foundSpell.isSingleTargetSpell == false) false
-        else if (multiTargetSpellsOnly && foundSpell.isMultiTargetSpell == false) false
-        else true
+        if (singleTargetSpellsOnly && foundSpell.isSingleTargetSpell == false)
+          false
+        else if (multiTargetSpellsOnly && foundSpell.isMultiTargetSpell == false)
+          false
+        else
+          true
 
       spellTypeMatches &&
       foundSpell.spellLevel == spellLevel &&
@@ -60,8 +63,10 @@ object Spell {
     }
 
     val spellLookup = spellCaster.spellsKnown.find {
-      case foundSpell if foundSpellMatches(foundSpell) => true
-      case _                                           => false
+      case foundSpell if foundSpellMatches(foundSpell) =>
+        true
+      case _ =>
+        false
     }
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
@@ -100,7 +105,8 @@ object Spell {
             (foundSpell, originalSpellLevel).some
           case Some(foundSpell) =>
             (foundSpell, foundSpell.spellLevel).some
-          case _ => none[(Spell, SpellLevel)]
+          case _ =>
+            none[(Spell, SpellLevel)]
         }
     } else if (spellLevelBelow >= 0)
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
@@ -109,7 +115,8 @@ object Spell {
         singleTargetSpellsOnly,
         multiTargetSpellsOnly
       )
-    else none[(Spell, SpellLevel)]
+    else
+      none[(Spell, SpellLevel)]
   }
 
   def spellAttackBonus(spellCaster: SpellCaster): Int =
@@ -125,16 +132,20 @@ object Spell {
       caster: SpellCaster,
       attribute: Attribute,
       target: Creature
-  ): (Boolean, Creature) =
-    savingThrowPassed(spellSaveDc(caster), attribute, target)
+  ): (Boolean, Creature) = savingThrowPassed(spellSaveDc(caster), attribute, target)
 
   def spellAttack[_: RS](spellCaster: SpellCaster, target: Creature): AttackResult =
     D20.roll() match {
-      case roll if spellCaster.scoresCritical(roll) => CriticalHit
-      case 1                                        => CriticalMiss
+      case roll if spellCaster.scoresCritical(roll) =>
+        CriticalHit
+      case 1 =>
+        CriticalMiss
       case roll =>
         val attackRoll = roll + spellAttackBonus(spellCaster) + blessAttackBonus(spellCaster)
 
-        if (attackRoll >= target.armourClass) Hit else Miss
+        if (attackRoll >= target.armourClass)
+          Hit
+        else
+          Miss
     }
 }

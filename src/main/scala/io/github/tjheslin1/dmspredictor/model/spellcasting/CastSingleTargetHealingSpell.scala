@@ -29,8 +29,7 @@ object CastSingleTargetHealingSpell extends LazyLogging {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        healingSpellTriggerMet(others)
+      def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
       def conditionMet: Boolean =
         spellConditionMet(
@@ -44,56 +43,67 @@ object CastSingleTargetHealingSpell extends LazyLogging {
 
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
-        val optSpell = highestSpellSlot match {
-          case None => none[(Spell, SpellLevel)]
-          case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, HealingSpellEffect, spellSlot.spellLevel)(
-              singleTargetSpellsOnly = true
-            )
-        }
+        val optSpell =
+          highestSpellSlot match {
+            case None =>
+              none[(Spell, SpellLevel)]
+            case Some(spellSlot) =>
+              spellOfLevelOrBelow(spellCaster, HealingSpellEffect, spellSlot.spellLevel)(
+                singleTargetSpellsOnly = true
+              )
+          }
 
-        val targets = spellCaster match {
-          case _: Player => players(others)
-          case _         => monsters(others)
-        }
+        val targets =
+          spellCaster match {
+            case _: Player =>
+              players(others)
+            case _ =>
+              monsters(others)
+          }
 
         val target = nextToFocus(combatant, targets, Healing)
 
-        val (updatedCombatant, optHealedAlly) = (target, optSpell) match {
-          case (_, None) => (combatant, None)
-          case (None, _) => (combatant, None)
-          case (Some(spellTarget), Some((foundSpell, foundSpellLevel))) =>
-            val (spellAffectedCaster, List(updatedTarget)) =
-              foundSpell.effect(spellCaster, foundSpellLevel, List(spellTarget))
+        val (updatedCombatant, optHealedAlly) =
+          (target, optSpell) match {
+            case (_, None) =>
+              (combatant, None)
+            case (None, _) =>
+              (combatant, None)
+            case (Some(spellTarget), Some((foundSpell, foundSpellLevel))) =>
+              val (spellAffectedCaster, List(updatedTarget)) = foundSpell.effect(
+                spellCaster,
+                foundSpellLevel,
+                List(spellTarget))
 
-            val updatedSpellCaster = if (foundSpellLevel.value == 0) {
-              spellAffectedCaster
-            } else {
-              val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
+              val updatedSpellCaster =
+                if (foundSpellLevel.value == 0) {
+                  spellAffectedCaster
+                } else {
+                  val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
 
-              decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
-            }
+                  decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
+                }
 
-            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+              val updatedCombatant =
+                Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
-            val updatedHealth =
-              Math.min(
+              val updatedHealth = Math.min(
                 updatedTarget.creature.maxHealth,
                 updatedTarget.creature.health + bonusHealing
               )
 
-            val updatedBonusHealingTarget =
-              (Combatant.creatureLens composeLens Creature.creatureHealthLens)
-                .set(updatedHealth)(updatedTarget)
+              val updatedBonusHealingTarget =
+                (Combatant.creatureLens composeLens Creature.creatureHealthLens)
+                  .set(updatedHealth)(updatedTarget)
 
-            if (bonusHealing > 0) {
-              logger.debug(
-                s"${updatedBonusHealingTarget.creature.name} healed for $bonusHealing bonus healing"
-              )
-            }
+              if (bonusHealing > 0) {
+                logger.debug(
+                  s"${updatedBonusHealingTarget.creature.name} healed for $bonusHealing bonus healing"
+                )
+              }
 
-            (updatedCombatant, updatedBonusHealingTarget.some)
-        }
+              (updatedCombatant, updatedBonusHealingTarget.some)
+          }
 
         optHealedAlly.fold((updatedCombatant, others))(updatedTarget =>
           (updatedCombatant, others.replace(updatedTarget)))

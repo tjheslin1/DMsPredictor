@@ -49,6 +49,8 @@ val MonocleVersion = "2.1.0"
 val RefinedVersion = "0.9.15"
 
 assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x                             => MergeStrategy.first
+  case PathList("META-INF", xs @ _*) =>
+    MergeStrategy.discard
+  case x =>
+    MergeStrategy.first
 }

@@ -13,6 +13,5 @@ abstract class OnWeaponDamageAbility(combatant: Combatant) extends Ability(comba
   override def useAbility[_: RS](
       others: List[Combatant],
       focus: Focus
-  ): (Combatant, List[Combatant]) =
-    (combatant, others)
+  ): (Combatant, List[Combatant]) = (combatant, others)
 }

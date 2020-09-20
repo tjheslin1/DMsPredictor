@@ -70,9 +70,12 @@ import monocle.macros.{GenLens, Lenses}
       case Radiant =>
         val updatedVampire = applyDamage(this, dmg).asInstanceOf[Vampire]
 
-        if (dmg > 0) _radiantDamageTaken.set(true)(updatedVampire)
-        else _radiantDamageTaken.set(false)(updatedVampire)
-      case _ => applyDamage(this, adjustedDamage(dmg, damageType, this))
+        if (dmg > 0)
+          _radiantDamageTaken.set(true)(updatedVampire)
+        else
+          _radiantDamageTaken.set(false)(updatedVampire)
+      case _ =>
+        applyDamage(this, adjustedDamage(dmg, damageType, this))
     }
 
   def restoreHealth(healing: Int): Creature = copy(health = Math.min(maxHealth, health + healing))
@@ -81,7 +84,8 @@ import monocle.macros.{GenLens, Lenses}
 
   def resetStartOfTurn(): Creature = {
     val radiantCalculatedVampire =
-      if (radiantDamageTaken) copy(radiantDamageTaken = false)
+      if (radiantDamageTaken)
+        copy(radiantDamageTaken = false)
       else {
         val regeneratedHp = Math.min(maxHealth, health + 20)
 

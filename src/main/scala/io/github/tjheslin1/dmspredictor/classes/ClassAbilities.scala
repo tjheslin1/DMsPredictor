@@ -32,15 +32,19 @@ object ClassAbilities {
       focus: Focus
   ): (Combatant, List[Combatant]) =
     nextToFocus(attacker, monsters(others), focus).fold((attacker, others)) { target =>
-      val (updatedAttacker, updatedTarget, updatedOthers) =
-        attackAndDamage(attacker, target, others.except(target))
+      val (updatedAttacker, updatedTarget, updatedOthers) = attackAndDamage(
+        attacker,
+        target,
+        others.except(target))
 
       val allUpdatedOthers = updatedOthers.replace(updatedTarget)
 
       nextToFocus(updatedAttacker, monsters(allUpdatedOthers), focus)
         .fold((updatedAttacker, allUpdatedOthers)) { nextTarget =>
-          val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) =
-            attackAndDamage(updatedAttacker, nextTarget, allUpdatedOthers)
+          val (updatedAttacker2, updatedEnemy2, updatedOtherEnemies2) = attackAndDamage(
+            updatedAttacker,
+            nextTarget,
+            allUpdatedOthers)
 
           (updatedAttacker2, updatedOtherEnemies2.replace(updatedEnemy2))
         }

@@ -75,12 +75,11 @@ object Condition {
     val condition         = creature.conditions.find(_.name == conditionName).get
     val updatedConditions = creature.conditions.except(condition)
 
-    val conditionRemovedCreature =
-      Creature.creatureConditionsLens.set(updatedConditions)(creature)
+    val conditionRemovedCreature = Creature.creatureConditionsLens.set(updatedConditions)(creature)
 
     condition.onConditionRemoved(conditionRemovedCreature)
   }
 
-  implicit val conditionEq: Eq[Condition] = (x: Condition, y: Condition) =>
-    x.name == y.name && x.saveDc == y.saveDc
+  implicit val conditionEq: Eq[Condition] =
+    (x: Condition, y: Condition) => x.name == y.name && x.saveDc == y.saveDc
 }

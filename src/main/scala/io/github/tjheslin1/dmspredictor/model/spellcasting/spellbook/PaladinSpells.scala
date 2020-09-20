@@ -27,22 +27,31 @@ object PaladinSpells {
     val spellLevel: SpellLevel = 1
     val affectedTargets        = 2 + spellLevel
 
-    val buffTargetsPriority: Ordering[Combatant] = (x: Combatant, y: Combatant) =>
-      if (focusHigherHealthCreatureOrder(x.creature) == focusHigherHealthCreatureOrder(y.creature))
-        0
-      else if (
-        focusHigherHealthCreatureOrder(x.creature) < focusHigherHealthCreatureOrder(y.creature)
-      ) -1
-      else 1
+    val buffTargetsPriority: Ordering[Combatant] =
+      (x: Combatant, y: Combatant) =>
+        if (
+          focusHigherHealthCreatureOrder(x.creature) == focusHigherHealthCreatureOrder(y.creature)
+        )
+          0
+        else if (
+          focusHigherHealthCreatureOrder(x.creature) < focusHigherHealthCreatureOrder(y.creature)
+        )
+          -1
+        else
+          1
   }
 
   def blessAttackBonus[_: RS](creature: Creature): Int = {
     val blessed = creature.conditions.exists {
-      case BlessCondition(_) => true
-      case _                 => false
+      case BlessCondition(_) =>
+        true
+      case _ =>
+        false
     }
 
-    if (blessed) 1 * D4
-    else 0
+    if (blessed)
+      1 * D4
+    else
+      0
   }
 }

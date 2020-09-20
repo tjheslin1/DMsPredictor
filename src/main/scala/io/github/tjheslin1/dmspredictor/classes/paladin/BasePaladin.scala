@@ -42,33 +42,41 @@ object BasePaladin {
       weapon: Weapon,
       offHand: Option[Equipment]
   ): Weapon = {
-    val weaponWithFightingStyle = weapon.weaponType match {
-      case Melee
-          if duelingFightingStyleConditionsMet(weapon, offHand, paladin.fightingStyles, Dueling) =>
-        bonusToHitWeapon(weapon, 2)
-      case Melee if weapon.twoHanded && paladin.fightingStyles.contains(GreatWeaponFighting) =>
-        lazy val rerollingDamage = {
-          val damageRoll = weapon.damage
-          if (damageRoll <= 2)
-            weapon.damage
-          else
-            damageRoll
-        }
-        Weapon(
-          weapon.name,
-          weapon.weaponType,
-          weapon.damageType,
-          weapon.twoHanded,
-          weapon.finesse,
-          rerollingDamage,
-          weapon.hitBonus
-        )
-      case _ => weapon
-    }
+    val weaponWithFightingStyle =
+      weapon.weaponType match {
+        case Melee
+            if duelingFightingStyleConditionsMet(
+              weapon,
+              offHand,
+              paladin.fightingStyles,
+              Dueling) =>
+          bonusToHitWeapon(weapon, 2)
+        case Melee if weapon.twoHanded && paladin.fightingStyles.contains(GreatWeaponFighting) =>
+          lazy val rerollingDamage = {
+            val damageRoll = weapon.damage
+            if (damageRoll <= 2)
+              weapon.damage
+            else
+              damageRoll
+          }
+          Weapon(
+            weapon.name,
+            weapon.weaponType,
+            weapon.damageType,
+            weapon.twoHanded,
+            weapon.finesse,
+            rerollingDamage,
+            weapon.hitBonus
+          )
+        case _ =>
+          weapon
+      }
 
     val sacredWeaponBuffActive = paladin.conditions.exists {
-      case SacredWeaponCondition(_) => true
-      case _                        => false
+      case SacredWeaponCondition(_) =>
+        true
+      case _ =>
+        false
     }
 
     if (sacredWeaponBuffActive) {
@@ -77,7 +85,8 @@ object BasePaladin {
       val bonusToHitWpn = bonusToHitWeapon(weaponWithFightingStyle, charismaBonus)
 
       ofDamageTypeWeapon(bonusToHitWpn, Magical)
-    } else weaponWithFightingStyle
+    } else
+      weaponWithFightingStyle
   }
 
   def armourClassWithFightingStyle(
@@ -88,19 +97,29 @@ object BasePaladin {
   ): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
 
-    val shieldBonus = offHand match {
-      case Some(Shield) => Shield.armourClass(stats.dexterity)
-      case _            => 0
-    }
+    val shieldBonus =
+      offHand match {
+        case Some(Shield) =>
+          Shield.armourClass(stats.dexterity)
+        case _ =>
+          0
+      }
 
-    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+    val defenseBonus =
+      if (fightingStyles.contains(Defense))
+        1
+      else
+        0
 
     armour match {
-      case NoArmour => baseArmourClass + shieldBonus
-      case _        => baseArmourClass + shieldBonus + defenseBonus
+      case NoArmour =>
+        baseArmourClass + shieldBonus
+      case _ =>
+        baseArmourClass + shieldBonus + defenseBonus
     }
   }
 
+  //@format: off
   def paladinSpellSlots(level: Level): SpellSlots =
     level match {
       case LevelOne       => SpellSlots(0, 0, 0)
@@ -124,24 +143,29 @@ object BasePaladin {
       case LevelNineteen  => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
       case LevelTwenty    => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
     }
+  //@format: on
 
   def layOnHandsPoolForLevel(level: Level): Int = level.value * 5
 
-  val layOnHandsPoolLens: Lens[BasePaladin, Int] = Lens[BasePaladin, Int](_.layOnHandsPool) {
-    pool =>
+  val layOnHandsPoolLens: Lens[BasePaladin, Int] =
+    Lens[BasePaladin, Int](_.layOnHandsPool) { pool =>
       {
-        case paladin: Paladin => Paladin._layOnHandsPool.set(pool)(paladin)
+        case paladin: Paladin =>
+          Paladin._layOnHandsPool.set(pool)(paladin)
 
-        case _ => throw new NotImplementedError("Missing a case in layOnHandsPoolLens")
+        case _ =>
+          throw new NotImplementedError("Missing a case in layOnHandsPoolLens")
       }
-  }
+    }
 
   val channelDivinityUsedLens: Lens[BasePaladin, Boolean] =
     Lens[BasePaladin, Boolean](_.channelDivinityUsed) { channelDivinityUsed =>
       {
-        case paladin: Paladin => Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
+        case paladin: Paladin =>
+          Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
 
-        case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+        case _ =>
+          throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
 
       }
     }

@@ -7,6 +7,7 @@ object Modifier {
   def mod(stat: Stat): Int = modifier(stat.value)
   def mod(score: Int): Int = modifier(score)
 
+  //@format: off
   def attributeModifier(creature: Creature, attribute: Attribute): Int =
     attribute match {
       case Strength     => mod(creature.stats.strength)
@@ -16,6 +17,7 @@ object Modifier {
       case Intelligence => mod(creature.stats.intelligence)
       case Charisma     => mod(creature.stats.charisma)
     }
+  //@format: on
 
   // format: off
   private val modifier = Map(

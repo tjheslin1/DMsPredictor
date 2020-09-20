@@ -28,6 +28,7 @@ object BaseRanger {
   def calculateHealth(level: Level, constitutionScore: Stat): Int =
     Player.calculateHealth(HitDice, level, constitutionScore)
 
+  //@format: off
   def rangerSpellSlots(level: Level): SpellSlots =
     level match {
       case LevelOne       => SpellSlots(0, 0, 0)
@@ -51,6 +52,7 @@ object BaseRanger {
       case LevelNineteen  => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
       case LevelTwenty    => SpellSlots(4, 3, 3, 3, 2, 0, 0, 0, 0)
     }
+  //@format: on
 
   def weaponWithFightingStyle[_: RS](
       weapon: Weapon,
@@ -62,7 +64,8 @@ object BaseRanger {
         bonusToHitWeapon(weapon, 2)
       case Melee if duelingFightingStyleConditionsMet(weapon, offHand, fightingStyles, Dueling) =>
         bonusToHitWeapon(weapon, 2)
-      case _ => weapon
+      case _ =>
+        weapon
     }
 
   def armourClassWithFightingStyle(
@@ -73,16 +76,25 @@ object BaseRanger {
   ): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
 
-    val shieldBonus = offHand match {
-      case Some(Shield) => Shield.armourClass(stats.dexterity)
-      case _            => 0
-    }
+    val shieldBonus =
+      offHand match {
+        case Some(Shield) =>
+          Shield.armourClass(stats.dexterity)
+        case _ =>
+          0
+      }
 
-    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+    val defenseBonus =
+      if (fightingStyles.contains(Defense))
+        1
+      else
+        0
 
     armour match {
-      case NoArmour => baseArmourClass + shieldBonus
-      case _        => baseArmourClass + shieldBonus + defenseBonus
+      case NoArmour =>
+        baseArmourClass + shieldBonus
+      case _ =>
+        baseArmourClass + shieldBonus + defenseBonus
     }
   }
 }

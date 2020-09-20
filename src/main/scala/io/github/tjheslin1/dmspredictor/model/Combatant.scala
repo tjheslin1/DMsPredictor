@@ -14,6 +14,7 @@ object Combatant {
 
   val creatureLens: Lens[Combatant, Creature] = GenLens[Combatant](_.creature)
 
+  //@format: off
   val playerOptional: Optional[Combatant, Player] = Optional[Combatant, Player] {
     case Combatant(_, p: Player) => p.some
     case _                       => none[Player]
@@ -33,4 +34,5 @@ object Combatant {
       case c: Combatant                             => c
     }
   }
+  //@format: on
 }

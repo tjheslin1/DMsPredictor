@@ -69,6 +69,7 @@ trait Creature {
   def passivePerception: Int = 10 + skills.perception
 }
 
+//@format: off
 object Creature extends LazyLogging {
 
   implicit def creatureShow[_: RS]: Show[Creature] =
@@ -798,3 +799,4 @@ object Creature extends LazyLogging {
     }
   }
 }
+//@format: on

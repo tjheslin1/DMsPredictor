@@ -36,30 +36,39 @@ object CastConditionSpell extends LazyLogging {
 
         val highestSpellSlot = highestSpellSlotAvailable(spellCaster.spellSlots)
 
-        val optSpell = highestSpellSlot match {
-          case None => none[(Spell, SpellLevel)]
-          case Some(spellSlot) =>
-            spellOfLevelOrBelow(spellCaster, ConditionSpellEffect, spellSlot.spellLevel)()
-        }
+        val optSpell =
+          highestSpellSlot match {
+            case None =>
+              none[(Spell, SpellLevel)]
+            case Some(spellSlot) =>
+              spellOfLevelOrBelow(spellCaster, ConditionSpellEffect, spellSlot.spellLevel)()
+          }
 
-        val targets = spellCaster match {
-          case _: Player => monsters(others)
-          case _         => players(others)
-        }
+        val targets =
+          spellCaster match {
+            case _: Player =>
+              monsters(others)
+            case _ =>
+              players(others)
+          }
 
         optSpell match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some((foundSpell, foundSpellLevel)) =>
-            val (spellAffectedCaster, updatedOthers) =
-              foundSpell.effect(spellCaster, foundSpellLevel, targets)
+            val (spellAffectedCaster, updatedOthers) = foundSpell.effect(
+              spellCaster,
+              foundSpellLevel,
+              targets)
 
-            val updatedSpellCaster = if (foundSpellLevel.value == 0) {
-              spellAffectedCaster
-            } else {
-              val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
+            val updatedSpellCaster =
+              if (foundSpellLevel.value == 0) {
+                spellAffectedCaster
+              } else {
+                val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
 
-              decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
-            }
+                decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
+              }
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
