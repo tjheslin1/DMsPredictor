@@ -51,7 +51,8 @@ object BaseFighter {
           rerollingDamage,
           weapon.hitBonus
         )
-      case _ => weapon
+      case _ =>
+        weapon
     }
 
   def armourClassWithFightingStyle(
@@ -62,26 +63,38 @@ object BaseFighter {
   ): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)
 
-    val shieldBonus = offHand match {
-      case Some(Shield) => Shield.armourClass(stats.dexterity)
-      case _            => 0
-    }
+    val shieldBonus =
+      offHand match {
+        case Some(Shield) =>
+          Shield.armourClass(stats.dexterity)
+        case _ =>
+          0
+      }
 
-    val defenseBonus = if (fightingStyles.contains(Defense)) 1 else 0
+    val defenseBonus =
+      if (fightingStyles.contains(Defense))
+        1
+      else
+        0
 
     armour match {
-      case NoArmour => baseArmourClass + shieldBonus
-      case _        => baseArmourClass + shieldBonus + defenseBonus
+      case NoArmour =>
+        baseArmourClass + shieldBonus
+      case _ =>
+        baseArmourClass + shieldBonus + defenseBonus
     }
   }
 
   val abilityUsagesLens: Lens[BaseFighter, BaseFighterAbilities] =
     Lens[BaseFighter, BaseFighterAbilities](_.abilityUsages) { abilityUsages =>
       {
-        case champion: Champion => Champion._abilityUsages.set(abilityUsages)(champion)
-        case fighter: Fighter   => Fighter._abilityUsages.set(abilityUsages)(fighter)
+        case champion: Champion =>
+          Champion._abilityUsages.set(abilityUsages)(champion)
+        case fighter: Fighter =>
+          Fighter._abilityUsages.set(abilityUsages)(fighter)
 
-        case _ => throw new NotImplementedError("Missing a case in abilityUsagesLens")
+        case _ =>
+          throw new NotImplementedError("Missing a case in abilityUsagesLens")
 
       }
     }

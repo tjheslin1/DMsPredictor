@@ -10,9 +10,12 @@ object SimulationRunner extends LazyLogging {
       val (losses, wins) = results
       logger.debug("\n\n------------ New Simulation ------------\n")
       simulation.run(info).result match {
-        case Loss       => (losses + 1, wins)
-        case Success    => (losses, wins + 1)
-        case Unresolved => (losses, wins)
+        case Loss =>
+          (losses + 1, wins)
+        case Success =>
+          (losses, wins + 1)
+        case Unresolved =>
+          (losses, wins)
       }
     }
 }

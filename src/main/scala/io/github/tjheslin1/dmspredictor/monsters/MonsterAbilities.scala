@@ -30,22 +30,23 @@ object MonsterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${monster.name} used $name")
 
-        (1 to numberOfAttacks).foldLeft((combatant, others)) {
-          case ((attacker, otherTargets), _) =>
-            nextAbilityToUseInConjunction(
-              attacker,
-              otherTargets,
-              order,
-              NonEmptyList.of(SingleAttack)
-            ).fold {
-              nextToFocus(attacker, players(otherTargets), focus).fold((attacker, otherTargets)) {
-                target =>
-                  val (updatedMonster, updatedEnemy, updatedOthers) =
-                    attackAndDamage(attacker, target, otherTargets.except(target))
+        (1 to numberOfAttacks).foldLeft((combatant, others)) { case ((attacker, otherTargets), _) =>
+          nextAbilityToUseInConjunction(
+            attacker,
+            otherTargets,
+            order,
+            NonEmptyList.of(SingleAttack)
+          ).fold {
+            nextToFocus(attacker, players(otherTargets), focus).fold((attacker, otherTargets)) {
+              target =>
+                val (updatedMonster, updatedEnemy, updatedOthers) = attackAndDamage(
+                  attacker,
+                  target,
+                  otherTargets.except(target))
 
-                  (updatedMonster, updatedOthers.replace(updatedEnemy))
-              }
-            }(ability => useAdditionalAbility(ability, attacker, otherTargets, focus))
+                (updatedMonster, updatedOthers.replace(updatedEnemy))
+            }
+          }(ability => useAdditionalAbility(ability, attacker, otherTargets, focus))
         }
       }
 

@@ -39,16 +39,24 @@ abstract class ConditionSpell extends Spell with LazyLogging {
     val conditionTargets = targets.sorted(conditionTargetsPriority).take(affectedTargets)
 
     val updatedTargets = conditionTargets.map { target =>
-      val (passed, updatedCreature) =
-        spellSavingThrowPassed(spellCaster, attribute, target.creature)
+      val (passed, updatedCreature) = spellSavingThrowPassed(
+        spellCaster,
+        attribute,
+        target.creature)
 
       val updatedTarget = Combatant.creatureLens.set(updatedCreature)(target)
 
-      val savingThrowResult = if (passed) "Passed" else "Failed"
+      val savingThrowResult =
+        if (passed)
+          "Passed"
+        else
+          "Failed"
       logger.debug(s"${updatedCreature.name} rolls saving throw - $savingThrowResult")
 
-      if (passed) updatedTarget
-      else applyCondition(spellCaster, updatedTarget)
+      if (passed)
+        updatedTarget
+      else
+        applyCondition(spellCaster, updatedTarget)
     }
 
     def anyTargetIsAffectedByCondition(): Boolean =

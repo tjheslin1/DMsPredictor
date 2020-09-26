@@ -53,7 +53,11 @@ import monocle.macros.{GenLens, Lenses}
   def updateHealth[_: RS](dmg: Int, damageType: DamageType, attackResult: AttackResult): Creature =
     applyDamage(this, adjustedDamage(dmg, damageType, this))
 
-  def scoresCritical(roll: Int): Boolean = if (level.value <= 2) roll == 20 else roll >= 19
+  def scoresCritical(roll: Int): Boolean =
+    if (level.value <= 2)
+      roll == 20
+    else
+      roll >= 19
 
   val reactionOnHit: Option[OnHitReaction]       = None
   val reactionOnDamage: Option[OnDamageReaction] = None

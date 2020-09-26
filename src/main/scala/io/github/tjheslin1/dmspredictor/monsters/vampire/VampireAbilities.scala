@@ -34,36 +34,49 @@ object VampireAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"Vampire used $name")
 
-        val grappledEnemies =
-          players(others).filter(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
+        val grappledEnemies = players(others).filter(
+          _.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
         nextToFocus(combatant, grappledEnemies, focus) match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some(grappledTarget) =>
             val (attackResult, hitTarget) = attack(combatant, Bite, grappledTarget)
 
-            val (updatedVampireCombatant, updatedTarget, updatedOthers) =
-              resolveDamage(combatant, hitTarget, others, Bite, attackResult)
+            val (updatedVampireCombatant, updatedTarget, updatedOthers) = resolveDamage(
+              combatant,
+              hitTarget,
+              others,
+              Bite,
+              attackResult)
 
-            val necroticDamage = attackResult match {
-              case CriticalHit  => Bite.necroticDamage + Bite.necroticDamage
-              case Hit          => Bite.necroticDamage
-              case Miss         => 0
-              case CriticalMiss => 0
-            }
+            val necroticDamage =
+              attackResult match {
+                case CriticalHit =>
+                  Bite.necroticDamage + Bite.necroticDamage
+                case Hit =>
+                  Bite.necroticDamage
+                case Miss =>
+                  0
+                case CriticalMiss =>
+                  0
+              }
 
-            if (necroticDamage > 0) logger.debug(s"$name deals $necroticDamage necrotic damage")
+            if (necroticDamage > 0)
+              logger.debug(s"$name deals $necroticDamage necrotic damage")
 
             val updatedVampire = updatedVampireCombatant.creature.asInstanceOf[Vampire]
 
-            val restoredVampire = Combatant.creatureLens.set(
-              updatedVampire.restoreHealth(necroticDamage)
-            )(updatedVampireCombatant)
+            val restoredVampire =
+              Combatant.creatureLens.set(
+                updatedVampire.restoreHealth(necroticDamage)
+              )(updatedVampireCombatant)
 
-            val updatedHealthTarget = Combatant.creatureLens
-              .set(updatedTarget.creature.updateHealth(necroticDamage, Necrotic, attackResult))(
-                updatedTarget
-              )
+            val updatedHealthTarget =
+              Combatant.creatureLens
+                .set(updatedTarget.creature.updateHealth(necroticDamage, Necrotic, attackResult))(
+                  updatedTarget
+                )
 
             val updatedMaxHealth = updatedHealthTarget.creature.maxHealth - necroticDamage
             val updatedMaxHealthTarget =
@@ -96,11 +109,13 @@ object VampireAbilities extends LazyLogging {
         val enemies = players(others)
 
         nextToFocus(combatant, enemies, focus) match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some(target) =>
             val (attackResult, hitTarget) = attack(combatant, UnarmedStrike, target)
             attackResult match {
-              case CriticalMiss | Miss => (combatant, others)
+              case CriticalMiss | Miss =>
+                (combatant, others)
               case attackResult @ (CriticalHit | Hit) =>
                 if (
                   vampire.firstAttack &&
@@ -121,8 +136,12 @@ object VampireAbilities extends LazyLogging {
 
                   (combatant, others.replace(updatedTarget))
                 } else {
-                  val (updatedVampire, updatedAttackTarget, updatedOthers) =
-                    resolveDamage(combatant, hitTarget, others, UnarmedStrike, attackResult)
+                  val (updatedVampire, updatedAttackTarget, updatedOthers) = resolveDamage(
+                    combatant,
+                    hitTarget,
+                    others,
+                    UnarmedStrike,
+                    attackResult)
 
                   (updatedVampire, updatedOthers.replace(updatedAttackTarget))
                 }
@@ -130,7 +149,11 @@ object VampireAbilities extends LazyLogging {
         }
       }
 
-      def update: Creature = if (vampire.firstAttack) vampire.copy(firstAttack = false) else vampire
+      def update: Creature =
+        if (vampire.firstAttack)
+          vampire.copy(firstAttack = false)
+        else
+          vampire
     }
 
   def charm(currentOrder: Int)(combatant: Combatant): Ability =
@@ -154,7 +177,8 @@ object VampireAbilities extends LazyLogging {
           .filter(_.creature.conditionImmunities.contains(CharmedCondition) == false)
           .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
 
-        if (nonImmuneCombatants.isEmpty) false
+        if (nonImmuneCombatants.isEmpty)
+          false
         else
           nonImmuneCombatants
             .exists(_.creature.conditions.map(_.name).contains(Charmed.name)) == false
@@ -166,7 +190,8 @@ object VampireAbilities extends LazyLogging {
         logger.debug(s"Vampire used $name")
 
         nextToFocus(combatant, charmTargets(players(others)), focus) match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some(target) =>
             val (passed, updatedCreature) = savingThrowPassed(CharmDC, Wisdom, target.creature)
 

@@ -59,12 +59,11 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
             writeToDynamo(SimulationResult(simHash, "unknown", e.getMessage, "unknown config"))
         }
       case Right((simulationConfig, simHash, basicSimulation, json)) =>
-        val (losses, wins) =
-          SimulationRunner.run(
-            basicSimulation,
-            simulationConfig.simulationName,
-            Math.min(10000, simulationConfig.simulations)
-          )
+        val (losses, wins) = SimulationRunner.run(
+          basicSimulation,
+          simulationConfig.simulationName,
+          Math.min(10000, simulationConfig.simulations)
+        )
 
         writeToDynamo(
           SimulationResult(
@@ -113,7 +112,8 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     } match {
       case Some(Left(dynamoError)) =>
         throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
-      case _ => ()
+      case _ =>
+        ()
     }
   }
 }

@@ -62,8 +62,10 @@ import monocle.macros.{GenLens, Lenses}
       if (passed) {
         logger.debug("Zombie used Undead Fortitude to remain at 1 hp")
         _health.set(1)(updatedZombie)
-      } else applyDamage(updatedZombie, adjustedDmg)
-    } else applyDamage(this, adjustedDmg)
+      } else
+        applyDamage(updatedZombie, adjustedDmg)
+    } else
+      applyDamage(this, adjustedDmg)
   }
 
   def scoresCritical(roll: Int): Boolean = roll == 20

@@ -17,7 +17,8 @@ object HunterAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean =
         others match {
-          case List(target) => target.creature.health < target.creature.maxHealth
+          case List(target) =>
+            target.creature.health < target.creature.maxHealth
           case _ =>
             throw new IllegalArgumentException(
               s"Expected one combatant passed to triggerMet but found ${others.size}"

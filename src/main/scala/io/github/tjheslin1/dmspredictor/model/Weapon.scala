@@ -82,8 +82,7 @@ object Weapon {
       twoHands: Boolean,
       finesse: Boolean,
       dmg: Int
-  ): Weapon =
-    Weapon(weaponName, wpnType, weaponDamageType, twoHands, finesse, dmg)
+  ): Weapon = Weapon(weaponName, wpnType, weaponDamageType, twoHands, finesse, dmg)
 
   case class UnarmedStrike(creature: Creature) extends Weapon {
     override val name: String           = "Unarmed strike"

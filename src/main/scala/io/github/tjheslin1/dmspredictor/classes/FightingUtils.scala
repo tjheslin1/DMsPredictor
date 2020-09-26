@@ -12,7 +12,9 @@ object FightingUtils {
       dueling: T
   ): Boolean =
     offHand match {
-      case Some(_: Weapon) => false
-      case _               => weapon.twoHanded == false && fightingStyles.contains(dueling)
+      case Some(_: Weapon) =>
+        false
+      case _ =>
+        weapon.twoHanded == false && fightingStyles.contains(dueling)
     }
 }

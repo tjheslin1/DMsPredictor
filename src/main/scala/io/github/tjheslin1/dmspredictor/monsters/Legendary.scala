@@ -15,8 +15,10 @@ object Legendary {
   val legendaryResistancesLens: Lens[Legendary, Int] =
     Lens[Legendary, Int](_.legendaryResistances) { legendaryResistances =>
       {
-        case c: Lich    => Lich._legendaryResistances.set(legendaryResistances)(c)
-        case c: Vampire => Vampire._legendaryResistances.set(legendaryResistances)(c)
+        case c: Lich =>
+          Lich._legendaryResistances.set(legendaryResistances)(c)
+        case c: Vampire =>
+          Vampire._legendaryResistances.set(legendaryResistances)(c)
       }
     }
 }

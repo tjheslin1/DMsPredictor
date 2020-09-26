@@ -22,8 +22,10 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus)
       if (players.exists(_.creature.isConscious)) {
         if (monsters.exists(_.creature.isConscious)) {
 
-          val (pcs, mobs) =
-            Turn(initiative).run(focus).toList.partition(_.creature.creatureType == PlayerCharacter)
+          val (pcs, mobs) = Turn(initiative)
+            .run(focus)
+            .toList
+            .partition(_.creature.creatureType == PlayerCharacter)
 
           val updatedInitiative = updateInitiative(initiative, pcs, mobs)
 
@@ -32,19 +34,21 @@ case class BasicSimulation(creatures: List[Creature], focus: Focus)
             logger.debug(s"mob: ${mob.creature.name} - hp=${mob.creature.health}"))
 
           determineOutcome(updatedInitiative, pcs, mobs)
-        } else SimulationResult(Success, info)
-      } else SimulationResult(Loss, info)
+        } else
+          SimulationResult(Success, info)
+      } else
+        SimulationResult(Loss, info)
 
     val initiative = InitiativeCalculator(creatures).rollInitiative()
 
     logger.debug("Initiative Scores:")
-    initiative.foreach {
-      case (_, initiative) =>
-        logger.debug(s"${initiative.combatant.creature.name} - ${initiative.score}")
+    initiative.foreach { case (_, initiative) =>
+      logger.debug(s"${initiative.combatant.creature.name} - ${initiative.score}")
     }
 
-    val (playerCharacters, monsters) =
-      initiative.toList.map(_._2.combatant).partition(_.creature.creatureType == PlayerCharacter)
+    val (playerCharacters, monsters) = initiative.toList
+      .map(_._2.combatant)
+      .partition(_.creature.creatureType == PlayerCharacter)
 
     determineOutcome(initiative, playerCharacters, monsters)
   }
