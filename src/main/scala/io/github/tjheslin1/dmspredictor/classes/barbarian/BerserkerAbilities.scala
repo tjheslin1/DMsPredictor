@@ -39,7 +39,8 @@ object BerserkerAbilities extends LazyLogging {
         val target  = nextToFocus(combatant, enemies, focus)
 
         target match {
-          case None => (ragingBarbarianCombatant, others)
+          case None =>
+            (ragingBarbarianCombatant, others)
           case Some(targetOfAttack) =>
             nextAbilityToUseInConjunction(
               ragingBarbarianCombatant,
@@ -47,13 +48,18 @@ object BerserkerAbilities extends LazyLogging {
               order,
               AbilityAction.MainAction
             ).fold {
-              val (updatedAttacker, updatedTarget, updatedOthers) =
-                attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
+              val (updatedAttacker, updatedTarget, updatedOthers) = attackAndDamage(
+                ragingBarbarianCombatant,
+                targetOfAttack,
+                others)
 
               (updatedAttacker, updatedOthers.replace(updatedTarget))
             } { nextAbility =>
-              val (updatedAttacker, updatedOthers) =
-                useAdditionalAbility(nextAbility, ragingBarbarianCombatant, others, focus)
+              val (updatedAttacker, updatedOthers) = useAdditionalAbility(
+                nextAbility,
+                ragingBarbarianCombatant,
+                others,
+                focus)
 
               (updatedAttacker, updatedOthers)
             }
@@ -75,8 +81,9 @@ object BerserkerAbilities extends LazyLogging {
           )
           .asInstanceOf[BaseBarbarian]
 
-        val bonusActionUsedBerserker =
-          playerBonusActionUsedLens.set(true)(resistantBerserker).asInstanceOf[Berserker]
+        val bonusActionUsedBerserker = playerBonusActionUsedLens
+          .set(true)(resistantBerserker)
+          .asInstanceOf[Berserker]
 
         Berserker._inFrenzy.set(true)(bonusActionUsedBerserker)
       }
@@ -102,12 +109,15 @@ object BerserkerAbilities extends LazyLogging {
         val target = nextToFocus(combatant, monsters(others), focus)
 
         target match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some(targetOfAttack) =>
             nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
               .fold {
-                val (updatedAttacker, updatedTarget, updatedOthers) =
-                  attackAndDamage(combatant, targetOfAttack, others)
+                val (updatedAttacker, updatedTarget, updatedOthers) = attackAndDamage(
+                  combatant,
+                  targetOfAttack,
+                  others)
 
                 (updatedAttacker, updatedOthers.replace(updatedTarget))
               } { singleAttackAbility =>

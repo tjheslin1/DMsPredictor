@@ -38,32 +38,37 @@ object CastMultiTargetOffensiveSpell extends LazyLogging {
 
         val (optSpell, foundSpellLevel) =
           highestSpellSlot match {
-            case None => (none[Spell], LevelZero)
+            case None =>
+              (none[Spell], LevelZero)
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
-              ).fold((none[Spell], LevelZero)) {
-                case (foundSpell, spellLevel) =>
-                  (foundSpell.some, spellLevel)
+              ).fold((none[Spell], LevelZero)) { case (foundSpell, spellLevel) =>
+                (foundSpell.some, spellLevel)
               }
           }
 
-        val targets = spellCaster match {
-          case _: Player => monsters(others)
-          case _         => players(others)
-        }
+        val targets =
+          spellCaster match {
+            case _: Player =>
+              monsters(others)
+            case _ =>
+              players(others)
+          }
 
-        val (spellAffectedCaster, updatedTargets) = optSpell.fold((spellCaster, others)) { spell =>
-          spell.effect(spellCaster, foundSpellLevel, targets)
-        }
+        val (spellAffectedCaster, updatedTargets) =
+          optSpell.fold((spellCaster, others)) { spell =>
+            spell.effect(spellCaster, foundSpellLevel, targets)
+          }
 
-        val updatedSpellCaster = if (foundSpellLevel.value == 0) {
-          spellAffectedCaster
-        } else {
-          val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
+        val updatedSpellCaster =
+          if (foundSpellLevel.value == 0) {
+            spellAffectedCaster
+          } else {
+            val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
 
-          decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
-        }
+            decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
+          }
 
         val updatedCombatant = Combatant.creatureLens.set(updatedSpellCaster)(combatant)
 

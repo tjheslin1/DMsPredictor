@@ -7,6 +7,7 @@ object ListOps {
 
   implicit class ListOps[T](val list: List[T]) extends AnyVal {
 
+    // format: off
     def replace(t: T)(implicit eq: Eq[T]): List[T] =
       if (list.exists(_ === t)) {
         list.map {
@@ -16,10 +17,11 @@ object ListOps {
       } else {
         list :+ t
       }
+    // format: on
 
     def replace(ts: List[T])(implicit eq: Eq[T]): List[T] =
-      ts.foldLeft(list) {
-        case (tss, t) => tss.replace(t)
+      ts.foldLeft(list) { case (tss, t) =>
+        tss.replace(t)
       }
 
     def except(t: T): List[T] = list diff List(t)

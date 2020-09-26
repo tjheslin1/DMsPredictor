@@ -24,8 +24,10 @@ object CastMultiTargetBuffSpell extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean =
         spellCaster match {
-          case _: Player => players(others).nonEmpty
-          case _         => monsters(others).nonEmpty
+          case _: Player =>
+            players(others).nonEmpty
+          case _ =>
+            monsters(others).nonEmpty
         }
 
       def conditionMet: Boolean =
@@ -42,24 +44,30 @@ object CastMultiTargetBuffSpell extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-            case None => none[(Spell, SpellLevel)]
+            case None =>
+              none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
               )
           }
 
-        val targets = spellCaster match {
-          case _: Player => players(others)
-          case _         => monsters(others)
-        }
+        val targets =
+          spellCaster match {
+            case _: Player =>
+              players(others)
+            case _ =>
+              monsters(others)
+          }
 
-        optSpell.fold((combatant, others)) {
-          case (foundSpell, foundSpellLevel) =>
-            val (spellAffectedCaster, updatedOthers) =
-              foundSpell.effect(spellCaster, foundSpellLevel, targets)
+        optSpell.fold((combatant, others)) { case (foundSpell, foundSpellLevel) =>
+          val (spellAffectedCaster, updatedOthers) = foundSpell.effect(
+            spellCaster,
+            foundSpellLevel,
+            targets)
 
-            val updatedSpellCaster = if (foundSpellLevel.value == 0) {
+          val updatedSpellCaster =
+            if (foundSpellLevel.value == 0) {
               spellAffectedCaster
             } else {
               val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
@@ -67,9 +75,9 @@ object CastMultiTargetBuffSpell extends LazyLogging {
               decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
             }
 
-            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+          val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
-            (updatedCombatant, others.replace(updatedOthers))
+          (updatedCombatant, others.replace(updatedOthers))
         }
       }
 

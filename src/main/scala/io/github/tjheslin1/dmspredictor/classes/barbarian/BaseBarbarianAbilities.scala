@@ -40,7 +40,8 @@ object BaseBarbarianAbilities extends LazyLogging {
         val target  = nextToFocus(combatant, enemies, focus)
 
         target match {
-          case None => (ragingBarbarianCombatant, others)
+          case None =>
+            (ragingBarbarianCombatant, others)
           case Some(targetOfAttack) =>
             nextAbilityToUseInConjunction(
               ragingBarbarianCombatant,
@@ -48,13 +49,18 @@ object BaseBarbarianAbilities extends LazyLogging {
               order,
               AbilityAction.MainAction
             ).fold {
-              val (updatedAttacker, updatedTarget, updatedOthers) =
-                attackAndDamage(ragingBarbarianCombatant, targetOfAttack, others)
+              val (updatedAttacker, updatedTarget, updatedOthers) = attackAndDamage(
+                ragingBarbarianCombatant,
+                targetOfAttack,
+                others)
 
               (updatedAttacker, updatedOthers.replace(updatedTarget))
             } { nextAbility =>
-              val (updatedAttacker, updatedEnemies) =
-                useAdditionalAbility(nextAbility, ragingBarbarianCombatant, enemies, focus)
+              val (updatedAttacker, updatedEnemies) = useAdditionalAbility(
+                nextAbility,
+                ragingBarbarianCombatant,
+                enemies,
+                focus)
               (updatedAttacker, others.replace(updatedEnemies))
             }
         }
@@ -72,8 +78,9 @@ object BaseBarbarianAbilities extends LazyLogging {
           .set(barbarian.damageResistances ++ rageResistances)(rageTurnsLeftBarbarian)
           .asInstanceOf[BaseBarbarian]
 
-        val bonusActionUsedBarbarian =
-          playerBonusActionUsedLens.set(true)(resistantBarbarian).asInstanceOf[BaseBarbarian]
+        val bonusActionUsedBarbarian = playerBonusActionUsedLens
+          .set(true)(resistantBarbarian)
+          .asInstanceOf[BaseBarbarian]
 
         inRageLens.set(true)(bonusActionUsedBarbarian)
       }
@@ -100,10 +107,13 @@ object BaseBarbarianAbilities extends LazyLogging {
         val target = nextToFocus(combatant, monsters(others), focus)
 
         target match {
-          case None => (recklessBarbarianCombatant, others)
+          case None =>
+            (recklessBarbarianCombatant, others)
           case Some(targetOfAttack) =>
-            val (updatedAttacker, updatedTarget, updatedOthers) =
-              attackAndDamage(recklessBarbarianCombatant, targetOfAttack, others)
+            val (updatedAttacker, updatedTarget, updatedOthers) = attackAndDamage(
+              recklessBarbarianCombatant,
+              targetOfAttack,
+              others)
 
             (updatedAttacker, updatedOthers.replace(updatedTarget))
         }

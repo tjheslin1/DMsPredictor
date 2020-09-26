@@ -33,33 +33,38 @@ object BaseRogueAbilities extends LazyLogging {
         logger.debug(s"${combatant.creature.name} used $name")
 
         nextToFocus(combatant, baseRogue.hiddenFrom, focus) match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some(target) =>
             val sneakAttackingRogue =
               (Combatant.creatureLens composeLens Creature.creatureAttackStatusLens)
                 .set(Advantage)(combatant)
 
-            val (attackResult, hitTarget) =
-              attack(sneakAttackingRogue, sneakAttackingRogue.creature.weapon, target)
+            val (attackResult, hitTarget) = attack(
+              sneakAttackingRogue,
+              sneakAttackingRogue.creature.weapon,
+              target)
             attackResult match {
-              case CriticalMiss | Miss => (combatant, others)
+              case CriticalMiss | Miss =>
+                (combatant, others)
               case attackHitResult =>
                 val sneakAttackDmg = {
                   def damage: Int = sneakAttackDamage(baseRogue.level) * BaseRogue.SneakAttackDice
 
-                  if (attackHitResult == CriticalHit) damage + damage
-                  else damage
+                  if (attackHitResult == CriticalHit)
+                    damage + damage
+                  else
+                    damage
                 }
 
-                val (updatedRogue, updatedTarget, updatedOthers) =
-                  resolveDamage(
-                    sneakAttackingRogue,
-                    hitTarget,
-                    others,
-                    sneakAttackingRogue.creature.weapon,
-                    attackHitResult,
-                    sneakAttackDmg
-                  )
+                val (updatedRogue, updatedTarget, updatedOthers) = resolveDamage(
+                  sneakAttackingRogue,
+                  hitTarget,
+                  others,
+                  sneakAttackingRogue.creature.weapon,
+                  attackHitResult,
+                  sneakAttackDmg
+                )
 
                 logger.debug(s"${baseRogue.name} dealt $sneakAttackDmg sneak attack damage")
 
@@ -94,8 +99,8 @@ object BaseRogueAbilities extends LazyLogging {
 
         val hideDc = D20.roll() + baseRogue.skills.stealth
 
-        val updatedRogue = monsters(others).foldLeft(baseRogue) {
-          case (hidingRogue, enemy) =>
+        val updatedRogue =
+          monsters(others).foldLeft(baseRogue) { case (hidingRogue, enemy) =>
             if (enemy.creature.isConscious && enemy.creature.passivePerception >= hideDc)
               hidingRogue
             else {
@@ -105,7 +110,7 @@ object BaseRogueAbilities extends LazyLogging {
 
               BaseRogue.hiddenFromLens.set(updatedEnemiesHiddenFrom)(baseRogue)
             }
-        }
+          }
 
         val updatedCombatant = Combatant.creatureLens.set(updatedRogue)(combatant)
 
@@ -135,8 +140,10 @@ object BaseRogueAbilities extends LazyLogging {
             s"${baseRogue.name} used $name and took half damage ($halfDamageRoundedDown)"
           )
 
-          val updatedHealthRogue =
-            baseRogue.updateHealth(halfDamageRoundedDown, damageType, attackResult)
+          val updatedHealthRogue = baseRogue.updateHealth(
+            halfDamageRoundedDown,
+            damageType,
+            attackResult)
 
           Creature.creatureReactionUsedLens.set(true)(updatedHealthRogue)
         } else {

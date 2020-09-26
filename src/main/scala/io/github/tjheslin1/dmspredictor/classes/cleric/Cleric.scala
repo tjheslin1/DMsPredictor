@@ -70,7 +70,8 @@ import monocle.macros.{GenLens, Lenses}
       handleConcentration(updatedCleric, updatedCleric.concentratingSpell.get, Integer.MAX_VALUE)
     else if (updatedCleric.isConscious && isConcentrating && damageTaken > 0)
       handleConcentration(updatedCleric, updatedCleric.concentratingSpell.get, damageTaken)
-    else updatedCleric
+    else
+      updatedCleric
   }
 
   val reactionOnHit: Option[OnHitReaction]       = None
@@ -106,6 +107,7 @@ object Cleric {
   val wisdomLens: Lens[Cleric, Stat]       = _stats composeLens GenLens[BaseStats](_.wisdom)
   val charismaLens: Lens[Cleric, Stat]     = _stats composeLens GenLens[BaseStats](_.charisma)
 
+  // format: off
   def clericSpellSlots(level: Level): SpellSlots =
     level match {
       case LevelOne       => SpellSlots(2, 0, 0)
@@ -129,4 +131,5 @@ object Cleric {
       case LevelNineteen  => SpellSlots(4, 3, 3, 3, 3, 2, 1, 1, 1)
       case LevelTwenty    => SpellSlots(4, 3, 3, 3, 3, 2, 2, 1, 1)
     }
+    // format: on
 }

@@ -52,6 +52,7 @@ package object spellcasting {
   case object BuffSpellEffect          extends SpellEffect
   case object InstantEffectSpellEffect extends SpellEffect
 
+  // format: off
   def focusHigherHealthCreatureOrder(creature: Creature): Int =
     creature match {
       case _: Barbarian => 1
@@ -71,6 +72,7 @@ package object spellcasting {
       case _: Goblin   => 11
       case _: Zombie   => 12
     }
+  // format: on
 
   def spellConditionMet(
       spellCaster: SpellCaster,
@@ -78,18 +80,21 @@ package object spellcasting {
       singleTargetSpellsOnly: Boolean,
       multiTargetSpellsOnly: Boolean
   ): Boolean = {
-    val optMaxSpellLevel = highestSpellSlotAvailable(spellCaster.spellSlots)
-      .fold {
-        spellCaster.cantrip.fold(none[SpellLevel])(_ => LevelZero.some)
-      } {
-        _.spellLevel.some
-      }
+    val optMaxSpellLevel =
+      highestSpellSlotAvailable(spellCaster.spellSlots)
+        .fold {
+          spellCaster.cantrip.fold(none[SpellLevel])(_ => LevelZero.some)
+        } {
+          _.spellLevel.some
+        }
 
-    val capableOfCasting = spellCaster match {
-      case player: Player with SpellCaster =>
-        player.level >= player.levelSpellcastingLearned
-      case _ => true
-    }
+    val capableOfCasting =
+      spellCaster match {
+        case player: Player with SpellCaster =>
+          player.level >= player.levelSpellcastingLearned
+        case _ =>
+          true
+      }
 
     optMaxSpellLevel.fold(false) { maxSpellLevel =>
       capableOfCasting &&
@@ -97,17 +102,23 @@ package object spellcasting {
         .filter {
           case spell if singleTargetSpellsOnly && multiTargetSpellsOnly =>
             spell.isSingleTargetSpell || spell.isMultiTargetSpell
-          case spell if singleTargetSpellsOnly => spell.isSingleTargetSpell
-          case spell if multiTargetSpellsOnly  => spell.isMultiTargetSpell
-          case _                               => true
+          case spell if singleTargetSpellsOnly =>
+            spell.isSingleTargetSpell
+          case spell if multiTargetSpellsOnly =>
+            spell.isMultiTargetSpell
+          case _ =>
+            true
         }
         .exists {
           case spell if spell.spellLevel.value <= maxSpellLevel.value =>
             spell.spellEffect match {
-              case `effect` if canCastSpell(spellCaster, spell) => true
-              case _                                            => false
+              case `effect` if canCastSpell(spellCaster, spell) =>
+                true
+              case _ =>
+                false
             }
-          case _ => false
+          case _ =>
+            false
         }
     }
   }

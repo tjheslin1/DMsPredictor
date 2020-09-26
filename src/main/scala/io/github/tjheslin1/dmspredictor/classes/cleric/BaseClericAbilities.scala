@@ -33,29 +33,35 @@ object BaseClericAbilities extends LazyLogging {
         logger.debug(s"${baseCleric.name} used $name")
 
         monsters(others).filter(_.creature.creatureType == Undead) match {
-          case List() => (combatant, others)
+          case List() =>
+            (combatant, others)
           case undeadTargets: List[Combatant] =>
             val dc = spellSaveDc(baseCleric)
 
             val updatedUndead = undeadTargets.map { undead =>
-              if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
+              if (undead.creature.conditionImmunities.contains(TurnedCondition))
+                undead
               else if (undead.creature.conditionResistances.contains(TurnedCondition)) {
-                val (passed, updatedCreature) =
-                  savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)
+                val (passed, updatedCreature) = savingThrowWithAdvantagePassed(
+                  dc,
+                  Wisdom,
+                  undead.creature)
 
                 val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
 
-                if (passed) updatedUndead
+                if (passed)
+                  updatedUndead
                 else
                   addCondition(updatedUndead, Turned(dc, 10))
               } else {
-                val (passed, updatedCreature) =
-                  savingThrowPassed(dc, Wisdom, undead.creature)
+                val (passed, updatedCreature) = savingThrowPassed(dc, Wisdom, undead.creature)
 
                 val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
 
-                if (passed) updatedUndead
-                else addCondition(updatedUndead, Turned(dc, 10))
+                if (passed)
+                  updatedUndead
+                else
+                  addCondition(updatedUndead, Turned(dc, 10))
               }
             }
 
@@ -85,19 +91,24 @@ object BaseClericAbilities extends LazyLogging {
         logger.debug(s"${baseCleric.name} used $name")
 
         monsters(others).filter(_.creature.creatureType == Undead) match {
-          case List() => (combatant, others)
+          case List() =>
+            (combatant, others)
           case undeadTargets: List[Combatant] =>
             val dc = spellSaveDc(baseCleric)
 
             val updatedUndead = undeadTargets.map { undead =>
-              if (undead.creature.conditionImmunities.contains(TurnedCondition)) undead
+              if (undead.creature.conditionImmunities.contains(TurnedCondition))
+                undead
               else if (undead.creature.conditionResistances.contains(TurnedCondition)) {
-                val (passed, updatedCreature) =
-                  savingThrowWithAdvantagePassed(dc, Wisdom, undead.creature)
+                val (passed, updatedCreature) = savingThrowWithAdvantagePassed(
+                  dc,
+                  Wisdom,
+                  undead.creature)
 
                 val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
 
-                if (passed) updatedUndead
+                if (passed)
+                  updatedUndead
                 else if (updatedCreature.asInstanceOf[Monster].challengeRating <= 0.5) {
                   logger.debug(s"${updatedCreature.name} has been Destroyed")
 
@@ -115,7 +126,8 @@ object BaseClericAbilities extends LazyLogging {
 
                 val updatedUndead = Combatant.creatureLens.set(updatedCreature)(undead)
 
-                if (passed) updatedUndead
+                if (passed)
+                  updatedUndead
                 else if (updatedCreature.asInstanceOf[Monster].challengeRating <= 0.5) {
                   logger.debug(s"${updatedCreature.name} has been Destroyed")
 

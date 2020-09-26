@@ -45,33 +45,40 @@ object CastSingleTargetOffensiveSpell extends LazyLogging {
               spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true
               )
-                .fold((spellCaster.cantrip, LevelZero)) {
-                  case (foundSpell, spellLevel) =>
-                    (foundSpell.some, spellLevel)
+                .fold((spellCaster.cantrip, LevelZero)) { case (foundSpell, spellLevel) =>
+                  (foundSpell.some, spellLevel)
                 }
           }
 
-        val targets = spellCaster match {
-          case _: Player => monsters(others)
-          case _         => players(others)
-        }
+        val targets =
+          spellCaster match {
+            case _: Player =>
+              monsters(others)
+            case _ =>
+              players(others)
+          }
 
         val target = nextToFocus(combatant, targets, focus)
 
         (target, optSpell) match {
-          case (_, None) => (combatant, others)
-          case (None, _) => (combatant, others)
+          case (_, None) =>
+            (combatant, others)
+          case (None, _) =>
+            (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
-            val (spellAffectedCaster, List(updatedTarget)) =
-              spell.effect(spellCaster, foundSpellLevel, List(spellTarget))
+            val (spellAffectedCaster, List(updatedTarget)) = spell.effect(
+              spellCaster,
+              foundSpellLevel,
+              List(spellTarget))
 
-            val updatedSpellCaster = if (foundSpellLevel.value == 0) {
-              spellAffectedCaster
-            } else {
-              val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
+            val updatedSpellCaster =
+              if (foundSpellLevel.value == 0) {
+                spellAffectedCaster
+              } else {
+                val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
 
-              decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
-            }
+                decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
+              }
 
             val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 

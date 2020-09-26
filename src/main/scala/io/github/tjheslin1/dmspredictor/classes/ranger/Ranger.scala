@@ -71,7 +71,8 @@ import monocle.macros.{GenLens, Lenses}
       handleConcentration(updatedRanger, updatedRanger.concentratingSpell.get, Integer.MAX_VALUE)
     else if (updatedRanger.isConscious && isConcentrating && damageTaken > 0)
       handleConcentration(updatedRanger, updatedRanger.concentratingSpell.get, damageTaken)
-    else updatedRanger
+    else
+      updatedRanger
   }
 
   def scoresCritical(roll: Int): Boolean = roll == 20

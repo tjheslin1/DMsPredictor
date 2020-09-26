@@ -74,7 +74,8 @@ import monocle.macros.{GenLens, Lenses}
       handleConcentration(updatedPaladin, updatedPaladin.concentratingSpell.get, Integer.MAX_VALUE)
     else if (updatedPaladin.isConscious && isConcentrating && damageTaken > 0)
       handleConcentration(updatedPaladin, updatedPaladin.concentratingSpell.get, damageTaken)
-    else updatedPaladin
+    else
+      updatedPaladin
   }
 
   def scoresCritical(roll: Int): Boolean = roll == 20

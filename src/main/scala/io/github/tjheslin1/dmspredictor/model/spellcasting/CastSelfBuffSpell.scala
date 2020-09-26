@@ -39,19 +39,22 @@ object CastSelfBuffSpell extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-            case None => none[(Spell, SpellLevel)]
+            case None =>
+              none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true
               )
           }
 
-        optSpell.fold((combatant, others)) {
-          case (foundSpell, foundSpellLevel) =>
-            val (spellAffectedCaster, updatedOthers) =
-              foundSpell.effect(spellCaster, foundSpellLevel, others)
+        optSpell.fold((combatant, others)) { case (foundSpell, foundSpellLevel) =>
+          val (spellAffectedCaster, updatedOthers) = foundSpell.effect(
+            spellCaster,
+            foundSpellLevel,
+            others)
 
-            val updatedSpellCaster = if (foundSpellLevel.value == 0) {
+          val updatedSpellCaster =
+            if (foundSpellLevel.value == 0) {
               spellAffectedCaster
             } else {
               val spellSlotUsed = spellSlotFromLevel(spellAffectedCaster, foundSpellLevel)
@@ -59,9 +62,9 @@ object CastSelfBuffSpell extends LazyLogging {
               decrementCastersSpellSlot(spellAffectedCaster, spellSlotUsed)
             }
 
-            val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
+          val updatedCombatant = Combatant.spellCasterOptional.set(updatedSpellCaster)(combatant)
 
-            (updatedCombatant, others.replace(updatedOthers))
+          (updatedCombatant, others.replace(updatedOthers))
         }
       }
 

@@ -20,11 +20,13 @@ case class BaseFighterAbilities(secondWindUsed: Boolean, actionSurgeUsed: Boolea
 
 object BaseFighterAbilities extends LazyLogging {
 
+  // format: off
   val secondWindUsedLens: Lens[BaseFighterAbilities, Boolean] =
     GenLens[BaseFighterAbilities](_.secondWindUsed)
 
   val actionSurgeUsedLens: Lens[BaseFighterAbilities, Boolean] =
     GenLens[BaseFighterAbilities](_.actionSurgeUsed)
+  // format: on
 
   val allUsed: BaseFighterAbilities   = BaseFighterAbilities(true, true)
   val allUnused: BaseFighterAbilities = BaseFighterAbilities(false, false)
@@ -47,11 +49,10 @@ object BaseFighterAbilities extends LazyLogging {
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used Second wind")
 
-        val updatedHealth =
-          Math.min(
-            combatant.creature.maxHealth,
-            combatant.creature.health + (1 * HitDice) + baseFighter.level.value
-          )
+        val updatedHealth = Math.min(
+          combatant.creature.maxHealth,
+          combatant.creature.health + (1 * HitDice) + baseFighter.level.value
+        )
         val updatedCombatant =
           (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)
 
@@ -59,8 +60,9 @@ object BaseFighterAbilities extends LazyLogging {
       }
 
       def update: Creature = {
-        val secondWindUsedFighter = (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
-          .set(true)(baseFighter)
+        val secondWindUsedFighter =
+          (BaseFighter.abilityUsagesLens composeLens secondWindUsedLens)
+            .set(true)(baseFighter)
 
         Player.playerBonusActionUsedLens.set(true)(secondWindUsedFighter)
       }
@@ -83,17 +85,21 @@ object BaseFighterAbilities extends LazyLogging {
             baseFighter.bonusActionUsed == false &&
               w.twoHanded == false &&
               combatant.creature.baseWeapon.twoHanded == false
-          case _ => false
+          case _ =>
+            false
         }
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
         nextToFocus(combatant, monsters(others), focus) match {
-          case None => (combatant, others)
+          case None =>
+            (combatant, others)
           case Some(attackTarget) =>
-            val (mainHandAttack, hitTarget) =
-              attack(combatant, combatant.creature.weapon, attackTarget)
+            val (mainHandAttack, hitTarget) = attack(
+              combatant,
+              combatant.creature.weapon,
+              attackTarget)
 
             val (updatedAttacker, attackTarget1, updatedOthers) =
               if (mainHandAttack.result > 0)
@@ -104,11 +110,14 @@ object BaseFighterAbilities extends LazyLogging {
             val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
 
             nextToFocus(combatant, updatedEnemies, focus) match {
-              case None => (combatant, updatedOthers)
+              case None =>
+                (combatant, updatedOthers)
               case Some(nextTarget) =>
                 val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
-                val (offHandAttack, nextHitTarget) =
-                  attack(updatedAttacker, offHandWeapon, nextTarget)
+                val (offHandAttack, nextHitTarget) = attack(
+                  updatedAttacker,
+                  offHandWeapon,
+                  nextTarget)
 
                 val offHandStatModifier = baseFighter.fightingStyles.contains(TwoWeaponFighting)
 
@@ -150,8 +159,11 @@ object BaseFighterAbilities extends LazyLogging {
 
         nextAbilityToUseInConjunction(combatant, others, order, AbilityAction.MainAction)
           .fold(useAttackActionTwice(combatant, others, focus)) { nextAbility =>
-            val (updatedAttacker, updatedOthers) =
-              useAdditionalAbility(nextAbility, combatant, others, focus)
+            val (updatedAttacker, updatedOthers) = useAdditionalAbility(
+              nextAbility,
+              combatant,
+              others,
+              focus)
 
             nextAbilityToUseInConjunction(
               updatedAttacker,
@@ -162,8 +174,10 @@ object BaseFighterAbilities extends LazyLogging {
               nextToFocus(updatedAttacker, updatedOthers, focus).fold(
                 (updatedAttacker, updatedOthers)
               ) { nextTarget =>
-                val (updatedAttacker2, updatedTarget2, updatedOthers2) =
-                  attackAndDamage(updatedAttacker, nextTarget, updatedOthers)
+                val (updatedAttacker2, updatedTarget2, updatedOthers2) = attackAndDamage(
+                  updatedAttacker,
+                  nextTarget,
+                  updatedOthers)
 
                 (updatedAttacker2, updatedOthers2.replace(updatedTarget2))
               }

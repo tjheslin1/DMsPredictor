@@ -10,22 +10,22 @@ import scala.collection.immutable.Queue
 class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrategy)
     extends LazyLogging {
 
-  val initiativeOrder: Queue[Combatant] =
-    Queue[Combatant](
-      initiatives.toSeq
-        .map {
-          case (_, initiative) => initiative
-        }
-        .sortBy(_.score)
-        .reverse
-        .map(_.combatant): _*
-    )
+  val initiativeOrder: Queue[Combatant] = Queue[Combatant](
+    initiatives.toSeq
+      .map { case (_, initiative) =>
+        initiative
+      }
+      .sortBy(_.score)
+      .reverse
+      .map(_.combatant): _*
+  )
 
   def run(focus: Focus): Queue[Combatant] = {
 
     @tailrec
     def nextCombatant(queue: Queue[Combatant], combatantMovesLeft: Int): Queue[Combatant] =
-      if (combatantMovesLeft <= 0) queue
+      if (combatantMovesLeft <= 0)
+        queue
       else {
         val nextTurnQueue = takeMove(queue, focus)
         nextCombatant(nextTurnQueue, combatantMovesLeft - 1)

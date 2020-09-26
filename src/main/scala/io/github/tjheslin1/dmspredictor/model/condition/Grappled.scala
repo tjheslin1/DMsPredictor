@@ -22,7 +22,11 @@ object Grappled {
   def decrementTurnsLeft(): Condition = this
 
   def handleStartOfTurn[_: RS](creature: Creature): Creature = {
-    val attribute = if (creature.stats.strength > creature.stats.dexterity) Strength else Dexterity
+    val attribute =
+      if (creature.stats.strength > creature.stats.dexterity)
+        Strength
+      else
+        Dexterity
 
     val (passed, updatedCreature) = savingThrowPassed(saveDc, attribute, creature)
 

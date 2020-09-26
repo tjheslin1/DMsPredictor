@@ -27,8 +27,7 @@ object LifeClericAbilities extends LazyLogging {
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        healingSpellTriggerMet(others)
+      def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
       def conditionMet: Boolean =
         spellConditionMet(
@@ -46,32 +45,33 @@ object LifeClericAbilities extends LazyLogging {
             .contains(CastSingleTargetHealingSpellName)
         ) {
 
-          val optSpell = highestSpellSlotAvailable(lifeCleric.spellSlots) match {
-            case None => none[(Spell, SpellLevel)]
-            case Some(spellSlot) =>
-              spellOfLevelOrBelow(lifeCleric, HealingSpellEffect, spellSlot.spellLevel)(
-                singleTargetSpellsOnly = true
-              )
-          }
+          val optSpell =
+            highestSpellSlotAvailable(lifeCleric.spellSlots) match {
+              case None =>
+                none[(Spell, SpellLevel)]
+              case Some(spellSlot) =>
+                spellOfLevelOrBelow(lifeCleric, HealingSpellEffect, spellSlot.spellLevel)(
+                  singleTargetSpellsOnly = true
+                )
+            }
 
-          optSpell.fold((combatant, others)) {
-            case (_, foundSpellLevel) =>
-              val healingSpellAbility =
-                castSingleTargetHealingSpell(
-                  order,
-                  bonusHealing = discipleOfLifeBonusHealing(foundSpellLevel)
-                )(_)
+          optSpell.fold((combatant, others)) { case (_, foundSpellLevel) =>
+            val healingSpellAbility =
+              castSingleTargetHealingSpell(
+                order,
+                bonusHealing = discipleOfLifeBonusHealing(foundSpellLevel)
+              )(_)
 
-              val (updatedLifeCleric, updatedTargets) =
-                healingSpellAbility(combatant).useAbility(others, focus)
+            val (updatedLifeCleric, updatedTargets) = healingSpellAbility(combatant).useAbility(
+              others,
+              focus)
 
-              val updatedSpellSlotLifeCleric =
-                healingSpellAbility(updatedLifeCleric).update
+            val updatedSpellSlotLifeCleric = healingSpellAbility(updatedLifeCleric).update
 
-              val updatedAttackingCombatant =
-                Combatant.creatureLens.set(updatedSpellSlotLifeCleric)(updatedLifeCleric)
+            val updatedAttackingCombatant =
+              Combatant.creatureLens.set(updatedSpellSlotLifeCleric)(updatedLifeCleric)
 
-              (updatedAttackingCombatant, others.replace(updatedTargets))
+            (updatedAttackingCombatant, others.replace(updatedTargets))
           }
         } else {
           (combatant, others)
@@ -95,8 +95,8 @@ object LifeClericAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = {
         val allies = players(others)
-        val alliesBelowHalfHealth =
-          allies.count(player => player.creature.health <= (player.creature.maxHealth / 2))
+        val alliesBelowHalfHealth = allies.count(player =>
+          player.creature.health <= (player.creature.maxHealth / 2))
 
         allies.nonEmpty && alliesBelowHalfHealth >= Math.ceil(1 + allies.size / 2)
       }
@@ -117,12 +117,12 @@ object LifeClericAbilities extends LazyLogging {
         (combatant, others.replace(updatedAllies))
       }
 
-      def update: Creature =
-        BaseCleric.channelDivinityUsedLens.set(true)(baseCleric)
+      def update: Creature = BaseCleric.channelDivinityUsedLens.set(true)(baseCleric)
     }
 
   def restoreHealthUsingPool(pool: Int, damagedAllies: List[Combatant]): List[Combatant] =
-    if (pool <= 0 || damagedAllies.isEmpty) damagedAllies
+    if (pool <= 0 || damagedAllies.isEmpty)
+      damagedAllies
     else {
       damagedAllies
         .sortBy(_.creature.health)
