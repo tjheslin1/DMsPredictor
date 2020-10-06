@@ -118,8 +118,7 @@ object Actions extends LazyLogging {
       addStatModifier = true
     )
 
-  /**
-    * @param attacker
+  /** @param attacker
     * @param target
     * @param others is the list of other combatants not including the `target`
     * @param weapon

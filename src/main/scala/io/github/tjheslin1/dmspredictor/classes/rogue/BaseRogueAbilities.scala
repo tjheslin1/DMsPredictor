@@ -77,8 +77,7 @@ object BaseRogueAbilities extends LazyLogging {
       def update: Creature = BaseRogue.hiddenFromLens.set(List.empty[Combatant])(baseRogue)
     }
 
-  /**
-    * Assumed to be using Cunning Action.
+  /** Assumed to be using Cunning Action.
     */
   def hide(currentPriority: Int)(combatant: Combatant): Ability =
     new Ability(combatant) {

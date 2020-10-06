@@ -33,8 +33,7 @@ trait Spell {
 
 object Spell {
 
-  /**
-    * @param findNewlyConcentratingSpell is used to find the spell a caster had just used when finding the spell slot to update.
+  /** @param findNewlyConcentratingSpell is used to find the spell a caster had just used when finding the spell slot to update.
     *    It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
     */
   @tailrec
