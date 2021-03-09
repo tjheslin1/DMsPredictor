@@ -3,10 +3,9 @@ package io.github.tjheslin1.dmspredictor
 import java.io.{InputStream, OutputStream}
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.lambda.runtime.{Context, RequestStreamHandler}
-import com.gu.scanamo.{Scanamo, Table}
+import org.scanamo.{Scanamo, Table}
 import com.typesafe.scalalogging.LazyLogging
 import io.circe._
 import io.circe.parser.decode
@@ -104,10 +103,12 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     } yield simHash
 
   private def writeToDynamo(simulationResult: SimulationResult): Unit = {
+    import org.scanamo.auto._
+
     val client = AmazonDynamoDBClientBuilder.standard().build()
     val table  = Table[SimulationResult]("simulation_results")
 
-    Scanamo.exec(client) {
+    Scanamo(client).exec {
       table.put(simulationResult)
     } match {
       case Some(Left(dynamoError)) =>
