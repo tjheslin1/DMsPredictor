@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.lambda.runtime.{Context, RequestStreamHandler}
-import org.scanamo.{Scanamo, Table}
+import org.scanamo._
+import org.scanamo.syntax._
 import com.typesafe.scalalogging.LazyLogging
 import io.circe._
 import io.circe.parser.decode
@@ -13,6 +14,7 @@ import io.github.tjheslin1.dmspredictor.classes.Player
 import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.monsters.Monster
 import io.github.tjheslin1.dmspredictor.simulation.{BasicSimulation, SimulationRunner}
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 case class SQSMessage(Records: Seq[SQSRecord])
 
@@ -103,13 +105,12 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     } yield simHash
 
   private def writeToDynamo(simulationResult: SimulationResult): Unit = {
-    import org.scanamo.auto._
+    import org.scanamo.generic.auto._
 
-    val client = AmazonDynamoDBClientBuilder.standard().build()
-    val table  = Table[SimulationResult]("simulation_results")
+    val table = Table[SimulationResult]("simulation_results")
 
-    Scanamo(client).exec {
-      table.put(simulationResult)
+    Scanamo(DynamoDbClient.create()).exec {
+      table.putAndReturn(PutReturn.NewValue)(simulationResult)
     } match {
       case Some(Left(dynamoError)) =>
         throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
