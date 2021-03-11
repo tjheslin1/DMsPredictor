@@ -31,12 +31,10 @@ lazy val dmspredictor = (project in file("."))
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.9"           % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.15.3"        % Test
       // format: on
-    ),
-    autoCompilerPlugins := true,
-    addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.full)
+    )
   )
 
-scalacOptions += "-Ypartial-unification"
+scalacOptions in Global += "-Ymacro-annotations"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
