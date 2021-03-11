@@ -2,7 +2,7 @@ lazy val dmspredictor = (project in file("."))
   .settings(
     name := "DMsPredictor",
     version := "1.0",
-    scalaVersion := "2.12.13",
+    scalaVersion := "2.13.5",
     mainClass in Compile := some("io.github.tjheslin1.dmspredictor.Main"),
     assemblyJarName := "DMsPredictor_full.jar",
     libraryDependencies ++= Seq(
@@ -23,7 +23,7 @@ lazy val dmspredictor = (project in file("."))
       "com.amazonaws"               % "aws-java-sdk-lambda"               % "1.11.693",
       "com.amazonaws"               % "aws-lambda-java-core"              % "1.2.1",
       
-      "org.scanamo"                 %% "scanamo"                          % "1.0.0-M10",
+      "org.scanamo"                 %% "scanamo"                          % "1.0.0-M15",
 
       "org.scalatest"               %% "scalatest"                        % "3.2.6"         % Test,
       "org.scalatestplus"           %% "scalatestplus-scalacheck"         % "3.1.0.0-RC2"   % Test,
@@ -31,12 +31,10 @@ lazy val dmspredictor = (project in file("."))
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.9"           % Test,
       "org.scalacheck"              %% "scalacheck"                       % "1.15.3"        % Test
       // format: on
-    ),
-    autoCompilerPlugins := true,
-    addCompilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.full)
+    )
   )
 
-scalacOptions += "-Ypartial-unification"
+scalacOptions in Global += "-Ymacro-annotations"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
