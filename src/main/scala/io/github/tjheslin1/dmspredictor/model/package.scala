@@ -35,5 +35,8 @@ package object model {
           0
         else
           1
+
+      override def parseString(str: String): Option[RollResult] =
+        str.toIntOption.map(RollResult.apply)
     }
 }
