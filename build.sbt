@@ -41,7 +41,7 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
-val CirceVersion   = "0.13.0"
+val CirceVersion   = "0.14.0"
 val MonocleVersion = "2.1.0"
 val RefinedVersion = "0.9.25"
 
