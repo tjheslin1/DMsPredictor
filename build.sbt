@@ -2,7 +2,7 @@ lazy val dmspredictor = (project in file("."))
   .settings(
     name := "DMsPredictor",
     version := "1.0",
-    scalaVersion := "2.13.5",
+    scalaVersion := "2.13.6",
     mainClass in Compile := some("io.github.tjheslin1.dmspredictor.Main"),
     assemblyJarName := "DMsPredictor_full.jar",
     libraryDependencies ++= Seq(
@@ -43,7 +43,7 @@ resolvers ++= Seq(
 
 val CirceVersion   = "0.14.1"
 val MonocleVersion = "2.1.0"
-val RefinedVersion = "0.9.25"
+val RefinedVersion = "0.9.26"
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) =>
