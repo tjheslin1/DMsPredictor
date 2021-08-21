@@ -59,8 +59,8 @@ abstract class ConditionSpell extends Spell with LazyLogging {
         applyCondition(spellCaster, updatedTarget)
     }
 
-    def anyTargetIsAffectedByCondition(): Boolean =
-      updatedTargets.exists(_.creature.conditions.contains(conditionFrom(spellCaster)))
+    def anyTargetIsAffectedByCondition(): Boolean = updatedTargets.exists(
+      _.creature.conditions.contains(conditionFrom(spellCaster)))
 
     if (requiresConcentration && anyTargetIsAffectedByCondition()) {
       val updatedConcentratingSpellCaster =

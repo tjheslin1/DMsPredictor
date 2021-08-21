@@ -32,8 +32,10 @@ object BaseBarbarian {
     LevelFive  -> 3
   )
 
-  def calculateHealth(level: Level, constitutionScore: Stat): Int =
-    Player.calculateHealth(HitDice, level, constitutionScore)
+  def calculateHealth(level: Level, constitutionScore: Stat): Int = Player.calculateHealth(
+    HitDice,
+    level,
+    constitutionScore)
 
   def weaponWithRageDamage[_: RS](weapon: Weapon, inRage: Boolean): Weapon = {
     lazy val inRageDamage =

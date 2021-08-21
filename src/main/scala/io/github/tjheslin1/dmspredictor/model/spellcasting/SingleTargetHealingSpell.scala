@@ -24,7 +24,7 @@ abstract class SingleTargetHealingSpell extends Spell with LazyLogging {
     val target = targets.head
 
     val healthRestored = healing(spellCaster, spellLevel)
-    val updatedHealth  = Math.min(target.creature.maxHealth, target.creature.health + healthRestored)
+    val updatedHealth = Math.min(target.creature.maxHealth, target.creature.health + healthRestored)
 
     logger.debug(s"${target.creature.name} was healed for $healthRestored")
 

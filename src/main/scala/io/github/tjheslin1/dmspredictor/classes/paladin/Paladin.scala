@@ -99,13 +99,12 @@ object Paladin {
     divineSmite(5)
   )
 
-  implicit def paladinShow[_: RS]: Show[Ranger] =
-    Show.show { ranger =>
-      s"Paladin: " +
-        s"Name: ${ranger.name}, " +
-        s"health: ${ranger.health}, " +
-        s"AC: ${ranger.armourClass}"
-    }
+  implicit def paladinShow[_: RS]: Show[Ranger] = Show.show { ranger =>
+    s"Paladin: " +
+      s"Name: ${ranger.name}, " +
+      s"health: ${ranger.health}, " +
+      s"AC: ${ranger.armourClass}"
+  }
 
   // format: off
   val strengthLens: Lens[Paladin, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

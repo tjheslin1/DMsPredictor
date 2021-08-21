@@ -20,15 +20,14 @@ trait Monster extends Creature {
 
 object Monster {
 
-  def defaultSavingThrowScores(monster: Monster): Map[Attribute, Int] =
-    Map(
-      Strength     -> mod(monster.stats.strength),
-      Dexterity    -> mod(monster.stats.dexterity),
-      Constitution -> mod(monster.stats.constitution),
-      Wisdom       -> mod(monster.stats.wisdom),
-      Intelligence -> mod(monster.stats.intelligence),
-      Charisma     -> mod(monster.stats.charisma)
-    )
+  def defaultSavingThrowScores(monster: Monster): Map[Attribute, Int] = Map(
+    Strength     -> mod(monster.stats.strength),
+    Dexterity    -> mod(monster.stats.dexterity),
+    Constitution -> mod(monster.stats.constitution),
+    Wisdom       -> mod(monster.stats.wisdom),
+    Intelligence -> mod(monster.stats.intelligence),
+    Charisma     -> mod(monster.stats.charisma)
+  )
 
   // format: off
   val monsterArmourClassLens: Lens[Monster, Int] = Lens[Monster, Int](_.armourClass) { ac =>

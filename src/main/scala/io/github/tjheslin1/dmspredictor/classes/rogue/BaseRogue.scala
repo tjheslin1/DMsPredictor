@@ -29,8 +29,10 @@ object BaseRogue {
     LevelFive  -> 3
   )
 
-  def calculateHealth(level: Level, constitutionScore: Stat): Int =
-    Player.calculateHealth(HitDice, level, constitutionScore)
+  def calculateHealth(level: Level, constitutionScore: Stat): Int = Player.calculateHealth(
+    HitDice,
+    level,
+    constitutionScore)
 
   def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int =
     armour.armourClass(stats.dexterity)

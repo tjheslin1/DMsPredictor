@@ -62,8 +62,9 @@ object ClericSpells extends LazyLogging {
     val saveDc            = 0
     val isHandledOnDamage = true
 
-    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature =
-      removeCondition(creature, name)
+    def handleOnDamage[_: RS](creature: Creature, damage: Int): Creature = removeCondition(
+      creature,
+      name)
 
     def decrementTurnsLeft(): Condition = GuidingBoltCondition(turnsLeft - 1)
 
@@ -111,8 +112,10 @@ object ClericSpells extends LazyLogging {
     val spellLevel: SpellLevel      = 2
     val benefitsFromHigherSpellSlot = false
 
-    def conditionFrom(spellCaster: SpellCaster): Condition =
-      Paralyzed(spellSaveDc(spellCaster), 10, attribute)
+    def conditionFrom(spellCaster: SpellCaster): Condition = Paralyzed(
+      spellSaveDc(spellCaster),
+      10,
+      attribute)
   }
 
   case object SpiritGuardians extends ConditionSpell {
@@ -141,8 +144,11 @@ object ClericSpells extends LazyLogging {
 
     val benefitsFromHigherSpellSlot = false
 
-    def conditionFrom(spellCaster: SpellCaster): Condition =
-      SpiritGuardiansCondition(spellLevel, spellSaveDc(spellCaster), 100, Wisdom)
+    def conditionFrom(spellCaster: SpellCaster): Condition = SpiritGuardiansCondition(
+      spellLevel,
+      spellSaveDc(spellCaster),
+      100,
+      Wisdom)
   }
 
   case class SpiritGuardiansCondition(

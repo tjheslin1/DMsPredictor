@@ -31,12 +31,11 @@ object CastSingleTargetHealingSpell extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = healingSpellTriggerMet(others)
 
-      def conditionMet: Boolean =
-        spellConditionMet(
-          spellCaster,
-          HealingSpellEffect,
-          singleTargetSpellsOnly = true,
-          multiTargetSpellsOnly = false)
+      def conditionMet: Boolean = spellConditionMet(
+        spellCaster,
+        HealingSpellEffect,
+        singleTargetSpellsOnly = true,
+        multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")
@@ -112,6 +111,6 @@ object CastSingleTargetHealingSpell extends LazyLogging {
       def update: Creature = spellCaster
     }
 
-  def healingSpellTriggerMet(others: List[Combatant]): Boolean =
-    players(others).exists(player => player.creature.health <= (player.creature.maxHealth / 2))
+  def healingSpellTriggerMet(others: List[Combatant]): Boolean = players(others).exists(player =>
+    player.creature.health <= (player.creature.maxHealth / 2))
 }

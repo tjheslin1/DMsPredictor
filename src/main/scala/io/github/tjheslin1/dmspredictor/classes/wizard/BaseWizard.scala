@@ -25,8 +25,10 @@ object BaseWizard {
 
   val HitDice = D6
 
-  def calculateHealth(level: Level, constitutionScore: Stat): Int =
-    Player.calculateHealth(HitDice, level, constitutionScore)
+  def calculateHealth(level: Level, constitutionScore: Stat): Int = Player.calculateHealth(
+    HitDice,
+    level,
+    constitutionScore)
 
   def calculateArmourClass(
       stats: BaseStats,

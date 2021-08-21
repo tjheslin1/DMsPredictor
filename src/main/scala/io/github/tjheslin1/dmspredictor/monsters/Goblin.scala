@@ -65,13 +65,12 @@ object Goblin {
     Goblin(hp, hp, name = goblinName)
   }
 
-  implicit def goblinShow[_: RS]: Show[Goblin] =
-    Show.show { goblin =>
-      s"Goblin: " +
-        s"Name: ${goblin.name}, " +
-        s"health: ${goblin.health}, " +
-        s"AC: ${goblin.armourClass}"
-    }
+  implicit def goblinShow[_: RS]: Show[Goblin] = Show.show { goblin =>
+    s"Goblin: " +
+      s"Name: ${goblin.name}, " +
+      s"health: ${goblin.health}, " +
+      s"AC: ${goblin.armourClass}"
+  }
 
   val strengthLens: Lens[Goblin, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)
   val dexterityLens: Lens[Goblin, Stat]    = _stats composeLens GenLens[BaseStats](_.dexterity)

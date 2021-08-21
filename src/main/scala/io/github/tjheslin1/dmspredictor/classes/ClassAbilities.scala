@@ -16,15 +16,14 @@ object ClassAbilities {
       others: List[Combatant],
       currentOrder: Int,
       suitableAction: NonEmptyList[AbilityAction]
-  ): Option[CombatantAbility] =
-    attacker.creature.abilities
-      .sortBy(ability => ability(attacker).order)
-      .find { ability =>
-        val nextAbility = ability(attacker)
-        suitableAction.toList.contains(nextAbility.abilityAction) &&
-        nextAbility.order > currentOrder &&
-        nextAbility.conditionMet && nextAbility.triggerMet(others)
-      }
+  ): Option[CombatantAbility] = attacker.creature.abilities
+    .sortBy(ability => ability(attacker).order)
+    .find { ability =>
+      val nextAbility = ability(attacker)
+      suitableAction.toList.contains(nextAbility.abilityAction) &&
+      nextAbility.order > currentOrder &&
+      nextAbility.conditionMet && nextAbility.triggerMet(others)
+    }
 
   def useAttackActionTwice[_: RS](
       attacker: Combatant,

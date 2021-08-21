@@ -107,20 +107,20 @@ object Actions extends LazyLogging {
       others: List[Combatant],
       attackResult: AttackResult,
       damageBonus: Int = 0
-  ): (Combatant, Combatant, List[Combatant]) =
-    resolveDamage(
-      attacker,
-      target,
-      others,
-      attacker.creature.weapon,
-      attackResult,
-      damageBonus,
-      addStatModifier = true
-    )
+  ): (Combatant, Combatant, List[Combatant]) = resolveDamage(
+    attacker,
+    target,
+    others,
+    attacker.creature.weapon,
+    attackResult,
+    damageBonus,
+    addStatModifier = true
+  )
 
   /** @param attacker
     * @param target
-    * @param others is the list of other combatants not including the `target`
+    * @param others
+    *   is the list of other combatants not including the `target`
     * @param weapon
     * @param attackResult
     * @param damageBonus
@@ -217,8 +217,12 @@ object Actions extends LazyLogging {
       attacker: Combatant,
       target: Combatant,
       others: List[Combatant]
-  ): (Combatant, Combatant, List[Combatant]) =
-    runCombatantTimes(times, attacker, target, others, attackAndDamage)
+  ): (Combatant, Combatant, List[Combatant]) = runCombatantTimes(
+    times,
+    attacker,
+    target,
+    others,
+    attackAndDamage)
 
   def runCombatantTimes(
       times: Int,
@@ -344,17 +348,16 @@ object Actions extends LazyLogging {
   private def availableOnWeaponDamageAction(
       attacker: Combatant,
       target: Combatant
-  ): Option[Combatant => OnWeaponDamageAbility] =
-    attacker.creature.abilities
-      .sortBy(ability => ability(attacker).order)
-      .find { combatantAbility =>
-        combatantAbility(attacker) match {
-          case ability: OnWeaponDamageAbility =>
-            ability.abilityAction == OnWeaponDamage && ability.conditionMet &&
-              ability.triggerOnSingleTargetMet(target)
-          case _ =>
-            false
-        }
+  ): Option[Combatant => OnWeaponDamageAbility] = attacker.creature.abilities
+    .sortBy(ability => ability(attacker).order)
+    .find { combatantAbility =>
+      combatantAbility(attacker) match {
+        case ability: OnWeaponDamageAbility =>
+          ability.abilityAction == OnWeaponDamage && ability.conditionMet &&
+            ability.triggerOnSingleTargetMet(target)
+        case _ =>
+          false
       }
-      .map(_.asInstanceOf[Combatant => OnWeaponDamageAbility])
+    }
+    .map(_.asInstanceOf[Combatant => OnWeaponDamageAbility])
 }

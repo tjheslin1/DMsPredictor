@@ -30,12 +30,11 @@ object CastMultiTargetBuffSpell extends LazyLogging {
             monsters(others).nonEmpty
         }
 
-      def conditionMet: Boolean =
-        spellConditionMet(
-          spellCaster,
-          BuffSpellEffect,
-          singleTargetSpellsOnly = false,
-          multiTargetSpellsOnly = true)
+      def conditionMet: Boolean = spellConditionMet(
+        spellCaster,
+        BuffSpellEffect,
+        singleTargetSpellsOnly = false,
+        multiTargetSpellsOnly = true)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")

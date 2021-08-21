@@ -34,8 +34,10 @@ object BasePaladin {
 
   val HitDice = D10
 
-  def calculateHealth(level: Level, constitutionScore: Stat): Int =
-    Player.calculateHealth(HitDice, level, constitutionScore)
+  def calculateHealth(level: Level, constitutionScore: Stat): Int = Player.calculateHealth(
+    HitDice,
+    level,
+    constitutionScore)
 
   def paladinWeapon[_: RS](
       paladin: BasePaladin,

@@ -72,13 +72,12 @@ object Werewolf {
     multiAttack(1, numberOfAttacks = 2)
   )
 
-  implicit def werewolfShow[_: RS]: Show[Werewolf] =
-    Show.show { werewolf =>
-      s"Werewolf: " +
-        s"Name: ${werewolf.name}, " +
-        s"health: ${werewolf.health}, " +
-        s"AC: ${werewolf.armourClass}"
-    }
+  implicit def werewolfShow[_: RS]: Show[Werewolf] = Show.show { werewolf =>
+    s"Werewolf: " +
+      s"Name: ${werewolf.name}, " +
+      s"health: ${werewolf.health}, " +
+      s"AC: ${werewolf.armourClass}"
+  }
 
   case object HydbridFormClaw extends Weapon {
 

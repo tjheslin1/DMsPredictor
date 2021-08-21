@@ -25,12 +25,11 @@ object CastSingleTargetOffensiveSpell extends LazyLogging {
 
       def triggerMet(others: List[Combatant]) = true
 
-      def conditionMet: Boolean =
-        spellConditionMet(
-          spellCaster,
-          DamageSpellEffect,
-          singleTargetSpellsOnly = true,
-          multiTargetSpellsOnly = false)
+      def conditionMet: Boolean = spellConditionMet(
+        spellCaster,
+        DamageSpellEffect,
+        singleTargetSpellsOnly = true,
+        multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")

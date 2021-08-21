@@ -36,7 +36,7 @@ package object model {
         else
           1
 
-      override def parseString(str: String): Option[RollResult] =
-        str.toIntOption.map(RollResult.apply)
+      override def parseString(str: String): Option[RollResult] = str.toIntOption.map(
+        RollResult.apply)
     }
 }

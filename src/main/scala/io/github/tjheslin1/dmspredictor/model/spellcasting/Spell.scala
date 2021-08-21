@@ -33,8 +33,10 @@ trait Spell {
 
 object Spell {
 
-  /** @param findNewlyConcentratingSpell is used to find the spell a caster had just used when finding the spell slot to update.
-    *    It prevents looking further after finding a concentration spell because the spellCaster is now concentrating.
+  /** @param findNewlyConcentratingSpell
+    *   is used to find the spell a caster had just used when finding the spell slot to update. It
+    *   prevents looking further after finding a concentration spell because the spellCaster is now
+    *   concentrating.
     */
   @tailrec
   def spellOfLevelOrBelow(
@@ -124,8 +126,9 @@ object Spell {
   def spellSaveDc(spellCaster: SpellCaster): Int =
     8 + attributeModifierForSchool(spellCaster) + spellCaster.spellCastingModifier
 
-  def attributeModifierForSchool(spellCaster: SpellCaster): Int =
-    attributeModifier(spellCaster, spellCaster.spellCastingAttribute)
+  def attributeModifierForSchool(spellCaster: SpellCaster): Int = attributeModifier(
+    spellCaster,
+    spellCaster.spellCastingAttribute)
 
   def spellSavingThrowPassed[_: RS](
       caster: SpellCaster,

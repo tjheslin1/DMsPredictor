@@ -26,8 +26,10 @@ object BaseCleric {
 
   val HitDice = D8
 
-  def calculateHealth(level: Level, constitutionScore: Stat): Int =
-    Player.calculateHealth(HitDice, level, constitutionScore)
+  def calculateHealth(level: Level, constitutionScore: Stat): Int = Player.calculateHealth(
+    HitDice,
+    level,
+    constitutionScore)
 
   def calculateArmourClass(stats: BaseStats, armour: Armour, offHand: Option[Equipment]): Int = {
     val baseArmourClass = armour.armourClass(stats.dexterity)

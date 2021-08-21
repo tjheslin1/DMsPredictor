@@ -85,18 +85,17 @@ object SpellSlots {
       seventhLevelSlots: Int,
       eigthLevelSlots: Int,
       ninthLevelSlots: Int
-  ): SpellSlots =
-    SpellSlots(
-      FirstLevelSpellSlots(firstLevelSlots),
-      SecondLevelSpellSlots(secondLevelSlots),
-      ThirdLevelSpellSlots(thirdLevelSlots),
-      FourthLevelSpellSlots(fourthLevelSlots),
-      FifthLevelSpellSlots(fifthLevelSlots),
-      SixthLevelSpellSlots(sixthLevelSlots),
-      SeventhLevelSpellSlots(seventhLevelSlots),
-      EighthLevelSpellSlots(eigthLevelSlots),
-      NinthLevelSpellSlots(ninthLevelSlots)
-    )
+  ): SpellSlots = SpellSlots(
+    FirstLevelSpellSlots(firstLevelSlots),
+    SecondLevelSpellSlots(secondLevelSlots),
+    ThirdLevelSpellSlots(thirdLevelSlots),
+    FourthLevelSpellSlots(fourthLevelSlots),
+    FifthLevelSpellSlots(fifthLevelSlots),
+    SixthLevelSpellSlots(sixthLevelSlots),
+    SeventhLevelSpellSlots(seventhLevelSlots),
+    EighthLevelSpellSlots(eigthLevelSlots),
+    NinthLevelSpellSlots(ninthLevelSlots)
+  )
 
   // format: off
   def highestSpellSlotAvailable(spellSlots: SpellSlots): Option[SpellSlot] = spellSlots match {

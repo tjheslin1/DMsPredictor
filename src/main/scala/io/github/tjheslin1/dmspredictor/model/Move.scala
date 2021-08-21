@@ -143,14 +143,14 @@ object Move extends LazyLogging {
   private def availableActionAbility(
       attacker: Combatant,
       others: List[Combatant]
-  ): Option[CombatantAbility] =
-    attacker.creature.abilities.sortBy(ability => ability(attacker).order).find {
-      combatantAbility =>
-        val ability = combatantAbility(attacker)
-        AbilityAction.MainAction.toList
-          .contains(ability.abilityAction) &&
-        ability.conditionMet &&
-        ability.triggerMet(others)
+  ): Option[CombatantAbility] = attacker.creature.abilities
+    .sortBy(ability => ability(attacker).order)
+    .find { combatantAbility =>
+      val ability = combatantAbility(attacker)
+      AbilityAction.MainAction.toList
+        .contains(ability.abilityAction) &&
+      ability.conditionMet &&
+      ability.triggerMet(others)
     }
 
   private def availableBonusAction(

@@ -25,10 +25,9 @@ object BasePaladinAbilities extends LazyLogging {
       val levelRequirement = LevelOne
       val abilityAction    = WholeAction
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        players(others)
-          .filter(_.creature.isAlive)
-          .exists(ally => ally.creature.health <= (ally.creature.maxHealth / 2))
+      def triggerMet(others: List[Combatant]): Boolean = players(others)
+        .filter(_.creature.isAlive)
+        .exists(ally => ally.creature.health <= (ally.creature.maxHealth / 2))
 
       def conditionMet: Boolean = basePaladin.layOnHandsPool > 0
 

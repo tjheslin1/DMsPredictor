@@ -26,8 +26,8 @@ object VampireAbilities extends LazyLogging {
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = SingleAttack
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        others.exists(_.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
+      def triggerMet(others: List[Combatant]): Boolean = others.exists(
+        _.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
       def conditionMet: Boolean = vampire.biteUsed == false
 
@@ -166,11 +166,10 @@ object VampireAbilities extends LazyLogging {
       val levelRequirement: Level      = LevelOne
       val abilityAction: AbilityAction = WholeAction
 
-      def charmTargets(others: List[Combatant]): List[Combatant] =
-        others
-          .filter(_.creature.conditionImmunities.contains(CharmedCondition) == false)
-          .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
-          .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
+      def charmTargets(others: List[Combatant]): List[Combatant] = others
+        .filter(_.creature.conditionImmunities.contains(CharmedCondition) == false)
+        .filter(_.creature.conditions.map(_.name).contains(CharmImmunity.name) == false)
+        .filter(_.creature.conditions.map(_.name).contains(Charmed.name) == false)
 
       def triggerMet(others: List[Combatant]): Boolean = {
         val nonImmuneCombatants = others

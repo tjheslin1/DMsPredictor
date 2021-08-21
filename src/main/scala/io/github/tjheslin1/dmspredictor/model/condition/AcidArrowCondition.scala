@@ -15,8 +15,10 @@ import monocle.macros.Lenses
 
   def decrementTurnsLeft(): Condition = AcidArrowCondition(spellLevel, turnsLeft = 0)
 
-  def handleEndOfTurn[_: RS](creature: Creature): Creature =
-    creature.updateHealth(spellLevel.value * D4, Acid, Hit)
+  def handleEndOfTurn[_: RS](creature: Creature): Creature = creature.updateHealth(
+    spellLevel.value * D4,
+    Acid,
+    Hit)
 
   def onConditionApplied[_: RS](creature: Creature): Creature = creature
   def onConditionRemoved[_: RS](creature: Creature): Creature = creature

@@ -25,12 +25,11 @@ object CastSelfBuffSpell extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = true
 
-      def conditionMet: Boolean =
-        spellConditionMet(
-          spellCaster,
-          BuffSpellEffect,
-          singleTargetSpellsOnly = true,
-          multiTargetSpellsOnly = false)
+      def conditionMet: Boolean = spellConditionMet(
+        spellCaster,
+        BuffSpellEffect,
+        singleTargetSpellsOnly = true,
+        multiTargetSpellsOnly = false)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used $name")

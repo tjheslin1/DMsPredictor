@@ -25,8 +25,10 @@ object BaseRanger {
 
   val HitDice = D10
 
-  def calculateHealth(level: Level, constitutionScore: Stat): Int =
-    Player.calculateHealth(HitDice, level, constitutionScore)
+  def calculateHealth(level: Level, constitutionScore: Stat): Int = Player.calculateHealth(
+    HitDice,
+    level,
+    constitutionScore)
 
   // format: off
   def rangerSpellSlots(level: Level): SpellSlots =

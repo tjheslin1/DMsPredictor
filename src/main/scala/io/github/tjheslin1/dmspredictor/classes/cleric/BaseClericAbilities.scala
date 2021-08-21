@@ -26,8 +26,8 @@ object BaseClericAbilities extends LazyLogging {
       def conditionMet: Boolean =
         baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        monsters(others).exists(_.creature.creatureType == Undead)
+      def triggerMet(others: List[Combatant]): Boolean = monsters(others).exists(
+        _.creature.creatureType == Undead)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${baseCleric.name} used $name")
@@ -84,8 +84,8 @@ object BaseClericAbilities extends LazyLogging {
       def conditionMet: Boolean =
         baseCleric.level >= levelRequirement && baseCleric.channelDivinityUsed == false
 
-      def triggerMet(others: List[Combatant]): Boolean =
-        monsters(others).exists(_.creature.creatureType == Undead)
+      def triggerMet(others: List[Combatant]): Boolean = monsters(others).exists(
+        _.creature.creatureType == Undead)
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${baseCleric.name} used $name")

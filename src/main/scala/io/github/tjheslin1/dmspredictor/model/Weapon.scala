@@ -42,38 +42,35 @@ object Weapon {
       def damage(implicit rollStrategy: RollStrategy): Int = dmg
     }
 
-  def ofDamageTypeWeapon[_: RS](weapon: Weapon, damageType: DamageType): Weapon =
-    Weapon(
-      weapon.name,
-      weapon.weaponType,
-      damageType,
-      weapon.twoHanded,
-      weapon.finesse,
-      weapon.damage,
-      weapon.hitBonus
-    )
+  def ofDamageTypeWeapon[_: RS](weapon: Weapon, damageType: DamageType): Weapon = Weapon(
+    weapon.name,
+    weapon.weaponType,
+    damageType,
+    weapon.twoHanded,
+    weapon.finesse,
+    weapon.damage,
+    weapon.hitBonus
+  )
 
-  def bonusToHitWeapon[_: RS](weapon: Weapon, bonus: Int): Weapon =
-    Weapon(
-      weapon.name,
-      weapon.weaponType,
-      weapon.damageType,
-      weapon.twoHanded,
-      weapon.finesse,
-      weapon.damage,
-      weapon.hitBonus + bonus
-    )
+  def bonusToHitWeapon[_: RS](weapon: Weapon, bonus: Int): Weapon = Weapon(
+    weapon.name,
+    weapon.weaponType,
+    weapon.damageType,
+    weapon.twoHanded,
+    weapon.finesse,
+    weapon.damage,
+    weapon.hitBonus + bonus
+  )
 
-  def bonusDamageWeapon[_: RS](weapon: Weapon, bonusDamage: => Int): Weapon =
-    Weapon(
-      weapon.name,
-      weapon.weaponType,
-      weapon.damageType,
-      weapon.twoHanded,
-      weapon.finesse,
-      weapon.damage + bonusDamage,
-      weapon.hitBonus
-    )
+  def bonusDamageWeapon[_: RS](weapon: Weapon, bonusDamage: => Int): Weapon = Weapon(
+    weapon.name,
+    weapon.weaponType,
+    weapon.damageType,
+    weapon.twoHanded,
+    weapon.finesse,
+    weapon.damage + bonusDamage,
+    weapon.hitBonus
+  )
 
   def fixedDamageWeapon[_: RS](
       weaponName: String,
