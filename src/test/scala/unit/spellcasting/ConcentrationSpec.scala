@@ -40,9 +40,10 @@ class ConcentrationSpec extends UnitSpecBase {
             .withConstitution(5)
             .asInstanceOf[SpellCaster]
 
-          val updatedCleric = handleConcentration(lowConstitutionCleric,
-                                                  damageTaken = 20,
-                                                  buffSpell = trackedSpell)
+          val updatedCleric = handleConcentration(
+            lowConstitutionCleric,
+            damageTaken = 20,
+            buffSpell = trackedSpell)
 
           updatedCleric.isConcentrating shouldBe false
         }
@@ -61,9 +62,10 @@ class ConcentrationSpec extends UnitSpecBase {
             .withConstitution(18)
             .asInstanceOf[SpellCaster]
 
-          val updatedCleric = handleConcentration(highConstitutionCleric,
-                                                  damageTaken = 10,
-                                                  buffSpell = trackedSpell)
+          val updatedCleric = handleConcentration(
+            highConstitutionCleric,
+            damageTaken = 10,
+            buffSpell = trackedSpell)
 
           updatedCleric.isConcentrating shouldBe true
         }
@@ -85,8 +87,8 @@ class ConcentrationSpec extends UnitSpecBase {
             .withConstitution(2)
             .asInstanceOf[Ranger]
 
-          val updatedRanger =
-            handleConcentration(concentratingRanger, trackedSpell, 50).asInstanceOf[Ranger]
+          val updatedRanger = handleConcentration(concentratingRanger, trackedSpell, 50)
+            .asInstanceOf[Ranger]
 
           updatedRanger.conditions shouldBe List.empty[Condition]
           updatedRanger.concentratingSpell shouldBe none[Spell]
@@ -99,8 +101,7 @@ class ConcentrationSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedSpell =
-            trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true)
+          val trackedSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true)
 
           val concentratingRanger = ranger
             .withSpellKnown(trackedSpell)
@@ -111,8 +112,8 @@ class ConcentrationSpec extends UnitSpecBase {
             .withCondition(HuntersMarkBuffCondition)
             .asInstanceOf[Ranger]
 
-          val updatedRanger =
-            handleConcentration(concentratingRanger, trackedSpell, 50).asInstanceOf[Ranger]
+          val updatedRanger = handleConcentration(concentratingRanger, trackedSpell, 50)
+            .asInstanceOf[Ranger]
 
           updatedRanger.conditions shouldBe List.empty[Condition]
           updatedRanger.concentratingSpell shouldBe none[Spell]
@@ -123,7 +124,7 @@ class ConcentrationSpec extends UnitSpecBase {
     "handle loss of concentration of MultiTargetBuffSpell" in {
       forAll { paladin: Paladin =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val trackedSpell = trackedMultiTargetBuffSpell(1, BlessCondition())
 
@@ -136,8 +137,8 @@ class ConcentrationSpec extends UnitSpecBase {
             .withCondition(BlessCondition())
             .asInstanceOf[Paladin]
 
-          val updatedPaladin =
-            handleConcentration(concentratingPaladin, trackedSpell, 50).asInstanceOf[Paladin]
+          val updatedPaladin = handleConcentration(concentratingPaladin, trackedSpell, 50)
+            .asInstanceOf[Paladin]
 
           updatedPaladin.conditions shouldBe List.empty[Condition]
           updatedPaladin.concentratingSpell shouldBe none[Spell]

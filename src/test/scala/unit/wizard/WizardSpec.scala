@@ -13,17 +13,17 @@ class WizardSpec extends UnitSpecBase {
 
   "updateHealth" should {
 
-      "set the Wizard to dead if the damage brings health below negative max health" in new TestContext {
-        override implicit val roll: RollStrategy = _ => RollResult(10)
+    "set the Wizard to dead if the damage brings health below negative max health" in new TestContext {
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
-        val wizard = random[Wizard]
-          .withHealth(50)
-          .withMaxHealth(50)
+      val wizard = random[Wizard]
+        .withHealth(50)
+        .withMaxHealth(50)
 
-        val updatedWizard = wizard.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Wizard]
+      val updatedWizard = wizard.updateHealth(110, Bludgeoning, Hit).asInstanceOf[Wizard]
 
-        updatedWizard.isAlive shouldBe false
-      }
+      updatedWizard.isAlive shouldBe false
+    }
 
     "not handle concentration if damage taken was 0" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(1)

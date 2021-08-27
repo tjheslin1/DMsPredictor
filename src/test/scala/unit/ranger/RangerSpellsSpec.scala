@@ -27,8 +27,7 @@ class RangerSpellsSpec extends UnitSpecBase {
 
           val monster = testMonster.withCombatIndex(2)
 
-          val (updatedRanger: Ranger, _) =
-            HuntersMark.effect(levelTwoRanger, 1, List(monster))
+          val (updatedRanger: Ranger, _) = HuntersMark.effect(levelTwoRanger, 1, List(monster))
 
           updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
         }
@@ -48,8 +47,10 @@ class RangerSpellsSpec extends UnitSpecBase {
             .withMaxHealth(50)
             .asInstanceOf[Ranger]
 
-          val (updatedRanger: Ranger, _) =
-            HuntersMark.effect(levelTwoRanger, 1, List.empty[Combatant])
+          val (updatedRanger: Ranger, _) = HuntersMark.effect(
+            levelTwoRanger,
+            1,
+            List.empty[Combatant])
 
           updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
 

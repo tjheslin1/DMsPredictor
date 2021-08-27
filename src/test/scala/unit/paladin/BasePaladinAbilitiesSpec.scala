@@ -33,7 +33,6 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "be triggered if an ally is below half their max hit points" in {
       forAll { (paladin: Paladin, hunter: Hunter) =>
-
         val paladinCombatant = paladin.withCombatIndex(1)
 
         val fullHealthHunter = hunter.withHealth(22).withMaxHealth(50).withCombatIndex(2)
@@ -44,7 +43,6 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "not be triggered if no allies are below half their max hit points" in {
       forAll { (paladin: Paladin, hunter: Hunter) =>
-
         val paladinCombatant = paladin.withCombatIndex(1)
 
         val fullHealthHunter = hunter.withHealth(10).withMaxHealth(10).withCombatIndex(2)
@@ -55,10 +53,13 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "not be triggered if no allies are alive" in {
       forAll { (paladin: Paladin, hunter: Hunter) =>
-
         val paladinCombatant = paladin.withCombatIndex(1)
 
-        val fullHealthHunter = hunter.withHealth(0).withMaxHealth(10).withIsAlive(false).withCombatIndex(2)
+        val fullHealthHunter = hunter
+          .withHealth(0)
+          .withMaxHealth(10)
+          .withIsAlive(false)
+          .withCombatIndex(2)
 
         layOnHands(1)(paladinCombatant).triggerMet(List(fullHealthHunter)) shouldBe false
       }
@@ -73,8 +74,8 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
           val lowHealthHunter = hunter.withHealth(4).withMaxHealth(10).withCombatIndex(2)
 
-          val (Combatant(_, updatedPaladin: Paladin), _) =
-            layOnHands(1)(paladinCombatant).useAbility(List(lowHealthHunter), LowestFirst)
+          val (Combatant(_, updatedPaladin: Paladin), _) = layOnHands(1)(paladinCombatant)
+            .useAbility(List(lowHealthHunter), LowestFirst)
 
           updatedPaladin.layOnHandsPool shouldBe 14
         }
@@ -90,8 +91,8 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
           val lowHealthHunter = hunter.withHealth(4).withMaxHealth(10).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedHunter: Hunter))) =
-            layOnHands(1)(paladinCombatant).useAbility(List(lowHealthHunter), LowestFirst)
+          val (_, List(Combatant(_, updatedHunter: Hunter))) = layOnHands(1)(paladinCombatant)
+            .useAbility(List(lowHealthHunter), LowestFirst)
 
           updatedHunter.health shouldBe 10
         }
@@ -107,8 +108,8 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
           val lowHealthHunter = hunter.withHealth(10).withMaxHealth(30).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedHunter: Hunter))) =
-            layOnHands(1)(paladinCombatant).useAbility(List(lowHealthHunter), LowestFirst)
+          val (_, List(Combatant(_, updatedHunter: Hunter))) = layOnHands(1)(paladinCombatant)
+            .useAbility(List(lowHealthHunter), LowestFirst)
 
           updatedHunter.health shouldBe 15
         }
@@ -122,10 +123,14 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
           val paladinCombatant = paladin.withLayOnHandsPoolOf(5).withCombatIndex(1)
 
-          val unconsciousHunter = hunter.withHealth(0).withMaxHealth(30).withIsAlive(true).withCombatIndex(2)
+          val unconsciousHunter = hunter
+            .withHealth(0)
+            .withMaxHealth(30)
+            .withIsAlive(true)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedHunter: Hunter))) =
-            layOnHands(1)(paladinCombatant).useAbility(List(unconsciousHunter), LowestFirst)
+          val (_, List(Combatant(_, updatedHunter: Hunter))) = layOnHands(1)(paladinCombatant)
+            .useAbility(List(unconsciousHunter), LowestFirst)
 
           updatedHunter.health shouldBe 5
         }
@@ -139,7 +144,11 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
           val paladinCombatant = paladin.withLayOnHandsPoolOf(5).withCombatIndex(1)
 
-          val lowHealthHunter = hunter.withHealth(0).withMaxHealth(30).withIsAlive(false).withCombatIndex(2)
+          val lowHealthHunter = hunter
+            .withHealth(0)
+            .withMaxHealth(30)
+            .withIsAlive(false)
+            .withCombatIndex(2)
 
           val (Combatant(_, updatedPaladin: Paladin), List(Combatant(_, updatedHunter: Hunter))) =
             layOnHands(1)(paladinCombatant).useAbility(List(lowHealthHunter), LowestFirst)
@@ -170,10 +179,12 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val goblinCombatant = goblin
-            .withHealth(50).withMaxHealth(50).withCombatIndex(2)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            divineSmite(1)(levelTwoPaladin).useAbility(List(goblinCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = divineSmite(1)(levelTwoPaladin)
+            .useAbility(List(goblinCombatant), LowestFirst)
 
           updatedGoblin.health shouldBe 50 - (10 + 4 + 20) // weapon damage + strength mod + radiant damage
         }
@@ -183,22 +194,24 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
     "deal 4d8 extra radiant damage on a weapon attack using a third level spell slot" in {
       forAll { (paladin: Paladin, goblin: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
-         val thirdLevelSpellPaladin = paladin
-           .withSpellSlots(SpellSlots(0, 0, 1))
-           .withNoFightingStyles()
+          val thirdLevelSpellPaladin = paladin
+            .withSpellSlots(SpellSlots(0, 0, 1))
+            .withNoFightingStyles()
             .withProficiencyBonus(6)
-           .withStrength(18)
-           .withDexterity(10)
-           .withBaseWeapon(Shortsword)
-           .withCombatIndex(1)
+            .withStrength(18)
+            .withDexterity(10)
+            .withBaseWeapon(Shortsword)
+            .withCombatIndex(1)
 
           val goblinCombatant = goblin
-            .withHealth(100).withMaxHealth(100).withCombatIndex(2)
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            divineSmite(1)(thirdLevelSpellPaladin).useAbility(List(goblinCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = divineSmite(1)(
+            thirdLevelSpellPaladin).useAbility(List(goblinCombatant), LowestFirst)
 
           updatedGoblin.health shouldBe 100 - (10 + 4 + 40) // weapon damage + strength mod + radiant damage
         }
@@ -208,7 +221,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
     "deal a maximum of 5d8  extra radiant damage" in {
       forAll { (paladin: Paladin, goblin: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val fifthLevelSpellPaladin = paladin
             .withSpellSlots(SpellSlots(0, 0, 0, 0, 1, 0, 0, 0, 0))
@@ -220,10 +233,12 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val werewolfCombatant = goblin
-            .withHealth(100).withMaxHealth(100).withCombatIndex(2)
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            divineSmite(1)(fifthLevelSpellPaladin).useAbility(List(werewolfCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = divineSmite(1)(
+            fifthLevelSpellPaladin).useAbility(List(werewolfCombatant), LowestFirst)
 
           updatedGoblin.health shouldBe 100 - (10 + 4 + 50) // weapon damage + strength mod + radiant damage
         }
@@ -246,10 +261,12 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val zombieCombatant = zombie
-            .withHealth(50).withMaxHealth(50).withCombatIndex(2)
+            .withHealth(50)
+            .withMaxHealth(50)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedZombie: Zombie))) =
-            divineSmite(1)(levelTwoPaladin).useAbility(List(zombieCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedZombie: Zombie))) = divineSmite(1)(levelTwoPaladin)
+            .useAbility(List(zombieCombatant), LowestFirst)
 
           updatedZombie.health shouldBe 50 - (10 + 4 + 30) // weapon damage + strength mod + radiant damage
         }
@@ -278,8 +295,8 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withMaxHealth(50)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedTestMonster: TestMonster))) =
-            divineSmite(1)(levelTwoPaladin).useAbility(List(fiendCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedTestMonster: TestMonster))) = divineSmite(1)(
+            levelTwoPaladin).useAbility(List(fiendCombatant), LowestFirst)
 
           updatedTestMonster.health shouldBe 50 - (10 + 4 + 30) // weapon damage + strength mod + radiant damage
         }
@@ -303,7 +320,9 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withCombatIndex(1)
 
           val goblinCombatant = goblin
-            .withHealth(100).withMaxHealth(100).withCombatIndex(2)
+            .withHealth(100)
+            .withMaxHealth(100)
+            .withCombatIndex(2)
 
           val Queue(Combatant(_, updatedGoblin: Goblin), Combatant(_, updatedPaladin: Paladin)) =
             Move.takeMove(Queue(levelFivePaladin, goblinCombatant), LowestFirst)
@@ -399,7 +418,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
     "spend the highest level spell slot when available" in {
       forAll { (paladin: Paladin, goblin: Goblin) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val levelFivePaladin = paladin
             .withAllSpellSlotsAvailableForLevel(LevelFive)
@@ -416,9 +435,9 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(2)
 
-          val (Combatant(_, updatedPaladin: Paladin), _) =
-            divineSmite(1)(levelFivePaladin.withCombatIndex(1))
-              .useAbility(List(goblinCombatant), LowestFirst)
+          val (Combatant(_, updatedPaladin: Paladin), _) = divineSmite(1)(
+            levelFivePaladin.withCombatIndex(1))
+            .useAbility(List(goblinCombatant), LowestFirst)
 
           updatedPaladin.spellSlots.firstLevel.count shouldBe levelFivePaladin.spellSlots.firstLevel.count
           updatedPaladin.spellSlots.secondLevel.count shouldBe (levelFivePaladin.spellSlots.secondLevel.count - 1)
@@ -454,7 +473,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
   "SacredWeaponCondition" should {
     "make the Paladins weapon to have DamageType of Magical" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin]
           .withNoFightingStyles()
@@ -467,7 +486,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "make the Paladins weapon have a hit bonus equal to its Charisma modifier (minimum of 1)" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin]
           .withNoFightingStyles()
@@ -482,7 +501,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "make the Paladins weapon have a hit bonus equal to its Charisma modifier (minimum of 1) plus the weapons base hit bonus" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin]
           .withNoFightingStyles()
@@ -499,12 +518,12 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
   "Sacred Weapon" should {
     "apply the SacredWeaponCondition to Paladin" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val levelThreePaladin = random[Paladin].withLevel(LevelThree).withCombatIndex(1)
 
-        val (Combatant(_, updatedPaladin: Paladin), _) =
-          sacredWeapon(1)(levelThreePaladin).useAbility(List.empty[Combatant], LowestFirst)
+        val (Combatant(_, updatedPaladin: Paladin), _) = sacredWeapon(1)(levelThreePaladin)
+          .useAbility(List.empty[Combatant], LowestFirst)
 
         updatedPaladin.conditions shouldBe List(SacredWeaponCondition())
       }
@@ -512,7 +531,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "set the Paladins channelDivinityUsed to true" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val levelThreePaladin = random[Paladin].withLevel(LevelThree).withCombatIndex(1)
 
@@ -524,7 +543,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "meet the condition if channel divinity has not been used" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin].withCombatIndex(1)
 
@@ -534,7 +553,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
 
     "not meet the condition if channel divinity has already been used" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val paladin = random[Paladin].withChannelDivinityUsed().withCombatIndex(1)
 

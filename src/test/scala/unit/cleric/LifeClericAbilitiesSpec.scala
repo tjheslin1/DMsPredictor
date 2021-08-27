@@ -54,12 +54,13 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedFighter: Fighter))) =
-            discipleOfLife(1)(lifeCleric).useAbility(List(weakFighter), LowestFirst)
+          val (_, List(Combatant(_, updatedFighter: Fighter))) = discipleOfLife(1)(lifeCleric)
+            .useAbility(List(weakFighter), LowestFirst)
 
           val trackedSpellHealing = 1
-          val expectedHealth = weakFighter.creature.health + trackedSpellHealing +
-            discipleOfLifeBonusHealing(trackedLevelTwoHealingSpell.spellLevel)
+          val expectedHealth =
+            weakFighter.creature.health + trackedSpellHealing +
+              discipleOfLifeBonusHealing(trackedLevelTwoHealingSpell.spellLevel)
 
           updatedFighter.health shouldBe expectedHealth
         }
@@ -80,8 +81,8 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
 
           val weakFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            discipleOfLife(1)(lifeCleric.withCombatIndex(1)).useAbility(List(weakFighter), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = discipleOfLife(1)(
+            lifeCleric.withCombatIndex(1)).useAbility(List(weakFighter), LowestFirst)
 
           updatedCleric.spellSlots.secondLevel.count shouldBe (lifeCleric.spellSlots.secondLevel.count - 1)
         }
@@ -115,7 +116,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has only a damage spell to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withSpellKnown(MagicMissile).withCombatIndex(1)
 
@@ -123,7 +124,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     }
 
     "not meet the condition if the Spell Caster has no spell to cast" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric].withNoSpellSlotsAvailable().withCombatIndex(1)
 
@@ -140,16 +141,18 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "restore up to 50% of an allies health using all points" in {
       forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val weakFighter   = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian = barbarian.withHealth(10).withMaxHealth(100).withCombatIndex(3)
 
-          val (_,
-               List(Combatant(_, updatedFighter: Fighter),
-                    Combatant(_, updatedBarbarian: Barbarian))) =
-            preserveLife(Priority)(cleric.withLevel(LevelTwo).withCombatIndex(1))
-              .useAbility(List(weakFighter, weakBarbarian), LowestFirst)
+          val (
+            _,
+            List(
+              Combatant(_, updatedFighter: Fighter),
+              Combatant(_, updatedBarbarian: Barbarian))) = preserveLife(Priority)(
+            cleric.withLevel(LevelTwo).withCombatIndex(1))
+            .useAbility(List(weakFighter, weakBarbarian), LowestFirst)
 
           updatedFighter.health shouldBe 20
           updatedBarbarian.health shouldBe 10
@@ -160,18 +163,20 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
     "restore up to 50% of an allies health using as many points as allowed" in {
       forAll { (cleric: Cleric, fighter: Fighter, barbarian: Barbarian, champion: Champion) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val healthyFighter = fighter.withHealth(100).withMaxHealth(100).withCombatIndex(2)
           val weakBarbarian  = barbarian.withHealth(10).withMaxHealth(25).withCombatIndex(3)
           val weakChampion   = champion.withHealth(10).withMaxHealth(25).withCombatIndex(4)
 
-          val (_,
-               List(_,
-                    Combatant(_, updatedBarbarian: Barbarian),
-                    Combatant(_, updatedChampion: Champion))) =
-            preserveLife(Priority)(cleric.withLevel(LevelFive).withCombatIndex(1))
-              .useAbility(List(healthyFighter, weakBarbarian, weakChampion), LowestFirst)
+          val (
+            _,
+            List(
+              _,
+              Combatant(_, updatedBarbarian: Barbarian),
+              Combatant(_, updatedChampion: Champion))) = preserveLife(Priority)(
+            cleric.withLevel(LevelFive).withCombatIndex(1))
+            .useAbility(List(healthyFighter, weakBarbarian, weakChampion), LowestFirst)
 
           updatedBarbarian.health shouldBe 12
           updatedChampion.health shouldBe 12
@@ -232,11 +237,13 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
       val weakChampion   = random[Champion].withHealth(10).withMaxHealth(30).withCombatIndex(3)
       val weakCleric     = random[Cleric].withHealth(80).withMaxHealth(200).withCombatIndex(4)
 
-      val List(Combatant(_, updatedFighter: Fighter),
-               Combatant(_, updatedBarbarian: Barbarian),
-               Combatant(_, updatedChampion: Champion),
-               Combatant(_, updatedCleric: Cleric)) =
-        restoreHealthUsingPool(20, List(healthyFighter, weakBarbarian, weakChampion, weakCleric))
+      val List(
+        Combatant(_, updatedFighter: Fighter),
+        Combatant(_, updatedBarbarian: Barbarian),
+        Combatant(_, updatedChampion: Champion),
+        Combatant(_, updatedCleric: Cleric)) = restoreHealthUsingPool(
+        20,
+        List(healthyFighter, weakBarbarian, weakChampion, weakCleric))
 
       updatedFighter.health shouldBe 100
       updatedBarbarian.health shouldBe 40

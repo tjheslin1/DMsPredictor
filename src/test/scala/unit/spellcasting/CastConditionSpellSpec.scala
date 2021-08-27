@@ -48,7 +48,10 @@ class CastConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(1)
 
-          val trackedSpell = trackedConditionSpell(2, savingThrowAttribute = Wisdom, concentration = true)
+          val trackedSpell = trackedConditionSpell(
+            2,
+            savingThrowAttribute = Wisdom,
+            concentration = true)
 
           val trackedCleric = cleric
             .withSpellKnown(trackedSpell)
@@ -61,8 +64,8 @@ class CastConditionSpellSpec extends UnitSpecBase {
 
           val monster = goblin.withWisdom(2).withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castConditionSpell(Priority)(trackedCleric).useAbility(List(monster), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(trackedCleric)
+            .useAbility(List(monster), LowestFirst)
 
           conditionSpellUsedCount shouldBe 1
           conditionSpellLevelUsed shouldBe 3
@@ -77,7 +80,10 @@ class CastConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedMultiConditionSpell = trackedConditionSpell(1, concentration = false, higherSpellSlot = true)
+          val trackedMultiConditionSpell = trackedConditionSpell(
+            1,
+            concentration = false,
+            higherSpellSlot = true)
 
           val trackedCleric = cleric
             .withSpellsKnown(trackedMultiConditionSpell)
@@ -91,9 +97,9 @@ class CastConditionSpellSpec extends UnitSpecBase {
           val goblinCombatantOne = goblinOne.withCombatIndex(2)
           val goblinCombatantTwo = goblinTwo.withCombatIndex(3)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castConditionSpell(Priority)(clericCombatant)
-              .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(
+            clericCombatant)
+            .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
@@ -107,7 +113,10 @@ class CastConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedConcentrationSpell = trackedConditionSpell(1, concentration = true, higherSpellSlot = true)
+          val trackedConcentrationSpell = trackedConditionSpell(
+            1,
+            concentration = true,
+            higherSpellSlot = true)
 
           val trackedCleric = cleric
             .withSpellsKnown(trackedConcentrationSpell)
@@ -121,9 +130,9 @@ class CastConditionSpellSpec extends UnitSpecBase {
           val goblinCombatantOne = goblinOne.withCombatIndex(2)
           val goblinCombatantTwo = goblinTwo.withCombatIndex(3)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castConditionSpell(Priority)(clericCombatant)
-              .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(
+            clericCombatant)
+            .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
@@ -137,7 +146,10 @@ class CastConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedSpell = trackedConditionSpell(2, concentration = false, higherSpellSlot = false)
+          val trackedSpell = trackedConditionSpell(
+            2,
+            concentration = false,
+            higherSpellSlot = false)
 
           val trackedCleric = cleric
             .withSpellsKnown(trackedSpell)
@@ -151,9 +163,9 @@ class CastConditionSpellSpec extends UnitSpecBase {
           val goblinCombatantOne = goblinOne.withCombatIndex(2)
           val goblinCombatantTwo = goblinTwo.withCombatIndex(3)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castConditionSpell(Priority)(clericCombatant)
-              .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(
+            clericCombatant)
+            .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe (trackedCleric.spellSlots.secondLevel.count - 1)
@@ -167,7 +179,10 @@ class CastConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedConcentrationSpell = trackedConditionSpell(2, concentration = true, higherSpellSlot = false)
+          val trackedConcentrationSpell = trackedConditionSpell(
+            2,
+            concentration = true,
+            higherSpellSlot = false)
 
           val trackedCleric = cleric
             .withSpellsKnown(trackedConcentrationSpell)
@@ -181,9 +196,9 @@ class CastConditionSpellSpec extends UnitSpecBase {
           val goblinCombatantOne = goblinOne.withCombatIndex(2)
           val goblinCombatantTwo = goblinTwo.withCombatIndex(3)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castConditionSpell(Priority)(clericCombatant)
-              .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castConditionSpell(Priority)(
+            clericCombatant)
+            .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe (trackedCleric.spellSlots.secondLevel.count - 1)
@@ -215,7 +230,7 @@ class CastConditionSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedSpell = trackedConditionSpell(2, concentration = true)
+          val trackedSpell  = trackedConditionSpell(2, concentration = true)
           val trackedSpell2 = trackedConditionSpell(3, concentration = true)
 
           val concentratingCleric = cleric
@@ -241,8 +256,8 @@ class CastConditionSpellSpec extends UnitSpecBase {
 
           val easyToHitFighter = fighter.withDexterity(2).withCombatIndex(2)
 
-          castConditionSpell(Priority)(lichCombatant).useAbility(List(easyToHitFighter),
-            LowestFirst)
+          castConditionSpell(Priority)(lichCombatant)
+            .useAbility(List(easyToHitFighter), LowestFirst)
 
           conditionSpellUsedCount shouldBe 1
           conditionSpellLevelUsed shouldBe 9

@@ -3,7 +3,10 @@ package unit.rogue
 import base.UnitSpecBase
 import cats.syntax.option._
 import eu.timepit.refined.auto._
-import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.{calculateArmourClass, calculateHealth}
+import io.github.tjheslin1.dmspredictor.classes.rogue.BaseRogue.{
+  calculateArmourClass,
+  calculateHealth
+}
 import io.github.tjheslin1.dmspredictor.equipment.Equipment
 import io.github.tjheslin1.dmspredictor.equipment.armour.{ChainShirt, NoArmour}
 import io.github.tjheslin1.dmspredictor.model._
@@ -16,7 +19,10 @@ class BaseRogueSpec extends UnitSpecBase {
     }
 
     "calculate whilst wearing armour with no shield" in new TestContext {
-      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12), ChainShirt, none[Equipment]) shouldBe 14
+      calculateArmourClass(
+        BaseStats(12, 12, 12, 12, 12, 12),
+        ChainShirt,
+        none[Equipment]) shouldBe 14
     }
   }
 
@@ -41,7 +47,6 @@ class BaseRogueSpec extends UnitSpecBase {
       calculateHealth(LevelTwenty, 19) shouldBe 183
     }
   }
-
 
   private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser

@@ -39,8 +39,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
 
       val berserker = random[Berserker].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val (Combatant(_, frenzyingBerserker: Berserker), _) =
-        frenzy(Priority)(berserker).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, frenzyingBerserker: Berserker), _) = frenzy(Priority)(berserker)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       frenzyingBerserker.rageUsages shouldBe 1
     }
@@ -50,8 +50,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
 
       val frenziesBerserker = random[Berserker].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val (Combatant(_, frenzyingBerserker: Berserker), _) =
-        frenzy(Priority)(frenziesBerserker).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, frenzyingBerserker: Berserker), _) = frenzy(Priority)(frenziesBerserker)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       frenzyingBerserker.inFrenzy shouldBe true
     }
@@ -64,8 +64,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
         .withRageTurnsLeft(5)
         .withCombatIndex(1)
 
-      val (Combatant(_, frenzyingBerserker: Berserker), _) =
-        frenzy(Priority)(berserker).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, frenzyingBerserker: Berserker), _) = frenzy(Priority)(berserker)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       frenzyingBerserker.rageTurnsLeft shouldBe 10
     }
@@ -75,8 +75,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
 
       val berserker = random[Berserker].withDamageResistance(Fire).withCombatIndex(1)
 
-      val (Combatant(_, frenzyingBerserker: Berserker), _) =
-        frenzy(Priority)(berserker).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, frenzyingBerserker: Berserker), _) = frenzy(Priority)(berserker)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       frenzyingBerserker.damageResistances shouldBe List(Fire, Bludgeoning, Piercing, Slashing)
     }
@@ -86,8 +86,8 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
 
       val berserker = random[Berserker].withCombatIndex(1)
 
-      val (Combatant(_, frenzyingBerserker: Berserker), _) =
-        frenzy(Priority)(berserker).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, frenzyingBerserker: Berserker), _) = frenzy(Priority)(berserker)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       frenzyingBerserker.bonusActionUsed shouldBe true
     }
@@ -120,10 +120,10 @@ class BerserkerAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = D20.naturalTwenty
 
-          val trackedSingleAttack: CombatantAbility =
-            trackedAbility(2,
-                           action = SingleAttack,
-                           updatedTracking = trackedSingleAttackUsed = true)
+          val trackedSingleAttack: CombatantAbility = trackedAbility(
+            2,
+            action = SingleAttack,
+            updatedTracking = trackedSingleAttackUsed = true)
 
           val frenzyingBerserker = berserker
             .withInFrenzy()

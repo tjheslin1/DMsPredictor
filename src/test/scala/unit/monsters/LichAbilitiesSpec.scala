@@ -28,8 +28,8 @@ class LichAbilitiesSpec extends UnitSpecBase {
         .withMaxHealth(50)
         .withCombatIndex(2)
 
-      val (_, List(Combatant(_, updatedFighter: Fighter))) =
-        paralyzingTouch(1)(lich).useAbility(List(lowDefenseFighter), LowestFirst)
+      val (_, List(Combatant(_, updatedFighter: Fighter))) = paralyzingTouch(1)(lich)
+        .useAbility(List(lowDefenseFighter), LowestFirst)
 
       updatedFighter.health shouldBe 32 // 50 - 3d6
     }
@@ -40,16 +40,17 @@ class LichAbilitiesSpec extends UnitSpecBase {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           val lowConstitutionFighter = fighter
-              .withNoArmour()
-              .withNoOffHand()
-              .withDexterity(10)
-              .withConstitution(2)
-              .withCombatIndex(2)
+            .withNoArmour()
+            .withNoOffHand()
+            .withDexterity(10)
+            .withConstitution(2)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedFighter: Fighter))) =
-            paralyzingTouch(1)(lich.withCombatIndex(1)).useAbility(List(lowConstitutionFighter), LowestFirst)
+          val (_, List(Combatant(_, updatedFighter: Fighter))) = paralyzingTouch(1)(
+            lich.withCombatIndex(1)).useAbility(List(lowConstitutionFighter), LowestFirst)
 
-          updatedFighter.conditions should contain theSameElementsAs List(Paralyzed(18, 10, Constitution))
+          updatedFighter.conditions should contain theSameElementsAs List(
+            Paralyzed(18, 10, Constitution))
         }
       }
     }
@@ -67,8 +68,8 @@ class LichAbilitiesSpec extends UnitSpecBase {
             .withConstitution(1)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedFighter: Fighter))) =
-            paralyzingTouch(1)(lich.withCombatIndex(1)).useAbility(List(highACLowConFighter), LowestFirst)
+          val (_, List(Combatant(_, updatedFighter: Fighter))) = paralyzingTouch(1)(
+            lich.withCombatIndex(1)).useAbility(List(highACLowConFighter), LowestFirst)
 
           updatedFighter.health shouldBe highACLowConFighter.creature.health
           updatedFighter.conditions should contain theSameElementsAs List.empty[Condition]
@@ -82,11 +83,11 @@ class LichAbilitiesSpec extends UnitSpecBase {
           implicit val rollStrategy: RollStrategy = _ => RollResult(15)
 
           val highConstitutionFighter = fighter
-              .withConstitution(24)
-              .withCombatIndex(2)
+            .withConstitution(24)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedFighter: Fighter))) =
-            paralyzingTouch(1)(lich.withCombatIndex(1)).useAbility(List(highConstitutionFighter), LowestFirst)
+          val (_, List(Combatant(_, updatedFighter: Fighter))) = paralyzingTouch(1)(
+            lich.withCombatIndex(1)).useAbility(List(highConstitutionFighter), LowestFirst)
 
           updatedFighter.conditions should contain theSameElementsAs List.empty[Condition]
         }

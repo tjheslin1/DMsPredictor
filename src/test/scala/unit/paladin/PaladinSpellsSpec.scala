@@ -22,7 +22,7 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to Players weapon attack roll" in {
       forAll { (champion: Champion, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(4)
+          implicit override val rollStrategy: RollStrategy = _ => RollResult(4)
 
           val blessedChampion = champion
             .withNoFightingStyles()
@@ -44,7 +44,7 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to a Monsters weapon attack roll" in {
       forAll { (goblin: Goblin, rogue: Rogue) =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(4)
+          implicit override val rollStrategy: RollStrategy = _ => RollResult(4)
 
           val blessedGoblin = goblin
             .withCondition(BlessCondition())
@@ -67,7 +67,7 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to spell attack roll" in {
       forAll { (wizard: Wizard, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+          implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
           val blessedWizard = wizard
             .withSpellsKnown(FireBolt)
@@ -88,7 +88,7 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to a Monsters spell attack roll" in {
       forAll { (lich: Lich, rogue: Rogue) =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+          implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
 //          lich.spellCastingModifier
 
@@ -112,7 +112,7 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to a saving throw roll" in {
       forAll { paladin: Paladin =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+          implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
 //          paladin.savingThrowProficiencies
 
@@ -121,8 +121,7 @@ class PaladinSpellsSpec extends UnitSpecBase {
             .withCondition(BlessCondition())
             .withStrength(10)
 
-          val (passed, _) =
-            SavingThrow.savingThrowPassed(12, Strength, blessedPaladin)
+          val (passed, _) = SavingThrow.savingThrowPassed(12, Strength, blessedPaladin)
 
           passed shouldBe true
         }
@@ -132,16 +131,15 @@ class PaladinSpellsSpec extends UnitSpecBase {
     "add 1d4 to a Monsters saving throw roll" in {
       forAll { lich: Lich =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+          implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
 //          lich.savingThrowScores
 
           val blessedLich = lich
-              .withLegendaryResistanceCount(0)
+            .withLegendaryResistanceCount(0)
             .withCondition(BlessCondition())
 
-          val (passed, _) =
-            SavingThrow.savingThrowPassed(21, Constitution, blessedLich)
+          val (passed, _) = SavingThrow.savingThrowPassed(21, Constitution, blessedLich)
 
           passed shouldBe true
         }

@@ -60,8 +60,8 @@ class BaseRangerAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            twoWeaponFighting(Priority)(dualWieldingRanger).useAbility(List(monster), LowestFirst)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = twoWeaponFighting(Priority)(
+            dualWieldingRanger).useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 1
           offHAndSwordUsedCount shouldBe 1
@@ -87,8 +87,8 @@ class BaseRangerAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            twoWeaponFighting(Priority)(dualWieldingRanger).useAbility(List(monster), LowestFirst)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = twoWeaponFighting(Priority)(
+            dualWieldingRanger).useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 1
           offHAndSwordUsedCount shouldBe 1
@@ -103,9 +103,8 @@ class BaseRangerAbilitiesSpec extends UnitSpecBase {
     "set the player's bonus action to be used" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(19)
 
-      val updatedRanger =
-        twoWeaponFighting(Priority)(random[Ranger].withCombatIndex(1)).update
-          .asInstanceOf[Ranger]
+      val updatedRanger = twoWeaponFighting(Priority)(random[Ranger].withCombatIndex(1)).update
+        .asInstanceOf[Ranger]
 
       updatedRanger.bonusActionUsed shouldBe true
     }

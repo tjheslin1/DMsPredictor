@@ -23,8 +23,10 @@ class SelfBuffSpellSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .asInstanceOf[Ranger]
 
-          val (updatedRanger: Ranger, _) =
-            trackedBuffSpell.effect(buffingRanger, HuntersMark.spellLevel, List.empty[Combatant])
+          val (updatedRanger: Ranger, _) = trackedBuffSpell.effect(
+            buffingRanger,
+            HuntersMark.spellLevel,
+            List.empty[Combatant])
 
           updatedRanger.conditions shouldBe List(HuntersMarkBuffCondition)
         }

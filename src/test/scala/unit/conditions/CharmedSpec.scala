@@ -13,7 +13,7 @@ class CharmedSpec extends UnitSpecBase {
     "sustain Charmed condition if saving throw failed" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          override implicit val roll = _ => RollResult(2)
+          implicit override val roll = _ => RollResult(2)
 
           val charmed         = Charmed(15)
           val poisoned        = Poisoned(10, 10)
@@ -29,7 +29,7 @@ class CharmedSpec extends UnitSpecBase {
     "remove Charmed condition if saving throw passed and apply CharmImmunity" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          override implicit val roll = D20.naturalTwenty
+          implicit override val roll = D20.naturalTwenty
 
           val charmed         = Charmed(1)
           val poisoned        = Poisoned(10, 10)
@@ -43,7 +43,7 @@ class CharmedSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
   }
 }

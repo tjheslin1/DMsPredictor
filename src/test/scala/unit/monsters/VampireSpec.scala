@@ -86,12 +86,11 @@ class VampireSpec extends UnitSpecBase {
 
     "not regenerate hit points if the Vampire has taken Radiant damage last turn" in {
       forAll { vampire: Vampire =>
-        val regeneratedVampire =
-          vampire
-            .copy(radiantDamageTaken = true)
-            .withHealth(50)
-            .withMaxHealth(100)
-            .resetStartOfTurn()
+        val regeneratedVampire = vampire
+          .copy(radiantDamageTaken = true)
+          .withHealth(50)
+          .withMaxHealth(100)
+          .resetStartOfTurn()
 
         regeneratedVampire.health shouldBe 50
       }
@@ -141,8 +140,8 @@ class VampireSpec extends UnitSpecBase {
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)
 
           val (Combatant(_, updatedVampire: Vampire), List(Combatant(_, updatedFighter: Fighter))) =
-            multiAttack(1, numberOfAttacks = 2)(vampireCombatant).useAbility(List(fighterCombatant),
-                                                                             LowestFirst)
+            multiAttack(1, numberOfAttacks = 2)(vampireCombatant)
+              .useAbility(List(fighterCombatant), LowestFirst)
 
           updatedVampire.biteUsed shouldBe true
           updatedVampire.firstAttack shouldBe false
@@ -156,8 +155,8 @@ class VampireSpec extends UnitSpecBase {
       forAll { (vampire: Vampire, fighter: Fighter) =>
         new TestContext {
           val (firstAttack, secondAttack, secondAttackDamage) = (1, 5, 2)
-          val rolls                                           = Iterator(firstAttack, secondAttack, secondAttackDamage)
-          implicit override val roll: RollStrategy            = _ => RollResult(rolls.next())
+          val rolls = Iterator(firstAttack, secondAttack, secondAttackDamage)
+          implicit override val roll: RollStrategy = _ => RollResult(rolls.next())
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withDexterity(1).withNoArmour().withCombatIndex(2)

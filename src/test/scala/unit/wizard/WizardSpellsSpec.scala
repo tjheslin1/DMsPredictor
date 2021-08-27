@@ -110,8 +110,10 @@ class WizardSpellsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withArmourClass(10).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = AcidArrow.effect(
+            levelFourWizard,
+            2,
+            List(goblinCombatant))
 
           updatedGoblin.conditions shouldBe List(AcidArrowCondition(2))
         }
@@ -161,8 +163,10 @@ class WizardSpellsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withArmourClass(10).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = AcidArrow.effect(
+            levelFourWizard,
+            2,
+            List(goblinCombatant))
 
           updatedGoblin.health shouldBe 42
         }
@@ -187,8 +191,10 @@ class WizardSpellsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withArmourClass(20).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = AcidArrow.effect(
+            levelFourWizard,
+            2,
+            List(goblinCombatant))
 
           updatedGoblin.health shouldBe 46
         }
@@ -208,8 +214,10 @@ class WizardSpellsSpec extends UnitSpecBase {
 
           val goblinCombatant = goblin.withArmourClass(20).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(levelFourWizard, 2, List(goblinCombatant))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = AcidArrow.effect(
+            levelFourWizard,
+            2,
+            List(goblinCombatant))
 
           updatedGoblin.health shouldBe 50
         }
@@ -238,8 +246,10 @@ class WizardSpellsSpec extends UnitSpecBase {
             .withMaxHealth(50)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            AcidArrow.effect(levelFiveWizard, 3, List(fiftyHpGoblin))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = AcidArrow.effect(
+            levelFiveWizard,
+            3,
+            List(fiftyHpGoblin))
 
           updatedGoblin.health shouldBe 40
         }
@@ -253,11 +263,14 @@ class WizardSpellsSpec extends UnitSpecBase {
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val ac13Wizard =
-            wizard.withMageArmourPrepared(true).withDexterity(10).asInstanceOf[Wizard]
+          val ac13Wizard = wizard
+            .withMageArmourPrepared(true)
+            .withDexterity(10)
+            .asInstanceOf[Wizard]
 
-          val (_, updatedSpellCaster: SpellCaster) =
-            ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
+          val (_, updatedSpellCaster: SpellCaster) = ShieldSpell.updateAttackOnReaction(
+            ac13Wizard,
+            15)
 
           val expectedSpellSlots = ac13Wizard.spellSlots.copy(
             firstLevel = FirstLevelSpellSlots(ac13Wizard.spellSlots.firstLevel.count - 1))
@@ -276,8 +289,9 @@ class WizardSpellsSpec extends UnitSpecBase {
             .withDexterity(10)
             .withReactionUsed(false)
 
-          val (_, updatedSpellCaster: SpellCaster) =
-            ShieldSpell.updateAttackOnReaction(reactionNotUsedWizard, 15)
+          val (_, updatedSpellCaster: SpellCaster) = ShieldSpell.updateAttackOnReaction(
+            reactionNotUsedWizard,
+            15)
 
           updatedSpellCaster.reactionUsed shouldBe true
         }
@@ -289,10 +303,14 @@ class WizardSpellsSpec extends UnitSpecBase {
         new TestContext {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
-          val noSpellSlotsWizard =
-            wizard.withMageArmourPrepared(false).withNoSpellSlotsAvailable().withDexterity(10)
+          val noSpellSlotsWizard = wizard
+            .withMageArmourPrepared(false)
+            .withNoSpellSlotsAvailable()
+            .withDexterity(10)
 
-          ShieldSpell.updateAttackOnReaction(noSpellSlotsWizard, 15) shouldBe (Hit, noSpellSlotsWizard)
+          ShieldSpell.updateAttackOnReaction(
+            noSpellSlotsWizard,
+            15) shouldBe (Hit, noSpellSlotsWizard)
         }
       }
     }
@@ -313,16 +331,17 @@ class WizardSpellsSpec extends UnitSpecBase {
           implicit val rollStrategy: RollStrategy = _ => RollResult(10)
 
           val ac13Wizard = wizard.withMageArmourPrepared(true).withDexterity(10)
-          val (attackResult, shieldSpellActiveWizard: Wizard) =
-            ShieldSpell.updateAttackOnReaction(ac13Wizard, 15)
+          val (attackResult, shieldSpellActiveWizard: Wizard) = ShieldSpell.updateAttackOnReaction(
+            ac13Wizard,
+            15)
 
           attackResult shouldBe Miss // checking Shield was activated
 
           val goblinCombatant = goblin.withCombatIndex(2)
 
-          val Queue(_, Combatant(_, updatedWizard: Wizard)) =
-            Move.takeMove(Queue(shieldSpellActiveWizard.withCombatIndex(1), goblinCombatant),
-                          LowestFirst)
+          val Queue(_, Combatant(_, updatedWizard: Wizard)) = Move.takeMove(
+            Queue(shieldSpellActiveWizard.withCombatIndex(1), goblinCombatant),
+            LowestFirst)
 
           updatedWizard.conditions shouldBe List.empty[Condition]
         }
@@ -376,8 +395,10 @@ class WizardSpellsSpec extends UnitSpecBase {
         .withDexterity(2)
         .withCombatIndex(1)
 
-      val (_, List(Combatant(_, updatedFighter: Fighter))) =
-        Disintegrate.effect(lich, Disintegrate.spellLevel, List(lowDexFighter))
+      val (_, List(Combatant(_, updatedFighter: Fighter))) = Disintegrate.effect(
+        lich,
+        Disintegrate.spellLevel,
+        List(lowDexFighter))
 
       updatedFighter.health shouldBe 0
       updatedFighter.isAlive shouldBe false
@@ -399,8 +420,10 @@ class WizardSpellsSpec extends UnitSpecBase {
             .withSavingThrowScores(dexterity = -4)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            Disintegrate.effect(trackedLich, Disintegrate.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = Disintegrate.effect(
+            trackedLich,
+            Disintegrate.spellLevel,
+            List(monster))
 
           updatedMonster.health shouldBe monster.creature.health - 140 // 10d10 + 40 - using RollResult(10)
         }
@@ -424,8 +447,10 @@ class WizardSpellsSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            Disintegrate.effect(trackedLich, Disintegrate.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = Disintegrate.effect(
+            trackedLich,
+            Disintegrate.spellLevel,
+            List(monster))
 
           updatedMonster.health shouldBe monster.creature.health
         }
@@ -450,17 +475,16 @@ class WizardSpellsSpec extends UnitSpecBase {
           val fingerOfDeathLich = lich
             .withSpellKnown(FingerOfDeath)
 
-          val lowHealthFighter =
-            fighter
-              .withConstitution(2)
-              .withHealth(2)
-              .withMaxHealth(10)
-              .withCombatIndex(2)
+          val lowHealthFighter = fighter
+            .withConstitution(2)
+            .withHealth(2)
+            .withMaxHealth(10)
+            .withCombatIndex(2)
 
-          val (_, others) =
-            FingerOfDeath.effect(fingerOfDeathLich,
-                                 FingerOfDeath.spellLevel,
-                                 List(lowHealthFighter))
+          val (_, others) = FingerOfDeath.effect(
+            fingerOfDeathLich,
+            FingerOfDeath.spellLevel,
+            List(lowHealthFighter))
 
           others.size shouldBe 2
 
@@ -481,17 +505,16 @@ class WizardSpellsSpec extends UnitSpecBase {
           val fingerOfDeathLich = lich
             .withSpellKnown(FingerOfDeath)
 
-          val lowConstitutionFighter =
-            fighter
-              .withConstitution(2)
-              .withHealth(20)
-              .withMaxHealth(200)
-              .withCombatIndex(2)
+          val lowConstitutionFighter = fighter
+            .withConstitution(2)
+            .withHealth(20)
+            .withMaxHealth(200)
+            .withCombatIndex(2)
 
-          val (_, others) =
-            FingerOfDeath.effect(fingerOfDeathLich,
-                                 FingerOfDeath.spellLevel,
-                                 List(lowConstitutionFighter))
+          val (_, others) = FingerOfDeath.effect(
+            fingerOfDeathLich,
+            FingerOfDeath.spellLevel,
+            List(lowConstitutionFighter))
 
           others.size shouldBe 1
 
@@ -507,14 +530,16 @@ class WizardSpellsSpec extends UnitSpecBase {
   "Power Word Stun spell" should {
     "apply the Stunned condition if the target has 150 hit points" in {
       new TestContext {
-        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+        implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
         val lich = random[Lich].withSpellKnown(PowerWordStun)
 
         val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
 
-        val (_, List(Combatant(_, updatedRogue: Rogue))) =
-          PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
+        val (_, List(Combatant(_, updatedRogue: Rogue))) = PowerWordStun.effect(
+          lich,
+          PowerWordStun.spellLevel,
+          List(rogue))
 
         val saveDC = spellSaveDc(lich)
         updatedRogue.conditions should contain theSameElementsAs List(Stunned(saveDC))
@@ -523,14 +548,16 @@ class WizardSpellsSpec extends UnitSpecBase {
 
     "apply the Stunned condition if the target has fewer than 150 hit points" in {
       new TestContext {
-        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+        implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
         val lich = random[Lich].withSpellKnown(PowerWordStun)
 
         val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
 
-        val (_, List(Combatant(_, updatedRogue: Rogue))) =
-          PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
+        val (_, List(Combatant(_, updatedRogue: Rogue))) = PowerWordStun.effect(
+          lich,
+          PowerWordStun.spellLevel,
+          List(rogue))
 
         val saveDC = spellSaveDc(lich)
         updatedRogue.conditions should contain theSameElementsAs List(Stunned(saveDC))
@@ -539,14 +566,16 @@ class WizardSpellsSpec extends UnitSpecBase {
 
     "not apply the Stunned condition if the target has more than 150 hit points" in {
       new TestContext {
-        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+        implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
         val lich = random[Lich].withSpellKnown(PowerWordStun)
 
         val rogue = random[Rogue].withHealth(170).withMaxHealth(200).withCombatIndex(2)
 
-        val (_, List(Combatant(_, updatedRogue: Rogue))) =
-          PowerWordStun.effect(lich, PowerWordStun.spellLevel, List(rogue))
+        val (_, List(Combatant(_, updatedRogue: Rogue))) = PowerWordStun.effect(
+          lich,
+          PowerWordStun.spellLevel,
+          List(rogue))
 
         updatedRogue.conditions should contain theSameElementsAs List.empty[Condition]
       }
@@ -556,14 +585,16 @@ class WizardSpellsSpec extends UnitSpecBase {
   "Power Word Kill" should {
     "kill the creature if it has 100 hit points" in {
       new TestContext {
-        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+        implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
         val lich = random[Lich].withSpellKnown(PowerWordKill)
 
         val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
 
-        val (_, List(Combatant(_, updatedRogue: Rogue))) =
-          PowerWordKill.effect(lich, PowerWordKill.spellLevel, List(rogue))
+        val (_, List(Combatant(_, updatedRogue: Rogue))) = PowerWordKill.effect(
+          lich,
+          PowerWordKill.spellLevel,
+          List(rogue))
 
         updatedRogue.isAlive shouldBe false
         updatedRogue.health shouldBe 0
@@ -572,14 +603,16 @@ class WizardSpellsSpec extends UnitSpecBase {
 
     "kill the creature if it has fewer than 100 hit points" in {
       new TestContext {
-        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+        implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
         val lich = random[Lich].withSpellKnown(PowerWordKill)
 
         val rogue = random[Rogue].withHealth(90).withMaxHealth(200).withCombatIndex(2)
 
-        val (_, List(Combatant(_, updatedRogue: Rogue))) =
-          PowerWordKill.effect(lich, PowerWordKill.spellLevel, List(rogue))
+        val (_, List(Combatant(_, updatedRogue: Rogue))) = PowerWordKill.effect(
+          lich,
+          PowerWordKill.spellLevel,
+          List(rogue))
 
         updatedRogue.isAlive shouldBe false
         updatedRogue.health shouldBe 0
@@ -588,14 +621,16 @@ class WizardSpellsSpec extends UnitSpecBase {
 
     "not kill the creature if it has more than 100 hit points" in {
       new TestContext {
-        override implicit val rollStrategy: RollStrategy = _ => RollResult(10)
+        implicit override val rollStrategy: RollStrategy = _ => RollResult(10)
 
         val lich = random[Lich].withSpellKnown(PowerWordKill)
 
         val rogue = random[Rogue].withHealth(110).withMaxHealth(200).withCombatIndex(2)
 
-        val (_, List(Combatant(_, updatedRogue: Rogue))) =
-          PowerWordKill.effect(lich, PowerWordKill.spellLevel, List(rogue))
+        val (_, List(Combatant(_, updatedRogue: Rogue))) = PowerWordKill.effect(
+          lich,
+          PowerWordKill.spellLevel,
+          List(rogue))
 
         updatedRogue.isAlive shouldBe true
         updatedRogue.health shouldBe rogue.creature.health

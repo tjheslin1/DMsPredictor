@@ -42,14 +42,14 @@ class DiceSpec extends UnitSpecBase {
 
     "take the highest value of two rolls" in {
       val iterator = Iterator(5, 15)
-      val res = D20.rollWithAdvantage()(_ => iterator.next())
+      val res      = D20.rollWithAdvantage()(_ => iterator.next())
 
       res shouldBe 15
     }
 
     "take the highest value over multiple rolls" in {
       val iterator = Iterator(5, 15, 19, 4)
-      val res = D20.rollWithAdvantage(2)(_ => iterator.next())
+      val res      = D20.rollWithAdvantage(2)(_ => iterator.next())
 
       res shouldBe (15 + 19)
     }
@@ -59,14 +59,14 @@ class DiceSpec extends UnitSpecBase {
 
     "take the lowest value of two rolls" in {
       val iterator = Iterator(5, 15)
-      val res = D20.rollWithDisadvantage()(_ => iterator.next())
+      val res      = D20.rollWithDisadvantage()(_ => iterator.next())
 
       res shouldBe 5
     }
 
     "take the highest value over multiple rolls" in {
       val iterator = Iterator(5, 15, 19, 4)
-      val res = D20.rollWithDisadvantage(2)(_ => iterator.next())
+      val res      = D20.rollWithDisadvantage(2)(_ => iterator.next())
 
       res shouldBe (5 + 4)
     }

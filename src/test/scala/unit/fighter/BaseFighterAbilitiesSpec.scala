@@ -32,14 +32,14 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = twoWeaponFighting(Priority)(
+            dualWieldingFighter).useAbility(List(monster), LowestFirst)
 
           swordUsedCount shouldBe 1
           offHAndSwordUsedCount shouldBe 1
 
           val mainHandDamage = 6 // 1 + 5 strength modifier
-          val offHandDamage = 6 // 1 + 5 strength modifier
+          val offHandDamage  = 6 // 1 + 5 strength modifier
           updatedMonster.health shouldBe monster.creature.health - (mainHandDamage + offHandDamage)
         }
       }
@@ -59,11 +59,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val monster = testMonster.withArmourClass(5).withHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            twoWeaponFighting(Priority)(dualWieldingFighter).useAbility(List(monster), LowestFirst)
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = twoWeaponFighting(Priority)(
+            dualWieldingFighter).useAbility(List(monster), LowestFirst)
 
           val mainHandDamage = 6 // 1 + 5 strength modifier
-          val offHandDamage = 1 // 1 + no strength modifier
+          val offHandDamage  = 1 // 1 + no strength modifier
           updatedMonster.health shouldBe monster.creature.health - (mainHandDamage + offHandDamage)
         }
       }
@@ -72,9 +72,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "set the player's bonus action to be used" in new TestContext {
       implicit override val roll: RollStrategy = _ => RollResult(19)
 
-      val updatedFighter =
-        twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update
-          .asInstanceOf[Fighter]
+      val updatedFighter = twoWeaponFighting(Priority)(random[Fighter].withCombatIndex(1)).update
+        .asInstanceOf[Fighter]
 
       updatedFighter.bonusActionUsed shouldBe true
     }
@@ -160,8 +159,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val lowHealthFighter =
-            fighter.withLevel(LevelTwo).withHealth(1).withMaxHealth(5).withCombatIndex(1)
+          val lowHealthFighter = fighter
+            .withLevel(LevelTwo)
+            .withHealth(1)
+            .withMaxHealth(5)
+            .withCombatIndex(1)
 
           secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe true
         }
@@ -173,8 +175,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val lowHealthFighter =
-            fighter.withLevel(LevelTwo).withHealth(1).withMaxHealth(5).withCombatIndex(1)
+          val lowHealthFighter = fighter
+            .withLevel(LevelTwo)
+            .withHealth(1)
+            .withMaxHealth(5)
+            .withCombatIndex(1)
 
           val updatedFighter = secondWind(Priority)(lowHealthFighter).update.asInstanceOf[Fighter]
 
@@ -188,12 +193,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val lowHealthFighter =
-            fighter
-              .withLevel(LevelTwo)
-              .withHealth(4)
-              .withMaxHealth(5)
-              .withCombatIndex(1)
+          val lowHealthFighter = fighter
+            .withLevel(LevelTwo)
+            .withHealth(4)
+            .withMaxHealth(5)
+            .withCombatIndex(1)
 
           secondWind(Priority)(lowHealthFighter).triggerMet(List.empty[Combatant]) shouldBe false
         }
@@ -205,8 +209,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val updatedBaseFighter =
-            secondWind(Priority)(fighter.withCombatIndex(1)).update.asInstanceOf[BaseFighter]
+          val updatedBaseFighter = secondWind(Priority)(fighter.withCombatIndex(1)).update
+            .asInstanceOf[BaseFighter]
 
           updatedBaseFighter.bonusActionUsed shouldBe true
         }
@@ -220,8 +224,8 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
 
           val freshFighter = fighter.withAllAbilitiesUnused().withCombatIndex(1)
 
-          val updatedBaseFighter =
-            secondWind(Priority)(freshFighter).update.asInstanceOf[BaseFighter]
+          val updatedBaseFighter = secondWind(Priority)(freshFighter).update
+            .asInstanceOf[BaseFighter]
 
           updatedBaseFighter.abilityUsages.secondWindUsed shouldBe true
         }
@@ -273,14 +277,11 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "use additional abilities in conjunction with Action Surge" in {
       forAll { (fighter: Fighter, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val trackedAbilityFighter = fighter
             .withLevel(LevelTwo)
-            .withAbilities(
-              List(actionSurge(1),
-                   trackedAbility(2),
-                otherTrackedAbility(3)))
+            .withAbilities(List(actionSurge(1), trackedAbility(2), otherTrackedAbility(3)))
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -296,7 +297,7 @@ class BaseFighterAbilitiesSpec extends UnitSpecBase {
     "updated the fighters action surge used to true" in {
       forAll { fighter: Fighter =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val freshFighter = fighter.withAllAbilitiesUnused().withCombatIndex(1)
 

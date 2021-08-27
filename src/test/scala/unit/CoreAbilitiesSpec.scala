@@ -43,9 +43,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val trackedAbilityFighter = fighter
             .withLevel(LevelFive)
             .withAbilities(
-              List(extraAttack(Priority),
-                   trackedAbility(2, action = WholeAction),
-                   otherTrackedAbility(3, action = SingleAttack, updatedTracking = ())))
+              List(
+                extraAttack(Priority),
+                trackedAbility(2, action = WholeAction),
+                otherTrackedAbility(3, action = SingleAttack, updatedTracking = ())))
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)
@@ -66,9 +67,10 @@ class CoreAbilitiesSpec extends UnitSpecBase {
           val trackedAbilityFighter = fighter
             .withLevel(LevelFive)
             .withAbilities(
-              List(extraAttack(Priority),
-                   trackedAbility(2, action = WholeAction),
-                   otherTrackedAbility(3, action = SingleAttack)))
+              List(
+                extraAttack(Priority),
+                trackedAbility(2, action = WholeAction),
+                otherTrackedAbility(3, action = SingleAttack)))
             .withCombatIndex(1)
 
           val monster = testMonster.withArmourClass(5).withCombatIndex(2)

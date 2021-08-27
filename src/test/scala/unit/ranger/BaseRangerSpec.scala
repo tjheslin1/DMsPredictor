@@ -67,59 +67,59 @@ class BaseRangerSpec extends UnitSpecBase {
 
   "armourClass" should {
     "calculate default armour class for no armour and no shield" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
         none[Equipment],
-        List.empty[RangerFightingStyle]
-      ) shouldBe 10
+        List.empty[RangerFightingStyle]) shouldBe 10
     }
 
     "calculate armour class for wearing armour but no shield" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
         none[Equipment],
-        List.empty[RangerFightingStyle]
-      ) shouldBe 13
+        List.empty[RangerFightingStyle]) shouldBe 13
     }
 
     "calculate armour class for wearing a shield but no armour" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
         Shield.some,
-        List.empty[RangerFightingStyle]
-      ) shouldBe 12
+        List.empty[RangerFightingStyle]) shouldBe 12
     }
 
     "calculate armour class for wearing armour and a shield" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
         Shield.some,
-        List.empty[RangerFightingStyle]
-      ) shouldBe 15
+        List.empty[RangerFightingStyle]) shouldBe 15
     }
 
     "calculate armour class for wearing armour, shield and with high dexterity" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 14, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 14, 10, 10, 10, 10),
         ChainShirt,
         Shield.some,
-        List.empty[RangerFightingStyle]
-      ) shouldBe 17
+        List.empty[RangerFightingStyle]) shouldBe 17
     }
 
     "calculate armour class for having armour and the Defense fighting style" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 10, 10, 10, 10, 10),
         ChainShirt,
         none[Equipment],
-        List(Defense)
-      ) shouldBe 14
+        List(Defense)) shouldBe 14
     }
 
     "calculate armour class for having no armour and ignoring Defense fighting style" in new TestContext {
-      armourClassWithFightingStyle(BaseStats(10, 10, 10, 10, 10, 10),
+      armourClassWithFightingStyle(
+        BaseStats(10, 10, 10, 10, 10, 10),
         NoArmour,
         none[Equipment],
-        List(Defense)
-      ) shouldBe 10
+        List(Defense)) shouldBe 10
     }
   }
 

@@ -37,7 +37,10 @@ class BaseClericSpec extends UnitSpecBase {
     }
 
     "calculate whilst wearing armour with no shield" in new TestContext {
-      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12), ChainShirt, none[Equipment]) shouldBe 14
+      calculateArmourClass(
+        BaseStats(12, 12, 12, 12, 12, 12),
+        ChainShirt,
+        none[Equipment]) shouldBe 14
     }
 
     "calculate whilst wielding a shield and wearing armour" in new TestContext {
@@ -45,7 +48,7 @@ class BaseClericSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy = Dice.defaultRandomiser
   }
 }

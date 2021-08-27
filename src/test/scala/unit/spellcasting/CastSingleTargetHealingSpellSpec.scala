@@ -38,8 +38,10 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
 
       val healingCleric  = random[Cleric].withWisdom(12).withCombatIndex(1)
       val damagedFighter = random[Fighter].withHealth(80).withMaxHealth(100).withCombatIndex(2)
-      val unconsciousBarbarian =
-        random[Barbarian].withHealth(0).withMaxHealth(100).withCombatIndex(3)
+      val unconsciousBarbarian = random[Barbarian]
+        .withHealth(0)
+        .withMaxHealth(100)
+        .withCombatIndex(3)
       val goblin = random[Goblin].withCombatIndex(4)
 
       castSingleTargetHealingSpell(Priority)(healingCleric)
@@ -63,7 +65,7 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedSpell = trackedHealingSpell(1, higherSpellSlot = true)
+          val trackedSpell       = trackedHealingSpell(1, higherSpellSlot = true)
           val trackedAttackSpell = trackedMeleeSpellAttack(1)
 
           val healingCleric = cleric
@@ -75,9 +77,9 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(50).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) =
-            castSingleTargetHealingSpell(Priority)(healingCleric)
-              .useAbility(List(damagedFighter), LowestFirst)
+          val (_, List(Combatant(_, healedFighter: Fighter))) = castSingleTargetHealingSpell(
+            Priority)(healingCleric)
+            .useAbility(List(damagedFighter), LowestFirst)
 
           trackedHealingSpellUsedCount shouldBe 1
           trackedHealingSpellLevelUsed shouldBe 3
@@ -95,7 +97,10 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val trackedHealSpell = trackedHealingSpell(1)
-          val trackedSingleTargetSpell = trackedSingleTargetSavingThrowSpell(2, Dexterity, higherSpellSlot = false)
+          val trackedSingleTargetSpell = trackedSingleTargetSavingThrowSpell(
+            2,
+            Dexterity,
+            higherSpellSlot = false)
 
           val healingCleric = cleric
             .withSpellsKnown(trackedHealSpell, trackedSingleTargetSpell)
@@ -109,9 +114,9 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1))
-              .useAbility(List(woundedHunter), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castSingleTargetHealingSpell(Priority)(
+            healingCleric.withCombatIndex(1))
+            .useAbility(List(woundedHunter), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe healingCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
@@ -137,9 +142,9 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1))
-              .useAbility(List(woundedHunter), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castSingleTargetHealingSpell(Priority)(
+            healingCleric.withCombatIndex(1))
+            .useAbility(List(woundedHunter), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe (healingCleric.spellSlots.firstLevel.count - 1)
           updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
@@ -165,9 +170,9 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(2)
 
-          val (Combatant(_, updatedCleric: Cleric), _) =
-            castSingleTargetHealingSpell(Priority)(healingCleric.withCombatIndex(1))
-              .useAbility(List(woundedHunter), LowestFirst)
+          val (Combatant(_, updatedCleric: Cleric), _) = castSingleTargetHealingSpell(Priority)(
+            healingCleric.withCombatIndex(1))
+            .useAbility(List(woundedHunter), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe healingCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
@@ -227,9 +232,9 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
             .withMaxHealth(100)
             .withCombatIndex(3)
 
-          val (_, List(_, Combatant(_, updatedGoblin: Goblin))) =
-            castSingleTargetHealingSpell(Priority)(lichCombatant)
-              .useAbility(List(fighterCombatant, damagedGoblin), LowestFirst)
+          val (_, List(_, Combatant(_, updatedGoblin: Goblin))) = castSingleTargetHealingSpell(
+            Priority)(lichCombatant)
+            .useAbility(List(fighterCombatant, damagedGoblin), LowestFirst)
 
           trackedHealingSpellUsedCount shouldBe 1
           trackedHealingSpellLevelUsed shouldBe 9
