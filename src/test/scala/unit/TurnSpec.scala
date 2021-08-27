@@ -13,11 +13,13 @@ class TurnSpec extends UnitSpecBase {
       forAll { (fighterOne: Fighter, fighterTwo: Fighter, goblin: Goblin) =>
         implicit val roll: RollStrategy = Dice.defaultRandomiser
 
-        val initiatives =
-          InitiativeCalculator(List(fighterOne, fighterTwo, goblin)).rollInitiative()
+        val initiatives = InitiativeCalculator(List(fighterOne, fighterTwo, goblin))
+          .rollInitiative()
 
         Turn(initiatives).run(LowestFirst).map(_.creature.name) shouldBe initiatives.toSeq
-          .map { case (_, initiative) => initiative }
+          .map { case (_, initiative) =>
+            initiative
+          }
           .sortBy(_.score)
           .reverse
           .map(_.combatant.creature.name)

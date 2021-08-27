@@ -32,13 +32,14 @@ class ConditionSpec extends UnitSpecBase {
 
         val fighter = random[Fighter].withCombatIndex(1)
 
-        val defenseDisadvantageCondition =
-          trackedCondition(10,
-                           true,
-                           onApplied = c => Creature.creatureDefenseStatusLens.set(Disadvantage)(c))
+        val defenseDisadvantageCondition = trackedCondition(
+          10,
+          true,
+          onApplied = c => Creature.creatureDefenseStatusLens.set(Disadvantage)(c))
 
-        val Combatant(_, updatedFighter: Fighter) =
-          addCondition(fighter, defenseDisadvantageCondition)
+        val Combatant(_, updatedFighter: Fighter) = addCondition(
+          fighter,
+          defenseDisadvantageCondition)
 
         updatedFighter.defenseStatus shouldBe Disadvantage
       }
@@ -49,10 +50,10 @@ class ConditionSpec extends UnitSpecBase {
 
     "remove the condition from a creatures list of conditions" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
         val condition = trackedCondition(10, true)
-        val poisoned = Poisoned(10)
+        val poisoned  = Poisoned(10)
 
         val conditionAppliedRogue = random[Rogue].withConditions(condition, poisoned)
 
@@ -64,9 +65,12 @@ class ConditionSpec extends UnitSpecBase {
 
     "apply onConditionRemoved to creature" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.defaultRandomiser
+        implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-        val condition = trackedCondition(10, true, onRemoved = c => Creature.creatureIsAliveLens.set(false)(c))
+        val condition = trackedCondition(
+          10,
+          true,
+          onRemoved = c => Creature.creatureIsAliveLens.set(false)(c))
         val poisoned = Poisoned(10)
 
         val conditionAppliedRogue = random[Rogue].withConditions(condition, poisoned)

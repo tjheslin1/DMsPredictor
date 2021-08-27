@@ -79,8 +79,9 @@ class HunterAbilitiesSpec extends UnitSpecBase {
           .withMaxHealth(50)
           .withCombatIndex(2)
 
-        val Queue(Combatant(_, updatedTestMonster: TestMonster), _) =
-          takeMove(Queue(twoWeaponFightingHunter, injuredGoblin), LowestFirst)
+        val Queue(Combatant(_, updatedTestMonster: TestMonster), _) = takeMove(
+          Queue(twoWeaponFightingHunter, injuredGoblin),
+          LowestFirst)
 
         val damageOfBothWeapons  = 10 * 2
         val colossusSlayerDamage = 10

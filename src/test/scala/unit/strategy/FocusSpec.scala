@@ -21,10 +21,12 @@ class FocusSpec extends UnitSpecBase with OptionValues {
 
     "focus mob with lowest health first" in {
       forAll {
-        (fighter: Fighter,
-         monsterOne: TestMonster,
-         monsterTwo: TestMonster,
-         monsterThree: TestMonster) =>
+        (
+            fighter: Fighter,
+            monsterOne: TestMonster,
+            monsterTwo: TestMonster,
+            monsterThree: TestMonster
+        ) =>
           new TestContext {
             implicit val roll: RollStrategy = Dice.defaultRandomiser
 

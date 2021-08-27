@@ -10,7 +10,7 @@ class LichSpec extends UnitSpecBase {
 
   "updateHealth" should {
     "set the Lich to dead if the damage brings health below negative max health" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val lich = random[Lich]
         .withNoSpellSlots()

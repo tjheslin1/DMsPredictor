@@ -80,14 +80,16 @@ class ListOpsSpec extends UnitSpecBase {
 
       val creatures = List(cleric, barbarian, goblin, zombie)
 
-      creatures.replace(List(zombie, fighter)) shouldBe List(cleric, barbarian, goblin, zombie, fighter)
+      creatures
+        .replace(List(zombie, fighter)) shouldBe List(cleric, barbarian, goblin, zombie, fighter)
     }
 
     "replace product element in single product element list" in {
-      val cleric    = random[Cleric]
+      val cleric        = random[Cleric]
       val updatedCleric = cleric.withCondition(Turned(10, 10))
 
-      List(cleric.withCombatIndex(1)).replace(updatedCleric.withCombatIndex(1)) shouldBe List(updatedCleric.withCombatIndex(1))
+      List(cleric.withCombatIndex(1)).replace(updatedCleric.withCombatIndex(1)) shouldBe List(
+        updatedCleric.withCombatIndex(1))
     }
   }
 }

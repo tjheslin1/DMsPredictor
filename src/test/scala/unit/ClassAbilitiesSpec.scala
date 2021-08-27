@@ -20,10 +20,11 @@ class ClassAbilitiesSpec extends UnitSpecBase with OptionValues {
             .withCombatIndex(1)
 
           val expected = trackedAbility(3)(combatant)
-          val actual = nextAbilityToUseInConjunction(combatant,
-                                                     List.empty[Combatant],
-                                                     2,
-                                                     AbilityAction.Any).value.apply(combatant)
+          val actual = nextAbilityToUseInConjunction(
+            combatant,
+            List.empty[Combatant],
+            2,
+            AbilityAction.Any).value.apply(combatant)
 
           actual.name shouldBe expected.name
           actual.order shouldBe expected.order

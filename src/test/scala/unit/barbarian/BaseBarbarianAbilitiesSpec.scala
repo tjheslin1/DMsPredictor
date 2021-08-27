@@ -37,8 +37,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
       val barbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, ragingBarbarian: Barbarian), _) = rage(Priority)(barbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.rageUsages shouldBe 1
     }
@@ -48,8 +48,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
       val ragedBarbarian = random[Barbarian].withRageUsagesLeft(2).withCombatIndex(1)
 
-      val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(ragedBarbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, ragingBarbarian: Barbarian), _) = rage(Priority)(ragedBarbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.inRage shouldBe true
     }
@@ -62,8 +62,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
         .withRageTurnsLeft(5)
         .withCombatIndex(1)
 
-      val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, ragingBarbarian: Barbarian), _) = rage(Priority)(barbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.rageTurnsLeft shouldBe 10
     }
@@ -74,10 +74,15 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
       val barbarian = random[Barbarian].withDamageResistance(Fire, Slashing).withCombatIndex(1)
 
-      val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, ragingBarbarian: Barbarian), _) = rage(Priority)(barbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
-      ragingBarbarian.damageResistances shouldBe List(Fire, Slashing, Bludgeoning, Piercing, Slashing)
+      ragingBarbarian.damageResistances shouldBe List(
+        Fire,
+        Slashing,
+        Bludgeoning,
+        Piercing,
+        Slashing)
     }
 
     "use the Barbarian's bonus action" in new TestContext {
@@ -85,8 +90,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
       val barbarian = random[Barbarian].withCombatIndex(1)
 
-      val (Combatant(_, ragingBarbarian: Barbarian), _) =
-        rage(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, ragingBarbarian: Barbarian), _) = rage(Priority)(barbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       ragingBarbarian.bonusActionUsed shouldBe true
     }
@@ -99,8 +104,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
       val barbarian = random[Barbarian].withCombatIndex(1)
 
-      val (Combatant(_, recklessBarbarian: Barbarian), _) =
-        recklessAttack(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, recklessBarbarian: Barbarian), _) = recklessAttack(Priority)(barbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       recklessBarbarian.attackStatus shouldBe Advantage
     }
@@ -110,8 +115,8 @@ class BaseBarbarianAbilitiesSpec extends UnitSpecBase {
 
       val barbarian = random[Barbarian].withCombatIndex(1)
 
-      val (Combatant(_, recklessBarbarian: Barbarian), _) =
-        recklessAttack(Priority)(barbarian).useAbility(List.empty[Combatant], LowestFirst)
+      val (Combatant(_, recklessBarbarian: Barbarian), _) = recklessAttack(Priority)(barbarian)
+        .useAbility(List.empty[Combatant], LowestFirst)
 
       recklessBarbarian.defenseStatus shouldBe Disadvantage
     }

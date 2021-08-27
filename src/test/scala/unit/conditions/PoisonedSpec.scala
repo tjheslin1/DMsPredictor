@@ -11,9 +11,9 @@ class PoisonedSpec extends UnitSpecBase {
   "onConditionApplied" should {
     "set the creatures Attack status to Disadvantage" in {
       new TestContext {
-        override implicit val roll: RollStrategy = _ => RollResult(10)
+        implicit override val roll: RollStrategy = _ => RollResult(10)
 
-        val rogue = random[Rogue]
+        val rogue    = random[Rogue]
         val poisoned = Poisoned(10)
 
         val poisonedRogue = poisoned.onConditionApplied(rogue)
@@ -24,9 +24,9 @@ class PoisonedSpec extends UnitSpecBase {
 
     "set the creatures Attack status to Regular when Poisoned is removed" in {
       new TestContext {
-        override implicit val roll: RollStrategy = _ => RollResult(10)
+        implicit override val roll: RollStrategy = _ => RollResult(10)
 
-        val poisoned = Poisoned(10)
+        val poisoned      = Poisoned(10)
         val poisonedRogue = random[Rogue].withCondition(poisoned)
 
         val conditionHandledRogue = poisoned.onConditionRemoved(poisonedRogue)
@@ -36,7 +36,7 @@ class PoisonedSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
   }
 }

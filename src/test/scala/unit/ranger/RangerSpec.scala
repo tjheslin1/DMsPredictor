@@ -14,7 +14,7 @@ class RangerSpec extends UnitSpecBase {
   "updateHealth" should {
 
     "set the Ranger to dead if the damage brings health below negative max health" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val ranger = random[Ranger]
         .withHealth(50)
@@ -28,7 +28,10 @@ class RangerSpec extends UnitSpecBase {
     "not handle concentration if damage taken was 0" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(1)
 
-      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
+      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(
+        1,
+        BlessCondition(),
+        concentration = true)
 
       val concentratingRanger = random[Ranger]
         .withSpellKnown(trackedConcentrationSpell)
@@ -45,7 +48,10 @@ class RangerSpec extends UnitSpecBase {
     "handle loss of concentration if ranger goes unconscious" in new TestContext {
       implicit val roll: RollStrategy = _ => RollResult(10)
 
-      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(1, BlessCondition(), concentration = true)
+      val trackedConcentrationSpell = trackedMultiTargetBuffSpell(
+        1,
+        BlessCondition(),
+        concentration = true)
 
       val concentratingRanger = random[Ranger]
         .withSpellKnown(trackedConcentrationSpell)

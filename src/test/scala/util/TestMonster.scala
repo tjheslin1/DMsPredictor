@@ -38,8 +38,8 @@ import util.TestMonster.defaultScores
     savingThrowScores: Map[Attribute, Int] = defaultScores,
     isAlive: Boolean = true,
     toHitModifier: Int = 0,
-    name: String = NameGenerator.randomName)
-    extends Monster {
+    name: String = NameGenerator.randomName
+) extends Monster {
 
   val skills: Skills = Skills(perceptionScore, stealthScore)
 

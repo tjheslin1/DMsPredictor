@@ -13,9 +13,9 @@ class GrappledSpec extends UnitSpecBase {
     "remove Grappled condition if passed" in {
       forAll { goblin: Goblin =>
         new TestContext {
-          override implicit val roll = D20.naturalTwenty
+          implicit override val roll = D20.naturalTwenty
 
-          val grappled          = Grappled(1)
+          val grappled        = Grappled(1)
           val poisoned        = Poisoned(10, 10)
           val conditionGoblin = goblin.withStrength(20).withConditions(grappled, poisoned)
 
@@ -27,7 +27,7 @@ class GrappledSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
   }
 }

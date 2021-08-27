@@ -16,7 +16,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "apply damage to target if Hit" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val fireAttackSpell = trackedMeleeSpellAttack(1)
 
@@ -33,8 +33,10 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = fireAttackSpell.effect(
+            fireSpellCleric,
+            fireAttackSpell.spellLevel,
+            List(monster))
 
           meleeSpellUsedCount shouldBe 1
         }
@@ -44,7 +46,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "apply damage twice to target if CriticalHit" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = D20.naturalTwenty
+          implicit override val roll: RollStrategy = D20.naturalTwenty
 
           val fireAttackSpell = trackedMeleeSpellAttack(1)
 
@@ -61,17 +63,20 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = fireAttackSpell.effect(
+            fireSpellCleric,
+            fireAttackSpell.spellLevel,
+            List(monster))
 
           meleeSpellUsedCount shouldBe 2
         }
-      }}
+      }
+    }
 
     "not apply damage to target if Miss and halfDamageOnMiss is set to false" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(2)
+          implicit override val roll: RollStrategy = _ => RollResult(2)
 
           val fireAttackSpell = trackedMeleeSpellAttack(1, halfDamageOnAMiss = false)
 
@@ -88,8 +93,10 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = fireAttackSpell.effect(
+            fireSpellCleric,
+            fireAttackSpell.spellLevel,
+            List(monster))
 
           meleeSpellUsedCount shouldBe 0
         }
@@ -99,7 +106,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "deal half damage on miss" in {
       forAll { (wizard: Wizard, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val halfDamageOnSaveSpell = trackedMeleeSpellAttack(1, dmg = 10, halfDamageOnAMiss = true)
 
@@ -114,8 +121,10 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withMaxHealth(50)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            halfDamageOnSaveSpell.effect(missingWizard, halfDamageOnSaveSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = halfDamageOnSaveSpell.effect(
+            missingWizard,
+            halfDamageOnSaveSpell.spellLevel,
+            List(monster))
 
           updatedMonster.health shouldBe monster.creature.health - (10 / 2)
         }
@@ -125,7 +134,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "not apply damage to target if CriticalMiss" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(1)
+          implicit override val roll: RollStrategy = _ => RollResult(1)
 
           val fireAttackSpell = trackedMeleeSpellAttack(1)
 
@@ -142,17 +151,20 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = fireAttackSpell.effect(
+            fireSpellCleric,
+            fireAttackSpell.spellLevel,
+            List(monster))
 
           meleeSpellUsedCount shouldBe 0
         }
-      }}
+      }
+    }
 
     "deal half damage to a creature resistant to the damage type" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val fireAttackSpell = trackedMeleeSpellAttack(1)
 
@@ -169,8 +181,10 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = fireAttackSpell.effect(
+            fireSpellCleric,
+            fireAttackSpell.spellLevel,
+            List(monster))
 
           updatedMonster.health shouldBe 8
         }
@@ -180,7 +194,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
     "deal zero damage to a creature immune to the damage type" in {
       forAll { (cleric: Cleric, testMonster: TestMonster) =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(19)
+          implicit override val roll: RollStrategy = _ => RollResult(19)
 
           val fireAttackSpell = trackedMeleeSpellAttack(1)
 
@@ -197,8 +211,10 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withArmourClass(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedMonster: TestMonster))) =
-            fireAttackSpell.effect(fireSpellCleric, fireAttackSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedMonster: TestMonster))) = fireAttackSpell.effect(
+            fireSpellCleric,
+            fireAttackSpell.spellLevel,
+            List(monster))
 
           updatedMonster.health shouldBe 10
         }
@@ -211,9 +227,13 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val applyParalysis: Combatant => Combatant =
-            c => (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set(List(Paralyzed(10, 10, Strength)))(c)
+            c =>
+              (Combatant.creatureLens composeLens Creature.creatureConditionsLens).set(
+                List(Paralyzed(10, 10, Strength)))(c)
 
-          val spellAttackWithEffectSpell = trackedMeleeSpellAttack(1, additionalTargetEffect = applyParalysis)
+          val spellAttackWithEffectSpell = trackedMeleeSpellAttack(
+            1,
+            additionalTargetEffect = applyParalysis)
 
           val trackedCleric = cleric
             .withSpellKnown(spellAttackWithEffectSpell)
@@ -226,10 +246,13 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             .withHealth(10)
             .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedGoblin: Goblin))) =
-            spellAttackWithEffectSpell.effect(trackedCleric, spellAttackWithEffectSpell.spellLevel, List(monster))
+          val (_, List(Combatant(_, updatedGoblin: Goblin))) = spellAttackWithEffectSpell.effect(
+            trackedCleric,
+            spellAttackWithEffectSpell.spellLevel,
+            List(monster))
 
-          updatedGoblin.conditions should contain theSameElementsAs List(Paralyzed(10, 10, Strength))
+          updatedGoblin.conditions should contain theSameElementsAs List(
+            Paralyzed(10, 10, Strength))
         }
       }
     }

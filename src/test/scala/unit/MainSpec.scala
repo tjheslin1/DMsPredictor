@@ -67,12 +67,14 @@ class MainSpec extends UnitSpecBase with EitherValues {
 
 //      val expectedMonsters = List(Goblin(6, 6, name = "TestGoblin"))
 
-      val (_, simHash, basicSim, _) = new Main().parseSimulation(sqsMessage) match {
-        case Left(error) =>
-          println(s"Error: ${error.getMessage}")
-          throw error
-        case Right(result) => result
-      }
+      val (_, simHash, basicSim, _) =
+        new Main().parseSimulation(sqsMessage) match {
+          case Left(error) =>
+            println(s"Error: ${error.getMessage}")
+            throw error
+          case Right(result) =>
+            result
+        }
 
 //      simConfig shouldBe SimulationConfig(
 //        "Wizard vs Goblin",
@@ -137,12 +139,14 @@ class MainSpec extends UnitSpecBase with EitherValues {
           name = "TestRanger"
         ))
 
-      val (_, simHash, basicSim, _) = new Main().parseSimulation(sqsMessage) match {
-        case Left(error) =>
-          println(s"Error: ${error.getMessage}")
-          throw error
-        case Right(result) => result
-      }
+      val (_, simHash, basicSim, _) =
+        new Main().parseSimulation(sqsMessage) match {
+          case Left(error) =>
+            println(s"Error: ${error.getMessage}")
+            throw error
+          case Right(result) =>
+            result
+        }
 
       simHash shouldBe "1512201769"
 

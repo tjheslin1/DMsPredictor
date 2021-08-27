@@ -22,17 +22,15 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
           val fighterCombatant = fighter.withStrength(1).withDexterity(1).withCombatIndex(2)
 
-          val clericCombatant =
-            cleric
-              .withCondition(Grappled(18))
-              .withNoArmour()
-              .withStrength(1)
-              .withDexterity(1)
-              .withCombatIndex(3)
+          val clericCombatant = cleric
+            .withCondition(Grappled(18))
+            .withNoArmour()
+            .withStrength(1)
+            .withDexterity(1)
+            .withCombatIndex(3)
 
-          val (_, List(_, Combatant(_, updatedCleric: Cleric))) =
-            bite(1)(vampireCombatant)
-              .useAbility(List(fighterCombatant, clericCombatant), LowestFirst)
+          val (_, List(_, Combatant(_, updatedCleric: Cleric))) = bite(1)(vampireCombatant)
+            .useAbility(List(fighterCombatant, clericCombatant), LowestFirst)
 
           updatedCleric.health < cleric.health
         }
@@ -44,20 +42,21 @@ class VampireAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(5)
 
-          val vampireCombatant =
-            vampire.withHealth(50).withMaxHealth(100).withStrength(20).withCombatIndex(1)
+          val vampireCombatant = vampire
+            .withHealth(50)
+            .withMaxHealth(100)
+            .withStrength(20)
+            .withCombatIndex(1)
 
-          val clericCombatant =
-            cleric
-              .withCondition(Grappled(18))
-              .withNoArmour()
-              .withStrength(1)
-              .withDexterity(1)
-              .withCombatIndex(3)
+          val clericCombatant = cleric
+            .withCondition(Grappled(18))
+            .withNoArmour()
+            .withStrength(1)
+            .withDexterity(1)
+            .withCombatIndex(3)
 
-          val (Combatant(_, updatedVampire: Vampire), _) =
-            bite(1)(vampireCombatant)
-              .useAbility(List(clericCombatant), LowestFirst)
+          val (Combatant(_, updatedVampire: Vampire), _) = bite(1)(vampireCombatant)
+            .useAbility(List(clericCombatant), LowestFirst)
 
           updatedVampire.health shouldBe 65
         }
@@ -69,22 +68,23 @@ class VampireAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(5)
 
-          val vampireCombatant =
-            vampire.withHealth(50).withMaxHealth(100).withStrength(20).withCombatIndex(1)
+          val vampireCombatant = vampire
+            .withHealth(50)
+            .withMaxHealth(100)
+            .withStrength(20)
+            .withCombatIndex(1)
 
-          val clericCombatant =
-            cleric
-              .withHealth(50)
-              .withMaxHealth(60)
-              .withCondition(Grappled(18))
-              .withNoArmour()
-              .withStrength(1)
-              .withDexterity(1)
-              .withCombatIndex(2)
+          val clericCombatant = cleric
+            .withHealth(50)
+            .withMaxHealth(60)
+            .withCondition(Grappled(18))
+            .withNoArmour()
+            .withStrength(1)
+            .withDexterity(1)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
-            bite(1)(vampireCombatant)
-              .useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric))) = bite(1)(vampireCombatant)
+            .useAbility(List(clericCombatant), LowestFirst)
 
           val expectedPiercingDamage = 10
           val expectedNecroticDamage = 15
@@ -126,11 +126,14 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
 
-          val clericCombatant =
-            cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+          val clericCombatant = cleric
+            .withNoArmour()
+            .withStrength(1)
+            .withDexterity(1)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
-            unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric))) = unarmedStrike(1)(vampireCombatant)
+            .useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(Grappled(18))
         }
@@ -144,16 +147,15 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val vampireCombatant = vampire.withStrength(20).withCombatIndex(1)
 
-          val clericCombatant =
-            cleric
-              .withCondition(Grappled(18))
-              .withNoArmour()
-              .withStrength(1)
-              .withDexterity(1)
-              .withCombatIndex(2)
+          val clericCombatant = cleric
+            .withCondition(Grappled(18))
+            .withNoArmour()
+            .withStrength(1)
+            .withDexterity(1)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
-            unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric))) = unarmedStrike(1)(vampireCombatant)
+            .useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.health < cleric.health
         }
@@ -165,14 +167,19 @@ class VampireAbilitiesSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(5)
 
-          val vampireCombatant =
-            vampire.copy(firstAttack = false).withStrength(20).withCombatIndex(1)
+          val vampireCombatant = vampire
+            .copy(firstAttack = false)
+            .withStrength(20)
+            .withCombatIndex(1)
 
-          val clericCombatant =
-            cleric.withNoArmour().withStrength(1).withDexterity(1).withCombatIndex(2)
+          val clericCombatant = cleric
+            .withNoArmour()
+            .withStrength(1)
+            .withDexterity(1)
+            .withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
-            unarmedStrike(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric))) = unarmedStrike(1)(vampireCombatant)
+            .useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List.empty[Condition]
           updatedCleric.health < cleric.health
@@ -188,7 +195,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
-      val cleric = random[Cleric].withCombatIndex(3)
+      val cleric  = random[Cleric].withCombatIndex(3)
 
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe true
     }
@@ -198,7 +205,7 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
       val vampire = random[Vampire].withCombatIndex(1)
       val fighter = random[Fighter].withCombatIndex(2)
-      val cleric = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
+      val cleric  = random[Cleric].withCondition(Charmed(100)).withCombatIndex(3)
 
       charm(1)(vampire).triggerMet(List(fighter, cleric)) shouldBe false
     }
@@ -209,13 +216,15 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(15)
 
           val vampireCombatant = vampire.withCombatIndex(1)
-          val clericCombatant =
-            cleric.withProficiencyBonus(2).withWisdom(1).withHealth(50).withCombatIndex(2)
+          val clericCombatant = cleric
+            .withProficiencyBonus(2)
+            .withWisdom(1)
+            .withHealth(50)
+            .withCombatIndex(2)
           val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
-            charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant),
-              LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric), _)) = charm(1)(vampireCombatant)
+            .useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(Charmed(Vampire.CharmDC))
         }
@@ -228,12 +237,11 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(15)
 
           val vampireCombatant = vampire.withCombatIndex(1)
-          val clericCombatant = cleric.withWisdom(24).withHealth(50).withCombatIndex(2)
+          val clericCombatant  = cleric.withWisdom(24).withHealth(50).withCombatIndex(2)
           val fighterCombatant = fighter.withHealth(100).withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric), _)) =
-            charm(1)(vampireCombatant).useAbility(List(clericCombatant, fighterCombatant),
-              LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric), _)) = charm(1)(vampireCombatant)
+            .useAbility(List(clericCombatant, fighterCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List.empty[Condition]
         }
@@ -246,11 +254,10 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(15)
 
           val vampireCombatant = vampire.withCombatIndex(1)
-          val clericCombatant =
-            cleric.withWisdom(2).withCondition(CharmImmunity).withCombatIndex(2)
+          val clericCombatant = cleric.withWisdom(2).withCondition(CharmImmunity).withCombatIndex(2)
 
-          val (_, List(Combatant(_, updatedCleric: Cleric))) =
-            charm(1)(vampireCombatant).useAbility(List(clericCombatant), LowestFirst)
+          val (_, List(Combatant(_, updatedCleric: Cleric))) = charm(1)(vampireCombatant)
+            .useAbility(List(clericCombatant), LowestFirst)
 
           updatedCleric.conditions shouldBe List(CharmImmunity)
         }
@@ -290,10 +297,11 @@ class VampireAbilitiesSpec extends UnitSpecBase {
 
           val vampireCombatant = vampire.withCombatIndex(1)
 
-          val charmedCleric = cleric.withCondition(Charmed(15)).withCombatIndex(2)
+          val charmedCleric      = cleric.withCondition(Charmed(15)).withCombatIndex(2)
           val charmImmuneFighter = fighter.withCondition(CharmImmunity).withCombatIndex(3)
 
-          charm(1)(vampireCombatant).triggerMet(List(charmedCleric, charmImmuneFighter)) shouldBe false
+          charm(1)(vampireCombatant).triggerMet(
+            List(charmedCleric, charmImmuneFighter)) shouldBe false
         }
       }
     }
@@ -306,9 +314,12 @@ class VampireAbilitiesSpec extends UnitSpecBase {
           val vampireCombatant = vampire.withCombatIndex(1)
 
           val charmImmuneCleric = cleric.withConditionImmunity(CharmedCondition).withCombatIndex(2)
-          val charmImmuneFighter = fighter.withConditionImmunity(CharmedCondition).withCombatIndex(3)
+          val charmImmuneFighter = fighter
+            .withConditionImmunity(CharmedCondition)
+            .withCombatIndex(3)
 
-          charm(1)(vampireCombatant).triggerMet(List(charmImmuneCleric, charmImmuneFighter)) shouldBe false
+          charm(1)(vampireCombatant).triggerMet(
+            List(charmImmuneCleric, charmImmuneFighter)) shouldBe false
         }
       }
     }

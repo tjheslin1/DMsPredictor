@@ -9,7 +9,11 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastMultiTargetOffensiveSpell._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.Spell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.ClericSpells.CureWounds
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.{AcidArrow, Fireball, MagicMissile}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.{
+  AcidArrow,
+  Fireball,
+  MagicMissile
+}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
 import util.TestData._
@@ -27,7 +31,10 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val trackedSpell = trackedMultiTargetSavingThrowSpell(1, Wisdom)
-          val trackedSingleSpell = trackedSingleTargetSavingThrowSpell(2, Strength, higherSpellSlot = false)
+          val trackedSingleSpell = trackedSingleTargetSavingThrowSpell(
+            2,
+            Strength,
+            higherSpellSlot = false)
 
           val trackedWizard = wizard
             .withSpellsKnown(trackedSpell, trackedSingleSpell)
@@ -49,9 +56,13 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
             .withDexteritySavingThrowScore(-10)
             .withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedMonsterOne: TestMonster), Combatant(_, updatedMonsterTwo: TestMonster))) =
-            castMultiTargetOffensiveSpell(Priority)(trackedWizard)
-              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+          val (
+            _,
+            List(
+              Combatant(_, updatedMonsterOne: TestMonster),
+              Combatant(_, updatedMonsterTwo: TestMonster))) = castMultiTargetOffensiveSpell(
+            Priority)(trackedWizard)
+            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedMonsterOne.health < monsterOne.creature.health shouldBe true
           updatedMonsterTwo.health < monsterTwo.creature.health shouldBe true
@@ -71,7 +82,10 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
           val trackedSpell = trackedMultiTargetSavingThrowSpell(2, Wisdom, higherSpellSlot = false)
-          val trackedSingleSpell = trackedSingleTargetSavingThrowSpell(3, Strength, higherSpellSlot = false)
+          val trackedSingleSpell = trackedSingleTargetSavingThrowSpell(
+            3,
+            Strength,
+            higherSpellSlot = false)
 
           val trackedWizard = wizard
             .withSpellsKnown(trackedSpell, trackedSingleSpell)
@@ -93,9 +107,13 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
             .withDexteritySavingThrowScore(-10)
             .withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedMonsterOne: TestMonster), Combatant(_, updatedMonsterTwo: TestMonster))) =
-            castMultiTargetOffensiveSpell(Priority)(trackedWizard)
-              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+          val (
+            _,
+            List(
+              Combatant(_, updatedMonsterOne: TestMonster),
+              Combatant(_, updatedMonsterTwo: TestMonster))) = castMultiTargetOffensiveSpell(
+            Priority)(trackedWizard)
+            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedMonsterOne.health < monsterOne.creature.health shouldBe true
           updatedMonsterTwo.health < monsterTwo.creature.health shouldBe true
@@ -114,8 +132,14 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedMultiTargetSpell = trackedMultiTargetSavingThrowSpell(1, Strength, higherSpellSlot = true)
-          val trackedSingleTargetSpell = trackedSingleTargetSavingThrowSpell(2, Dexterity, higherSpellSlot = false)
+          val trackedMultiTargetSpell = trackedMultiTargetSavingThrowSpell(
+            1,
+            Strength,
+            higherSpellSlot = true)
+          val trackedSingleTargetSpell = trackedSingleTargetSavingThrowSpell(
+            2,
+            Dexterity,
+            higherSpellSlot = false)
 
           val trackedWizard = wizard
             .withSpellsKnown(trackedMultiTargetSpell, trackedSingleTargetSpell)
@@ -137,9 +161,9 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
             .withDexteritySavingThrowScore(-10)
             .withCombatIndex(3)
 
-          val (Combatant(_, updatedWizard: Wizard), _) =
-            castMultiTargetOffensiveSpell(Priority)(wizardCombatant)
-              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+          val (Combatant(_, updatedWizard: Wizard), _) = castMultiTargetOffensiveSpell(Priority)(
+            wizardCombatant)
+            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe trackedWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
@@ -153,7 +177,10 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(19)
 
-          val trackedMultiTargetSpell = trackedMultiTargetSavingThrowSpell(1, Strength, higherSpellSlot = false)
+          val trackedMultiTargetSpell = trackedMultiTargetSavingThrowSpell(
+            1,
+            Strength,
+            higherSpellSlot = false)
           val trackedSingleTargetSpell = trackedMeleeSpellAttack(3)
 
           val trackedWizard = wizard
@@ -176,9 +203,9 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
             .withDexteritySavingThrowScore(-10)
             .withCombatIndex(3)
 
-          val (Combatant(_, updatedWizard: Wizard), _) =
-            castMultiTargetOffensiveSpell(Priority)(wizardCombatant)
-              .useAbility(List(monsterOne, monsterTwo), LowestFirst)
+          val (Combatant(_, updatedWizard: Wizard), _) = castMultiTargetOffensiveSpell(Priority)(
+            wizardCombatant)
+            .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
@@ -237,7 +264,7 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedSpell = trackedMultiTargetSavingThrowSpell(2, Dexterity)
+          val trackedSpell       = trackedMultiTargetSavingThrowSpell(2, Dexterity)
           val trackedSingleSpell = trackedMeleeSpellAttack(3, higherSpellSlot = false)
 
           val lichCombatant = lich
@@ -256,7 +283,9 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
             .withDexterity(2)
             .withCombatIndex(3)
 
-          val (_, List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedWizard: Wizard))) =
+          val (
+            _,
+            List(Combatant(_, updatedFighter: Fighter), Combatant(_, updatedWizard: Wizard))) =
             castMultiTargetOffensiveSpell(Priority)(lichCombatant)
               .useAbility(List(easyToHitFighter, easyToHitWizard), LowestFirst)
 

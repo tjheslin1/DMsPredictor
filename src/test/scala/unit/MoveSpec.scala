@@ -27,8 +27,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
 
           val queue = Queue(fighter.withCombatIndex(1), monster.withCombatIndex(2))
 
-          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
-                                                                           fighter.name)
+          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(
+            monster.name,
+            fighter.name)
         }
       }
     }
@@ -40,8 +41,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
 
           val queue = Queue(fighter.withHealth(0).withCombatIndex(1), monster.withCombatIndex(2))
 
-          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(monster.name,
-                                                                           fighter.name)
+          takeMove(queue, LowestFirst).map(_.creature.name) shouldBe Queue(
+            monster.name,
+            fighter.name)
         }
       }
     }
@@ -51,8 +53,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val bonusActionFighter =
-            fighter.withAbilities(List(trackedBonusAction(1))).withCombatIndex(1)
+          val bonusActionFighter = fighter
+            .withAbilities(List(trackedBonusAction(1)))
+            .withCombatIndex(1)
 
           val queue = Queue(bonusActionFighter, monster.withCombatIndex(2))
 
@@ -69,8 +72,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val queue =
-            Queue(fighter.withBonusActionUsed().withCombatIndex(1), monster.withCombatIndex(2))
+          val queue = Queue(
+            fighter.withBonusActionUsed().withCombatIndex(1),
+            monster.withCombatIndex(2))
 
           val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
@@ -84,8 +88,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val queue =
-            Queue(fighter.withReactionUsed(true).withCombatIndex(1), monster.withCombatIndex(2))
+          val queue = Queue(
+            fighter.withReactionUsed(true).withCombatIndex(1),
+            monster.withCombatIndex(2))
 
           val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
@@ -100,8 +105,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
           var turnReset = false
-          val queue =
-            Queue(barbarian.withAttackStatus(Advantage).withCombatIndex(1))
+          val queue     = Queue(barbarian.withAttackStatus(Advantage).withCombatIndex(1))
 
           val Queue(Combatant(_, updatedBarbarian: Barbarian)) = takeMove(queue, LowestFirst)
 
@@ -115,8 +119,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val queue = Queue(fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
-                            monster.withCombatIndex(2))
+          val queue = Queue(
+            fighter.withBonusActionUsed().withHealth(0).withCombatIndex(1),
+            monster.withCombatIndex(2))
 
           val Queue(_, Combatant(_, updatedFighter: Fighter)) = takeMove(queue, LowestFirst)
 
@@ -144,7 +149,11 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val player = fighter.withAllAbilitiesUsed().withStrength(20).withDexterity(20).withCombatIndex(1)
+          val player = fighter
+            .withAllAbilitiesUsed()
+            .withStrength(20)
+            .withDexterity(20)
+            .withCombatIndex(1)
 
           val enemyOne = monsterOne.withHealth(0).withCombatIndex(2)
           val enemyTwo = monsterTwo.withArmourClass(1).withHealth(1).withCombatIndex(3)
@@ -164,8 +173,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll: RollStrategy = Dice.defaultRandomiser
 
-          val trackedFighter =
-            fighter.withAbilities(List(trackedAbility(Priority))).withCombatIndex(1)
+          val trackedFighter = fighter
+            .withAbilities(List(trackedAbility(Priority)))
+            .withCombatIndex(1)
 
           takeMove(Queue(trackedFighter, monster.withCombatIndex(2)), LowestFirst)
 
@@ -180,12 +190,12 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll = _ => RollResult(10)
 
-          val trackedGoblin =
-            goblin
-              .withConditions(trackedStartOfTurnCondition(100),
-                              trackedStartOfTurnCondition(50),
-                              trackedEndOfTurnCondition(100))
-              .withCombatIndex(1)
+          val trackedGoblin = goblin
+            .withConditions(
+              trackedStartOfTurnCondition(100),
+              trackedStartOfTurnCondition(50),
+              trackedEndOfTurnCondition(100))
+            .withCombatIndex(1)
 
           val fighterCombatant = fighter.withCombatIndex(2)
 
@@ -202,12 +212,12 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll = _ => RollResult(10)
 
-          val trackedGoblin =
-            goblin
-              .withConditions(trackedStartOfTurnCondition(100),
-                              trackedStartOfTurnCondition(50),
-                              trackedEndOfTurnCondition(100, turnMissed = true))
-              .withCombatIndex(1)
+          val trackedGoblin = goblin
+            .withConditions(
+              trackedStartOfTurnCondition(100),
+              trackedStartOfTurnCondition(50),
+              trackedEndOfTurnCondition(100, turnMissed = true))
+            .withCombatIndex(1)
 
           val fighterCombatant = fighter.withCombatIndex(2)
 
@@ -224,11 +234,10 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
-          val trackedGoblin =
-            goblin
-              .withBaseWeapon(trackedSword)
-              .withConditions(trackedStartOfTurnCondition(100, turnMissed = true))
-              .withCombatIndex(1)
+          val trackedGoblin = goblin
+            .withBaseWeapon(trackedSword)
+            .withConditions(trackedStartOfTurnCondition(100, turnMissed = true))
+            .withCombatIndex(1)
 
           val fighterCombatant = fighter.withCombatIndex(2)
 
@@ -248,8 +257,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           val turnedCondition = Turned(saveDc = 1, turnsLeft = 0)
           val turnedFighter   = fighter.withCondition(turnedCondition).withCombatIndex(1)
 
-          val Queue(Combatant(_, updatedFighter: Fighter)) =
-            takeMove(Queue(turnedFighter), LowestFirst)
+          val Queue(Combatant(_, updatedFighter: Fighter)) = takeMove(
+            Queue(turnedFighter),
+            LowestFirst)
 
           updatedFighter.conditions shouldBe List.empty[Condition]
         }
@@ -262,12 +272,13 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           implicit override val roll = D20.naturalTwenty
 
           val trackedCondition = trackedEndOfTurnCondition(2, turnMissed = true)
-          val stunned = Stunned(2)
+          val stunned          = Stunned(2)
 
-          val trackedFighter   = fighter.withConditions(trackedCondition, stunned).withCombatIndex(1)
+          val trackedFighter = fighter.withConditions(trackedCondition, stunned).withCombatIndex(1)
 
-          val Queue(Combatant(_, updatedFighter: Fighter)) =
-            takeMove(Queue(trackedFighter), LowestFirst)
+          val Queue(Combatant(_, updatedFighter: Fighter)) = takeMove(
+            Queue(trackedFighter),
+            LowestFirst)
 
           trackedEndOfTurnConditionHandledCount shouldBe 1
 
@@ -284,8 +295,9 @@ class MoveSpec extends UnitSpecBase with OptionValues {
           val paralyzedCondition = Paralyzed(saveDc = 1, turnsLeft = 0, Constitution)
           val paralyzedFighter   = fighter.withCondition(paralyzedCondition).withCombatIndex(1)
 
-          val Queue(Combatant(_, updatedFighter: Fighter)) =
-            takeMove(Queue(paralyzedFighter), LowestFirst)
+          val Queue(Combatant(_, updatedFighter: Fighter)) = takeMove(
+            Queue(paralyzedFighter),
+            LowestFirst)
 
           updatedFighter.conditions shouldBe List.empty[Condition]
         }
@@ -297,10 +309,11 @@ class MoveSpec extends UnitSpecBase with OptionValues {
         new TestContext {
           implicit override val roll = D20.naturalTwenty
 
-          val paralyzedTurnedFighter =
-            fighter.withConditions(trackedStartOfTurnCondition(dc = 1)).withCombatIndex(1)
+          val paralyzedTurnedFighter = fighter
+            .withConditions(trackedStartOfTurnCondition(dc = 1))
+            .withCombatIndex(1)
 
-            takeMove(Queue(paralyzedTurnedFighter), LowestFirst)
+          takeMove(Queue(paralyzedTurnedFighter), LowestFirst)
 
           trackedStartOfTurnConditionDecremented shouldBe true
         }

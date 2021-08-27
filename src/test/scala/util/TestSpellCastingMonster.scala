@@ -46,8 +46,8 @@ import util.TestMonster.defaultScores
     spellCastingLevel: Level = LevelOne,
     isAlive: Boolean = true,
     toHitModifier: Int = 0,
-    name: String = NameGenerator.randomName)
-    extends Monster
+    name: String = NameGenerator.randomName
+) extends Monster
     with SpellCaster {
 
   val levelSpellcastingLearned: Level = LevelOne

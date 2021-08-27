@@ -123,8 +123,9 @@ class SavingThrowSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val stunnedGoblin =
-            goblin.withStats(BaseStats(10, 10, 10, 10, 10, 10)).withCondition(Stunned(20))
+          val stunnedGoblin = goblin
+            .withStats(BaseStats(10, 10, 10, 10, 10, 10))
+            .withCondition(Stunned(20))
 
           val dc           = 5
           val (result1, _) = savingThrowPassed(dc, Constitution, stunnedGoblin)
@@ -145,8 +146,9 @@ class SavingThrowSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val paralyzedGoblin =
-            goblin.withStrength(10).withCondition(Paralyzed(10, 10, Constitution))
+          val paralyzedGoblin = goblin
+            .withStrength(10)
+            .withCondition(Paralyzed(10, 10, Constitution))
 
           val dc          = 5
           val (result, _) = savingThrowPassed(dc, Strength, paralyzedGoblin)
@@ -161,8 +163,9 @@ class SavingThrowSpec extends UnitSpecBase {
         new TestContext {
           implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val paralyzedGoblin =
-            goblin.withDexterity(10).withCondition(Paralyzed(10, 10, Constitution))
+          val paralyzedGoblin = goblin
+            .withDexterity(10)
+            .withCondition(Paralyzed(10, 10, Constitution))
 
           val dc          = 5
           val (result, _) = savingThrowPassed(dc, Dexterity, paralyzedGoblin)
@@ -181,7 +184,7 @@ class SavingThrowSpec extends UnitSpecBase {
             .withStats(BaseStats(10, 10, 10, 10, 10, 10))
             .withCondition(Paralyzed(10, 10, Constitution))
 
-          val dc = 5
+          val dc           = 5
           val (result1, _) = savingThrowPassed(dc, Constitution, paralyzedGoblin)
           val (result2, _) = savingThrowPassed(dc, Wisdom, paralyzedGoblin)
           val (result3, _) = savingThrowPassed(dc, Intelligence, paralyzedGoblin)
@@ -231,8 +234,10 @@ class SavingThrowSpec extends UnitSpecBase {
           val noLegendaryResistancesLich = lich.withNoLegendaryResistancesLeft()
 
           val dc = 20
-          val (result, updatedLich: Lich) =
-            savingThrowPassed(dc, Constitution, noLegendaryResistancesLich)
+          val (result, updatedLich: Lich) = savingThrowPassed(
+            dc,
+            Constitution,
+            noLegendaryResistancesLich)
 
           result shouldBe false
           updatedLich.legendaryResistances shouldBe 0
@@ -354,8 +359,10 @@ class SavingThrowSpec extends UnitSpecBase {
           implicit override val roll: RollStrategy = _ => RollResult(2)
 
           val dc = 20
-          val (result, updatedLich: Lich) =
-            savingThrowWithDisadvantagePassed(dc, Constitution, lich)
+          val (result, updatedLich: Lich) = savingThrowWithDisadvantagePassed(
+            dc,
+            Constitution,
+            lich)
 
           result shouldBe true
           updatedLich.legendaryResistances shouldBe 2

@@ -9,7 +9,10 @@ import io.github.tjheslin1.dmspredictor.model._
 import io.github.tjheslin1.dmspredictor.model.spellcasting.CastSelfBuffSpell.castSelfBuffSpell
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.PaladinSpells.BlessCondition
 import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.RangerSpells.HuntersMarkBuffCondition
-import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.{FireBolt, Fireball}
+import io.github.tjheslin1.dmspredictor.model.spellcasting.spellbook.WizardSpells.{
+  FireBolt,
+  Fireball
+}
 import io.github.tjheslin1.dmspredictor.model.spellcasting.{Spell, SpellSlots}
 import io.github.tjheslin1.dmspredictor.monsters.lich.Lich
 import io.github.tjheslin1.dmspredictor.strategy.LowestFirst
@@ -26,7 +29,10 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val rangerCombatant = ranger
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
@@ -34,9 +40,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .withCombatIndex(1)
 
-          val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedRanger: Ranger), _) = castSelfBuffSpell(Priority)(
+            rangerCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 1
@@ -49,10 +55,16 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
     "set the spellCasters concentration to the cast spell if a concentration spell" in {
       forAll { ranger: Ranger =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedBuffSpell = trackedSelfBuffSpell(
+            HuntersMarkBuffCondition,
+            1,
+            concentration = true)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val rangerCombatant = ranger
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
@@ -60,9 +72,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .withCombatIndex(1)
 
-          val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedRanger: Ranger), _) = castSelfBuffSpell(Priority)(
+            rangerCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 1
@@ -77,10 +89,16 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
     "not set the spellCasters concentration to the cast spell if not a concentration spell" in {
       forAll { ranger: Ranger =>
         new TestContext {
-          override implicit val roll: RollStrategy = _ => RollResult(10)
+          implicit override val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = false)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedBuffSpell = trackedSelfBuffSpell(
+            HuntersMarkBuffCondition,
+            1,
+            concentration = false)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val rangerCombatant = ranger
             .withAllSpellSlotsAvailableForLevel(LevelTwo)
@@ -88,9 +106,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
             .withLevel(LevelTwo)
             .withCombatIndex(1)
 
-          val (Combatant(_, updatedRanger: Ranger), _) =
-            castSelfBuffSpell(Priority)(rangerCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedRanger: Ranger), _) = castSelfBuffSpell(Priority)(
+            rangerCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 1
@@ -107,8 +125,14 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, higherSpellSlot = true)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedBuffSpell = trackedSelfBuffSpell(
+            HuntersMarkBuffCondition,
+            1,
+            higherSpellSlot = true)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val buffingWizard = wizard
             .withAllSpellSlotsAvailableForLevel(LevelFive)
@@ -118,9 +142,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
 
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
-          val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedWizard: Wizard), _) = castSelfBuffSpell(Priority)(
+            wizardCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -134,8 +158,15 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true, higherSpellSlot = true)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedBuffSpell = trackedSelfBuffSpell(
+            HuntersMarkBuffCondition,
+            1,
+            concentration = true,
+            higherSpellSlot = true)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val buffingWizard = wizard
             .withSpellsKnown(trackedBuffSpell, trackedMultiBuffSpell)
@@ -145,9 +176,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
 
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
-          val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedWizard: Wizard), _) = castSelfBuffSpell(Priority)(
+            wizardCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -161,9 +192,14 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell =
-            trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, higherSpellSlot = false)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedBuffSpell = trackedSelfBuffSpell(
+            HuntersMarkBuffCondition,
+            1,
+            higherSpellSlot = false)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val buffingWizard = wizard
             .withSpellsKnown(trackedBuffSpell, trackedMultiBuffSpell)
@@ -173,9 +209,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
 
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
-          val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedWizard: Wizard), _) = castSelfBuffSpell(Priority)(
+            wizardCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (buffingWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -189,9 +225,15 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
         new TestContext {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
-          val trackedBuffSpell =
-            trackedSelfBuffSpell(HuntersMarkBuffCondition, 1, concentration = true, higherSpellSlot = false)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedBuffSpell = trackedSelfBuffSpell(
+            HuntersMarkBuffCondition,
+            1,
+            concentration = true,
+            higherSpellSlot = false)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val buffingWizard = wizard
             .withSpellsKnown(trackedBuffSpell, trackedMultiBuffSpell)
@@ -201,9 +243,9 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
 
           val wizardCombatant = buffingWizard.withCombatIndex(1)
 
-          val (Combatant(_, updatedWizard: Wizard), _) =
-            castSelfBuffSpell(Priority)(wizardCombatant)
-              .useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedWizard: Wizard), _) = castSelfBuffSpell(Priority)(
+            wizardCombatant)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           updatedWizard.spellSlots.firstLevel.count shouldBe (buffingWizard.spellSlots.firstLevel.count - 1)
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
@@ -262,14 +304,17 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
           implicit val roll: RollStrategy = _ => RollResult(10)
 
           val trackedBuffSpell = trackedSelfBuffSpell(HuntersMarkBuffCondition, 1)
-          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(2, BlessCondition(), higherSpellSlot = false)
+          val trackedMultiBuffSpell = trackedMultiTargetBuffSpell(
+            2,
+            BlessCondition(),
+            higherSpellSlot = false)
 
           val buffingLich = lich
             .withSpellsKnown(trackedBuffSpell, trackedMultiBuffSpell)
             .withCombatIndex(1)
 
-          val (Combatant(_, updatedLich: Lich), _) =
-            castSelfBuffSpell(Priority)(buffingLich).useAbility(List.empty[Combatant], LowestFirst)
+          val (Combatant(_, updatedLich: Lich), _) = castSelfBuffSpell(Priority)(buffingLich)
+            .useAbility(List.empty[Combatant], LowestFirst)
 
           selfBuffSpellUsedCount shouldBe 1
           selfBuffSpellLevelUsed shouldBe 9

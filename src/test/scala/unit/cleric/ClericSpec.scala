@@ -41,7 +41,7 @@ class ClericSpec extends UnitSpecBase {
     }
 
     "set the Cleric to dead if the damage brings health below negative max health" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val cleric = random[Cleric]
         .withHealth(50)

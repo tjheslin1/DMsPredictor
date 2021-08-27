@@ -26,8 +26,10 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
 
           val damagedFighter = fighter.withHealth(10).withMaxHealth(100).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) =
-            healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
+          val (_, List(Combatant(_, healedFighter: Fighter))) = healingSpell.effect(
+            healingCleric,
+            healingSpell.spellLevel,
+            List(damagedFighter))
 
           trackedHealingSpellUsedCount shouldBe 1
           healedFighter.health shouldBe damagedFighter.creature.health + 4
@@ -51,8 +53,10 @@ class SingleTargetHealingSpellSpec extends UnitSpecBase {
 
           val damagedFighter = fighter.withHealth(98).withMaxHealth(100).withCombatIndex(2)
 
-          val (_, List(Combatant(_, healedFighter: Fighter))) =
-            healingSpell.effect(healingCleric, healingSpell.spellLevel, List(damagedFighter))
+          val (_, List(Combatant(_, healedFighter: Fighter))) = healingSpell.effect(
+            healingCleric,
+            healingSpell.spellLevel,
+            List(damagedFighter))
 
           trackedHealingSpellUsedCount shouldBe 1
           healedFighter.health shouldBe 100

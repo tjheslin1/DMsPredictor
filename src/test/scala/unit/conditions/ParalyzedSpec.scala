@@ -12,7 +12,7 @@ class ParalyzedSpec extends UnitSpecBase {
   "handleEndOfTurn" should {
     "sustain the Paralyzed condition if saving throw failed" in {
       new TestContext {
-        override implicit val roll: RollStrategy = Dice.naturalOne
+        implicit override val roll: RollStrategy = Dice.naturalOne
 
         val paralyzed       = Paralyzed(10, 10, Wisdom)
         val poisoned        = Poisoned(10, 10)
@@ -26,17 +26,17 @@ class ParalyzedSpec extends UnitSpecBase {
     }
 
     "remove Paralyzed condition if saving throw passed" in {
-        new TestContext {
-          override implicit val roll = D20.naturalTwenty
+      new TestContext {
+        implicit override val roll = D20.naturalTwenty
 
-          val paralyzed       = Paralyzed(10, 10, Wisdom)
-          val poisoned        = Poisoned(10, 10)
-          val conditionGoblin = random[Goblin].withWisdom(20).withConditions(paralyzed, poisoned)
+        val paralyzed       = Paralyzed(10, 10, Wisdom)
+        val poisoned        = Poisoned(10, 10)
+        val conditionGoblin = random[Goblin].withWisdom(20).withConditions(paralyzed, poisoned)
 
-          val updatedGoblin = paralyzed.handleEndOfTurn(conditionGoblin)
+        val updatedGoblin = paralyzed.handleEndOfTurn(conditionGoblin)
 
-          updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
-          updatedGoblin.defenseStatus shouldBe Regular
+        updatedGoblin.conditions should contain theSameElementsAs List(poisoned)
+        updatedGoblin.defenseStatus shouldBe Regular
       }
     }
   }
@@ -45,9 +45,9 @@ class ParalyzedSpec extends UnitSpecBase {
 
     "set the creature's defense status to Disadvantage" in {
       new TestContext {
-        override implicit val roll: RollStrategy = _ => RollResult(10)
+        implicit override val roll: RollStrategy = _ => RollResult(10)
 
-        val paralyzed       = Paralyzed(10, 10, Wisdom)
+        val paralyzed = Paralyzed(10, 10, Wisdom)
 
         val goblin = random[Goblin]
 
@@ -58,7 +58,7 @@ class ParalyzedSpec extends UnitSpecBase {
     }
   }
 
-  private abstract class TestContext {
+  abstract private class TestContext {
     implicit val roll: RollStrategy
   }
 }

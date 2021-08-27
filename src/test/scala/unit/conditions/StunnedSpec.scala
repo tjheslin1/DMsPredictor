@@ -92,9 +92,9 @@ class StunnedSpec extends UnitSpecBase {
   "onConditionApplied" should {
     "set the creature's defense status to Disadvantage" in {
       new TestContext {
-        override implicit val roll: RollStrategy = _ => RollResult(10)
+        implicit override val roll: RollStrategy = _ => RollResult(10)
 
-        val rogue = random[Rogue]
+        val rogue   = random[Rogue]
         val stunned = Stunned(10)
 
         val stunnedRogue = stunned.onConditionApplied(rogue)
@@ -129,8 +129,12 @@ class StunnedSpec extends UnitSpecBase {
           val rangerCombatant = random[Ranger].withCombatIndex(2)
           val zombieCombatant = random[Zombie].withCombatIndex(3)
 
-          val stunnedCombatants =
-            List(stunnedChampion, stunnedRogue, stunnedWizard, stunnedGoblin, stunnedLich)
+          val stunnedCombatants = List(
+            stunnedChampion,
+            stunnedRogue,
+            stunnedWizard,
+            stunnedGoblin,
+            stunnedLich)
 
           stunnedCombatants.foreach { stunnedCombatant =>
             Move.takeMove(Queue(stunnedCombatant, rangerCombatant, zombieCombatant), LowestFirst)

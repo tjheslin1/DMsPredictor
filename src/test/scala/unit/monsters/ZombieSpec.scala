@@ -71,7 +71,7 @@ class ZombieSpec extends UnitSpecBase {
       forAll { zombie: Zombie =>
         new TestContext {
           implicit override val roll: RollStrategy = D20.naturalTwenty
-          val lowHpZombie                          = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
+          val lowHpZombie = zombie.withHealth(5).withConstitution(20).asInstanceOf[Zombie]
 
           val updatedZombie = lowHpZombie.updateHealth(10, Radiant, Hit)
 
@@ -81,7 +81,7 @@ class ZombieSpec extends UnitSpecBase {
     }
 
     "set the Zombie to dead if the damage brings health below negative max health and Undead Fortitude can't help" in new TestContext {
-      override implicit val roll: RollStrategy = _ => RollResult(10)
+      implicit override val roll: RollStrategy = _ => RollResult(10)
 
       val zombie = random[Zombie]
         .withHealth(50)

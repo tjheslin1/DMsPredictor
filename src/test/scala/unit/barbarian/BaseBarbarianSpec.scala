@@ -23,7 +23,10 @@ class BaseBarbarianSpec extends UnitSpecBase {
     }
 
     "calculate whilst wearing armour with no shield" in new TestContext {
-      calculateArmourClass(BaseStats(12, 12, 12, 12, 12, 12), ChainShirt, none[Equipment]) shouldBe 14
+      calculateArmourClass(
+        BaseStats(12, 12, 12, 12, 12, 12),
+        ChainShirt,
+        none[Equipment]) shouldBe 14
     }
 
     "calculate whilst wielding a shield and wearing armour" in new TestContext {
@@ -65,8 +68,8 @@ class BaseBarbarianSpec extends UnitSpecBase {
     "reset Reckless Attack attackStatus and DefenseStats at start of turn" in new TestContext {
       val barbarian = random[Barbarian]
 
-      val recklessBarbarian =
-        recklessAttack(1)(barbarian.withCombatIndex(1)).update.asInstanceOf[Barbarian]
+      val recklessBarbarian = recklessAttack(1)(barbarian.withCombatIndex(1)).update
+        .asInstanceOf[Barbarian]
 
       val newTurnBarbarian = resetStatus(recklessBarbarian)
 

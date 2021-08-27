@@ -126,7 +126,7 @@ class ClericSpellsSpec extends UnitSpecBase {
     "set the creatures DefenseStatus to Disadvantage when applied" in {
       forAll { rogue: Rogue =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+          implicit override val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
           val updatedRogue = GuidingBoltCondition().onConditionApplied(rogue)
 
@@ -138,7 +138,7 @@ class ClericSpellsSpec extends UnitSpecBase {
     "set the creatures DefenseStatus to Regular when the condition is handled" in {
       forAll { rogue: Rogue =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+          implicit override val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
           val guidingBoltedRogue = rogue.withCondition(GuidingBoltCondition())
 
@@ -152,7 +152,7 @@ class ClericSpellsSpec extends UnitSpecBase {
     "set the creatures DefenseStatus to Regular when the condition runs out" in {
       forAll { rogue: Rogue =>
         new TestContext {
-          override implicit val rollStrategy: RollStrategy = Dice.defaultRandomiser
+          implicit override val rollStrategy: RollStrategy = Dice.defaultRandomiser
 
           val disadvantageRogue = rogue.withDefenseStatus(Disadvantage)
 
