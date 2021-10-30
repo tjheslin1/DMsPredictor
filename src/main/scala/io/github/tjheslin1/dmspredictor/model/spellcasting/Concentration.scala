@@ -32,8 +32,7 @@ object Concentration extends LazyLogging {
             updatedSpellCaster)
 
           SpellCaster.concentratingLens.set(None)(buffHandledCaster)
-        case _ =>
-          SpellCaster.concentratingLens.set(None)(updatedSpellCaster)
+        case _ => SpellCaster.concentratingLens.set(None)(updatedSpellCaster)
       }
     }
   }

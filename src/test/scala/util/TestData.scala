@@ -103,10 +103,8 @@ object TestData {
 
     def withStrengthSavingThrowScore(strScore: Int) = {
       val savingThrowScores = testMonster.savingThrowScores.map {
-        case (Strength, _) =>
-          Strength -> strScore
-        case (attribute, score) =>
-          attribute -> score
+        case (Strength, _)      => Strength  -> strScore
+        case (attribute, score) => attribute -> score
       }
 
       _savingThrowScores.set(savingThrowScores)(testMonster)
@@ -114,10 +112,8 @@ object TestData {
 
     def withDexteritySavingThrowScore(dexScore: Int) = {
       val savingThrowScores = testMonster.savingThrowScores.map {
-        case (Dexterity, _) =>
-          Dexterity -> dexScore
-        case (attribute, score) =>
-          attribute -> score
+        case (Dexterity, _)     => Dexterity -> dexScore
+        case (attribute, score) => attribute -> score
       }
 
       _savingThrowScores.set(savingThrowScores)(testMonster)
@@ -430,10 +426,8 @@ trait TestData extends RandomDataGenerator {
       .choose(0, 6)
       .map(refined.refineV[Interval.ClosedOpen[W.`0`.T, W.`7`.T]](_))
       .flatMap {
-        case Right(i) =>
-          Gen.const(i)
-        case Left(_) =>
-          Gen.fail
+        case Right(i) => Gen.const(i)
+        case Left(_)  => Gen.fail
       }
   }
 
@@ -520,10 +514,8 @@ trait TestData extends RandomDataGenerator {
       .choose(1, 30)
       .map(refined.refineV[Interval.ClosedOpen[W.`1`.T, W.`31`.T]](_))
       .flatMap {
-        case Right(i) =>
-          Gen.const(i)
-        case Left(_) =>
-          Gen.fail
+        case Right(i) => Gen.const(i)
+        case Left(_)  => Gen.fail
       }
   }
 

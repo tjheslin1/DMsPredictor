@@ -35,8 +35,7 @@ object CoreAbilities extends LazyLogging {
         logger.debug(s"${combatant.creature.name} used $name")
 
         nextToFocus(combatant, monsters(others), focus) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(target) =>
             nextAbilityToUseInConjunction(combatant, others, order, NonEmptyList.of(SingleAttack))
               .fold {

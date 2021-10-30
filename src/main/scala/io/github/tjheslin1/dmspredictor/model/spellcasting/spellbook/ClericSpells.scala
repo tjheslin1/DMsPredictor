@@ -49,10 +49,8 @@ object ClericSpells extends LazyLogging {
 
     override def additionalEffect[_: RS](target: Combatant, attackResult: AttackResult): Combatant =
       attackResult match {
-        case CriticalHit | Hit =>
-          addCondition(target, GuidingBoltCondition())
-        case CriticalMiss | Miss =>
-          target
+        case CriticalHit | Hit   => addCondition(target, GuidingBoltCondition())
+        case CriticalMiss | Miss => target
       }
   }
 

@@ -64,10 +64,8 @@ object Spell {
     }
 
     val spellLookup = spellCaster.spellsKnown.find {
-      case foundSpell if foundSpellMatches(foundSpell) =>
-        true
-      case _ =>
-        false
+      case foundSpell if foundSpellMatches(foundSpell) => true
+      case _                                           => false
     }
 
     val spellLevelBelow: SpellLevel = Refined.unsafeApply(spellLevel - 1)
@@ -104,10 +102,8 @@ object Spell {
             (foundSpell, foundSpell.spellLevel).some
           case Some(foundSpell) if foundSpell.benefitsFromHigherSpellSlot =>
             (foundSpell, originalSpellLevel).some
-          case Some(foundSpell) =>
-            (foundSpell, foundSpell.spellLevel).some
-          case _ =>
-            none[(Spell, SpellLevel)]
+          case Some(foundSpell) => (foundSpell, foundSpell.spellLevel).some
+          case _                => none[(Spell, SpellLevel)]
         }
     } else if (spellLevelBelow >= 0)
       spellOfLevelOrBelow(spellCaster, spellEffect, spellLevelBelow)(
@@ -138,10 +134,8 @@ object Spell {
 
   def spellAttack[_: RS](spellCaster: SpellCaster, target: Creature): AttackResult =
     D20.roll() match {
-      case roll if spellCaster.scoresCritical(roll) =>
-        CriticalHit
-      case 1 =>
-        CriticalMiss
+      case roll if spellCaster.scoresCritical(roll) => CriticalHit
+      case 1                                        => CriticalMiss
       case roll =>
         val attackRoll = roll + spellAttackBonus(spellCaster) + blessAttackBonus(spellCaster)
 

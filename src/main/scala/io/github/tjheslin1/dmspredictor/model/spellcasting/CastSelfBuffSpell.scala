@@ -38,8 +38,7 @@ object CastSelfBuffSpell extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-            case None =>
-              none[(Spell, SpellLevel)]
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true

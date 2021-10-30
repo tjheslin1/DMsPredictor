@@ -28,12 +28,9 @@ trait ArgParser {
 
   def parseFocus(focus: String): Either[Error, Focus] =
     focus.toLowerCase match {
-      case "lowestfirst" =>
-        LowestFirst.asRight
-      case "randomfocus" =>
-        RandomFocus.asRight
-      case _ =>
-        Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
+      case "lowestfirst" => LowestFirst.asRight
+      case "randomfocus" => RandomFocus.asRight
+      case _             => Left(ParsingFailure(s"unknown focus strategy provided: $focus", null))
     }
 
   implicit val sqsMessageDecoder: Decoder[SQSMessage] = deriveDecoder[SQSMessage]
@@ -547,8 +544,7 @@ trait ArgParser {
         .leftMap(e => DecodingFailure(e.getMessage, c.history))
       skills <-
         ints match {
-          case Array(perception, stealth) =>
-            Skills(perception, stealth).asRight
+          case Array(perception, stealth) => Skills(perception, stealth).asRight
           case _ =>
             DecodingFailure(
               s"$skillsCsv did not match expected format for skills",

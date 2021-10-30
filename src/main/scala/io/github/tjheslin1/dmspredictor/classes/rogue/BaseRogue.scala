@@ -40,11 +40,9 @@ object BaseRogue {
   val hiddenFromLens: Lens[BaseRogue, List[Combatant]] =
     Lens[BaseRogue, List[Combatant]](_.hiddenFrom) { enemiesHiddenFrom =>
       {
-        case r: Rogue =>
-          Rogue._hiddenFrom.set(enemiesHiddenFrom)(r)
+        case r: Rogue => Rogue._hiddenFrom.set(enemiesHiddenFrom)(r)
 
-        case _ =>
-          throw new NotImplementedError("Missing a case in hiddenFromLens")
+        case _ => throw new NotImplementedError("Missing a case in hiddenFromLens")
       }
     }
 }

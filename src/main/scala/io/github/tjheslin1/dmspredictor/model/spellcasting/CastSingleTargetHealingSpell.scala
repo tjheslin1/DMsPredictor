@@ -44,8 +44,7 @@ object CastSingleTargetHealingSpell extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-            case None =>
-              none[(Spell, SpellLevel)]
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, HealingSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true
@@ -54,20 +53,16 @@ object CastSingleTargetHealingSpell extends LazyLogging {
 
         val targets =
           spellCaster match {
-            case _: Player =>
-              players(others)
-            case _ =>
-              monsters(others)
+            case _: Player => players(others)
+            case _         => monsters(others)
           }
 
         val target = nextToFocus(combatant, targets, Healing)
 
         val (updatedCombatant, optHealedAlly) =
           (target, optSpell) match {
-            case (_, None) =>
-              (combatant, None)
-            case (None, _) =>
-              (combatant, None)
+            case (_, None) => (combatant, None)
+            case (None, _) => (combatant, None)
             case (Some(spellTarget), Some((foundSpell, foundSpellLevel))) =>
               val (spellAffectedCaster, List(updatedTarget)) = foundSpell.effect(
                 spellCaster,

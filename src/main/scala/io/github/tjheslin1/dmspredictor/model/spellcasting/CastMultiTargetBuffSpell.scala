@@ -24,10 +24,8 @@ object CastMultiTargetBuffSpell extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean =
         spellCaster match {
-          case _: Player =>
-            players(others).nonEmpty
-          case _ =>
-            monsters(others).nonEmpty
+          case _: Player => players(others).nonEmpty
+          case _         => monsters(others).nonEmpty
         }
 
       def conditionMet: Boolean = spellConditionMet(
@@ -43,8 +41,7 @@ object CastMultiTargetBuffSpell extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-            case None =>
-              none[(Spell, SpellLevel)]
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, BuffSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
@@ -53,10 +50,8 @@ object CastMultiTargetBuffSpell extends LazyLogging {
 
         val targets =
           spellCaster match {
-            case _: Player =>
-              players(others)
-            case _ =>
-              monsters(others)
+            case _: Player => players(others)
+            case _         => monsters(others)
           }
 
         optSpell.fold((combatant, others)) { case (foundSpell, foundSpellLevel) =>

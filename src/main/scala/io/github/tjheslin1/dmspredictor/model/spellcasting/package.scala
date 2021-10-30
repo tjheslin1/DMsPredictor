@@ -90,10 +90,8 @@ package object spellcasting {
 
     val capableOfCasting =
       spellCaster match {
-        case player: Player with SpellCaster =>
-          player.level >= player.levelSpellcastingLearned
-        case _ =>
-          true
+        case player: Player with SpellCaster => player.level >= player.levelSpellcastingLearned
+        case _                               => true
       }
 
     optMaxSpellLevel.fold(false) { maxSpellLevel =>
@@ -102,23 +100,17 @@ package object spellcasting {
         .filter {
           case spell if singleTargetSpellsOnly && multiTargetSpellsOnly =>
             spell.isSingleTargetSpell || spell.isMultiTargetSpell
-          case spell if singleTargetSpellsOnly =>
-            spell.isSingleTargetSpell
-          case spell if multiTargetSpellsOnly =>
-            spell.isMultiTargetSpell
-          case _ =>
-            true
+          case spell if singleTargetSpellsOnly => spell.isSingleTargetSpell
+          case spell if multiTargetSpellsOnly  => spell.isMultiTargetSpell
+          case _                               => true
         }
         .exists {
           case spell if spell.spellLevel.value <= maxSpellLevel.value =>
             spell.spellEffect match {
-              case `effect` if canCastSpell(spellCaster, spell) =>
-                true
-              case _ =>
-                false
+              case `effect` if canCastSpell(spellCaster, spell) => true
+              case _                                            => false
             }
-          case _ =>
-            false
+          case _ => false
         }
     }
   }

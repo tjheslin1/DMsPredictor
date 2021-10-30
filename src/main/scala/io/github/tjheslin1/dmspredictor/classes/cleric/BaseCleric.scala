@@ -35,10 +35,8 @@ object BaseCleric {
     val baseArmourClass = armour.armourClass(stats.dexterity)
     val shieldBonus =
       offHand match {
-        case Some(Shield) =>
-          Shield.armourClass(stats.dexterity)
-        case _ =>
-          0
+        case Some(Shield) => Shield.armourClass(stats.dexterity)
+        case _            => 0
       }
 
     baseArmourClass + shieldBonus
@@ -47,11 +45,9 @@ object BaseCleric {
   val channelDivinityUsedLens: Lens[BaseCleric, Boolean] =
     Lens[BaseCleric, Boolean](_.channelDivinityUsed) { channelDivinityUsed =>
       {
-        case cleric: Cleric =>
-          Cleric._channelDivinityUsed.set(channelDivinityUsed)(cleric)
+        case cleric: Cleric => Cleric._channelDivinityUsed.set(channelDivinityUsed)(cleric)
 
-        case _ =>
-          throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+        case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
 
       }
     }

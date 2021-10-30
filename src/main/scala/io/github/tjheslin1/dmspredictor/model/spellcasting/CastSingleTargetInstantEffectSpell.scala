@@ -43,8 +43,7 @@ object CastSingleTargetInstantEffectSpell extends LazyLogging {
 
         val (optSpell, foundSpellLevel) =
           highestSpellSlot match {
-            case None =>
-              (instantEffectCantrip, LevelZero)
+            case None => (instantEffectCantrip, LevelZero)
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, InstantEffectSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true
@@ -56,19 +55,15 @@ object CastSingleTargetInstantEffectSpell extends LazyLogging {
 
         val targets =
           spellCaster match {
-            case _: Player =>
-              monsters(others)
-            case _ =>
-              players(others)
+            case _: Player => monsters(others)
+            case _         => players(others)
           }
 
         val target = nextToFocus(combatant, targets, focus)
 
         (target, optSpell) match {
-          case (_, None) =>
-            (combatant, others)
-          case (None, _) =>
-            (combatant, others)
+          case (_, None) => (combatant, others)
+          case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
             val (spellAffectedCaster, List(updatedTarget)) = spell.effect(
               spellCaster,

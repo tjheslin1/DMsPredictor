@@ -114,8 +114,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
     } match {
       case Some(Left(dynamoError)) =>
         throw new RuntimeException(s"Error writing to DynamoDB ($dynamoError)")
-      case _ =>
-        ()
+      case _ => ()
     }
   }
 }

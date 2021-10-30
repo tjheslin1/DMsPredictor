@@ -30,16 +30,14 @@ object BaseRangerAbilities extends LazyLogging {
               baseRanger.bonusActionUsed == false &&
               w.twoHanded == false &&
               combatant.creature.baseWeapon.twoHanded == false
-          case _ =>
-            false
+          case _ => false
         }
 
       def useAbility[_: RS](others: List[Combatant], focus: Focus): (Combatant, List[Combatant]) = {
         logger.debug(s"${combatant.creature.name} used two weapon fighting")
 
         nextToFocus(combatant, monsters(others), focus) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(attackTarget) =>
             val (mainHandAttack, hitTarget) = attack(
               combatant,
@@ -55,8 +53,7 @@ object BaseRangerAbilities extends LazyLogging {
             val updatedEnemies = monsters(updatedOthers).replace(attackTarget1)
 
             nextToFocus(combatant, updatedEnemies, focus) match {
-              case None =>
-                (combatant, others)
+              case None => (combatant, others)
               case Some(nextTarget) =>
                 val offHandWeapon = combatant.creature.offHand.get.asInstanceOf[Weapon]
                 val (offHandAttack, nextHitTarget) = attack(

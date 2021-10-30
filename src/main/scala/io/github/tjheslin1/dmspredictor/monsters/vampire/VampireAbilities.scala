@@ -38,8 +38,7 @@ object VampireAbilities extends LazyLogging {
           _.creature.conditions.contains(Grappled(UnarmedStrike.GrappleDc)))
 
         nextToFocus(combatant, grappledEnemies, focus) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(grappledTarget) =>
             val (attackResult, hitTarget) = attack(combatant, Bite, grappledTarget)
 
@@ -52,14 +51,10 @@ object VampireAbilities extends LazyLogging {
 
             val necroticDamage =
               attackResult match {
-                case CriticalHit =>
-                  Bite.necroticDamage + Bite.necroticDamage
-                case Hit =>
-                  Bite.necroticDamage
-                case Miss =>
-                  0
-                case CriticalMiss =>
-                  0
+                case CriticalHit  => Bite.necroticDamage + Bite.necroticDamage
+                case Hit          => Bite.necroticDamage
+                case Miss         => 0
+                case CriticalMiss => 0
               }
 
             if (necroticDamage > 0)
@@ -109,13 +104,11 @@ object VampireAbilities extends LazyLogging {
         val enemies = players(others)
 
         nextToFocus(combatant, enemies, focus) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(target) =>
             val (attackResult, hitTarget) = attack(combatant, UnarmedStrike, target)
             attackResult match {
-              case CriticalMiss | Miss =>
-                (combatant, others)
+              case CriticalMiss | Miss => (combatant, others)
               case attackResult @ (CriticalHit | Hit) =>
                 if (
                   vampire.firstAttack &&
@@ -189,8 +182,7 @@ object VampireAbilities extends LazyLogging {
         logger.debug(s"Vampire used $name")
 
         nextToFocus(combatant, charmTargets(players(others)), focus) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(target) =>
             val (passed, updatedCreature) = savingThrowPassed(CharmDC, Wisdom, target.creature)
 
