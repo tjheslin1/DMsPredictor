@@ -44,8 +44,7 @@ object SavingThrow {
           val updatedLegendaryResistances = l.legendaryResistances - 1
 
           (true, Legendary.legendaryResistancesLens.set(updatedLegendaryResistances)(l))
-        case _ =>
-          (false, updatedCreature)
+        case _ => (false, updatedCreature)
       }
   }
 

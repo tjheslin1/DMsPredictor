@@ -20,9 +20,7 @@ object ListOps {
     // format: on
 
     def replace(ts: List[T])(implicit eq: Eq[T]): List[T] =
-      ts.foldLeft(list) { case (tss, t) =>
-        tss.replace(t)
-      }
+      ts.foldLeft(list) { case (tss, t) => tss.replace(t) }
 
     def except(t: T): List[T] = list diff List(t)
   }

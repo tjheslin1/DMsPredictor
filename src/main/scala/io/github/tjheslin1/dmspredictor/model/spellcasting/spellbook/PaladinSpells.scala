@@ -43,10 +43,8 @@ object PaladinSpells {
 
   def blessAttackBonus[_: RS](creature: Creature): Int = {
     val blessed = creature.conditions.exists {
-      case BlessCondition(_) =>
-        true
-      case _ =>
-        false
+      case BlessCondition(_) => true
+      case _                 => false
     }
 
     if (blessed)

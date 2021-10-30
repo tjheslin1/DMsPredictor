@@ -46,8 +46,7 @@ object LifeClericAbilities extends LazyLogging {
 
           val optSpell =
             highestSpellSlotAvailable(lifeCleric.spellSlots) match {
-              case None =>
-                none[(Spell, SpellLevel)]
+              case None => none[(Spell, SpellLevel)]
               case Some(spellSlot) =>
                 spellOfLevelOrBelow(lifeCleric, HealingSpellEffect, spellSlot.spellLevel)(
                   singleTargetSpellsOnly = true

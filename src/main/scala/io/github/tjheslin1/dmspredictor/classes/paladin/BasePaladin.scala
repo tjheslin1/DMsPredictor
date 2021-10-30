@@ -70,15 +70,12 @@ object BasePaladin {
             rerollingDamage,
             weapon.hitBonus
           )
-        case _ =>
-          weapon
+        case _ => weapon
       }
 
     val sacredWeaponBuffActive = paladin.conditions.exists {
-      case SacredWeaponCondition(_) =>
-        true
-      case _ =>
-        false
+      case SacredWeaponCondition(_) => true
+      case _                        => false
     }
 
     if (sacredWeaponBuffActive) {
@@ -101,10 +98,8 @@ object BasePaladin {
 
     val shieldBonus =
       offHand match {
-        case Some(Shield) =>
-          Shield.armourClass(stats.dexterity)
-        case _ =>
-          0
+        case Some(Shield) => Shield.armourClass(stats.dexterity)
+        case _            => 0
       }
 
     val defenseBonus =
@@ -114,10 +109,8 @@ object BasePaladin {
         0
 
     armour match {
-      case NoArmour =>
-        baseArmourClass + shieldBonus
-      case _ =>
-        baseArmourClass + shieldBonus + defenseBonus
+      case NoArmour => baseArmourClass + shieldBonus
+      case _        => baseArmourClass + shieldBonus + defenseBonus
     }
   }
 
@@ -152,22 +145,18 @@ object BasePaladin {
   val layOnHandsPoolLens: Lens[BasePaladin, Int] =
     Lens[BasePaladin, Int](_.layOnHandsPool) { pool =>
       {
-        case paladin: Paladin =>
-          Paladin._layOnHandsPool.set(pool)(paladin)
+        case paladin: Paladin => Paladin._layOnHandsPool.set(pool)(paladin)
 
-        case _ =>
-          throw new NotImplementedError("Missing a case in layOnHandsPoolLens")
+        case _ => throw new NotImplementedError("Missing a case in layOnHandsPoolLens")
       }
     }
 
   val channelDivinityUsedLens: Lens[BasePaladin, Boolean] =
     Lens[BasePaladin, Boolean](_.channelDivinityUsed) { channelDivinityUsed =>
       {
-        case paladin: Paladin =>
-          Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
+        case paladin: Paladin => Paladin._channelDivinityUsed.set(channelDivinityUsed)(paladin)
 
-        case _ =>
-          throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
+        case _ => throw new NotImplementedError("Missing a case in channelDivinityUsedLens")
 
       }
     }

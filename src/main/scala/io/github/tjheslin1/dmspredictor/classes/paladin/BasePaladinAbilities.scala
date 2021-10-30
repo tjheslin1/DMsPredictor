@@ -35,8 +35,7 @@ object BasePaladinAbilities extends LazyLogging {
         logger.debug(s"${basePaladin.name} used $name")
 
         nextToFocus(combatant, players(others), Healing) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(target) =>
             val healthToRestore = Math.min(
               basePaladin.layOnHandsPool,
@@ -90,10 +89,8 @@ object BasePaladinAbilities extends LazyLogging {
         val optTarget = nextToFocus(combatant, monsters(others), focus)
 
         (optSpellSlot, optTarget) match {
-          case (None, _) =>
-            (combatant, others)
-          case (_, None) =>
-            (combatant, others)
+          case (None, _) => (combatant, others)
+          case (_, None) => (combatant, others)
           case (Some(spellSlot), Some(target)) =>
             val otherCombatants = others.except(target)
             val paladinsWeapon  = combatant.creature.weapon
@@ -114,12 +111,10 @@ object BasePaladinAbilities extends LazyLogging {
                     (attackResult, updatedDamagedTarget.creature.creatureType) match {
                       case (CriticalHit, Undead | Fiend) =>
                         damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot) + (2 * D8)
-                      case (Hit, Undead | Fiend) =>
-                        damageFromSpellSlot(spellSlot) + (1 * D8)
+                      case (Hit, Undead | Fiend) => damageFromSpellSlot(spellSlot) + (1 * D8)
                       case (CriticalHit, _) =>
                         damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot)
-                      case _ =>
-                        damageFromSpellSlot(spellSlot)
+                      case _ => damageFromSpellSlot(spellSlot)
                     }
 
                   val smiteDamagedCreature = updatedDamagedTarget.creature.updateHealth(

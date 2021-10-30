@@ -37,23 +37,19 @@ object CastConditionSpell extends LazyLogging {
 
         val optSpell =
           highestSpellSlot match {
-            case None =>
-              none[(Spell, SpellLevel)]
+            case None => none[(Spell, SpellLevel)]
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, ConditionSpellEffect, spellSlot.spellLevel)()
           }
 
         val targets =
           spellCaster match {
-            case _: Player =>
-              monsters(others)
-            case _ =>
-              players(others)
+            case _: Player => monsters(others)
+            case _         => players(others)
           }
 
         optSpell match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some((foundSpell, foundSpellLevel)) =>
             val (spellAffectedCaster, updatedOthers) = foundSpell.effect(
               spellCaster,

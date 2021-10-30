@@ -17,9 +17,7 @@ class TurnSpec extends UnitSpecBase {
           .rollInitiative()
 
         Turn(initiatives).run(LowestFirst).map(_.creature.name) shouldBe initiatives.toSeq
-          .map { case (_, initiative) =>
-            initiative
-          }
+          .map { case (_, initiative) => initiative }
           .sortBy(_.score)
           .reverse
           .map(_.combatant.creature.name)

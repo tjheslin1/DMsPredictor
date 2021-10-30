@@ -34,17 +34,14 @@ abstract class SingleTargetAttackSpell extends Spell with LazyLogging {
 
     val dmg =
       attackResult match {
-        case CriticalHit =>
-          damage(spellCaster, spellLevel) + damage(spellCaster, spellLevel)
-        case Hit =>
-          damage(spellCaster, spellLevel)
+        case CriticalHit => damage(spellCaster, spellLevel) + damage(spellCaster, spellLevel)
+        case Hit         => damage(spellCaster, spellLevel)
         case Miss =>
           if (halfDamageOnMiss)
             Math.floor(damage(spellCaster, spellLevel) / 2).toInt
           else
             0
-        case CriticalMiss =>
-          0
+        case CriticalMiss => 0
       }
 
     val damagedTarget = target

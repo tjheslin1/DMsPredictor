@@ -33,8 +33,7 @@ object BaseClericAbilities extends LazyLogging {
         logger.debug(s"${baseCleric.name} used $name")
 
         monsters(others).filter(_.creature.creatureType == Undead) match {
-          case List() =>
-            (combatant, others)
+          case List() => (combatant, others)
           case undeadTargets: List[Combatant] =>
             val dc = spellSaveDc(baseCleric)
 
@@ -91,8 +90,7 @@ object BaseClericAbilities extends LazyLogging {
         logger.debug(s"${baseCleric.name} used $name")
 
         monsters(others).filter(_.creature.creatureType == Undead) match {
-          case List() =>
-            (combatant, others)
+          case List() => (combatant, others)
           case undeadTargets: List[Combatant] =>
             val dc = spellSaveDc(baseCleric)
 

@@ -12,9 +12,7 @@ class Turn(initiatives: Map[Int, Initiative])(implicit rollStrategy: RollStrateg
 
   val initiativeOrder: Queue[Combatant] = Queue[Combatant](
     initiatives.toSeq
-      .map { case (_, initiative) =>
-        initiative
-      }
+      .map { case (_, initiative) => initiative }
       .sortBy(_.score)
       .reverse
       .map(_.combatant): _*

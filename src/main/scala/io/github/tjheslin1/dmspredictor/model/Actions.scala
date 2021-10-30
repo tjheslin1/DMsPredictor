@@ -180,8 +180,7 @@ object Actions extends LazyLogging {
         case (concentratingSpellCaster: SpellCaster, damagedSpellCaster: SpellCaster)
             if lossOfConcentration(concentratingSpellCaster, damagedSpellCaster) =>
           updateConditionOfOthers(concentratingSpellCaster, updatedAttacker, updatedTarget, others)
-        case _ =>
-          (updatedAttacker, updatedTarget, others)
+        case _ => (updatedAttacker, updatedTarget, others)
       }
 
     val conditionHandledTargetCreature =
@@ -263,8 +262,7 @@ object Actions extends LazyLogging {
           .map(removeCondition(_, concentratedBuffCondition))
 
         (updatedAttacker, conditionRemovedTarget, updatedOthers)
-      case _ =>
-        (updatedAttacker, updatedTarget, others)
+      case _ => (updatedAttacker, updatedTarget, others)
     }
   }
 
@@ -313,10 +311,8 @@ object Actions extends LazyLogging {
             }
 
           weapon.damage + modifier + damageBonus + onWeaponAbilityDamage
-        case Miss =>
-          0
-        case CriticalMiss =>
-          0
+        case Miss         => 0
+        case CriticalMiss => 0
       }
     )
   }
@@ -325,10 +321,8 @@ object Actions extends LazyLogging {
     weapon.weaponType match {
       case Melee if weapon.finesse =>
         Math.max(mod(creature.stats.strength), mod(creature.stats.dexterity))
-      case Melee =>
-        mod(creature.stats.strength)
-      case Ranged =>
-        mod(creature.stats.dexterity)
+      case Melee  => mod(creature.stats.strength)
+      case Ranged => mod(creature.stats.dexterity)
     }
 
   private def lossOfConcentration(
@@ -355,8 +349,7 @@ object Actions extends LazyLogging {
         case ability: OnWeaponDamageAbility =>
           ability.abilityAction == OnWeaponDamage && ability.conditionMet &&
             ability.triggerOnSingleTargetMet(target)
-        case _ =>
-          false
+        case _ => false
       }
     }
     .map(_.asInstanceOf[Combatant => OnWeaponDamageAbility])

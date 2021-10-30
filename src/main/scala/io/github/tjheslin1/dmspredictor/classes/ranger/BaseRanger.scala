@@ -62,12 +62,10 @@ object BaseRanger {
       fightingStyles: List[RangerFightingStyle]
   ): Weapon =
     weapon.weaponType match {
-      case Ranged if fightingStyles.contains(Archery) =>
-        bonusToHitWeapon(weapon, 2)
+      case Ranged if fightingStyles.contains(Archery) => bonusToHitWeapon(weapon, 2)
       case Melee if duelingFightingStyleConditionsMet(weapon, offHand, fightingStyles, Dueling) =>
         bonusToHitWeapon(weapon, 2)
-      case _ =>
-        weapon
+      case _ => weapon
     }
 
   def armourClassWithFightingStyle(
@@ -80,10 +78,8 @@ object BaseRanger {
 
     val shieldBonus =
       offHand match {
-        case Some(Shield) =>
-          Shield.armourClass(stats.dexterity)
-        case _ =>
-          0
+        case Some(Shield) => Shield.armourClass(stats.dexterity)
+        case _            => 0
       }
 
     val defenseBonus =
@@ -93,10 +89,8 @@ object BaseRanger {
         0
 
     armour match {
-      case NoArmour =>
-        baseArmourClass + shieldBonus
-      case _ =>
-        baseArmourClass + shieldBonus + defenseBonus
+      case NoArmour => baseArmourClass + shieldBonus
+      case _        => baseArmourClass + shieldBonus + defenseBonus
     }
   }
 }

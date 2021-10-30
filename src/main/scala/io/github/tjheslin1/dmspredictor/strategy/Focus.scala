@@ -24,24 +24,20 @@ object Focus {
     val visibleCombatants =
       if (combatant.creature.creatureType != PlayerCharacter) {
         consciousCombatants.filter {
-          case Combatant(_, rogue: BaseRogue) =>
-            rogue.hiddenFrom.contains(combatant) == false
-          case _ =>
-            true
+          case Combatant(_, rogue: BaseRogue) => rogue.hiddenFrom.contains(combatant) == false
+          case _                              => true
         }
       } else
         consciousCombatants
 
     focus match {
-      case LowestFirst =>
-        visibleCombatants.sortBy(_.creature.health).headOption
+      case LowestFirst => visibleCombatants.sortBy(_.creature.health).headOption
       case RandomFocus =>
         if (visibleCombatants.isEmpty)
           None
         else
           visibleCombatants(JRandom.nextInt(visibleCombatants.size)).some
-      case Healing =>
-        targets.filter(_.creature.isAlive).sortBy(_.creature.health).headOption
+      case Healing => targets.filter(_.creature.isAlive).sortBy(_.creature.health).headOption
     }
   }
 }

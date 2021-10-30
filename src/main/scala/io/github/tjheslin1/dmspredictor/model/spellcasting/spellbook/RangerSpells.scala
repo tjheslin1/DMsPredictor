@@ -59,8 +59,7 @@ object RangerSpells extends LazyLogging {
               spellCaster.spellsKnown.exists { spell =>
                 spell.name == HuntersMark.name
               }
-          case _ =>
-            false
+          case _ => false
         }
 
       def update: Creature = combatant.creature

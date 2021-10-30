@@ -33,8 +33,7 @@ object LichAbilities extends LazyLogging {
         logger.debug(s"Lich used $name")
 
         nextToFocus(combatant, players(others), focus) match {
-          case None =>
-            (combatant, others)
+          case None => (combatant, others)
           case Some(target) =>
             val (attackResult, hitTarget) = attack(combatant, ParalyzingTouch, target)
 
@@ -59,8 +58,7 @@ object LichAbilities extends LazyLogging {
                   addCondition(
                     updatedSavingThrowTarget,
                     Paralyzed(ParalyzingSaveDC, 10, Constitution))
-                case _ =>
-                  updatedSavingThrowTarget
+                case _ => updatedSavingThrowTarget
               }
 
             (updatedLich, updatedOthers.replace(conditionUpdatedTarget))

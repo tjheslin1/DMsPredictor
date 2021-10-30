@@ -74,8 +74,7 @@ import monocle.macros.{GenLens, Lenses}
           _radiantDamageTaken.set(true)(updatedVampire)
         else
           _radiantDamageTaken.set(false)(updatedVampire)
-      case _ =>
-        applyDamage(this, adjustedDamage(dmg, damageType, this))
+      case _ => applyDamage(this, adjustedDamage(dmg, damageType, this))
     }
 
   def restoreHealth(healing: Int): Creature = copy(health = Math.min(maxHealth, health + healing))

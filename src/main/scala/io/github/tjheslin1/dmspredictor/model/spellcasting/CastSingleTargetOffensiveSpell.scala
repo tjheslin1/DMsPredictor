@@ -38,8 +38,7 @@ object CastSingleTargetOffensiveSpell extends LazyLogging {
 
         val (optSpell, foundSpellLevel) =
           highestSpellSlot match {
-            case None =>
-              (spellCaster.cantrip, LevelZero)
+            case None => (spellCaster.cantrip, LevelZero)
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
                 singleTargetSpellsOnly = true
@@ -51,19 +50,15 @@ object CastSingleTargetOffensiveSpell extends LazyLogging {
 
         val targets =
           spellCaster match {
-            case _: Player =>
-              monsters(others)
-            case _ =>
-              players(others)
+            case _: Player => monsters(others)
+            case _         => players(others)
           }
 
         val target = nextToFocus(combatant, targets, focus)
 
         (target, optSpell) match {
-          case (_, None) =>
-            (combatant, others)
-          case (None, _) =>
-            (combatant, others)
+          case (_, None) => (combatant, others)
+          case (None, _) => (combatant, others)
           case (Some(spellTarget), Some(spell)) =>
             val (spellAffectedCaster, List(updatedTarget)) = spell.effect(
               spellCaster,

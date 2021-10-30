@@ -48,10 +48,8 @@ object Move extends LazyLogging {
 
       val attackTarget =
         turnStartConditionHandledCombatant.creature.creatureType match {
-          case PlayerCharacter =>
-            mobToFocus
-          case _ =>
-            pcToFocus
+          case PlayerCharacter => mobToFocus
+          case _               => pcToFocus
         }
 
       val (actedCombatant, updatedTargets) = {
@@ -101,10 +99,8 @@ object Move extends LazyLogging {
     val updatedCombatant =
       Combatant.creatureLens.set {
         combatant.creature.conditions.foldLeft(combatant.creature) {
-          case (creature, condition: StartOfTurnCondition) =>
-            condition.handleStartOfTurn(creature)
-          case (creature, _) =>
-            creature
+          case (creature, condition: StartOfTurnCondition) => condition.handleStartOfTurn(creature)
+          case (creature, _)                               => creature
         }
       }(combatant)
 
@@ -116,10 +112,8 @@ object Move extends LazyLogging {
   def handleEndOfTurnConditions[_: RS](combatant: Combatant): Combatant =
     Combatant.creatureLens.set {
       combatant.creature.conditions.foldLeft(combatant.creature) {
-        case (creature, condition: EndOfTurnCondition) =>
-          condition.handleEndOfTurn(creature)
-        case (creature, _) =>
-          creature
+        case (creature, condition: EndOfTurnCondition) => condition.handleEndOfTurn(creature)
+        case (creature, _)                             => creature
       }
     }(combatant)
 
@@ -165,8 +159,7 @@ object Move extends LazyLogging {
             ability.abilityAction == BonusAction && ability.conditionMet && ability
               .triggerMet(others)
         }
-      case _ =>
-        None
+      case _ => None
     }
 
   private def actionAgainstTarget[_: RS](

@@ -92,8 +92,7 @@ object WizardSpells extends LazyLogging {
 
           (Combatant.creatureLens composeLens Creature.creatureConditionsLens)
             .set(currentConditions :+ acidArrowCondition)(target)
-        case CriticalMiss | Miss =>
-          target
+        case CriticalMiss | Miss => target
       }
   }
 

@@ -72,8 +72,7 @@ class MainSpec extends UnitSpecBase with EitherValues {
           case Left(error) =>
             println(s"Error: ${error.getMessage}")
             throw error
-          case Right(result) =>
-            result
+          case Right(result) => result
         }
 
 //      simConfig shouldBe SimulationConfig(
@@ -144,8 +143,7 @@ class MainSpec extends UnitSpecBase with EitherValues {
           case Left(error) =>
             println(s"Error: ${error.getMessage}")
             throw error
-          case Right(result) =>
-            result
+          case Right(result) => result
         }
 
       simHash shouldBe "1512201769"

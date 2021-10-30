@@ -37,8 +37,7 @@ object CastMultiTargetOffensiveSpell extends LazyLogging {
 
         val (optSpell, foundSpellLevel) =
           highestSpellSlot match {
-            case None =>
-              (none[Spell], LevelZero)
+            case None => (none[Spell], LevelZero)
             case Some(spellSlot) =>
               spellOfLevelOrBelow(spellCaster, DamageSpellEffect, spellSlot.spellLevel)(
                 multiTargetSpellsOnly = true
@@ -49,10 +48,8 @@ object CastMultiTargetOffensiveSpell extends LazyLogging {
 
         val targets =
           spellCaster match {
-            case _: Player =>
-              monsters(others)
-            case _ =>
-              players(others)
+            case _: Player => monsters(others)
+            case _         => players(others)
           }
 
         val (spellAffectedCaster, updatedTargets) =
