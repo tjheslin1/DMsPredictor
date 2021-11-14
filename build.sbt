@@ -8,7 +8,7 @@ lazy val dmspredictor = (project in file("."))
     libraryDependencies ++= Seq(
       // format: off
       "org.typelevel"               %% "cats-core"                        % "2.6.1",
-      "ch.qos.logback"              %  "logback-classic"                  % "1.2.6",
+      "ch.qos.logback"              %  "logback-classic"                  % "1.2.7",
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.4",
       "eu.timepit"                  %% "refined"                          % RefinedVersion,
       "eu.timepit"                  %% "refined-scalacheck"               % RefinedVersion,
