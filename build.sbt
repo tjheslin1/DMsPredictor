@@ -7,7 +7,7 @@ lazy val dmspredictor = (project in file("."))
     assemblyJarName      := "DMsPredictor_full.jar",
     libraryDependencies ++= Seq(
       // format: off
-      "org.typelevel"               %% "cats-core"                        % "2.6.1",
+      "org.typelevel"               %% "cats-core"                        % "2.7.0",
       "ch.qos.logback"              %  "logback-classic"                  % "1.2.7",
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.4",
       "eu.timepit"                  %% "refined"                          % RefinedVersion,
