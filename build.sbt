@@ -3,7 +3,7 @@ lazy val dmspredictor = (project in file("."))
     name                 := "DMsPredictor",
     version              := "1.0",
     scalaVersion         := "2.13.7",
-    mainClass in Compile := some("io.github.tjheslin1.dmspredictor.Main"),
+    Compile / mainClass := some("io.github.tjheslin1.dmspredictor.Main"),
     assemblyJarName      := "DMsPredictor_full.jar",
     libraryDependencies ++= Seq(
       // format: off
@@ -14,7 +14,7 @@ lazy val dmspredictor = (project in file("."))
       "eu.timepit"                  %% "refined-scalacheck"               % RefinedVersion,
       "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
       "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
-      
+
       "io.circe"                    %% "circe-core"                       % CirceVersion,
       "io.circe"                    %% "circe-generic"                    % CirceVersion,
       "io.circe"                    %% "circe-parser"                     % CirceVersion,
@@ -22,7 +22,7 @@ lazy val dmspredictor = (project in file("."))
       "com.amazonaws"               % "aws-java-sdk-dynamodb"             % "1.11.688",
       "com.amazonaws"               % "aws-java-sdk-lambda"               % "1.11.693",
       "com.amazonaws"               % "aws-lambda-java-core"              % "1.2.1",
-      
+
       "org.scanamo"                 %% "scanamo"                          % "1.0.0-M17",
 
       "org.scalatest"               %% "scalatest"                        % "3.2.10"         % Test,
@@ -34,7 +34,7 @@ lazy val dmspredictor = (project in file("."))
     )
   )
 
-scalacOptions in Global += "-Ymacro-annotations"
+Global / scalacOptions += "-Ymacro-annotations"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -45,7 +45,7 @@ val CirceVersion   = "0.14.1"
 val MonocleVersion = "2.1.0"
 val RefinedVersion = "0.9.27"
 
-assemblyMergeStrategy in assembly := {
+assembly / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case x                             => MergeStrategy.first
 }

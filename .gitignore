@@ -4,3 +4,6 @@
 .bsp/
 .idea/
 target/
+
+*.bloop/
+.metals/
