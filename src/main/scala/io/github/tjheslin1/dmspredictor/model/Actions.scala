@@ -348,7 +348,7 @@ object Actions extends LazyLogging {
       combatantAbility(attacker) match {
         case ability: OnWeaponDamageAbility =>
           ability.abilityAction == OnWeaponDamage && ability.conditionMet &&
-            ability.triggerOnSingleTargetMet(target)
+          ability.triggerOnSingleTargetMet(target)
         case _ => false
       }
     }

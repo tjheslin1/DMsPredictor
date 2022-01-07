@@ -50,15 +50,15 @@ object RangerSpells extends LazyLogging {
         combatant.creature match {
           case spellCastingPlayer: Player with SpellCaster =>
             spellCastingPlayer.level >= levelRequirement &&
-              spellCastingPlayer.conditions.contains(HuntersMarkBuffCondition) &&
-              spellCastingPlayer.spellsKnown.exists { spell =>
-                spell.name == HuntersMark.name
-              }
+            spellCastingPlayer.conditions.contains(HuntersMarkBuffCondition) &&
+            spellCastingPlayer.spellsKnown.exists { spell =>
+              spell.name == HuntersMark.name
+            }
           case spellCaster: SpellCaster =>
             spellCaster.conditions.contains(HuntersMarkBuffCondition) &&
-              spellCaster.spellsKnown.exists { spell =>
-                spell.name == HuntersMark.name
-              }
+            spellCaster.spellsKnown.exists { spell =>
+              spell.name == HuntersMark.name
+            }
           case _ => false
         }
 

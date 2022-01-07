@@ -27,9 +27,9 @@ object BaseRangerAbilities extends LazyLogging {
         combatant.creature.offHand match {
           case Some(w: Weapon) =>
             baseRanger.level >= levelRequirement &&
-              baseRanger.bonusActionUsed == false &&
-              w.twoHanded == false &&
-              combatant.creature.baseWeapon.twoHanded == false
+            baseRanger.bonusActionUsed == false &&
+            w.twoHanded == false &&
+            combatant.creature.baseWeapon.twoHanded == false
           case _ => false
         }
 
