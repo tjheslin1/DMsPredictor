@@ -2,7 +2,7 @@ lazy val dmspredictor = (project in file("."))
   .settings(
     name                := "DMsPredictor",
     version             := "1.0",
-    scalaVersion        := "2.13.7",
+    scalaVersion        := "2.13.8",
     Compile / mainClass := some("io.github.tjheslin1.dmspredictor.Main"),
     assemblyJarName     := "DMsPredictor_full.jar",
     libraryDependencies ++= Seq(
