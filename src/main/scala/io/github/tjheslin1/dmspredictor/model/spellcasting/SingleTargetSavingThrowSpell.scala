@@ -44,9 +44,9 @@ abstract class SingleTargetSavingThrowSpell extends Spell with LazyLogging {
     logger.debug(
       s"${spellCaster.name} is casting $name  on ${updatedCreature.name} " +
         s"- Saving throw ${if (passed)
-          "Passed"
-        else
-          "Failed"}"
+            "Passed"
+          else
+            "Failed"}"
     )
 
     val dmg =
