@@ -31,9 +31,9 @@ abstract class MultiTargetSavingThrowSpell extends Spell with LazyLogging {
       val (passed, updatedTarget) = spellSavingThrowPassed(spellCaster, attribute, target.creature)
 
       logger.debug(s"casting $name - Saving throw ${if (passed)
-        "Passed"
-      else
-        "Failed"}")
+          "Passed"
+        else
+          "Failed"}")
 
       val dmg =
         if (passed == false)
