@@ -63,7 +63,7 @@ object CastSingleTargetHealingSpell extends LazyLogging {
           (target, optSpell) match {
             case (_, None) => (combatant, None)
             case (None, _) => (combatant, None)
-            case (Some(spellTarget), Some((foundSpell, foundSpellLevel))) =>
+            case (Some(spellTarget), Some(foundSpell, foundSpellLevel)) =>
               val (spellAffectedCaster, List(updatedTarget)) = foundSpell.effect(
                 spellCaster,
                 foundSpellLevel,
@@ -107,5 +107,5 @@ object CastSingleTargetHealingSpell extends LazyLogging {
     }
 
   def healingSpellTriggerMet(others: List[Combatant]): Boolean = players(others).exists(player =>
-    player.creature.health <= (player.creature.maxHealth / 2))
+    player.creature.health <= player.creature.maxHealth / 2)
 }

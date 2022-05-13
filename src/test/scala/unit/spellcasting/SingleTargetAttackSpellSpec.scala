@@ -126,7 +126,7 @@ class SingleTargetAttackSpellSpec extends UnitSpecBase {
             halfDamageOnSaveSpell.spellLevel,
             List(monster))
 
-          updatedMonster.health shouldBe monster.creature.health - (10 / 2)
+          updatedMonster.health shouldBe monster.creature.health - 10 / 2
         }
       }
     }

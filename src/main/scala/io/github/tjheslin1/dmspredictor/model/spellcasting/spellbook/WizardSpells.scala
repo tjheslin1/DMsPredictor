@@ -50,7 +50,7 @@ object WizardSpells extends LazyLogging {
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = {
       val numberOfDarts = 2 + spellLevel
 
-      (numberOfDarts * D4) + numberOfDarts
+      numberOfDarts * D4 + numberOfDarts
     }
 
     /*
@@ -173,7 +173,7 @@ object WizardSpells extends LazyLogging {
     val benefitsFromHigherSpellSlot = true
 
     def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
-      (spellLevel.value * D8) + (4 * D8)
+      spellLevel.value * D8 + 4 * D8
   }
 
   case object Disintegrate extends SingleTargetSavingThrowSpell {
@@ -231,7 +231,7 @@ object WizardSpells extends LazyLogging {
 
     val benefitsFromHigherSpellSlot = false
 
-    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = (7 * D8) + 30
+    def damage[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int = 7 * D8 + 30
 
     override def additionalEffect[_: RS](
         spellCaster: SpellCaster,

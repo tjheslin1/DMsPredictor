@@ -440,7 +440,7 @@ class BasePaladinAbilitiesSpec extends UnitSpecBase {
             .useAbility(List(goblinCombatant), LowestFirst)
 
           updatedPaladin.spellSlots.firstLevel.count shouldBe levelFivePaladin.spellSlots.firstLevel.count
-          updatedPaladin.spellSlots.secondLevel.count shouldBe (levelFivePaladin.spellSlots.secondLevel.count - 1)
+          updatedPaladin.spellSlots.secondLevel.count shouldBe levelFivePaladin.spellSlots.secondLevel.count - 1
         }
       }
     }

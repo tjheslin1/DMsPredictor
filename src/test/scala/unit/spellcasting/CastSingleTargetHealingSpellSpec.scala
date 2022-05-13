@@ -120,7 +120,7 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
 
           updatedCleric.spellSlots.firstLevel.count shouldBe healingCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
-          updatedCleric.spellSlots.thirdLevel.count shouldBe (healingCleric.spellSlots.thirdLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe healingCleric.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -146,7 +146,7 @@ class CastSingleTargetHealingSpellSpec extends UnitSpecBase {
             healingCleric.withCombatIndex(1))
             .useAbility(List(woundedHunter), LowestFirst)
 
-          updatedCleric.spellSlots.firstLevel.count shouldBe (healingCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.firstLevel.count shouldBe healingCleric.spellSlots.firstLevel.count - 1
           updatedCleric.spellSlots.secondLevel.count shouldBe healingCleric.spellSlots.secondLevel.count
           updatedCleric.spellSlots.thirdLevel.count shouldBe healingCleric.spellSlots.thirdLevel.count
         }

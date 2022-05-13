@@ -54,7 +54,7 @@ import monocle.macros.{GenLens, Lenses}
       attackResult: AttackResult
   ): Creature = {
     val adjustedDmg = adjustedDamage(dmg, damageType, this)
-    if ((health - adjustedDmg) <= 0 && attackResult == Hit && damageType != Radiant) {
+    if (health - adjustedDmg <= 0 && attackResult == Hit && damageType != Radiant) {
 
       val dc                              = 5 + adjustedDmg
       val (passed, updatedZombie: Zombie) = savingThrowPassed(dc, Constitution, this)
@@ -77,7 +77,7 @@ import monocle.macros.{GenLens, Lenses}
 
 object Zombie {
 
-  def calculateHealth[_: RS](): Int = (3 * D8) + 9
+  def calculateHealth[_: RS](): Int = 3 * D8 + 9
 
   def apply[_: RS](): Zombie = {
     val hp = calculateHealth()
@@ -99,7 +99,7 @@ object Zombie {
 
     override val hitBonus: Int = 3
 
-    def damage(implicit rollStrategy: RollStrategy): Int = (1 * D6) + 1
+    def damage(implicit rollStrategy: RollStrategy): Int = 1 * D6 + 1
   }
 
   val strengthLens: Lens[Zombie, Stat]     = _stats composeLens GenLens[BaseStats](_.strength)

@@ -94,7 +94,7 @@ object LifeClericAbilities extends LazyLogging {
       def triggerMet(others: List[Combatant]): Boolean = {
         val allies = players(others)
         val alliesBelowHalfHealth = allies.count(player =>
-          player.creature.health <= (player.creature.maxHealth / 2))
+          player.creature.health <= player.creature.maxHealth / 2)
 
         allies.nonEmpty && alliesBelowHalfHealth >= Math.ceil(1 + allies.size / 2)
       }
@@ -124,9 +124,9 @@ object LifeClericAbilities extends LazyLogging {
     else {
       damagedAllies
         .sortBy(_.creature.health)
-        .find(player => player.creature.health < (player.creature.maxHealth / 2))
+        .find(player => player.creature.health < player.creature.maxHealth / 2)
         .fold(damagedAllies) { targetAlly =>
-          val maxRestoredHealth = (targetAlly.creature.maxHealth / 2) - targetAlly.creature.health
+          val maxRestoredHealth = targetAlly.creature.maxHealth / 2 - targetAlly.creature.health
           val healthToRestore   = Math.min(pool, maxRestoredHealth)
 
           val healedAlly =

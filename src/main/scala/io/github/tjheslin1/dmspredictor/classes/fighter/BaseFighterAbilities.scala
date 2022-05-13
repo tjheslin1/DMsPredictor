@@ -51,7 +51,7 @@ object BaseFighterAbilities extends LazyLogging {
 
         val updatedHealth = Math.min(
           combatant.creature.maxHealth,
-          combatant.creature.health + (1 * HitDice) + baseFighter.level.value
+          combatant.creature.health + 1 * HitDice + baseFighter.level.value
         )
         val updatedCombatant =
           (Combatant.creatureLens composeLens creatureHealthLens).set(updatedHealth)(combatant)

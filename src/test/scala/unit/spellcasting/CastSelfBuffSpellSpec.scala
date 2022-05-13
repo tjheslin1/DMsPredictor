@@ -148,7 +148,7 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
-          updatedWizard.spellSlots.thirdLevel.count shouldBe (buffingWizard.spellSlots.thirdLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe buffingWizard.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -182,7 +182,7 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
-          updatedWizard.spellSlots.thirdLevel.count shouldBe (buffingWizard.spellSlots.thirdLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe buffingWizard.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -213,7 +213,7 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
             wizardCombatant)
             .useAbility(List.empty[Combatant], LowestFirst)
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe (buffingWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe buffingWizard.spellSlots.thirdLevel.count
         }
@@ -247,7 +247,7 @@ class CastSelfBuffSpellSpec extends UnitSpecBase {
             wizardCombatant)
             .useAbility(List.empty[Combatant], LowestFirst)
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe (buffingWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.firstLevel.count shouldBe buffingWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe buffingWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe buffingWizard.spellSlots.thirdLevel.count
         }

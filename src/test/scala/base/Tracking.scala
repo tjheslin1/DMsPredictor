@@ -124,7 +124,7 @@ trait Tracking {
       halfDamageOnAMiss: Boolean = false,
       additionalTargetEffect: Combatant => Combatant = c => c
   ): Spell =
-    new SingleTargetAttackSpell() {
+    new SingleTargetAttackSpell {
       val damageType: DamageType      = Fire
       val name: String                = s"tracked-melee-spell-${spellLvl.value}"
       val school: SchoolOfMagic       = Evocation

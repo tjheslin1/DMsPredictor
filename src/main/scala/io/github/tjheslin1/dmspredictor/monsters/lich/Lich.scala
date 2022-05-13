@@ -91,7 +91,7 @@ import monocle.macros.{GenLens, Lenses}
 }
 
 object Lich {
-  def calculateHealth[_: RS](): Int = (18 * D8) + 54
+  def calculateHealth[_: RS](): Int = 18 * D8 + 54
 
   def calculateArmourClass(stats: BaseStats, conditions: List[Condition]): Int = {
     val baseArmourClass = LichNaturalArmour.armourClass(stats.dexterity)

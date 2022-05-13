@@ -82,7 +82,7 @@ object ClericSpells extends LazyLogging {
     val benefitsFromHigherSpellSlot        = true
 
     def healing[_: RS](spellCaster: SpellCaster, spellLevel: SpellLevel): Int =
-      (spellLevel.value * D8) + attributeModifierForSchool(spellCaster)
+      spellLevel.value * D8 + attributeModifierForSchool(spellCaster)
   }
 
   case object HoldPerson extends ConditionSpell {

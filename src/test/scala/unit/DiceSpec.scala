@@ -51,7 +51,7 @@ class DiceSpec extends UnitSpecBase {
       val iterator = Iterator(5, 15, 19, 4)
       val res      = D20.rollWithAdvantage(2)(_ => iterator.next())
 
-      res shouldBe (15 + 19)
+      res shouldBe 15 + 19
     }
   }
 
@@ -68,7 +68,7 @@ class DiceSpec extends UnitSpecBase {
       val iterator = Iterator(5, 15, 19, 4)
       val res      = D20.rollWithDisadvantage(2)(_ => iterator.next())
 
-      res shouldBe (5 + 4)
+      res shouldBe 5 + 4
     }
   }
 

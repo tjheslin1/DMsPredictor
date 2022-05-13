@@ -167,7 +167,7 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe trackedWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
-          updatedWizard.spellSlots.thirdLevel.count shouldBe (trackedWizard.spellSlots.thirdLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe trackedWizard.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -207,7 +207,7 @@ class CastMultiTargetOffensiveSpellSpec extends UnitSpecBase {
             wizardCombatant)
             .useAbility(List(monsterOne, monsterTwo), LowestFirst)
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe (trackedWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.firstLevel.count shouldBe trackedWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe trackedWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe trackedWizard.spellSlots.thirdLevel.count
         }

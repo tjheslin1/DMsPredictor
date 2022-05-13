@@ -21,12 +21,12 @@ object SavingThrow {
         case (attr, p: Player) =>
           if (p.savingThrowProficiencies.exists(_ == attr)) {
             val passed =
-              (D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus + blessAttackBonus(
-                p)) >= dc
+              D20.roll() + attributeModifier(p, attr) + p.proficiencyBonus + blessAttackBonus(
+                p) >= dc
 
             (passed, p)
           } else {
-            val passed = (D20.roll() + attributeModifier(p, attr) + blessAttackBonus(p)) >= dc
+            val passed = D20.roll() + attributeModifier(p, attr) + blessAttackBonus(p) >= dc
 
             (passed, p)
           }

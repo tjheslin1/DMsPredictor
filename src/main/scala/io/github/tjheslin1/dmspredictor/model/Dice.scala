@@ -25,7 +25,7 @@ object Dice {
   val defaultRandomiser: RollStrategy = sides => RollResult(Random.nextInt(sides) + 1)
   val naturalOne: RollStrategy        = _ => RollResult(1)
 
-  def midpointRoundedUp(dice: Dice): Int = Math.ceil(1 + (dice.sides / 2)).toInt
+  def midpointRoundedUp(dice: Dice): Int = Math.ceil(1 + dice.sides / 2).toInt
 }
 
 object D4 extends Dice {

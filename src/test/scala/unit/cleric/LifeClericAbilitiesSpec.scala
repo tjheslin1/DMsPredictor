@@ -84,7 +84,7 @@ class LifeClericAbilitiesSpec extends UnitSpecBase {
           val (Combatant(_, updatedCleric: Cleric), _) = discipleOfLife(1)(
             lifeCleric.withCombatIndex(1)).useAbility(List(weakFighter), LowestFirst)
 
-          updatedCleric.spellSlots.secondLevel.count shouldBe (lifeCleric.spellSlots.secondLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe lifeCleric.spellSlots.secondLevel.count - 1
         }
       }
     }

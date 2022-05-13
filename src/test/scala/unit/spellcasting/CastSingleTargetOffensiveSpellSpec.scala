@@ -148,7 +148,7 @@ class CastSingleTargetOffensiveSpellSpec extends UnitSpecBase {
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
-          updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -176,7 +176,7 @@ class CastSingleTargetOffensiveSpellSpec extends UnitSpecBase {
             clericCombatant)
             .useAbility(List(monster), LowestFirst)
 
-          updatedCleric.spellSlots.firstLevel.count shouldBe (trackedCleric.spellSlots.firstLevel.count - 1)
+          updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count - 1
           updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
           updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }

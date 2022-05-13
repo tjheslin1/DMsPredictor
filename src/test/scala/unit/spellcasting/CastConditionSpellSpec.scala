@@ -103,7 +103,7 @@ class CastConditionSpellSpec extends UnitSpecBase {
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
-          updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -136,7 +136,7 @@ class CastConditionSpellSpec extends UnitSpecBase {
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
           updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count
-          updatedCleric.spellSlots.thirdLevel.count shouldBe (trackedCleric.spellSlots.thirdLevel.count - 1)
+          updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -168,7 +168,7 @@ class CastConditionSpellSpec extends UnitSpecBase {
             .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
-          updatedCleric.spellSlots.secondLevel.count shouldBe (trackedCleric.spellSlots.secondLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count - 1
           updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }
       }
@@ -201,7 +201,7 @@ class CastConditionSpellSpec extends UnitSpecBase {
             .useAbility(List(goblinCombatantOne, goblinCombatantTwo), LowestFirst)
 
           updatedCleric.spellSlots.firstLevel.count shouldBe trackedCleric.spellSlots.firstLevel.count
-          updatedCleric.spellSlots.secondLevel.count shouldBe (trackedCleric.spellSlots.secondLevel.count - 1)
+          updatedCleric.spellSlots.secondLevel.count shouldBe trackedCleric.spellSlots.secondLevel.count - 1
           updatedCleric.spellSlots.thirdLevel.count shouldBe trackedCleric.spellSlots.thirdLevel.count
         }
       }

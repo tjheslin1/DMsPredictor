@@ -245,7 +245,7 @@ class CastMultiTargetBuffSpellSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe castingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe castingWizard.spellSlots.secondLevel.count
-          updatedWizard.spellSlots.thirdLevel.count shouldBe (castingWizard.spellSlots.thirdLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe castingWizard.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -279,7 +279,7 @@ class CastMultiTargetBuffSpellSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe castingWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe castingWizard.spellSlots.secondLevel.count
-          updatedWizard.spellSlots.thirdLevel.count shouldBe (castingWizard.spellSlots.thirdLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe castingWizard.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -310,7 +310,7 @@ class CastMultiTargetBuffSpellSpec extends UnitSpecBase {
             castingWizard.withCombatIndex(1))
             .useAbility(List(paladinCombatant), LowestFirst)
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe (castingWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.firstLevel.count shouldBe castingWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe castingWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe castingWizard.spellSlots.thirdLevel.count
         }
@@ -344,7 +344,7 @@ class CastMultiTargetBuffSpellSpec extends UnitSpecBase {
             castingWizard.withCombatIndex(1))
             .useAbility(List(paladinCombatant), LowestFirst)
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe (castingWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.firstLevel.count shouldBe castingWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe castingWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe castingWizard.spellSlots.thirdLevel.count
         }

@@ -139,7 +139,7 @@ class MoveSpec extends UnitSpecBase with OptionValues {
 
           val Queue(Combatant(_, updatedEnemy), _) = takeMove(queue, LowestFirst)(D20.naturalTwenty)
 
-          updatedEnemy.health should (be <= monster.health)
+          updatedEnemy.health should be <= monster.health
         }
       }
     }

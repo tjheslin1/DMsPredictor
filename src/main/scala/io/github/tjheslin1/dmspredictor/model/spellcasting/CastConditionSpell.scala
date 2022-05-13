@@ -50,7 +50,7 @@ object CastConditionSpell extends LazyLogging {
 
         optSpell match {
           case None => (combatant, others)
-          case Some((foundSpell, foundSpellLevel)) =>
+          case Some(foundSpell, foundSpellLevel) =>
             val (spellAffectedCaster, updatedOthers) = foundSpell.effect(
               spellCaster,
               foundSpellLevel,

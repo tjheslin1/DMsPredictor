@@ -68,7 +68,7 @@ class MainSpec extends UnitSpecBase with EitherValues {
 //      val expectedMonsters = List(Goblin(6, 6, name = "TestGoblin"))
 
       val (_, simHash, basicSim, _) =
-        new Main().parseSimulation(sqsMessage) match {
+        new Main.parseSimulation(sqsMessage) match {
           case Left(error) =>
             println(s"Error: ${error.getMessage}")
             throw error
@@ -139,7 +139,7 @@ class MainSpec extends UnitSpecBase with EitherValues {
         ))
 
       val (_, simHash, basicSim, _) =
-        new Main().parseSimulation(sqsMessage) match {
+        new Main.parseSimulation(sqsMessage) match {
           case Left(error) =>
             println(s"Error: ${error.getMessage}")
             throw error

@@ -107,7 +107,7 @@ class CastSingleTargetInstantEffectSpellSpec extends UnitSpecBase {
 
           updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count
           updatedWizard.spellSlots.secondLevel.count shouldBe instantEffectWizard.spellSlots.secondLevel.count
-          updatedWizard.spellSlots.thirdLevel.count shouldBe (instantEffectWizard.spellSlots.thirdLevel.count - 1)
+          updatedWizard.spellSlots.thirdLevel.count shouldBe instantEffectWizard.spellSlots.thirdLevel.count - 1
         }
       }
     }
@@ -141,7 +141,7 @@ class CastSingleTargetInstantEffectSpellSpec extends UnitSpecBase {
             instantEffectWizard.withCombatIndex(1))
             .useAbility(List(goblinCombatant), LowestFirst)
 
-          updatedWizard.spellSlots.firstLevel.count shouldBe (instantEffectWizard.spellSlots.firstLevel.count - 1)
+          updatedWizard.spellSlots.firstLevel.count shouldBe instantEffectWizard.spellSlots.firstLevel.count - 1
           updatedWizard.spellSlots.secondLevel.count shouldBe instantEffectWizard.spellSlots.secondLevel.count
           updatedWizard.spellSlots.thirdLevel.count shouldBe instantEffectWizard.spellSlots.thirdLevel.count
         }

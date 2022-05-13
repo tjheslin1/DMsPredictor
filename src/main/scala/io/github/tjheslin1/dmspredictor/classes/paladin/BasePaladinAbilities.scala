@@ -27,7 +27,7 @@ object BasePaladinAbilities extends LazyLogging {
 
       def triggerMet(others: List[Combatant]): Boolean = players(others)
         .filter(_.creature.isAlive)
-        .exists(ally => ally.creature.health <= (ally.creature.maxHealth / 2))
+        .exists(ally => ally.creature.health <= ally.creature.maxHealth / 2)
 
       def conditionMet: Boolean = basePaladin.layOnHandsPool > 0
 
@@ -110,8 +110,8 @@ object BasePaladinAbilities extends LazyLogging {
                   val smiteDamage =
                     (attackResult, updatedDamagedTarget.creature.creatureType) match {
                       case (CriticalHit, Undead | Fiend) =>
-                        damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot) + (2 * D8)
-                      case (Hit, Undead | Fiend) => damageFromSpellSlot(spellSlot) + (1 * D8)
+                        damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot) + 2 * D8
+                      case (Hit, Undead | Fiend) => damageFromSpellSlot(spellSlot) + 1 * D8
                       case (CriticalHit, _) =>
                         damageFromSpellSlot(spellSlot) + damageFromSpellSlot(spellSlot)
                       case _ => damageFromSpellSlot(spellSlot)

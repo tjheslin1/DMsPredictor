@@ -61,7 +61,7 @@ object Werewolf {
 
   val HitDice = D8
 
-  def calculateHealth[_: RS](): Int = (9 * HitDice) + 18
+  def calculateHealth[_: RS](): Int = 9 * HitDice + 18
 
   def apply[_: RS](): Werewolf = {
     val hp = calculateHealth()

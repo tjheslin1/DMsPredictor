@@ -59,7 +59,7 @@ class Main extends RequestStreamHandler with ArgParser with LazyLogging {
           case Right(simHash) =>
             writeToDynamo(SimulationResult(simHash, "unknown", e.getMessage, "unknown config"))
         }
-      case Right((simulationConfig, simHash, basicSimulation, json)) =>
+      case Right(simulationConfig, simHash, basicSimulation, json) =>
         val (losses, wins) = SimulationRunner.run(
           basicSimulation,
           simulationConfig.simulationName,
