@@ -9,7 +9,7 @@ lazy val dmspredictor = (project in file("."))
       // format: off
       "org.typelevel"               %% "cats-core"                        % "2.7.0",
       "ch.qos.logback"              %  "logback-classic"                  % "1.2.11",
-      "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.4",
+      "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.5",
       "eu.timepit"                  %% "refined"                          % RefinedVersion,
       "eu.timepit"                  %% "refined-scalacheck"               % RefinedVersion,
       "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
