@@ -43,7 +43,7 @@ resolvers ++= Seq(
 
 val CirceVersion   = "0.14.2"
 val MonocleVersion = "2.1.0"
-val RefinedVersion = "0.9.29"
+val RefinedVersion = "0.10.1"
 
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
