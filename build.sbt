@@ -29,7 +29,7 @@ lazy val dmspredictor = (project in file("."))
       "org.scalatestplus"           %% "scalatestplus-scalacheck"         % "3.1.0.0-RC2"   % Test,
 
       "com.danielasfregola"         %% "random-data-generator-magnolia"   % "2.9"           % Test,
-      "org.scalacheck"              %% "scalacheck"                       % "1.16.0"        % Test
+      "org.scalacheck"              %% "scalacheck"                       % "1.17.0"        % Test
       // format: on
     )
   )
