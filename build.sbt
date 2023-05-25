@@ -12,8 +12,8 @@ lazy val dmspredictor = (project in file("."))
       "com.typesafe.scala-logging"  %% "scala-logging"                    % "3.9.5",
       "eu.timepit"                  %% "refined"                          % RefinedVersion,
       "eu.timepit"                  %% "refined-scalacheck"               % RefinedVersion,
-      "com.github.julien-truffaut"  %% "monocle-core"                     % MonocleVersion,
-      "com.github.julien-truffaut"  %% "monocle-macro"                    % MonocleVersion,
+      "dev.optics"  %% "monocle-core"                     % MonocleVersion,
+      "dev.optics"  %% "monocle-macro"                    % MonocleVersion,
 
       "io.circe"                    %% "circe-core"                       % CirceVersion,
       "io.circe"                    %% "circe-generic"                    % CirceVersion,
@@ -42,7 +42,7 @@ resolvers ++= Seq(
 )
 
 val CirceVersion   = "0.14.2"
-val MonocleVersion = "2.1.0"
+val MonocleVersion = "3.2.0"
 val RefinedVersion = "0.10.1"
 
 assembly / assemblyMergeStrategy := {
